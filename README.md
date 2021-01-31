@@ -30,7 +30,7 @@ docker-compose down -v
 # Common Errors and Fixes
 
 If a docker container running an app crashes saying it can't find some module, it's probably because the node_modules folder wasn't
-made on in the container. To fix this issue just go to the appropriate directory and run "npm install"; this will build the node_modules
+made on in the container. To fix this issue just go to the appropriate directory on your host machine (the one where the app is) and run "npm install"; this will build the node_modules
 folder on your machine, which will then be copied to the container. This will resolve the issue.
 
 If Docker says an HTTP request took too long, run "docker-compose down" from root directory, then try starting the dev containers again.
