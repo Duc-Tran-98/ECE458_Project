@@ -6,7 +6,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 
-function App() {
+function App(props) {
   const [loggedIn, setLoggedIn] = useState(false);
   const handleLogin = () => {
     setLoggedIn(true);
@@ -29,7 +29,9 @@ function App() {
             {!loggedIn && <Login handleLogin={handleLogin} />}
             {loggedIn && <Home />}
           </Route>
-          <Route path="/sign-up" component={SignUp} />
+          <Route path="/sign-up">
+            <SignUp />
+          </Route>
         </Switch>
       </main>
       <footer></footer>
