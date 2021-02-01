@@ -1,11 +1,10 @@
 // Resolvers define the technique for fetching the types defined in the
-  // schema.
+// schema.
 const bcrypt = require("bcryptjs");
 //For hashing password
 const saltRounds = 10;
 module.exports = {
   Query: {
-    books: () => books,
     me: (_, __, { dataSources }) => dataSources.userAPI.find(),
   },
   Mutation: {
@@ -14,8 +13,7 @@ module.exports = {
         userName: userName,
         password: password,
       });
-      //console.log(user);
-      return response;
+      return response.success;
     },
     signup: async (
       _,
@@ -32,7 +30,7 @@ module.exports = {
         userName: userName,
         password: hash,
       });
-      return response;
+      return response.success;
     },
   },
 };

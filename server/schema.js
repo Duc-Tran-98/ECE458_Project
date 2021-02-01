@@ -19,7 +19,7 @@ const typeDefs = gql`
   }
   # Mutation type allows clients to change state
   type Mutation {
-    login(userName: String! password: String!): loginResponse!
+    login(userName: String! password: String!): Boolean!
     signup(
       email: String!
       firstName: String!

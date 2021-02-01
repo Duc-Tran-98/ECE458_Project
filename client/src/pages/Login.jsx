@@ -1,26 +1,21 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import { gql } from "@apollo/client";
+import { print } from "graphql";
+import axios from "axios";
 
-export default class Login extends Component {
-  state = {
-    userName: "",
-    password: "",
-    isChecked: false,
-  };
-  onChangeCheckbox = (event) => {
-    this.setState({
-      isChecked: event.target.checked,
-    });
-  };
-  componentDidMount() {
-    //check if we remember this user
-    if (localStorage.checkbox && localStorage.userName !== "") {
-      this.setState({
-        isChecked: true,
-        userName: localStorage.username,
-        password: localStorage.password,
-      });
+const Login = (props) => {
+  const LOGIN_MUTATION = gql`
+    mutation LoginMutation($password: String!, $userName: String!) {
+      login(password: $password, userName: $userName)
     }
-    var forms = document.getElementsByClassName("needs-validation");
+  `;
+  const [formState, setFormState] = useState({
+    password: "",
+    userName: "",
+    isChecked: false,
+  });
+  useEffect(() => {
+    const forms = document.getElementsByClassName("needs-validation");
     // Loop over them and prevent submission
     Array.prototype.filter.call(forms, function (form) {
       form.addEventListener(
@@ -35,10 +30,13 @@ export default class Login extends Component {
         false
       );
     });
-  }
-  handleLogin = (e) => {
+  });
+  const onChangeCheckbox = (event) => {
+    setFormState({ ...formState, isChecked: event.target.checked });
+  };
+  const handleLogin = (e) => {
     e.preventDefault();
-    const { userName, password, isChecked } = this.state;
+    const { isChecked, userName, password } = formState;
     var hours = 24; // Reset when storage is more than 24hours
     var now = new Date().getTime();
     var setupTime = localStorage.getItem("setupTime");
@@ -57,115 +55,106 @@ export default class Login extends Component {
     } else if (!isChecked && userName !== "" && password !== "") {
       localStorage.clear();
     }
-
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userName: this.state.userName,
-        password: this.state.password,
-      }),
-    };
-    fetch("/api/login", options)
-      .then((response) => {
-        return response.json();
+    axios
+      .post("http://localhost:4000/", {
+        query: print(LOGIN_MUTATION),
+        variables: {
+          password: formState.password,
+          userName: formState.userName,
+        },
       })
-      .then((data) => {
-        alert(data.message);
-        if (!data.error) {
-          //if no error, login
-          this.props.handleLogin();
+      .then((res) => {
+        if (res.data.data.login) {
+          alert("Successfully Logged in!");
+          //window.location.href = "/";
+          props.handleLogin();
+        } else {
+          alert("Invalid username/password");
         }
-        //console.log(data);
       })
-      .catch((error) => {
-        alert("Uh oh! Server is down! Try again later...");
-        console.log(error);
-      });
+      .catch((err) => console.log(err));
   };
-  changeHandler = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+  const changeHandler = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-  render() {
-    return (
-      <div className="d-flex justify-content-center align-items-center mt-5">
-        <form
-          className="needs-validation bg-light rounded"
-          noValidate
-          onSubmit={this.handleLogin}
-        >
-          <div className="form-row">
-            <div className="col pl-3 pr-3">
-              <label htmlFor="validationCustomUsername" className="h4">
-                Username
-              </label>
-              <div className="input-group">
-                <div className="input-group-prepend">
-                  <span className="input-group-text" id="inputGroupPrepend">
-                    @
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="validationCustomUsername"
-                  placeholder="Username"
-                  aria-describedby="inputGroupPrepend"
-                  name="userName"
-                  value={this.state.userName}
-                  onChange={this.changeHandler}
-                  required
-                />
-                <div className="invalid-feedback">Please enter a username.</div>
+  return (
+    <div className="d-flex justify-content-center align-items-center mt-5">
+      <form
+        className="needs-validation bg-light rounded"
+        noValidate
+        onSubmit={handleLogin}
+      >
+        <div className="form-row">
+          <div className="col pl-3 pr-3">
+            <label htmlFor="validationCustomUsername" className="h4">
+              Username
+            </label>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <span className="input-group-text" id="inputGroupPrepend">
+                  @
+                </span>
               </div>
-            </div>
-          </div>
-          <div className="form-row">
-            <div className="col pl-3 pr-3">
-              <label htmlFor="validationCustom04" className="h4">
-                Password
-              </label>
               <input
-                type="password"
+                type="text"
                 className="form-control"
-                id="validationCustom04"
-                name="password"
-                value={this.state.password}
-                onChange={this.changeHandler}
+                id="validationCustomUsername"
+                placeholder="Username"
+                aria-describedby="inputGroupPrepend"
+                name="userName"
+                value={formState.userName}
+                onChange={changeHandler}
                 required
               />
-              <div className="invalid-feedback">
-                Please provide a valid password.
-              </div>
+              <div className="invalid-feedback">Please enter a username.</div>
             </div>
           </div>
-          <div className="form-check d-flex align-items-center ml-3">
-            <input
-              type="checkbox"
-              value=""
-              className="form-check-input"
-              id="customCheck1"
-              checked={this.state.isChecked}
-              onChange={this.onChangeCheckbox}
-            />
-            <label className="form-check-label" htmlFor="customCheck1">
-              Remember me
+        </div>
+        <div className="form-row">
+          <div className="col pl-3 pr-3">
+            <label htmlFor="validationCustom04" className="h4">
+              Password
             </label>
+            <input
+              type="password"
+              className="form-control"
+              id="validationCustom04"
+              name="password"
+              value={formState.password}
+              onChange={changeHandler}
+              required
+            />
+            <div className="invalid-feedback">
+              Please provide a valid password.
+            </div>
           </div>
-          <div className="d-flex justify-content-center mb-3 mt-3">
-            <button className="btn btn-primary" type="submit">
-              Log In
-            </button>
-          </div>
-          <div className="d-flex justify-content-center">
-            <p className="text-muted">
-              Forgot <a href="/">password?</a>
-            </p>
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
+        </div>
+        <div className="form-check d-flex align-items-center ml-3">
+          <input
+            type="checkbox"
+            value=""
+            className="form-check-input"
+            id="customCheck1"
+            checked={formState.isChecked}
+            onChange={onChangeCheckbox}
+          />
+          <label className="form-check-label" htmlFor="customCheck1">
+            Remember me
+          </label>
+        </div>
+        <div className="d-flex justify-content-center mb-3 mt-3">
+          <button className="btn btn-primary" type="submit">
+            Log In
+          </button>
+        </div>
+        <div className="d-flex justify-content-center">
+          <p className="text-muted">
+            Forgot <a href="/">password?</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
