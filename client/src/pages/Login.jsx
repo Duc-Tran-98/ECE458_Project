@@ -56,7 +56,7 @@ const Login = (props) => {
       localStorage.clear();
     }
     axios
-      .post("http://localhost:4000/", {
+      .post("/api", {
         query: print(LOGIN_MUTATION),
         variables: {
           password: formState.password,

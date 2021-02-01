@@ -3,7 +3,7 @@ version: "3.3"
 services:
   mysql:
     container_name: mysql
-    image: mysql:5.6.51
+    image: mysql:5.7.33
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD #get password from .env file in same directory
@@ -17,6 +17,7 @@ services:
       - app-network
   # Backend
   backend:
+    restart: always
     stdin_open: true
     tty: true
     container_name: backend
@@ -24,7 +25,7 @@ services:
       context: ./server/
       dockerfile: Dockerfile.prod
     expose:
-      - 5000
+      - 4000
     links:
       - mysql
     volumes:
@@ -35,6 +36,7 @@ services:
   frontend:
     stdin_open: true
     tty: true
+    restart: always
     container_name: frontend
     build:
       context: ./client/

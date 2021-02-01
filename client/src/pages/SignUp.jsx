@@ -50,7 +50,7 @@ const SignUp = (props) => {
     e.preventDefault();
     if (validateState() && true) {
       axios
-        .post("http://localhost:4000/", {
+        .post("/api", {
           query: print(SIGNUP_MUTATION),
           variables: {
             firstName: formState.firstName,
