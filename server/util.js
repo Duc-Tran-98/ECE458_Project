@@ -2,7 +2,7 @@
 const SQL = require("sequelize");
 const dotenv = require("dotenv");
 dotenv.config();
-
+console.log(process.env.MYSQL_ROOT_PASSWORD);
 module.exports.createStore = () => {
   const db = new SQL("mydb", "root", process.env.MYSQL_ROOT_PASSWORD, {
     host: "mysql",
