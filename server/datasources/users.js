@@ -1,6 +1,6 @@
 // This file deals with what methods a user model should have
-import { DataSource } from 'apollo-datasource';
-import { compareSync } from 'bcryptjs';
+const { DataSource } = require('apollo-datasource');
+const bcrypt = require('bcryptjs');
 
 class UserAPI extends DataSource {
   constructor({ store }) {
@@ -28,7 +28,7 @@ class UserAPI extends DataSource {
       if (!value) {
         response.message = 'No username found';
       } else {
-        response.success = compareSync(pArg, value.password);
+        response.success = bcrypt.compareSync(pArg, value.password);
         response.message = response.success
           ? 'Logged in'
           : 'Wrong username/password';
@@ -82,4 +82,4 @@ class UserAPI extends DataSource {
   }
 }
 
-export default UserAPI;
+module.exports = UserAPI;

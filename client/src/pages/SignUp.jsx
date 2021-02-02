@@ -3,6 +3,10 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import axios from 'axios';
 
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4000'
+  : '/api';
+
 const SignUp = () => {
   const [formState, setFormState] = useState({
     email: '',
@@ -65,7 +69,7 @@ const SignUp = () => {
     e.preventDefault();
     if (validateState() && true) {
       axios
-        .post('/api', {
+        .post(route, {
           query: print(SIGNUP_MUTATION),
           variables: {
             firstName: formState.firstName,

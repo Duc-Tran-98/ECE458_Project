@@ -4,6 +4,10 @@ import { print } from 'graphql';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4000'
+  : '/api';
+
 const Login = (props) => {
   Login.propTypes = {
     handleLogin: PropTypes.func.isRequired,
@@ -59,7 +63,7 @@ const Login = (props) => {
       localStorage.clear();
     }
     axios
-      .post('/api', {
+      .post(route, {
         query: print(LOGIN_MUTATION),
         variables: {
           password: formState.password,
