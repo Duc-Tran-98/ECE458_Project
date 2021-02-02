@@ -67,8 +67,11 @@ const Login = (props) => {
         },
       })
       .then((res) => {
-        if (res.data.data.login) {
-          alert("Successfully Logged in!");
+        //console.log(res);
+        const response = JSON.parse(res.data.data.login);
+        //console.log(JSON.parse(res.data.data.login));
+        if (response.success) {
+          alert(response.message);
           window.sessionStorage.setItem("userName", userName);
           props.handleLogin();
         } else {

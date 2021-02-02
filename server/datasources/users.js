@@ -23,7 +23,7 @@ class UserAPI extends DataSource {
    * to a user in the db
    */
   async login({ userName: uArg, password: pArg }) {
-    const response = { success: false, message: "" };
+    const response = { success: false, message: "", user: null };
     await this.findUser({ userName: uArg }).then((value) => {
       if (!value) {
         response.message = "No username found";
@@ -32,9 +32,10 @@ class UserAPI extends DataSource {
         response.message = response.success
           ? "Logged in"
           : "Wrong username/password";
+        response.user = response.success ? value : null;
       }
     });
-    return response;
+    return JSON.stringify(response);
   }
 
   async isAdmin({ userName: uArg }) {
@@ -94,7 +95,7 @@ class UserAPI extends DataSource {
         response.success = true;
       }
     });
-    return response;
+    return JSON.stringify(response);
   }
 }
 

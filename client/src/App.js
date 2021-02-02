@@ -40,6 +40,7 @@ function App(props) {
   const handleSignOut = () => {
     setLoggedIn(false);
     setIsAdmin(false);
+    window.sessionStorage.clear();
   };
   return (
     <Router>

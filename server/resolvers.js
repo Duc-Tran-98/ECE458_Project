@@ -15,7 +15,7 @@ module.exports = {
         userName: userName,
         password: password,
       });
-      return response.success;
+      return response;
     },
     signup: async (
       _,
@@ -33,7 +33,7 @@ module.exports = {
         password: hash,
         isAdmin: isAdmin,
       });
-      return response.success;
+      return response;
     },
   },
 };
