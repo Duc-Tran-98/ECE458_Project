@@ -6,6 +6,8 @@ const saltRounds = 10;
 module.exports = {
   Query: {
     me: (_, __, { dataSources }) => dataSources.userAPI.find(),
+    isAdmin: (_, { userName }, { dataSources }) =>
+      dataSources.userAPI.isAdmin({ userName: userName }),
   },
   Mutation: {
     login: async (_, { userName, password }, { dataSources }) => {
@@ -13,11 +15,11 @@ module.exports = {
         userName: userName,
         password: password,
       });
-      return response.success;
+      return response;
     },
     signup: async (
       _,
-      { lastName, email, password, firstName, userName },
+      { lastName, email, password, firstName, userName, isAdmin },
       { dataSources }
     ) => {
       //gen salt and hash user's password, then pass to api so it can be put in DB
@@ -29,8 +31,9 @@ module.exports = {
         lastName: lastName,
         userName: userName,
         password: hash,
+        isAdmin: isAdmin,
       });
-      return response.success;
+      return response;
     },
   },
 };

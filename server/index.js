@@ -2,12 +2,15 @@
 const { ApolloServer } = require("apollo-server");
 const typeDefs = require("./schema");
 const UserAPI = require("./datasources/users");
-const { createStore } = require("./util");
+const { createStore, createDB } = require("./util");
 const isEmail = require("isemail");
 const resolvers = require("./resolvers");
 
 // Connect to db and init tables
-const store = createStore();
+let store;
+createDB().then(() => {
+  store = createStore();
+});
 
 //Define api
 const dataSources = () => ({
@@ -23,6 +26,7 @@ const server = new ApolloServer({
     // find a user by their email
     const users = await store.users.findOrCreate({ where: { email } });
     const user = (users && users[0]) || null;
+    // console.log(user);
     return { user: { ...user.dataValues } };
   },
   // Additional constructor options

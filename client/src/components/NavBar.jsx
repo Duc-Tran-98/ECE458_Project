@@ -29,8 +29,8 @@ function NavBar(props) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink to="/sign-up" className="nav-link" type="button">
-          Sign Up
+        <NavLink to="/help" className="nav-link" type="button">
+          Need Help?
         </NavLink>
       </li>
     </ul>

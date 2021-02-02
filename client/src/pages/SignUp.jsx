@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { print } from "graphql";
 import axios from "axios";
-
+const route = process.env.NODE_ENV.includes("dev")
+  ? "http://localhost:4000"
+  : "/api";
 const SignUp = (props) => {
   const [formState, setFormState] = useState({
     email: "",
@@ -10,6 +12,7 @@ const SignUp = (props) => {
     firstName: "",
     lastName: "",
     userName: "",
+    isAdmin: false,
   });
   useEffect(() => {
     const forms = document.getElementsByClassName("needs-validation");
@@ -28,6 +31,9 @@ const SignUp = (props) => {
       );
     });
   });
+  const onChangeCheckbox = (event) => {
+    setFormState({ ...formState, isAdmin: event.target.checked });
+  };
   const SIGNUP_MUTATION = gql`
     mutation SignupMutation(
       $email: String!
@@ -35,6 +41,7 @@ const SignUp = (props) => {
       $firstName: String!
       $lastName: String!
       $userName: String!
+      $isAdmin: Boolean!
     ) {
       signup(
         email: $email
@@ -42,6 +49,7 @@ const SignUp = (props) => {
         firstName: $firstName
         lastName: $lastName
         userName: $userName
+        isAdmin: $isAdmin
       )
     }
   `;
@@ -50,7 +58,7 @@ const SignUp = (props) => {
     e.preventDefault();
     if (validateState() && true) {
       axios
-        .post("/api", {
+        .post(route, {
           query: print(SIGNUP_MUTATION),
           variables: {
             firstName: formState.firstName,
@@ -58,17 +66,19 @@ const SignUp = (props) => {
             password: formState.password,
             lastName: formState.lastName,
             userName: formState.userName,
+            isAdmin: formState.isAdmin,
           },
         })
         .then((res) => {
           //console.log(res);
-          if(res.data.data.signup){
-            alert("Successfully Registered!");
+          const response = JSON.parse(res.data.data.signup);
+          // console.log(response);
+          if (response.success) {
+            alert(response.message);
             window.location.href = "/";
-          }
-          else{
+          } else {
             alert("That username/email is already taken");
-          }        
+          }
         })
         .catch((err) => console.log(err));
     }
@@ -86,7 +96,7 @@ const SignUp = (props) => {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-  
+
   return (
     <div className="d-flex justify-content-center align-items-center mt-5">
       <form
@@ -94,8 +104,8 @@ const SignUp = (props) => {
         noValidate
         onSubmit={handleSignup}
       >
-        <div className="form-row ml-3 mr-3">
-          <div className="col-md-4 mb-3">
+        <div className="row mx-3">
+          <div className="col mb-3 mt-2">
             <label htmlFor="validationCustom01" className="h4">
               First Name
             </label>
@@ -111,7 +121,7 @@ const SignUp = (props) => {
             />
             <div className="valid-feedback">Looks good!</div>
           </div>
-          <div className="col-md-4 mb-3">
+          <div className="col mb-3 mt-2">
             <label htmlFor="validationCustom02" className="h4">
               Last name
             </label>
@@ -127,7 +137,7 @@ const SignUp = (props) => {
             />
             <div className="valid-feedback">Looks good!</div>
           </div>
-          <div className="col-md-4 mb-3">
+          <div className="col mb-3 mt-2">
             <label htmlFor="validationCustomUsername" className="h4">
               Username
             </label>
@@ -152,7 +162,7 @@ const SignUp = (props) => {
             </div>
           </div>
         </div>
-        <div className="form-row ml-3 mr-3">
+        <div className="row mx-3">
           <div className="col mb-3">
             <label htmlFor="validationCustom03" className="h4">
               Email
@@ -187,6 +197,22 @@ const SignUp = (props) => {
             <div className="invalid-feedback">
               Please provide a valid password.
             </div>
+          </div>
+        </div>
+        <div className="form-check form-switch row ms-4">
+          <label className="form-check-label h4 col" htmlFor="adminCheck">
+            Admin user?
+          </label>
+
+          <input
+            className="form-check-input mt-2"
+            type="checkbox"
+            id="adminCheck"
+            name="isAdmin"
+            onChange={onChangeCheckbox}
+          />
+          <div className="col">
+            <strong>{formState.isAdmin ? "Yes" : "No"}</strong>
           </div>
         </div>
         <div className="d-flex justify-content-center mt-3 mb-3">

@@ -5,14 +5,19 @@ const config = require("./config");
 
 const { host, port, user, password, database } = config;
 
-module.exports.createStore = async () => {
+module.exports.createDB = async () => {
   const connection = await mysql.createConnection({
     host,
     port,
     user,
     password,
   });
-  await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`); //create db if it doesn't exists
+  return await connection.query(
+    `CREATE DATABASE IF NOT EXISTS \`${database}\`;`
+  ); //create db if it doesn't exists
+};
+
+module.exports.createStore = () => {
   const db = new SQL(database, user, password, {
     host: host,
     dialect: "mysql" /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
@@ -37,6 +42,7 @@ module.exports.createStore = async () => {
       updatedAt: SQL.DATE,
       email: { type: SQL.STRING, unique: true },
       token: SQL.STRING,
+      isAdmin: SQL.BOOLEAN,
     },
     { freezeTableName: true }
   );
