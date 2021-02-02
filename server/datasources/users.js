@@ -23,7 +23,7 @@ class UserAPI extends DataSource {
    * to a user in the db
    */
   async login({ userName: uArg, password: pArg }) {
-    const response = { success: false, message: '' };
+    const response = { success: false, message: '', user: null };
     await this.findUser({ userName: uArg }).then((value) => {
       if (!value) {
         response.message = 'No username found';
@@ -32,6 +32,19 @@ class UserAPI extends DataSource {
         response.message = response.success
           ? 'Logged in'
           : 'Wrong username/password';
+        response.user = response.success ? value : null;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async isAdmin({ userName: uArg }) {
+    let response = false;
+    await this.findUser({ userName: uArg }).then((value) => {
+      if (!value) {
+        // no user exists
+      } else if (value.isAdmin) {
+        response = true;
       }
     });
     return response;
@@ -41,6 +54,7 @@ class UserAPI extends DataSource {
    * This function attempts to find a user from a given userName
    */
   async findUser({ userName: uArg }) {
+    console.log(this.store);
     const user = await this.store.users.findAll({ where: { userName: uArg } });
     const exists = user && user[0];
     if (exists) {
@@ -61,6 +75,7 @@ class UserAPI extends DataSource {
     lastName: lName,
     userName: uName,
     password: pwd,
+    isAdmin,
   }) {
     const response = { success: false, message: '' };
     await this.findUser({ userName: uName }).then((value) => {
@@ -73,12 +88,13 @@ class UserAPI extends DataSource {
           lastName: lName,
           userName: uName,
           password: pwd,
+          isAdmin,
         });
         response.message = 'Account Created!';
         response.success = true;
       }
     });
-    return response;
+    return JSON.stringify(response);
   }
 }
 

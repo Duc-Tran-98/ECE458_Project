@@ -35,12 +35,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - 4000:4000
-    expose: 
+    expose:
       - 4000
     links:
       - mysql
     volumes:
       - "./server/:/usr/src/app"
+    env_file: #tell the backend to use the .env file in the root directory
+      - "./.env"
 
   frontend:
     stdin_open: true
@@ -58,5 +60,7 @@ services:
       - backend
     environment:
       - CHOKIDAR_USEPOLLING=true
+    env_file:
+      - ".env"
 volumes:
   my-db: #docker stores our db for us so our data is persistent

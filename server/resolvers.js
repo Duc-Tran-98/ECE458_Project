@@ -6,6 +6,7 @@ const saltRounds = 10;
 module.exports = {
   Query: {
     me: (_, __, { dataSources }) => dataSources.userAPI.find(),
+    isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
   },
   Mutation: {
     login: async (_, { userName, password }, { dataSources }) => {
@@ -13,12 +14,12 @@ module.exports = {
         userName,
         password,
       });
-      return response.success;
+      return response;
     },
     signup: async (
       _,
       {
-        lastName, email, password, firstName, userName,
+        lastName, email, password, firstName, userName, isAdmin,
       },
       { dataSources },
     ) => {
@@ -31,8 +32,9 @@ module.exports = {
         lastName,
         userName,
         password: hash,
+        isAdmin,
       });
-      return response.success;
+      return response;
     },
   },
 };

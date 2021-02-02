@@ -7,6 +7,7 @@ const typeDefs = gql`
   # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
     me: User
+    isAdmin(userName: String!): Boolean!
   }
   type User {
     id: ID!
@@ -16,25 +17,19 @@ const typeDefs = gql`
     userName: String!
     password: String!
     token: String
+    isAdmin: Boolean!
   }
   # Mutation type allows clients to change state
   type Mutation {
-    login(userName: String! password: String!): Boolean!
+    login(userName: String!, password: String!): String!
     signup(
       email: String!
       firstName: String!
       lastName: String!
       userName: String!
       password: String!
-    ): Boolean!
-  }
-  type signupResponse {
-    success: Boolean!
-    message: String
-  }
-  type loginResponse {
-    success: Boolean!
-    message: String
+      isAdmin: Boolean!
+    ): String!
   }
 `;
 
