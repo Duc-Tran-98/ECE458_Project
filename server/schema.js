@@ -1,5 +1,5 @@
 // This file deals with the database schema
-const { gql } = require("apollo-server");
+const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that

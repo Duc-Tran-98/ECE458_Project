@@ -1,6 +1,6 @@
 // This file deals with what methods a user model should have
-const { DataSource } = require("apollo-datasource");
-const bcrypt = require("bcryptjs");
+import { DataSource } from 'apollo-datasource';
+import { compareSync } from 'bcryptjs';
 
 class UserAPI extends DataSource {
   constructor({ store }) {
@@ -23,15 +23,15 @@ class UserAPI extends DataSource {
    * to a user in the db
    */
   async login({ userName: uArg, password: pArg }) {
-    const response = { success: false, message: "" };
+    const response = { success: false, message: '' };
     await this.findUser({ userName: uArg }).then((value) => {
       if (!value) {
-        response.message = "No username found";
+        response.message = 'No username found';
       } else {
-        response.success = bcrypt.compareSync(pArg, value.password);
+        response.success = compareSync(pArg, value.password);
         response.message = response.success
-          ? "Logged in"
-          : "Wrong username/password";
+          ? 'Logged in'
+          : 'Wrong username/password';
       }
     });
     return response;
@@ -45,8 +45,8 @@ class UserAPI extends DataSource {
     const exists = user && user[0];
     if (exists) {
       await this.store.users.update(
-        { token: Buffer.from(uArg).toString("base64") },
-        { where: { token: null } }
+        { token: Buffer.from(uArg).toString('base64') },
+        { where: { token: null } },
       );
     }
     return exists ? user[0] : null;
@@ -62,10 +62,10 @@ class UserAPI extends DataSource {
     userName: uName,
     password: pwd,
   }) {
-    const response = { success: false, message: "" };
+    const response = { success: false, message: '' };
     await this.findUser({ userName: uName }).then((value) => {
       if (value) {
-        response.message = "User already exists!";
+        response.message = 'User already exists!';
       } else {
         this.store.users.create({
           email: emailArg,
@@ -74,7 +74,7 @@ class UserAPI extends DataSource {
           userName: uName,
           password: pwd,
         });
-        response.message = "Account Created!";
+        response.message = 'Account Created!';
         response.success = true;
       }
     });
@@ -82,4 +82,4 @@ class UserAPI extends DataSource {
   }
 }
 
-module.exports = UserAPI;
+export default UserAPI;
