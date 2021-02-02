@@ -41,8 +41,8 @@ services:
       - mysql
     volumes:
       - "./server/:/usr/src/app"
-    env_file:
-      - ".env"
+    env_file: #tell the backend to use the .env file in the root directory
+      - "./.env"
 
   frontend:
     stdin_open: true
