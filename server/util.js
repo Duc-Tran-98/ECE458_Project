@@ -1,9 +1,11 @@
 // This file handles connection to the database and initializing tables if they don't already exists
-const SQL = require("sequelize");
-const mysql = require("mysql2/promise");
-const config = require("./config");
+const SQL = require('sequelize');
+const mysql = require('mysql2/promise');
+const config = require('./config');
 
-const { host, port, user, password, database } = config;
+const {
+  host, port, user, password, database,
+} = config;
 
 module.exports.createDB = async () => {
   const connection = await mysql.createConnection({
@@ -13,21 +15,21 @@ module.exports.createDB = async () => {
     password,
   });
   return await connection.query(
-    `CREATE DATABASE IF NOT EXISTS \`${database}\`;`
-  ); //create db if it doesn't exists
+    `CREATE DATABASE IF NOT EXISTS \`${database}\`;`,
+  ); // create db if it doesn't exists
 };
 
 module.exports.createStore = () => {
   const db = new SQL(database, user, password, {
-    host: host,
-    dialect: "mysql" /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
-    port: port,
+    host,
+    dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
+    port,
     logging: console.log,
-    database: database,
+    database,
   });
 
   const users = db.define(
-    "users",
+    'users',
     {
       id: {
         type: SQL.INTEGER,
@@ -44,9 +46,9 @@ module.exports.createStore = () => {
       token: SQL.STRING,
       isAdmin: SQL.BOOLEAN,
     },
-    { freezeTableName: true }
+    { freezeTableName: true },
   );
-  users.sync(); //create table in db if it doesn't exists; if it exits, do nothing
+  users.sync(); // create table in db if it doesn't exists; if it exits, do nothing
 
   return { db, users };
 };

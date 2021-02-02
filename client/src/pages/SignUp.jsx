@@ -1,33 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { gql } from "@apollo/client";
-import { print } from "graphql";
-import axios from "axios";
-const route = process.env.NODE_ENV.includes("dev")
-  ? "http://localhost:4000"
-  : "/api";
-const SignUp = (props) => {
+import React, { useState, useEffect } from 'react';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
+import axios from 'axios';
+
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4000'
+  : '/api';
+const SignUp = () => {
   const [formState, setFormState] = useState({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    userName: "",
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    userName: '',
     isAdmin: false,
   });
   useEffect(() => {
-    const forms = document.getElementsByClassName("needs-validation");
+    const forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
-    Array.prototype.filter.call(forms, function (form) {
+    Array.prototype.filter.call(forms, (form) => {
       form.addEventListener(
-        "submit",
-        function (event) {
+        'submit',
+        (event) => {
           if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
           }
-          form.classList.add("was-validated");
+          form.classList.add('was-validated');
         },
-        false
+        false,
       );
     });
   });
@@ -54,6 +55,21 @@ const SignUp = (props) => {
     }
   `;
 
+  const validateState = () => {
+    const {
+      firstName, lastName, email, password,
+    } = formState;
+    return (
+      firstName.length > 0
+      && lastName.length > 0
+      && email.length > 0
+      && password.length > 0
+    );
+  };
+  const changeHandler = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value });
+  };
+
   const handleSignup = (e) => {
     e.preventDefault();
     if (validateState() && true) {
@@ -70,31 +86,18 @@ const SignUp = (props) => {
           },
         })
         .then((res) => {
-          //console.log(res);
+          // console.log(res);
           const response = JSON.parse(res.data.data.signup);
           // console.log(response);
           if (response.success) {
             alert(response.message);
-            window.location.href = "/";
+            window.location.href = '/';
           } else {
-            alert("That username/email is already taken");
+            alert('That username/email is already taken');
           }
         })
         .catch((err) => console.log(err));
     }
-  };
-
-  const validateState = () => {
-    var { firstName, lastName, email, password } = formState;
-    return (
-      firstName.length > 0 &&
-      lastName.length > 0 &&
-      email.length > 0 &&
-      password.length > 0
-    );
-  };
-  const changeHandler = (e) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
   return (
@@ -212,7 +215,7 @@ const SignUp = (props) => {
             onChange={onChangeCheckbox}
           />
           <div className="col">
-            <strong>{formState.isAdmin ? "Yes" : "No"}</strong>
+            <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
           </div>
         </div>
         <div className="d-flex justify-content-center mt-3 mb-3">

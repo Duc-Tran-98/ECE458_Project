@@ -1,10 +1,10 @@
 // This is the actual backend server;
-const { ApolloServer } = require("apollo-server");
-const typeDefs = require("./schema");
-const UserAPI = require("./datasources/users");
-const { createStore, createDB } = require("./util");
-const isEmail = require("isemail");
-const resolvers = require("./resolvers");
+const { ApolloServer } = require('apollo-server');
+const isEmail = require('isemail');
+const typeDefs = require('./schema');
+const UserAPI = require('./datasources/users');
+const { createStore, createDB } = require('./util');
+const resolvers = require('./resolvers');
 
 // Connect to db and init tables
 let store;
@@ -12,7 +12,7 @@ createDB().then(() => {
   store = createStore();
 });
 
-//Define api
+// Define api
 const dataSources = () => ({
   userAPI: new UserAPI({ store }),
 });
@@ -20,8 +20,8 @@ const dataSources = () => ({
 const server = new ApolloServer({
   context: async ({ req }) => {
     // simple auth check on every request
-    const auth = (req.headers && req.headers.authorization) || "";
-    const email = Buffer.from(auth, "base64").toString("ascii");
+    const auth = (req.headers && req.headers.authorization) || '';
+    const email = Buffer.from(auth, 'base64').toString('ascii');
     if (!isEmail.validate(email)) return { user: null };
     // find a user by their email
     const users = await store.users.findOrCreate({ where: { email } });
@@ -41,5 +41,5 @@ server.listen().then(() => {
     Listening on port 4000
     Explore at https://studio.apollographql.com/dev
   `);
-  //console.log("datasources: " + dataSources.userAPI);
+  // console.log("datasources: " + dataSources.userAPI);
 });
