@@ -28,6 +28,7 @@ module.exports.createStore = () => {
       updatedAt: SQL.DATE,
       email: { type: SQL.STRING, unique: true },
       token: SQL.STRING,
+      isAdmin: SQL.BOOLEAN,
     },
     { freezeTableName: true }
   );

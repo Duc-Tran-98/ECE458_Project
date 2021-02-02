@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { print } from "graphql";
 import axios from "axios";
+const route = process.env.NODE_ENV.includes("dev")
+  ? "http://localhost:4000"
+  : "/api";
 
 const Login = (props) => {
   const LOGIN_MUTATION = gql`
@@ -56,7 +59,7 @@ const Login = (props) => {
       localStorage.clear();
     }
     axios
-      .post("/api", {
+      .post(route, {
         query: print(LOGIN_MUTATION),
         variables: {
           password: formState.password,
@@ -66,7 +69,7 @@ const Login = (props) => {
       .then((res) => {
         if (res.data.data.login) {
           alert("Successfully Logged in!");
-          //window.location.href = "/";
+          window.sessionStorage.setItem("userName", userName);
           props.handleLogin();
         } else {
           alert("Invalid username/password");

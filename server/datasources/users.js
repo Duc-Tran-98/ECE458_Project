@@ -37,6 +37,20 @@ class UserAPI extends DataSource {
     return response;
   }
 
+  async isAdmin({ userName: uArg }) {
+    var response = false;
+    await this.findUser({ userName: uArg }).then((value) => {
+      if (!value) {
+        //no user exists
+      } else {
+        if (value.isAdmin) {
+          response = true;
+        }
+      }
+    });
+    return response;
+  }
+
   /**
    * This function attempts to find a user from a given userName
    */
@@ -61,6 +75,7 @@ class UserAPI extends DataSource {
     lastName: lName,
     userName: uName,
     password: pwd,
+    isAdmin: isAdmin,
   }) {
     const response = { success: false, message: "" };
     await this.findUser({ userName: uName }).then((value) => {
@@ -73,6 +88,7 @@ class UserAPI extends DataSource {
           lastName: lName,
           userName: uName,
           password: pwd,
+          isAdmin: isAdmin,
         });
         response.message = "Account Created!";
         response.success = true;

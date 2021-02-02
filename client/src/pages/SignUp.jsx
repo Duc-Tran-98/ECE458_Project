@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { print } from "graphql";
 import axios from "axios";
-
+const route = process.env.NODE_ENV.includes("dev")
+  ? "http://localhost:4000"
+  : "/api";
 const SignUp = (props) => {
   const [formState, setFormState] = useState({
     email: "",
@@ -10,6 +12,7 @@ const SignUp = (props) => {
     firstName: "",
     lastName: "",
     userName: "",
+    isAdmin: false,
   });
   useEffect(() => {
     const forms = document.getElementsByClassName("needs-validation");
@@ -28,6 +31,9 @@ const SignUp = (props) => {
       );
     });
   });
+  const onChangeCheckbox = (event) => {
+    setFormState({ ...formState, isAdmin: event.target.checked });
+  };
   const SIGNUP_MUTATION = gql`
     mutation SignupMutation(
       $email: String!
@@ -35,6 +41,7 @@ const SignUp = (props) => {
       $firstName: String!
       $lastName: String!
       $userName: String!
+      $isAdmin: Boolean!
     ) {
       signup(
         email: $email
@@ -42,6 +49,7 @@ const SignUp = (props) => {
         firstName: $firstName
         lastName: $lastName
         userName: $userName
+        isAdmin: $isAdmin
       )
     }
   `;
@@ -50,7 +58,7 @@ const SignUp = (props) => {
     e.preventDefault();
     if (validateState() && true) {
       axios
-        .post("/api", {
+        .post(route, {
           query: print(SIGNUP_MUTATION),
           variables: {
             firstName: formState.firstName,
@@ -58,17 +66,17 @@ const SignUp = (props) => {
             password: formState.password,
             lastName: formState.lastName,
             userName: formState.userName,
+            isAdmin: formState.isAdmin,
           },
         })
         .then((res) => {
           //console.log(res);
-          if(res.data.data.signup){
+          if (res.data.data.signup) {
             alert("Successfully Registered!");
             window.location.href = "/";
-          }
-          else{
+          } else {
             alert("That username/email is already taken");
-          }        
+          }
         })
         .catch((err) => console.log(err));
     }
@@ -86,7 +94,7 @@ const SignUp = (props) => {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-  
+
   return (
     <div className="d-flex justify-content-center align-items-center mt-5">
       <form
@@ -153,7 +161,7 @@ const SignUp = (props) => {
           </div>
         </div>
         <div className="form-row ml-3 mr-3">
-          <div className="col mb-3">
+          <div className="col-md-4 mb-3">
             <label htmlFor="validationCustom03" className="h4">
               Email
             </label>
@@ -171,7 +179,7 @@ const SignUp = (props) => {
               Please provide a valid email.
             </div>
           </div>
-          <div className="col mb-3">
+          <div className="col-md-4 mb-3">
             <label htmlFor="validationCustom04" className="h4">
               Password
             </label>
@@ -186,6 +194,22 @@ const SignUp = (props) => {
             />
             <div className="invalid-feedback">
               Please provide a valid password.
+            </div>
+          </div>
+          <div className="form-check col-md-4 mb-3 d-flex justify-content-center align-items-center">
+            <label className="form-check-label h4 mb-5" htmlFor="adminCheck">
+              Admin user?
+            </label>
+
+            <input
+              className="form-check-input mt-4"
+              type="checkbox"
+              id="adminCheck"
+              name="isAdmin"
+              onChange={onChangeCheckbox}
+            />
+            <div className="mt-3 mr-5">
+              <strong>{formState.isAdmin ? "Yes" : "No"}</strong>
             </div>
           </div>
         </div>
