@@ -71,8 +71,10 @@ const SignUp = (props) => {
         })
         .then((res) => {
           //console.log(res);
-          if (res.data.data.signup) {
-            alert("Successfully Registered!");
+          const response = JSON.parse(res.data.data.signup);
+          // console.log(response);
+          if (response.success) {
+            alert(response.message);
             window.location.href = "/";
           } else {
             alert("That username/email is already taken");
