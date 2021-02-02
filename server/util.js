@@ -1,15 +1,29 @@
 // This file handles connection to the database and initializing tables if they don't already exists
 const SQL = require("sequelize");
-const dotenv = require("dotenv");
-dotenv.config();
-console.log(process.env.MYSQL_ROOT_PASSWORD);
+const mysql = require("mysql2/promise");
+const config = require("./config");
+
+const { host, port, user, password, database } = config;
+
+module.exports.createDB = async () => {
+  const connection = await mysql.createConnection({
+    host,
+    port,
+    user,
+    password,
+  });
+  return await connection.query(
+    `CREATE DATABASE IF NOT EXISTS \`${database}\`;`
+  ); //create db if it doesn't exists
+};
+
 module.exports.createStore = () => {
-  const db = new SQL("mydb", "root", process.env.MYSQL_ROOT_PASSWORD, {
-    host: "mysql",
+  const db = new SQL(database, user, password, {
+    host: host,
     dialect: "mysql" /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
-    port: 3306,
+    port: port,
     logging: console.log,
-    database: "mydb",
+    database: database,
   });
 
   const users = db.define(

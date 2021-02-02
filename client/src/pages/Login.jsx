@@ -84,13 +84,13 @@ const Login = (props) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   return (
-    <div className="d-flex justify-content-center align-items-center mt-5">
+    <div className="d-flex justify-content-center align-items-center mt-5 ">
       <form
         className="needs-validation bg-light rounded"
         noValidate
         onSubmit={handleLogin}
       >
-        <div className="form-row">
+        <div className="form-row mx-3">
           <div className="col pl-3 pr-3">
             <label htmlFor="validationCustomUsername" className="h4">
               Username
@@ -116,7 +116,7 @@ const Login = (props) => {
             </div>
           </div>
         </div>
-        <div className="form-row">
+        <div className="form-row mx-3">
           <div className="col pl-3 pr-3">
             <label htmlFor="validationCustom04" className="h4">
               Password
@@ -135,7 +135,7 @@ const Login = (props) => {
             </div>
           </div>
         </div>
-        <div className="form-check d-flex align-items-center ml-3">
+        <div className="form-check form-switch d-flex align-items-center ms-3">
           <input
             type="checkbox"
             value=""
@@ -144,7 +144,7 @@ const Login = (props) => {
             checked={formState.isChecked}
             onChange={onChangeCheckbox}
           />
-          <label className="form-check-label" htmlFor="customCheck1">
+          <label className="form-check-label ms-2" htmlFor="customCheck1">
             Remember me
           </label>
         </div>

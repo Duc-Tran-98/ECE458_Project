@@ -104,8 +104,8 @@ const SignUp = (props) => {
         noValidate
         onSubmit={handleSignup}
       >
-        <div className="form-row ml-3 mr-3">
-          <div className="col-md-4 mb-3">
+        <div className="row mx-3">
+          <div className="col mb-3 mt-2">
             <label htmlFor="validationCustom01" className="h4">
               First Name
             </label>
@@ -121,7 +121,7 @@ const SignUp = (props) => {
             />
             <div className="valid-feedback">Looks good!</div>
           </div>
-          <div className="col-md-4 mb-3">
+          <div className="col mb-3 mt-2">
             <label htmlFor="validationCustom02" className="h4">
               Last name
             </label>
@@ -137,7 +137,7 @@ const SignUp = (props) => {
             />
             <div className="valid-feedback">Looks good!</div>
           </div>
-          <div className="col-md-4 mb-3">
+          <div className="col mb-3 mt-2">
             <label htmlFor="validationCustomUsername" className="h4">
               Username
             </label>
@@ -162,8 +162,8 @@ const SignUp = (props) => {
             </div>
           </div>
         </div>
-        <div className="form-row ml-3 mr-3">
-          <div className="col-md-4 mb-3">
+        <div className="row mx-3">
+          <div className="col mb-3">
             <label htmlFor="validationCustom03" className="h4">
               Email
             </label>
@@ -181,7 +181,7 @@ const SignUp = (props) => {
               Please provide a valid email.
             </div>
           </div>
-          <div className="col-md-4 mb-3">
+          <div className="col mb-3">
             <label htmlFor="validationCustom04" className="h4">
               Password
             </label>
@@ -198,21 +198,21 @@ const SignUp = (props) => {
               Please provide a valid password.
             </div>
           </div>
-          <div className="form-check col-md-4 mb-3 d-flex justify-content-center align-items-center">
-            <label className="form-check-label h4 mb-5" htmlFor="adminCheck">
-              Admin user?
-            </label>
+        </div>
+        <div className="form-check form-switch row ms-4">
+          <label className="form-check-label h4 col" htmlFor="adminCheck">
+            Admin user?
+          </label>
 
-            <input
-              className="form-check-input mt-4"
-              type="checkbox"
-              id="adminCheck"
-              name="isAdmin"
-              onChange={onChangeCheckbox}
-            />
-            <div className="mt-3 mr-5">
-              <strong>{formState.isAdmin ? "Yes" : "No"}</strong>
-            </div>
+          <input
+            className="form-check-input mt-2"
+            type="checkbox"
+            id="adminCheck"
+            name="isAdmin"
+            onChange={onChangeCheckbox}
+          />
+          <div className="col">
+            <strong>{formState.isAdmin ? "Yes" : "No"}</strong>
           </div>
         </div>
         <div className="d-flex justify-content-center mt-3 mb-3">
