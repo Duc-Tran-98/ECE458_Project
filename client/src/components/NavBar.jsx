@@ -3,7 +3,6 @@ import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 function NavBar({ loggedIn, handleSignOut, title }) {
-  // TODO - verify with Angel these are correct types
   NavBar.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
     handleSignOut: PropTypes.func.isRequired,
