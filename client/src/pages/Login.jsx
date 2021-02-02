@@ -1,33 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { gql } from "@apollo/client";
-import { print } from "graphql";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 
 const Login = (props) => {
+  Login.propTypes = {
+    handleLogin: PropTypes.func.isRequired,
+  };
+
   const LOGIN_MUTATION = gql`
     mutation LoginMutation($password: String!, $userName: String!) {
       login(password: $password, userName: $userName)
     }
   `;
   const [formState, setFormState] = useState({
-    password: "",
-    userName: "",
+    password: '',
+    userName: '',
     isChecked: false,
   });
   useEffect(() => {
-    const forms = document.getElementsByClassName("needs-validation");
+    const forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
-    Array.prototype.filter.call(forms, function (form) {
+    Array.prototype.filter.call(forms, (form) => {
       form.addEventListener(
-        "submit",
-        function (event) {
+        'submit',
+        (event) => {
           if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
           }
-          form.classList.add("was-validated");
+          form.classList.add('was-validated');
         },
-        false
+        false,
       );
     });
   });
@@ -37,26 +42,24 @@ const Login = (props) => {
   const handleLogin = (e) => {
     e.preventDefault();
     const { isChecked, userName, password } = formState;
-    var hours = 24; // Reset when storage is more than 24hours
-    var now = new Date().getTime();
-    var setupTime = localStorage.getItem("setupTime");
+    const hours = 24; // Reset when storage is more than 24hours
+    const now = new Date().getTime();
+    const setupTime = localStorage.getItem('setupTime');
     if (setupTime == null) {
-      localStorage.setItem("setupTime", now);
-    } else {
-      if (now - setupTime > hours * 60 * 60 * 1000) {
-        localStorage.clear();
-        localStorage.setItem("setupTime", now);
-      }
+      localStorage.setItem('setupTime', now);
+    } else if (now - setupTime > hours * 60 * 60 * 1000) {
+      localStorage.clear();
+      localStorage.setItem('setupTime', now);
     }
-    if (isChecked && userName !== "" && password !== "") {
+    if (isChecked && userName !== '' && password !== '') {
       localStorage.username = userName;
       localStorage.password = password;
       localStorage.checkbox = isChecked;
-    } else if (!isChecked && userName !== "" && password !== "") {
+    } else if (!isChecked && userName !== '' && password !== '') {
       localStorage.clear();
     }
     axios
-      .post("/api", {
+      .post('/api', {
         query: print(LOGIN_MUTATION),
         variables: {
           password: formState.password,
@@ -65,11 +68,11 @@ const Login = (props) => {
       })
       .then((res) => {
         if (res.data.data.login) {
-          alert("Successfully Logged in!");
-          //window.location.href = "/";
+          alert('Successfully Logged in!');
+          // window.location.href = "/";
           props.handleLogin();
         } else {
-          alert("Invalid username/password");
+          alert('Invalid username/password');
         }
       })
       .catch((err) => console.log(err));
@@ -149,7 +152,9 @@ const Login = (props) => {
         </div>
         <div className="d-flex justify-content-center">
           <p className="text-muted">
-            Forgot <a href="/">password?</a>
+            Forgot
+            {' '}
+            <a href="/">password?</a>
           </p>
         </div>
       </form>

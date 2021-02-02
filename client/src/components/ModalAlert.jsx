@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 import {
   Button,
   Modal,
   ModalTitle,
   ModalBody,
   ModalFooter,
-} from "react-bootstrap";
-import ModalHeader from "react-bootstrap/ModalHeader";
+} from 'react-bootstrap';
+import ModalHeader from 'react-bootstrap/ModalHeader';
 
 function ModalAlert(props) {
   const handleClose = () => props.handleClose();
 
   return (
-    <React.Fragment>
+    <>
       <Modal show={props.show} onHide={handleClose} animation={false}>
         <ModalHeader closeButton>
           <ModalTitle>{props.title}</ModalTitle>
@@ -24,7 +24,7 @@ function ModalAlert(props) {
           </Button>
         </ModalFooter>
       </Modal>
-    </React.Fragment>
+    </>
   );
 }
 export default ModalAlert;

@@ -1,8 +1,16 @@
-import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import React from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-function NavBar(props) {
-  var navContent = props.loggedIn ? (
+function NavBar({ loggedIn, handleSignOut, title }) {
+  // TODO - verify with Angel these are correct types
+  NavBar.propTypes = {
+    loggedIn: PropTypes.bool.isRequired,
+    handleSignOut: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+  };
+
+  const navContent = loggedIn ? (
     <ul className="navbar-nav mr-auto">
       <li className="nav-item">
         <NavLink
@@ -10,7 +18,7 @@ function NavBar(props) {
           to="/"
           className="nav-link"
           type="button"
-          onClick={props.handleSignOut}
+          onClick={handleSignOut}
         >
           Sign Out
         </NavLink>
@@ -38,9 +46,9 @@ function NavBar(props) {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link to="/" className="navbar-brand">
-        {props.title}
+        {title}
       </Link>
-      {/*This button is displayed when the screen is less than large */}
+      {/* This button is displayed when the screen is less than large */}
       <button
         className="navbar-toggler border border-light"
         type="button"
