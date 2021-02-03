@@ -8,6 +8,7 @@ const typeDefs = gql`
   type Query {
     me: User
     isAdmin(userName: String!): Boolean!
+    getAllModels: [Model]
   }
   type User {
     id: ID!

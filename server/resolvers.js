@@ -7,6 +7,7 @@ module.exports = {
   Query: {
     me: (_, __, { dataSources }) => dataSources.userAPI.find(),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
+    getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
   },
   Mutation: {
     login: async (_, { userName, password }, { dataSources }) => {
