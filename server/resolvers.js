@@ -8,6 +8,10 @@ module.exports = {
     me: (_, __, { dataSources }) => dataSources.userAPI.find(),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+    getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
+    getAllCalibrationEvents: (_, __, {
+      dataSources,
+    }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
   },
   Mutation: {
     login: async (_, { userName, password }, { dataSources }) => {

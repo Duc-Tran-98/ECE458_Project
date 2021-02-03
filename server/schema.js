@@ -1,4 +1,3 @@
-// This file deals with the database schema
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
@@ -9,6 +8,8 @@ const typeDefs = gql`
     me: User
     isAdmin(userName: String!): Boolean!
     getAllModels: [Model]
+    getAllInstruments: [Instrument]
+    getAllCalibrationEvents: [CalibrationEvent]
   }
   type User {
     id: ID!
