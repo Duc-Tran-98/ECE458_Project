@@ -1,4 +1,3 @@
-// This file deals with the database schema
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
@@ -8,6 +7,9 @@ const typeDefs = gql`
   type Query {
     me: User
     isAdmin(userName: String!): Boolean!
+    getAllModels: [Model]
+    getAllInstruments: [Instrument]
+    getAllCalibrationEvents: [CalibrationEvent]
   }
   type User {
     id: ID!
@@ -18,6 +20,30 @@ const typeDefs = gql`
     password: String!
     token: String
     isAdmin: Boolean!
+  }
+  type Model {
+    modelId: ID!
+    vendor: String!
+    modelNumber: String!
+    description: String!
+    comment: String
+    calibrationFrequency: Int
+  }
+  type Instrument {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    modelReference: Int!
+    isCalibratable: Boolean!
+    comment: String
+    calibrationHistoryId: Int!
+  }
+  type CalibrationEvent {
+    id: ID!
+    calibrationHistoryIdReference: Int!
+    user: String!
+    date: String!
+    comment: String
   }
   # Mutation type allows clients to change state
   type Mutation {

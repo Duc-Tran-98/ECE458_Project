@@ -3,6 +3,9 @@ const { ApolloServer } = require('apollo-server');
 const isEmail = require('isemail');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
+const ModelAPI = require('./datasources/models');
+const InstrumentAPI = require('./datasources/instruments');
+const CalibrationEventAPI = require('./datasources/calibrationEvents');
 const { createStore, createDB } = require('./util');
 const resolvers = require('./resolvers');
 
@@ -15,6 +18,9 @@ createDB().then(() => {
 // Define api
 const dataSources = () => ({
   userAPI: new UserAPI({ store }),
+  modelAPI: new ModelAPI({ store }),
+  instrumentAPI: new InstrumentAPI({ store }),
+  calibrationEventAPI: new CalibrationEventAPI({ store }),
 });
 
 const server = new ApolloServer({

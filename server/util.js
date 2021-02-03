@@ -19,7 +19,7 @@ module.exports.createDB = async () => {
   ); // create db if it doesn't exists
 };
 
-module.exports.createStore = () => {
+module.exports.createStore = async () => {
   const db = new SQL(database, user, password, {
     host,
     dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
@@ -36,19 +36,147 @@ module.exports.createStore = () => {
         primaryKey: true,
         autoIncrement: true,
       },
-      firstName: SQL.STRING,
-      lastName: SQL.STRING,
-      userName: { type: SQL.STRING, unique: true },
-      password: SQL.STRING,
+      firstName: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
+      lastName: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
+      userName: {
+        type: SQL.STRING,
+        unique: true,
+        allowNull: false,
+      },
+      password: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
       createdAt: SQL.DATE,
       updatedAt: SQL.DATE,
-      email: { type: SQL.STRING, unique: true },
+      email: {
+        type: SQL.STRING,
+        unique: true,
+        allowNull: false,
+      },
       token: SQL.STRING,
-      isAdmin: SQL.BOOLEAN,
+      isAdmin: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
   );
-  users.sync(); // create table in db if it doesn't exists; if it exits, do nothing
 
-  return { db, users };
+  const models = db.define(
+    'models',
+    {
+      modelId: {
+        type: SQL.INTEGER,
+        autoIncrement: true,
+        unique: true,
+      },
+      vendor: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+      modelNumber: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+      description: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
+      comment: SQL.STRING(1024),
+      calibrationFrequency: SQL.INTEGER,
+    },
+    { freezeTableName: true },
+  );
+
+  const instruments = db.define(
+    'instruments',
+    {
+      modelReference: {
+        type: SQL.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'models',
+          key: 'modelId',
+        },
+        onUpdate: 'RESTRICT',
+        onDelete: 'RESTRICT',
+      },
+      vendor: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+      modelNumber: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+      serialNumber: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+      isCalibratable: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      comment: SQL.STRING(1024),
+      calibrationHistoryId: {
+        type: SQL.INTEGER,
+        autoIncrement: true,
+        unique: true,
+      },
+    },
+    { freezeTableName: true },
+  );
+
+  const calibrationEvents = db.define(
+    'calibrationEvents',
+    {
+      id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      calibrationHistoryIdReference: {
+        type: SQL.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'instruments',
+          key: 'calibrationHistoryId',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      user: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
+      date: {
+        type: SQL.DATEONLY,
+        allowNull: false,
+      },
+      comment: SQL.STRING(1024),
+    },
+    { freezeTableName: true },
+  );
+
+  db.sync();
+
+  return {
+    db,
+    users,
+    models,
+    instruments,
+    calibrationEvents,
+  };
 };

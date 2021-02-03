@@ -1,5 +1,6 @@
-//This class is just for reducing duplicated code
-const dotenv = require("dotenv");
+// This class is just for reducing duplicated code
+const dotenv = require('dotenv');
+
 dotenv.config();
 module.exports = {
   host: process.env.SQL_HOST,
