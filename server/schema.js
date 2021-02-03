@@ -19,6 +19,30 @@ const typeDefs = gql`
     token: String
     isAdmin: Boolean!
   }
+  type Model {
+    modelId: ID!
+    vendor: String!
+    modelNumber: String!
+    description: String!
+    comment: String
+    calibrationFrequency: Int
+  }
+  type Instrument {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    modelReference: Int!
+    isCalibratable: Boolean!
+    comment: String
+    calibrationHistoryId: Int!
+  }
+  type CalibrationEvent {
+    id: ID!
+    calibrationHistoryIdReference: Int!
+    user: String!
+    date: String!
+    comment: String
+  }
   # Mutation type allows clients to change state
   type Mutation {
     login(userName: String!, password: String!): String!
