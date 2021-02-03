@@ -30,6 +30,7 @@ services:
     stdin_open: true
     tty: true
     container_name: backend
+    restart: always
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -48,6 +49,7 @@ services:
     stdin_open: true
     tty: true
     container_name: frontend
+    restart: always
     build:
       context: ./client/
       dockerfile: Dockerfile

@@ -54,7 +54,9 @@ class UserAPI extends DataSource {
    * This function attempts to find a user from a given userName
    */
   async findUser({ userName: uArg }) {
-    console.log(this.store);
+    // console.log(this.store);
+    const storeModel = await this.store;
+    this.store = storeModel;
     const user = await this.store.users.findAll({ where: { userName: uArg } });
     const exists = user && user[0];
     if (exists) {
