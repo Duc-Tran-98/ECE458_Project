@@ -162,7 +162,7 @@ module.exports.createStore = async () => {
         allowNull: false,
       },
       date: {
-        type: SQL.DATE,
+        type: SQL.DATEONLY,
         allowNull: false,
       },
       comment: SQL.STRING(1024),
