@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import axios from 'axios';
+import Query from '../components/UseQuery';
 
-const route = process.env.NODE_ENV.includes('dev')
-  ? 'http://localhost:4000'
-  : '/api';
 const SignUp = () => {
   const [formState, setFormState] = useState({
     email: '',
@@ -35,26 +32,6 @@ const SignUp = () => {
   const onChangeCheckbox = (event) => {
     setFormState({ ...formState, isAdmin: event.target.checked });
   };
-  const SIGNUP_MUTATION = gql`
-    mutation SignupMutation(
-      $email: String!
-      $password: String!
-      $firstName: String!
-      $lastName: String!
-      $userName: String!
-      $isAdmin: Boolean!
-    ) {
-      signup(
-        email: $email
-        password: $password
-        firstName: $firstName
-        lastName: $lastName
-        userName: $userName
-        isAdmin: $isAdmin
-      )
-    }
-  `;
-
   const validateState = () => {
     const {
       firstName, lastName, email, password,
@@ -72,31 +49,58 @@ const SignUp = () => {
 
   const handleSignup = (e) => {
     e.preventDefault();
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      userName,
+      isAdmin,
+    } = formState;
     if (validateState() && true) {
-      axios
-        .post(route, {
-          query: print(SIGNUP_MUTATION),
-          variables: {
-            firstName: formState.firstName,
-            email: formState.email,
-            password: formState.password,
-            lastName: formState.lastName,
-            userName: formState.userName,
-            isAdmin: formState.isAdmin,
-          },
-        })
-        .then((res) => {
-          // console.log(res);
-          const response = JSON.parse(res.data.data.signup);
-          // console.log(response);
-          if (response.success) {
-            alert(response.message);
-            window.location.href = '/';
-          } else {
-            alert('That username/email is already taken');
-          }
-        })
-        .catch((err) => console.log(err));
+      const SIGNUP_MUTATION = gql`
+        mutation SignupMutation(
+          $email: String!
+          $password: String!
+          $firstName: String!
+          $lastName: String!
+          $userName: String!
+          $isAdmin: Boolean!
+        ) {
+          signup(
+            email: $email
+            password: $password
+            firstName: $firstName
+            lastName: $lastName
+            userName: $userName
+            isAdmin: $isAdmin
+          )
+        }
+      `;
+      const getVariables = () => ({
+        firstName,
+        lastName,
+        email,
+        password,
+        userName,
+        isAdmin,
+      });
+      const query = print(SIGNUP_MUTATION);
+      const queryName = 'signup';
+      const handleResponse = (response) => {
+        if (response.success) {
+          alert(response.message);
+          window.location.href = '/';
+        } else {
+          alert('That username/email is already taken');
+        }
+      };
+      Query({
+        query,
+        queryName,
+        getVariables,
+        handleResponse,
+      });
     }
   };
 
