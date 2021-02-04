@@ -1,13 +1,43 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
+import Button from '@material-ui/core/Button';
 
 const columns = [
-  { field: 'id', headerName: '#', width: 50 },
+  {
+    field: 'id', headerName: '#', width: 50, type: 'number',
+  },
   { field: 'vendor', headerName: 'Vendor', width: 150 },
   { field: 'modelNumber', headerName: 'Model Number', width: 150 },
   { field: 'description', headerName: 'Description', width: 300 },
   { field: 'serialNumber', headerName: 'Serial Number', width: 200 },
-  { field: 'calibrationDate', headerName: 'Calibration Date', width: 200 },
+  {
+    field: 'calibrationDate', headerName: 'Calibration Date', width: 200, type: 'date',
+  },
+  {
+    field: 'options',
+    headerName: 'Options',
+    width: 230,
+    renderCell: () => (
+      <div>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          style={{ marginLeft: 16 }}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
+          style={{ marginLeft: 16 }}
+        >
+          Delete
+        </Button>
+      </div>
+    ),
+  },
 ];
 
 const rows = [
