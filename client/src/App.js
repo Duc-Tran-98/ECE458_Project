@@ -21,7 +21,7 @@ function App() {
     <Router>
       <header>
         <NavBar
-          title="Team Name"
+          title="Team Teams"
           loggedIn={loggedIn}
           handleSignOut={handleSignOut}
         />
