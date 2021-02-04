@@ -19,9 +19,12 @@ function CreateModel() {
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
+      let { calibrationFrequency } = formState;
+      if (typeof calibrationFrequency === 'string') { // If user increments input, it becomes string so change it back to number
+        calibrationFrequency = parseInt(calibrationFrequency, 10);
+      }
       const {
         modelNumber, vendor, description, comment,
-        calibrationFrequency,
       } = formState;
       const ADD_MODEL = gql`
         mutation AddModel($modelNumber: String!, $vendor: String!, $description: String!, $comment: String, $calibrationFrequency: Int) {
@@ -34,7 +37,7 @@ function CreateModel() {
         modelNumber, vendor, description, comment, calibrationFrequency,
       });
       const handleResponse = (response) => {
-        console.log(response);
+        alert(response.message);
       };
       Query({
         query, queryName, getVariables, handleResponse,

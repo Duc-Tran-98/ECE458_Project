@@ -19,9 +19,9 @@ const Query = ({
   axios
     .post(route, data)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       response = JSON.parse(res.data.data[queryName]);
-      console.log(response);
+      // console.log(response);
       handleResponse(response);
     })
     .catch((err) => console.error(err));

@@ -24,6 +24,16 @@ class ModelAPI extends DataSource {
     return models;
   }
 
+  async findModel({ modelNumber, vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
+    if (model && model[0]) {
+      return model[0];
+    }
+    return null;
+  }
+
   async addModel({
     modelNumber,
     vendor,
@@ -34,15 +44,21 @@ class ModelAPI extends DataSource {
     const response = { success: false, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.store.models.create({
-      modelNumber,
-      vendor,
-      description,
-      comment,
-      calibrationFrequency,
+    await this.findModel({ modelNumber, vendor }).then((value) => {
+      if (value) {
+        response.message = 'Model Number & Vendor pair already exists';
+      } else {
+        this.store.models.create({
+          modelNumber,
+          vendor,
+          description,
+          comment,
+          calibrationFrequency,
+        });
+        response.success = true;
+        response.message = 'Added new model!';
+      }
     });
-    response.success = true;
-    response.message = 'added model';
     return JSON.stringify(response);
   }
 }
