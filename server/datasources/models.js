@@ -23,6 +23,28 @@ class ModelAPI extends DataSource {
     const models = await this.store.models.findAll();
     return models;
   }
+
+  async addModel({
+    modelNumber,
+    vendor,
+    description,
+    comment,
+    calibrationFrequency,
+  }) {
+    const response = { success: false, message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.models.create({
+      modelNumber,
+      vendor,
+      description,
+      comment,
+      calibrationFrequency,
+    });
+    response.success = true;
+    response.message = 'added model';
+    return JSON.stringify(response);
+  }
 }
 
 module.exports = ModelAPI;

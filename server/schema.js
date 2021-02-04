@@ -55,6 +55,7 @@ const typeDefs = gql`
       password: String!
       isAdmin: Boolean!
     ): String!
+    addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
   }
 `;
 
