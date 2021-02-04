@@ -37,7 +37,7 @@ const rows = [
   },
   {
     id: 4,
-    vendor: 'Fluke',
+    vendor: 'Louis',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
@@ -45,7 +45,7 @@ const rows = [
   },
   {
     id: 5,
-    vendor: 'Fluke',
+    vendor: 'Natasha',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
@@ -53,7 +53,7 @@ const rows = [
   },
   {
     id: 6,
-    vendor: 'Fluke',
+    vendor: 'Duc',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
@@ -61,7 +61,7 @@ const rows = [
   },
   {
     id: 7,
-    vendor: 'Fluke',
+    vendor: 'Duc',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
@@ -77,15 +77,15 @@ const rows = [
   },
   {
     id: 9,
-    vendor: 'Fluke',
+    vendor: 'GraaphQL',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
-    calibrationDate: '12/25/20',
+    calibrationDate: '12/21/20',
   },
   {
     id: 10,
-    vendor: 'Fluke',
+    vendor: 'Apollo',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
@@ -93,15 +93,15 @@ const rows = [
   },
   {
     id: 11,
-    vendor: 'Fluke',
-    modelNumber: '87V',
+    vendor: 'Duke',
+    modelNumber: '4321',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
     calibrationDate: '12/25/20',
   },
   {
     id: 12,
-    vendor: 'Fluke',
+    vendor: 'Duke',
     modelNumber: '87V',
     description: 'This is a cool instrument',
     serialNumber: '9870-3452-908JD',
@@ -112,8 +112,21 @@ const rows = [
 
 export default function DataGridDemo() {
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} pageSize={4} checkboxSelection />
+    <div style={{ height: 600, width: '100%' }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSize={8}
+        checkboxSelection
+        showToolbar
+        locateText={{
+          toolbarDensity: 'Size',
+          toolbarDensityLabel: 'Size',
+          toolbarDensityCompact: 'Small',
+          toolbarDensityStandard: 'Medium',
+          toolbarDensityComfortable: 'Large',
+        }}
+      />
     </div>
   );
 }
