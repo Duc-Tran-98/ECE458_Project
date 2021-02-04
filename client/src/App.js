@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import ErrorPage from './pages/ErrorPage';
+import ComponentTest from './pages/ComponentTest';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4000'
@@ -66,6 +67,9 @@ function App() {
             ) : (
               <ErrorPage message={"You don't have the right permissions!"} />
             )}
+          </Route>
+          <Route path="/test">
+            <ComponentTest />
           </Route>
         </Switch>
       </main>
