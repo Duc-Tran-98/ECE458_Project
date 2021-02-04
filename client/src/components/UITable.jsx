@@ -1,6 +1,23 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import Button from '@material-ui/core/Button';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import ButtonBase from '@material-ui/core/ButtonBase';
+import SearchIcon from '@material-ui/icons/Search';
+
+function deleteEntry() {
+  alert('Deleting entry initiated');
+}
+
+function editEntry() {
+  alert('Edit entry initiated');
+}
+
+function focusEntry() {
+  alert('Focus entry initiated');
+}
 
 const columns = [
   {
@@ -15,11 +32,11 @@ const columns = [
   },
   {
     field: 'options',
-    headerName: 'Options',
-    width: 230,
+    headerName: ' ',
+    width: 100,
     renderCell: () => (
       <div>
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           size="small"
@@ -35,6 +52,22 @@ const columns = [
         >
           Delete
         </Button>
+        <IconButton /> */}
+        <ButtonBase
+          onClick={editEntry}
+        >
+          <EditIcon color="primary" />
+        </ButtonBase>
+        <ButtonBase
+          onClick={deleteEntry}
+        >
+          <DeleteIcon color="secondary" />
+        </ButtonBase>
+        <ButtonBase
+          onClick={focusEntry}
+        >
+          <SearchIcon />
+        </ButtonBase>
       </div>
     ),
   },
