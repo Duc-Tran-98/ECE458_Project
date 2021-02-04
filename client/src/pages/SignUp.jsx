@@ -78,12 +78,7 @@ const SignUp = () => {
       const query = print(SIGNUP_MUTATION);
       const queryName = 'signup';
       const handleResponse = (response) => {
-        if (response.success) {
-          alert(response.message);
-          // window.location.href = '/';
-        } else {
-          alert('That username is already taken');
-        }
+        alert(response.message);
       };
       Query({
         query,

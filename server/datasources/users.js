@@ -72,10 +72,10 @@ class UserAPI extends DataSource {
     password,
     isAdmin,
   }) {
-    const response = { success: false, message: '' };
+    const response = { message: '' };
     await this.findUser({ userName }).then((value) => {
       if (value) {
-        response.message = 'User already exists!';
+        response.message = 'Username already exists!';
       } else {
         this.store.users.create({
           email,
@@ -86,7 +86,6 @@ class UserAPI extends DataSource {
           isAdmin,
         });
         response.message = 'Account Created!';
-        response.success = true;
       }
     });
     return JSON.stringify(response);

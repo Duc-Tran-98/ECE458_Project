@@ -41,7 +41,7 @@ class ModelAPI extends DataSource {
     comment,
     calibrationFrequency,
   }) {
-    const response = { success: false, message: '' };
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.findModel({ modelNumber, vendor }).then((value) => {
@@ -55,7 +55,6 @@ class ModelAPI extends DataSource {
           comment,
           calibrationFrequency,
         });
-        response.success = true;
         response.message = 'Added new model!';
       }
     });
