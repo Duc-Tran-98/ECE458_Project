@@ -19,9 +19,9 @@ const SignUp = () => {
   useEffect(() => {
     NeedsValidation();
   });
-  const onChangeCheckbox = (event) => {
-    setFormState({ ...formState, isAdmin: event.target.checked });
-  };
+  // const onChangeCheckbox = (event) => {
+  //   setFormState({ ...formState, isAdmin: event.target.checked });
+  // };
   const validateState = () => {
     const {
       firstName, lastName, email, password,
@@ -78,12 +78,7 @@ const SignUp = () => {
       const query = print(SIGNUP_MUTATION);
       const queryName = 'signup';
       const handleResponse = (response) => {
-        if (response.success) {
-          alert(response.message);
-          // window.location.href = '/';
-        } else {
-          alert('That username/email is already taken');
-        }
+        alert(response.message);
       };
       Query({
         query,
@@ -93,8 +88,11 @@ const SignUp = () => {
       });
     }
   };
+  if (!user.isAdmin) {
+    return <ErrorPage message="You don't have the right permissions!" />;
+  }
 
-  const content = user.isAdmin ? (
+  return (
     <div className="d-flex justify-content-center align-items-center mt-5">
       <form
         className="needs-validation bg-light rounded"
@@ -196,7 +194,7 @@ const SignUp = () => {
             </div>
           </div>
         </div>
-        <div className="form-check form-switch row ms-4">
+        {/* <div className="form-check form-switch row ms-4">
           <label className="form-check-label h4 col" htmlFor="adminCheck">
             Admin user?
           </label>
@@ -211,7 +209,7 @@ const SignUp = () => {
           <div className="col">
             <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
           </div>
-        </div>
+        </div> */}
         <div className="d-flex justify-content-center mt-3 mb-3">
           <button className="btn btn-primary" type="submit">
             Register
@@ -219,10 +217,6 @@ const SignUp = () => {
         </div>
       </form>
     </div>
-  ) : (<ErrorPage message="You don't have the right permissions!" />);
-
-  return (
-    content
   );
 };
 

@@ -24,6 +24,19 @@ module.exports = {
     }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
   },
   Mutation: {
+    addModel: async (_, {
+      modelNumber, vendor, description, comment, calibrationFrequency,
+    }, { dataSources }) => {
+      const response = await dataSources.modelAPI.addModel({
+        modelNumber,
+        vendor,
+        description,
+        comment,
+        calibrationFrequency,
+      });
+      console.log(response);
+      return response;
+    },
     login: async (_, { userName, password }, { dataSources }) => {
       const response = await dataSources.userAPI.login({
         userName,

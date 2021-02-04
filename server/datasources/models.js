@@ -23,6 +23,43 @@ class ModelAPI extends DataSource {
     const models = await this.store.models.findAll();
     return models;
   }
+
+  async findModel({ modelNumber, vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
+    if (model && model[0]) {
+      return model[0];
+    }
+    return null;
+  }
+
+  async addModel({
+    modelNumber,
+    vendor,
+    description,
+    comment,
+    calibrationFrequency,
+  }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.findModel({ modelNumber, vendor }).then((value) => {
+      if (value) {
+        response.message = 'Model Number & Vendor pair already exists';
+      } else {
+        this.store.models.create({
+          modelNumber,
+          vendor,
+          description,
+          comment,
+          calibrationFrequency,
+        });
+        response.message = 'Added new model!';
+      }
+    });
+    return JSON.stringify(response);
+  }
 }
 
 module.exports = ModelAPI;
