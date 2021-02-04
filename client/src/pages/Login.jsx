@@ -1,88 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import axios from 'axios';
 import PropTypes from 'prop-types';
+import Query from '../components/UseQuery';
+import NeedsValidation from '../components/NeedsValidation';
 
-const route = process.env.NODE_ENV.includes('dev')
-  ? 'http://localhost:4000'
-  : '/api';
-
-const Login = (props) => {
+const Login = ({ handleLogin }) => {
   Login.propTypes = {
     handleLogin: PropTypes.func.isRequired,
   };
 
-  const LOGIN_MUTATION = gql`
-    mutation LoginMutation($password: String!, $userName: String!) {
-      login(password: $password, userName: $userName)
-    }
-  `;
   const [formState, setFormState] = useState({
     password: '',
     userName: '',
     isChecked: false,
   });
   useEffect(() => {
-    const forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    Array.prototype.filter.call(forms, (form) => {
-      form.addEventListener(
-        'submit',
-        (event) => {
-          if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        },
-        false,
-      );
-    });
+    NeedsValidation();
   });
   const onChangeCheckbox = (event) => {
     setFormState({ ...formState, isChecked: event.target.checked });
   };
-  const handleLogin = (e) => {
+  const submitForm = (e) => {
     e.preventDefault();
-    const { isChecked, userName, password } = formState;
-    const hours = 24; // Reset when storage is more than 24hours
-    const now = new Date().getTime();
-    const setupTime = localStorage.getItem('setupTime');
-    if (setupTime == null) {
-      localStorage.setItem('setupTime', now);
-    } else if (now - setupTime > hours * 60 * 60 * 1000) {
-      localStorage.clear();
-      localStorage.setItem('setupTime', now);
+    const { userName, password } = formState;
+    // const hours = 24; // Reset when storage is more than 24hours
+    // const now = new Date().getTime();
+    // const setupTime = localStorage.getItem('setupTime');
+    // if (setupTime == null) {
+    //   localStorage.setItem('setupTime', now);
+    // } else if (now - setupTime > hours * 60 * 60 * 1000) {
+    //   localStorage.clear();
+    //   localStorage.setItem('setupTime', now);
+    // }
+    // if (isChecked && userName !== '' && password !== '') {
+    //   localStorage.username = userName;
+    //   localStorage.password = password;
+    //   localStorage.checkbox = isChecked;
+    // } else if (!isChecked && userName !== '' && password !== '') {
+    //   localStorage.clear();
+    // }
+    function getVariables() {
+      return { password, userName };
     }
-    if (isChecked && userName !== '' && password !== '') {
-      localStorage.username = userName;
-      localStorage.password = password;
-      localStorage.checkbox = isChecked;
-    } else if (!isChecked && userName !== '' && password !== '') {
-      localStorage.clear();
+    const LOGIN_MUTATION = gql`
+     mutation LoginMutation($password: String!, $userName: String!) {
+       login(password: $password, userName: $userName)
+     }
+   `;
+    const queryName = 'login';
+    const query = print(LOGIN_MUTATION);
+    function handleResponse(response) {
+      // console.log(response);
+      if (response.success) {
+        window.sessionStorage.setItem(
+          'token',
+          Buffer.from(userName, 'ascii').toString('base64'),
+        );
+        alert(response.message);
+        handleLogin();
+      } else {
+        alert('Invalid username/password');
+      }
     }
-    axios
-      .post(route, {
-        query: print(LOGIN_MUTATION),
-        variables: {
-          password: formState.password,
-          userName: formState.userName,
-        },
-      })
-      .then((res) => {
-        // console.log(res);
-        const response = JSON.parse(res.data.data.login);
-        // console.log(JSON.parse(res.data.data.login));
-        if (response.success) {
-          alert(response.message);
-          window.sessionStorage.setItem('userName', userName);
-          props.handleLogin();
-        } else {
-          alert('Invalid username/password');
-        }
-      })
-      .catch((err) => console.log(err));
+    Query({
+      query,
+      queryName,
+      getVariables,
+      handleResponse,
+    });
   };
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
@@ -92,7 +78,7 @@ const Login = (props) => {
       <form
         className="needs-validation bg-light rounded"
         noValidate
-        onSubmit={handleLogin}
+        onSubmit={submitForm}
       >
         <div className="form-row mx-3">
           <div className="col pl-3 pr-3">

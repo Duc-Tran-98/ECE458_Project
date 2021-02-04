@@ -5,7 +5,17 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
-    me: (_, __, { dataSources }) => dataSources.userAPI.find(),
+    getUser: (_, { userName }, { dataSources }) => dataSources.userAPI.findUser({ userName })
+      .then((data) => {
+        const {
+          lastName, firstName, email, isAdmin,
+        } = data;
+        return JSON.stringify({
+          user: {
+            userName, lastName, firstName, email, isAdmin,
+          },
+        });
+      }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
