@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import Query from '../components/UseQuery';
+import UserContext from '../components/UserContext';
+import ErrorPage from './ErrorPage';
 
 const SignUp = () => {
+  const user = useContext(UserContext);
   const [formState, setFormState] = useState({
     email: '',
     password: '',
@@ -104,7 +107,7 @@ const SignUp = () => {
     }
   };
 
-  return (
+  const content = user.isAdmin ? (
     <div className="d-flex justify-content-center align-items-center mt-5">
       <form
         className="needs-validation bg-light rounded"
@@ -229,6 +232,10 @@ const SignUp = () => {
         </div>
       </form>
     </div>
+  ) : (<ErrorPage message="You don't have the right permissions!" />);
+
+  return (
+    content
   );
 };
 

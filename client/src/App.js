@@ -7,19 +7,16 @@ import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Home from './pages/Home';
-import ErrorPage from './pages/ErrorPage';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const handleLogin = () => {
     setLoggedIn(true);
   };
   const handleSignOut = () => {
     setLoggedIn(false);
-    setIsAdmin(false);
     window.sessionStorage.clear();
   };
   return (
@@ -36,17 +33,13 @@ function App() {
           <UserProvider>
             <Route exact path="/">
               {loggedIn ? (
-                <Home isAdmin={isAdmin} />
+                <Home />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
             </Route>
             <Route path="/register">
-              {isAdmin ? (
-                <SignUp />
-              ) : (
-                <ErrorPage message={"You don't have the right permissions!"} />
-              )}
+              <SignUp />
             </Route>
             <Route path="/test">
               <ComponentTest />
