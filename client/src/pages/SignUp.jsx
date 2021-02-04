@@ -4,6 +4,7 @@ import { print } from 'graphql';
 import Query from '../components/UseQuery';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
+import NeedsValidation from '../components/NeedsValidation';
 
 const SignUp = () => {
   const user = useContext(UserContext);
@@ -16,21 +17,7 @@ const SignUp = () => {
     isAdmin: false,
   });
   useEffect(() => {
-    const forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    Array.prototype.filter.call(forms, (form) => {
-      form.addEventListener(
-        'submit',
-        (event) => {
-          if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        },
-        false,
-      );
-    });
+    NeedsValidation();
   });
   const onChangeCheckbox = (event) => {
     setFormState({ ...formState, isAdmin: event.target.checked });

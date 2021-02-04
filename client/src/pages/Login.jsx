@@ -3,6 +3,7 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
+import NeedsValidation from '../components/NeedsValidation';
 
 const Login = ({ handleLogin }) => {
   Login.propTypes = {
@@ -15,21 +16,7 @@ const Login = ({ handleLogin }) => {
     isChecked: false,
   });
   useEffect(() => {
-    const forms = document.getElementsByClassName('needs-validation');
-    // Loop over them and prevent submission
-    Array.prototype.filter.call(forms, (form) => {
-      form.addEventListener(
-        'submit',
-        (event) => {
-          if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        },
-        false,
-      );
-    });
+    NeedsValidation();
   });
   const onChangeCheckbox = (event) => {
     setFormState({ ...formState, isChecked: event.target.checked });
