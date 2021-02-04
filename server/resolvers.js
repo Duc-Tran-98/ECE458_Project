@@ -34,6 +34,7 @@ module.exports = {
         comment,
         calibrationFrequency,
       });
+      console.log(response);
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {

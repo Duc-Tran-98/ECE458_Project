@@ -1,21 +1,51 @@
 import React, { useContext, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-// import Col from 'react-bootstrap/esm/Col';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
+import Query from '../components/UseQuery';
 
 function CreateModel() {
   const [validated, setValidated] = useState(false);
+  const [formState, setFormState] = useState({
+    modelNumber: '', vendor: '', description: '', comment: '', calibrationFrequency: 0,
+  });
 
   const handleSubmit = (event) => {
+    event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
+    } else {
+      const {
+        modelNumber, vendor, description, comment,
+        calibrationFrequency,
+      } = formState;
+      const ADD_MODEL = gql`
+        mutation AddModel($modelNumber: String!, $vendor: String!, $description: String!, $comment: String, $calibrationFrequency: Int) {
+          addModel(modelNumber: $modelNumber, vendor: $vendor, comment: $comment, description: $description, calibrationFrequency: $calibrationFrequency)
+        }
+      `;
+      const query = print(ADD_MODEL);
+      const queryName = 'addModel';
+      const getVariables = () => ({
+        modelNumber, vendor, description, comment, calibrationFrequency,
+      });
+      const handleResponse = (response) => {
+        console.log(response);
+      };
+      Query({
+        query, queryName, getVariables, handleResponse,
+      });
     }
 
     setValidated(true);
+  };
+
+  const changeHandler = (e) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
@@ -33,7 +63,14 @@ function CreateModel() {
           <div className="col mt-2">
             <Form.Group controlId="formModelNumber">
               <Form.Label className="h4">Model Number</Form.Label>
-              <Form.Control type="text" placeholder="####" required />
+              <Form.Control
+                name="modelNumber"
+                type="text"
+                placeholder="####"
+                required
+                value={formState.modelNumber}
+                onChange={changeHandler}
+              />
               <Form.Control.Feedback type="invalid">
                 Please enter a valid model number.
               </Form.Control.Feedback>
@@ -42,7 +79,14 @@ function CreateModel() {
           <div className="col mt-2">
             <Form.Group controlId="formVendor">
               <Form.Label className="h4">Vendor</Form.Label>
-              <Form.Control type="text" placeholder="Vendor" required />
+              <Form.Control
+                name="vendor"
+                type="text"
+                placeholder="Vendor"
+                required
+                value={formState.vendor}
+                onChange={changeHandler}
+              />
               <Form.Control.Feedback type="invalid">
                 Please enter a valid vendor.
               </Form.Control.Feedback>
@@ -53,7 +97,14 @@ function CreateModel() {
               <Form.Label className="h4 text-nowrap ">
                 Calibration Frequency
               </Form.Label>
-              <Form.Control type="number" placeholder="# Days" min={0} />
+              <Form.Control
+                type="number"
+                placeholder="# Days"
+                min={0}
+                name="calibrationFrequency"
+                value={formState.calibrationFrequency}
+                onChange={changeHandler}
+              />
             </Form.Group>
           </div>
         </div>
@@ -61,7 +112,14 @@ function CreateModel() {
           <div className="col mt-3">
             <Form.Group controlId="formDescription">
               <Form.Label className="h4">Description</Form.Label>
-              <Form.Control type="text" placeholder="Description" required />
+              <Form.Control
+                type="text"
+                placeholder="Description"
+                required
+                name="description"
+                value={formState.description}
+                onChange={changeHandler}
+              />
               <Form.Control.Feedback type="invalid">
                 Please enter a valid description.
               </Form.Control.Feedback>
@@ -74,6 +132,9 @@ function CreateModel() {
                 as="textarea"
                 placeholder="Sample comment"
                 rows={3}
+                name="comment"
+                value={formState.comment}
+                onChange={changeHandler}
               />
             </Form.Group>
           </div>

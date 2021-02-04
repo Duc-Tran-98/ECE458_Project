@@ -17,16 +17,14 @@ const Query = ({
   let response;
   const data = getVariables ? { query, variables: getVariables() } : { query };
   axios
-    .post(route, data, {
-      headers: { authorization: window.sessionStorage.getItem('token') },
-    })
+    .post(route, data)
     .then((res) => {
-      // console.log(res);
+      console.log(res);
       response = JSON.parse(res.data.data[queryName]);
-      // console.log(response);
+      console.log(response);
       handleResponse(response);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.error(err));
 };
 
 export default Query;
