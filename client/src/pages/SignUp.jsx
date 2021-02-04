@@ -93,7 +93,7 @@ const SignUp = () => {
       const handleResponse = (response) => {
         if (response.success) {
           alert(response.message);
-          window.location.href = '/';
+          // window.location.href = '/';
         } else {
           alert('That username/email is already taken');
         }
