@@ -9,30 +9,13 @@ import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import ErrorPage from './pages/ErrorPage';
 import ComponentTest from './pages/ComponentTest';
+import { UserProvider } from './components/UserContext';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const handleLogin = () => {
     setLoggedIn(true);
-    // const ADMIN_QUERY = gql`
-    //   query isAdmin($userName: String!) {
-    //     isAdmin(userName: $userName)
-    //   }
-    // `;
-    // axios
-    //   .post(route, {
-    //     query: print(ADMIN_QUERY),
-    //     variables: {
-    //       userName: window.sessionStorage.getItem('userName'),
-    //     },
-    //   })
-    //   .then((res) => {
-    //     if (res.data.data.isAdmin) {
-    //       setIsAdmin(true);
-    //     }
-    //   })
-    //   .catch((err) => console.log(err));
   };
   const handleSignOut = () => {
     setLoggedIn(false);
@@ -50,23 +33,25 @@ function App() {
       </header>
       <main>
         <Switch>
-          <Route exact path="/">
-            {loggedIn ? (
-              <Home isAdmin={isAdmin} />
-            ) : (
-              <Login handleLogin={handleLogin} />
-            )}
-          </Route>
-          <Route path="/register">
-            {isAdmin ? (
-              <SignUp />
-            ) : (
-              <ErrorPage message={"You don't have the right permissions!"} />
-            )}
-          </Route>
-          <Route path="/test">
-            <ComponentTest />
-          </Route>
+          <UserProvider>
+            <Route exact path="/">
+              {loggedIn ? (
+                <Home isAdmin={isAdmin} />
+              ) : (
+                <Login handleLogin={handleLogin} />
+              )}
+            </Route>
+            <Route path="/register">
+              {isAdmin ? (
+                <SignUp />
+              ) : (
+                <ErrorPage message={"You don't have the right permissions!"} />
+              )}
+            </Route>
+            <Route path="/test">
+              <ComponentTest />
+            </Route>
+          </UserProvider>
         </Switch>
       </main>
       <footer />

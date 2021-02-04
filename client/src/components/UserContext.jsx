@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -10,17 +10,23 @@ export const UserProvider = ({ children }) => {
   UserProvider.propTypes = {
     children: PropTypes.node.isRequired,
   };
-  let user = {
-    isLoggedIn: false, isAdmin: false, userName: '', firstName: '', lastName: '', email: '',
-  };
+  const [user, setUserState] = useState({
+    isLoggedIn: false,
+    isAdmin: false,
+    userName: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
   useEffect(() => {
-    if (window.sessionStorage.getItem('token')) { // If user logged in
+    if (window.sessionStorage.getItem('token')) {
+      // If user logged in
       const queryName = 'getUser';
       const GET_USER_QUERY = gql`
-          query GetUserQuery($userName: String!) {
-            getUser(userName: $userName)
-          }
-        `;
+        query GetUserQuery($userName: String!) {
+          getUser(userName: $userName)
+        }
+      `;
       const getVariables = () => ({
         userName: Buffer.from(
           window.sessionStorage.getItem('token'),
@@ -29,11 +35,8 @@ export const UserProvider = ({ children }) => {
       });
       const query = print(GET_USER_QUERY);
       const handleResponse = (response) => {
-        // console.log(response);
-        window.sessionStorage.setItem(
-          'user',
-          Buffer.from(JSON.stringify(response), 'ascii').toString('base64'),
-        ); // This will save user info as global
+        // console.log(response.user);
+        setUserState(response.user);
       };
       Query({
         query,
@@ -41,15 +44,9 @@ export const UserProvider = ({ children }) => {
         getVariables,
         handleResponse, // This will get user information
       });
-      user = JSON.parse(
-        Buffer.from(window.sessionStorage.getItem('user'), 'base64').toString(
-          'ascii',
-        ),
-      );
-      user = user.user; // Now we have a user in all our components
+      window.sessionStorage.clear();
     }
   });
-
   return (
     <UserContext.Provider value={user}>
       {children}
