@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
+import CreateModel from './pages/CreateModel';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -38,6 +39,9 @@ function App() {
             </Route>
             <Route path="/register">
               <SignUp />
+            </Route>
+            <Route path="/addModel">
+              <CreateModel />
             </Route>
             <Route path="/test">
               <ComponentTest />
