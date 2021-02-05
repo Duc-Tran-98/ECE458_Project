@@ -32,11 +32,11 @@ function ListInstruments() {
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments{
       getAllInstruments{
+        id
         vendor
         modelNumber
         serialNumber
         modelReference
-        isCalibratable
         comment
         calibrationHistoryId
       }

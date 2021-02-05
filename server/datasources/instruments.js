@@ -53,16 +53,25 @@ class InstrumentAPI extends DataSource {
           if (instrument) {
             response.message = 'ERROR: Instrument with this modelNumber/vendor/serialNumber already exists';
           } else {
-            const modelReference = model.dataValues.modelId;
+            const modelReference = model.dataValues.id;
             // eslint-disable-next-line prefer-destructuring
             const calibrationFrequency = model.dataValues.calibrationFrequency;
+            const isCalibratable = (calibrationFrequency > 0);
             this.store.instruments.create({
               modelReference,
               vendor,
               modelNumber,
               serialNumber,
-              calibrationFrequency,
+              isCalibratable,
               comment,
+
+              // vendor: String!
+              // modelNumber: String!
+              // serialNumber: String!
+              // modelReference: Int!
+              // isCalibratable: Boolean!
+              // comment: String
+              // calibrationHistoryId: Int!
             });
             response.message = 'Added new instrument!';
           }
