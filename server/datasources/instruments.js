@@ -23,6 +23,18 @@ class InstrumentAPI extends DataSource {
     const instruments = await this.store.instruments.findAll();
     return instruments;
   }
+
+  async findInstrument({ modelNumber, vendor, serialNumber }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.store.instruments.findAll({
+      where: { modelNumber, vendor, serialNumber },
+    });
+    if (instrument && instrument[0]) {
+      return instrument[0];
+    }
+    return null;
+  }
 }
 
 module.exports = InstrumentAPI;
