@@ -57,10 +57,8 @@ module.exports.createStore = async () => {
       updatedAt: SQL.DATE,
       email: {
         type: SQL.STRING,
-        unique: true,
         allowNull: false,
       },
-      token: SQL.STRING,
       isAdmin: {
         type: SQL.BOOLEAN,
         allowNull: false,
@@ -72,7 +70,7 @@ module.exports.createStore = async () => {
   const models = db.define(
     'models',
     {
-      modelId: {
+      id: {
         type: SQL.INTEGER,
         autoIncrement: true,
         unique: true,
@@ -105,7 +103,7 @@ module.exports.createStore = async () => {
         allowNull: false,
         references: {
           model: 'models',
-          key: 'modelId',
+          key: 'id',
         },
         onUpdate: 'RESTRICT',
         onDelete: 'RESTRICT',

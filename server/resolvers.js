@@ -5,7 +5,8 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
-    me: (_, __, { dataSources }) => dataSources.userAPI.find(),
+    // eslint-disable-next-line max-len
+    getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
@@ -14,6 +15,19 @@ module.exports = {
     }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
   },
   Mutation: {
+    addModel: async (_, {
+      modelNumber, vendor, description, comment, calibrationFrequency,
+    }, { dataSources }) => {
+      const response = await dataSources.modelAPI.addModel({
+        modelNumber,
+        vendor,
+        description,
+        comment,
+        calibrationFrequency,
+      });
+      console.log(response);
+      return response;
+    },
     login: async (_, { userName, password }, { dataSources }) => {
       const response = await dataSources.userAPI.login({
         userName,

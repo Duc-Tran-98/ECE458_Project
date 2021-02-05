@@ -22,25 +22,24 @@ class UserAPI extends DataSource {
    * This function takes a userName and password and see if it belongs
    * to a user in the db
    */
-  async login({ userName: uArg, password: pArg }) {
-    const response = { success: false, message: '', user: null };
-    await this.findUser({ userName: uArg }).then((value) => {
+  async login({ userName, password }) {
+    const response = { success: false, message: '' };
+    await this.findUser({ userName }).then((value) => {
       if (!value) {
-        response.message = 'No username found';
+        response.message = 'Wrong username/password';
       } else {
-        response.success = bcrypt.compareSync(pArg, value.password);
+        response.success = bcrypt.compareSync(password, value.password);
         response.message = response.success
           ? 'Logged in'
           : 'Wrong username/password';
-        response.user = response.success ? value : null;
       }
     });
     return JSON.stringify(response);
   }
 
-  async isAdmin({ userName: uArg }) {
+  async isAdmin({ userName }) {
     let response = false;
-    await this.findUser({ userName: uArg }).then((value) => {
+    await this.findUser({ userName }).then((value) => {
       if (!value) {
         // no user exists
       } else if (value.isAdmin) {
@@ -53,18 +52,12 @@ class UserAPI extends DataSource {
   /**
    * This function attempts to find a user from a given userName
    */
-  async findUser({ userName: uArg }) {
+  async findUser({ userName }) {
     // console.log(this.store);
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.store.users.findAll({ where: { userName: uArg } });
+    const user = await this.store.users.findAll({ where: { userName } });
     const exists = user && user[0];
-    if (exists) {
-      await this.store.users.update(
-        { token: Buffer.from(uArg).toString('base64') },
-        { where: { token: null } },
-      );
-    }
     return exists ? user[0] : null;
   }
 
@@ -72,28 +65,27 @@ class UserAPI extends DataSource {
    * This function attempts to create a user if they don't match a userName that's already in use
    */
   async createUser({
-    email: emailArg,
-    firstName: fName,
-    lastName: lName,
-    userName: uName,
-    password: pwd,
+    email,
+    firstName,
+    lastName,
+    userName,
+    password,
     isAdmin,
   }) {
-    const response = { success: false, message: '' };
-    await this.findUser({ userName: uName }).then((value) => {
+    const response = { message: '' };
+    await this.findUser({ userName }).then((value) => {
       if (value) {
-        response.message = 'User already exists!';
+        response.message = 'Username already exists!';
       } else {
         this.store.users.create({
-          email: emailArg,
-          firstName: fName,
-          lastName: lName,
-          userName: uName,
-          password: pwd,
+          email,
+          firstName,
+          lastName,
+          userName,
+          password,
           isAdmin,
         });
         response.message = 'Account Created!';
-        response.success = true;
       }
     });
     return JSON.stringify(response);

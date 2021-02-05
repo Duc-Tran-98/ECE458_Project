@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// We may want to modularize what features an admin can do
+
 function SideNav({ isAdmin }) {
   SideNav.propTypes = {
     isAdmin: PropTypes.bool.isRequired,
@@ -29,8 +31,6 @@ function SideNav({ isAdmin }) {
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               Dashboard
-              {' '}
-              <span className="sr-only">(current)</span>
             </Link>
           </li>
           <li className="nav-item">
@@ -54,7 +54,7 @@ function SideNav({ isAdmin }) {
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/">
+            <Link className="nav-link" to="/viewModels">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -65,38 +65,61 @@ function SideNav({ isAdmin }) {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="feather feather-shopping-cart"
+                className="feather feather-layers"
               >
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 17 12 22 22 17" />
+                <polyline points="2 12 12 17 22 12" />
               </svg>
-              Products
+              Models
             </Link>
           </li>
           {isAdmin && (
-            <li className="nav-item">
-              <Link className="nav-link" to="/register">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="feather feather-users"
-                >
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-                Create Users
-              </Link>
-            </li>
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/addModel">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="bi bi-plus-square "
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                  </svg>
+                  Create Model
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link className="nav-link" to="/register">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="feather feather-users"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  Create Users
+                </Link>
+              </li>
+            </>
           )}
           <li className="nav-item">
             <Link className="nav-link" to="/">
@@ -117,27 +140,6 @@ function SideNav({ isAdmin }) {
                 <line x1="6" y1="20" x2="6" y2="14" />
               </svg>
               Reports
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="feather feather-layers"
-              >
-                <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                <polyline points="2 17 12 22 22 17" />
-                <polyline points="2 12 12 17 22 12" />
-              </svg>
-              Integrations
             </Link>
           </li>
         </ul>
