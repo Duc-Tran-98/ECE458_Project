@@ -123,9 +123,9 @@ module.exports.createStore = async () => {
         primaryKey: true,
         allowNull: false,
       },
-      isCalibratable: {
-        type: SQL.BOOLEAN,
-        allowNull: false,
+      calibrationFrequency: {
+        type: SQL.INTEGER,
+        allowNull: true,
       },
       comment: SQL.STRING(1024),
       calibrationHistoryId: {
