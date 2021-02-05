@@ -10,6 +10,8 @@ module.exports = {
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
+    // eslint-disable-next-line max-len
+    findModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.findModel({ modelNumber, vendor }),
     getAllCalibrationEvents: (_, __, {
       dataSources,
     }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),

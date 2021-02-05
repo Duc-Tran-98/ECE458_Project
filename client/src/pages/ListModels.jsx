@@ -9,27 +9,18 @@ import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
 import UserContext from '../components/UserContext';
 import MouseOverPopover from '../components/PopOver';
-// import ErrorPage from './ErrorPage';
-
-function deleteEntry() {
-  alert('Deleting entry initiated');
-}
-
-function editEntry() {
-  alert('Edit entry initiated');
-}
-
-function focusEntry() {
-  alert('Focus entry initiated');
-}
+import ModalAlert from '../components/ModalAlert';
+import ErrorPage from './ErrorPage';
 
 function ListModels() {
   const user = useContext(UserContext);
-  console.log(user);
-  // if (!user.isLoggedIn) {
-  //   return <ErrorPage message="You need to sign in to see this page!" />;
-  // }
+  // console.log(user);
+  if (!user.isLoggedIn) {
+    return <ErrorPage message="You need to sign in to see this page!" />;
+  }
   const [rows, setModels] = useState([]);
+  const [show, setShow] = useState(false);
+  const [which, setWhich] = useState('');
   const GET_MODELS_QUERY = gql`
     query Models{
       getAllModels{
@@ -48,8 +39,17 @@ function ListModels() {
     setModels(response);
   };
   if (rows === null || rows.length === 0) {
+    console.log('query for rows');
     Query({ query, queryName, handleResponse });
   }
+  const cellHandler = (e) => {
+    setWhich(e.field);
+    setShow(true);
+  };
+  const closeModal = () => {
+    setShow(false);
+    setWhich('');
+  };
   const cols = [
     { field: 'id', headerName: 'Numb', width: 50 },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
@@ -61,29 +61,49 @@ function ListModels() {
       width: 200,
     },
     {
-      field: 'options',
+      field: 'edit',
       headerName: ' ',
-      width: 180,
+      width: 60,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
           <div className="col mt-2">
             <MouseOverPopover message="Edit Model">
-              <ButtonBase onClick={editEntry}>
+              <ButtonBase>
                 <EditIcon color="primary" />
               </ButtonBase>
             </MouseOverPopover>
           </div>
+        </div>
+      ),
+    },
+    {
+      field: 'delete',
+      headerName: ' ',
+      width: 60,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <div className="row">
           <div className="col mt-2">
             <MouseOverPopover message="Delete Model">
-              <ButtonBase onClick={deleteEntry}>
+              <ButtonBase>
                 <DeleteIcon color="secondary" />
               </ButtonBase>
             </MouseOverPopover>
           </div>
+        </div>
+      ),
+    },
+    {
+      field: 'view',
+      headerName: ' ',
+      width: 60,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <div className="row">
           <div className="col mt-2">
             <MouseOverPopover message="View Model">
-              <ButtonBase onClick={focusEntry}>
+              <ButtonBase>
                 <SearchIcon />
               </ButtonBase>
             </MouseOverPopover>
@@ -92,6 +112,11 @@ function ListModels() {
       ),
     },
   ];
-  return DisplayGrid({ rows, cols });
+  return (
+    <div style={{ height: '90vh' }}>
+      <ModalAlert handleClose={closeModal} show={show} title={which} />
+      {DisplayGrid({ rows, cols, cellHandler })}
+    </div>
+  );
 }
 export default ListModels;
