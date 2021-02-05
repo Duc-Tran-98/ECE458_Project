@@ -39,6 +39,19 @@ module.exports = {
       });
       return response;
     },
+    addCalibrationEvent: async (_, {
+      modelNumber, vendor, serialNumber, user, date, comment,
+    }, { dataSources }) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEvent({
+        modelNumber,
+        vendor,
+        serialNumber,
+        user,
+        date,
+        comment,
+      });
+      return response;
+    },
     login: async (_, { userName, password }, { dataSources }) => {
       const response = await dataSources.userAPI.login({
         userName,

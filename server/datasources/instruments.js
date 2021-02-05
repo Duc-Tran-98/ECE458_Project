@@ -71,7 +71,6 @@ class InstrumentAPI extends DataSource {
         response.message = 'ERROR: No corresponding model exists';
       }
     });
-
     return JSON.stringify(response);
   }
 }
