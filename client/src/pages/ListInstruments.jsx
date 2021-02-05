@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
@@ -7,7 +7,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
-import UserContext from '../components/UserContext';
+// import UserContext from '../components/UserContext';
 // import ErrorPage from './ErrorPage';
 
 function deleteEntry() {
@@ -23,8 +23,8 @@ function focusEntry() {
 }
 
 function ListInstruments() {
-  const user = useContext(UserContext);
-  console.log(user);
+  // const user = useContext(UserContext);
+  // console.log(user);
   // if (!user.isLoggedIn) {
   //   return <ErrorPage message="You need to sign in to see this page!" />;
   // }
@@ -32,7 +32,6 @@ function ListInstruments() {
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments{
       getAllInstruments{
-        id
         vendor
         modelNumber
         serialNumber
