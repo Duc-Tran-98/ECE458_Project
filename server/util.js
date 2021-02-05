@@ -128,7 +128,7 @@ module.exports.createStore = async () => {
         allowNull: true,
       },
       comment: SQL.STRING(1024),
-      calibrationHistoryId: {
+      id: {
         type: SQL.INTEGER,
         autoIncrement: true,
         unique: true,
@@ -150,7 +150,7 @@ module.exports.createStore = async () => {
         allowNull: false,
         references: {
           model: 'instruments',
-          key: 'calibrationHistoryId',
+          key: 'id',
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',

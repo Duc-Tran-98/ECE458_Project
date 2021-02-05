@@ -54,7 +54,7 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        const calibrationHistoryIdReference = instrument.dataValues.calibrationHistoryId;
+        const calibrationHistoryIdReference = instrument.dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
