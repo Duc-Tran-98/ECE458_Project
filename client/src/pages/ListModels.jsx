@@ -8,6 +8,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
 import UserContext from '../components/UserContext';
+import MouseOverPopover from '../components/PopOver';
 // import ErrorPage from './ErrorPage';
 
 function deleteEntry() {
@@ -54,28 +55,39 @@ function ListModels() {
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 300 },
-    { field: 'calibrationFrequency', headerName: 'Calibration Frequency', width: 200 },
+    {
+      field: 'calibrationFrequency',
+      headerName: 'Calibration Frequency',
+      width: 200,
+    },
     {
       field: 'options',
       headerName: ' ',
-      width: 100,
+      width: 180,
+      disableColumnMenu: true,
       renderCell: () => (
-        <div>
-          <ButtonBase
-            onClick={editEntry}
-          >
-            <EditIcon color="primary" />
-          </ButtonBase>
-          <ButtonBase
-            onClick={deleteEntry}
-          >
-            <DeleteIcon color="secondary" />
-          </ButtonBase>
-          <ButtonBase
-            onClick={focusEntry}
-          >
-            <SearchIcon />
-          </ButtonBase>
+        <div className="row">
+          <div className="col mt-2">
+            <MouseOverPopover message="Edit Model">
+              <ButtonBase onClick={editEntry}>
+                <EditIcon color="primary" />
+              </ButtonBase>
+            </MouseOverPopover>
+          </div>
+          <div className="col mt-2">
+            <MouseOverPopover message="Delete Model">
+              <ButtonBase onClick={deleteEntry}>
+                <DeleteIcon color="secondary" />
+              </ButtonBase>
+            </MouseOverPopover>
+          </div>
+          <div className="col mt-2">
+            <MouseOverPopover message="View Model">
+              <ButtonBase onClick={focusEntry}>
+                <SearchIcon />
+              </ButtonBase>
+            </MouseOverPopover>
+          </div>
         </div>
       ),
     },

@@ -47,7 +47,7 @@ export default function DisplayGrid({ rows, cols }) {
       <DataGrid
         rows={rows}
         columns={cols}
-        pageSize={12}
+        pageSize={10}
         checkboxSelection
         showToolbar
         locateText={{
@@ -59,6 +59,7 @@ export default function DisplayGrid({ rows, cols }) {
         }}
         autoHeight
         disableSelectionOnClick
+        className="bg-light"
       />
     </div>
   );
