@@ -5,17 +5,8 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
-    getUser: (_, { userName }, { dataSources }) => dataSources.userAPI.findUser({ userName })
-      .then((data) => {
-        const {
-          lastName, firstName, email, isAdmin,
-        } = data;
-        return JSON.stringify({
-          user: {
-            userName, lastName, firstName, email, isAdmin,
-          },
-        });
-      }),
+    // eslint-disable-next-line max-len
+    getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
@@ -35,6 +26,30 @@ module.exports = {
         calibrationFrequency,
       });
       console.log(response);
+      return response;
+    },
+    addInstrument: async (_, {
+      modelNumber, vendor, serialNumber, comment,
+    }, { dataSources }) => {
+      const response = await dataSources.instrumentAPI.addInstrument({
+        modelNumber,
+        vendor,
+        serialNumber,
+        comment,
+      });
+      return response;
+    },
+    addCalibrationEvent: async (_, {
+      modelNumber, vendor, serialNumber, user, date, comment,
+    }, { dataSources }) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEvent({
+        modelNumber,
+        vendor,
+        serialNumber,
+        user,
+        date,
+        comment,
+      });
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {

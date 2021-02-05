@@ -2,11 +2,10 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
+  # clients can execute, along with the return type for each. 
   type Query {
     isAdmin(userName: String!): Boolean!
-    getUser(userName: String!): String!
+    getUser(userName: String!): User!
     getAllModels: [Model]
     getAllInstruments: [Instrument]
     getAllCalibrationEvents: [CalibrationEvent]
@@ -21,7 +20,7 @@ const typeDefs = gql`
     isAdmin: Boolean!
   }
   type Model {
-    modelId: ID!
+    id: ID!
     vendor: String!
     modelNumber: String!
     description: String!
@@ -56,6 +55,8 @@ const typeDefs = gql`
       isAdmin: Boolean!
     ): String!
     addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
+    addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+    addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
   }
 `;
 

@@ -70,7 +70,7 @@ module.exports.createStore = async () => {
   const models = db.define(
     'models',
     {
-      modelId: {
+      id: {
         type: SQL.INTEGER,
         autoIncrement: true,
         unique: true,
@@ -103,7 +103,7 @@ module.exports.createStore = async () => {
         allowNull: false,
         references: {
           model: 'models',
-          key: 'modelId',
+          key: 'id',
         },
         onUpdate: 'RESTRICT',
         onDelete: 'RESTRICT',
@@ -123,9 +123,9 @@ module.exports.createStore = async () => {
         primaryKey: true,
         allowNull: false,
       },
-      isCalibratable: {
-        type: SQL.BOOLEAN,
-        allowNull: false,
+      calibrationFrequency: {
+        type: SQL.INTEGER,
+        allowNull: true,
       },
       comment: SQL.STRING(1024),
       calibrationHistoryId: {
