@@ -9,6 +9,7 @@ import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
+// import ErrorPage from './pages/ErrorPage';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -32,11 +33,7 @@ function App() {
         <Switch>
           <UserProvider>
             <Route exact path="/">
-              {loggedIn ? (
-                <Home />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/register">
               <SignUp />
@@ -44,11 +41,11 @@ function App() {
             <Route path="/addModel">
               <CreateModel />
             </Route>
-            <Route path="/models">
-              <ListModels />
-            </Route>
             <Route path="/test">
               <ComponentTest />
+            </Route>
+            <Route path="/viewModels">
+              <ListModels />
             </Route>
           </UserProvider>
         </Switch>

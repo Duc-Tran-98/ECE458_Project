@@ -54,7 +54,7 @@ function SideNav({ isAdmin }) {
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/models">
+            <Link className="nav-link" to="/viewModels">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"

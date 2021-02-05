@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
+import PropTypes from 'prop-types';
 
 const columns = [
   { field: 'id', headerName: '#', width: 50 },
@@ -10,7 +11,7 @@ const columns = [
   { field: 'calibrationDate', headerName: 'Calibration Date', width: 200 },
 ];
 
-const rows = [
+const testRows = [
   {
     id: 1,
     vendor: 'Fluke',
@@ -113,7 +114,29 @@ const rows = [
 export default function DataGridDemo() {
   return (
     <div style={{ height: 400, width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} pageSize={4} checkboxSelection />
+      <DataGrid rows={testRows} columns={columns} pageSize={4} checkboxSelection />
+    </div>
+  );
+}
+
+export function DisplayGrid({ rows, cols }) {
+  DisplayGrid.propTypes = {
+    // eslint-disable-next-line react/forbid-prop-types
+    rows: PropTypes.array.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    cols: PropTypes.array.isRequired,
+  };
+  return (
+    <div style={{ height: 450, width: '100%' }}>
+      <DataGrid
+        rows={rows}
+        columns={cols}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
+        checkboxSelection
+        pagination
+        className="bg-light mt-5"
+      />
     </div>
   );
 }
