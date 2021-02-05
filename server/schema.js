@@ -5,7 +5,7 @@ const typeDefs = gql`
   # clients can execute, along with the return type for each. 
   type Query {
     isAdmin(userName: String!): Boolean!
-    getUser(userName: String!): String!
+    getUser(userName: String!): User!
     getAllModels: [Model]
     getAllInstruments: [Instrument]
     getAllCalibrationEvents: [CalibrationEvent]

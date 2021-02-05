@@ -24,7 +24,13 @@ export const UserProvider = ({ children }) => {
       const queryName = 'getUser';
       const GET_USER_QUERY = gql`
         query GetUserQuery($userName: String!) {
-          getUser(userName: $userName)
+          getUser(userName: $userName){
+            firstName
+            lastName
+            email
+            isAdmin
+            userName
+          }
         }
       `;
       const getVariables = () => ({
@@ -35,8 +41,9 @@ export const UserProvider = ({ children }) => {
       });
       const query = print(GET_USER_QUERY);
       const handleResponse = (response) => {
-        // console.log(response.user);
-        setUserState(response.user);
+        response.isLoggedIn = true;
+        // console.log(response);
+        setUserState(response);
       };
       Query({
         query,

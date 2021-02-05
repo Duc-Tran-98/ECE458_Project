@@ -5,17 +5,8 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
-    getUser: (_, { userName }, { dataSources }) => dataSources.userAPI.findUser({ userName })
-      .then((data) => {
-        const {
-          lastName, firstName, email, isAdmin,
-        } = data;
-        return JSON.stringify({
-          user: {
-            userName, lastName, firstName, email, isAdmin, isLoggedIn: true,
-          },
-        });
-      }),
+    // eslint-disable-next-line max-len
+    getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
