@@ -12,7 +12,7 @@ module.exports = {
         } = data;
         return JSON.stringify({
           user: {
-            userName, lastName, firstName, email, isAdmin,
+            userName, lastName, firstName, email, isAdmin, isLoggedIn: true,
           },
         });
       }),
