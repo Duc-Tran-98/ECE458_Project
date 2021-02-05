@@ -19,8 +19,7 @@ const Query = ({
   axios
     .post(route, data)
     .then((res) => {
-      // console.log(res);
-      response = JSON.parse(res.data.data[queryName]);
+      response = (typeof res.data.data[queryName] === 'string') ? JSON.parse(res.data.data[queryName]) : res.data.data[queryName];
       // console.log(response);
       handleResponse(response);
     })
