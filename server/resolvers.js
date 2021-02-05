@@ -37,6 +37,17 @@ module.exports = {
       console.log(response);
       return response;
     },
+    addInstrument: async (_, {
+      modelNumber, vendor, serialNumber, comment,
+    }, { dataSources }) => {
+      const response = await dataSources.instrumentAPI.addInstrument({
+        modelNumber,
+        vendor,
+        serialNumber,
+        comment,
+      });
+      return response;
+    },
     login: async (_, { userName, password }, { dataSources }) => {
       const response = await dataSources.userAPI.login({
         userName,
