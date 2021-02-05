@@ -38,7 +38,7 @@ function ListInstruments() {
         serialNumber
         modelReference
         comment
-        calibrationHistoryId
+        calibrationFrequency
       }
     }
   `;
