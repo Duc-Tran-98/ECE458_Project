@@ -33,9 +33,9 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    isCalibratable: Boolean!
+    calibrationFrequency: Int!
     comment: String
-    calibrationHistoryId: Int!
+    id: Int!
   }
   type CalibrationEvent {
     id: ID!
