@@ -34,7 +34,7 @@ const typeDefs = gql`
     modelReference: Int!
     calibrationFrequency: Int!
     comment: String
-    calibrationHistoryId: Int!
+    id: Int!
   }
   type CalibrationEvent {
     id: ID!

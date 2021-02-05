@@ -53,7 +53,7 @@ class InstrumentAPI extends DataSource {
           if (instrument) {
             response.message = 'ERROR: Instrument with this modelNumber/vendor/serialNumber already exists';
           } else {
-            const modelReference = model.dataValues.modelId;
+            const modelReference = model.dataValues.id;
             // eslint-disable-next-line prefer-destructuring
             const calibrationFrequency = model.dataValues.calibrationFrequency;
             this.store.instruments.create({
