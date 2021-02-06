@@ -49,6 +49,7 @@ export default class SearchSuggest extends Component {
           )}
           noResults={<MenuItem disabled text="No results." />}
           onItemSelect={(film) => {
+            // eslint-disable-next-line no-alert
             alert(`Selected film ${film.title}`);
           }}
           closeOnSelect

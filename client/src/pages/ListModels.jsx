@@ -21,6 +21,7 @@ import UserContext from '../components/UserContext';
 function ListModels() {
   const user = useContext(UserContext);
   const [rows, setModels] = useState([]);
+  const [queried, setQuery] = useState(false);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
@@ -40,17 +41,20 @@ function ListModels() {
   const queryName = 'getAllModels';
   const handleResponse = (response) => {
     // console.log(response);
+    console.log('query for rows');
     setModels(response);
   };
-  if (rows === null || rows.length === 0) {
-    // console.log('query for rows');
+  if (!queried) {
     Query({ query, queryName, handleResponse });
+    setQuery(true);
   }
   const cellHandler = (e) => {
-    setModelNumber(e.row.modelNumber);
-    setVendor(e.row.vendor);
-    setWhich(e.field);
-    setShow(true);
+    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+      setModelNumber(e.row.modelNumber);
+      setVendor(e.row.vendor);
+      setWhich(e.field);
+      setShow(true);
+    }
   };
   const closeModal = (bool) => {
     setShow(false);
@@ -76,6 +80,31 @@ function ListModels() {
       field: 'calibrationFrequency',
       headerName: 'Calibration Frequency',
       width: 200,
+      renderCell: (params) => (
+        <div className="row">
+          <div className="col mt-3">
+            {params.value === 0 ? (
+              <MouseOverPopover message="Model not calibratable">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  fill="#f78102"
+                  className="bi bi-calendar-x"
+                  viewBox="0 0 32 32"
+                >
+                  {/* eslint-disable-next-line max-len */}
+                  <path d="M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708z" />
+                  {/* eslint-disable-next-line max-len */}
+                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                </svg>
+              </MouseOverPopover>
+            ) : (
+              params.value
+            )}
+          </div>
+        </div>
+      ),
     },
     {
       field: 'edit',
@@ -85,7 +114,7 @@ function ListModels() {
       hide: !user.isAdmin,
       renderCell: () => (
         <div className="row">
-          <div className="col mt-2">
+          <div className="col mt-1">
             <MouseOverPopover message="Edit Model">
               <ButtonBase>
                 <EditIcon color="primary" />
@@ -103,7 +132,7 @@ function ListModels() {
       hide: !user.isAdmin,
       renderCell: () => (
         <div className="row">
-          <div className="col mt-2">
+          <div className="col mt-1">
             <MouseOverPopover message="Delete Model">
               <ButtonBase>
                 <DeleteIcon color="secondary" />
@@ -120,7 +149,7 @@ function ListModels() {
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
-          <div className="col mt-2">
+          <div className="col mt-1">
             <MouseOverPopover message="View Model">
               <ButtonBase>
                 <SearchIcon />
