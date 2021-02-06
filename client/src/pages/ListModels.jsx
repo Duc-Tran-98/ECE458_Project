@@ -1,6 +1,7 @@
 /*
 This class is starting to get a bit complex, so may want
-to refactor this into smaller components when possible
+to refactor this into smaller components when possible;
+minor feature that would be cool is spinners while the modal alert loads;
 */
 import { useState } from 'react';
 import { gql } from '@apollo/client';
@@ -47,6 +48,7 @@ function ListModels() {
     setVendor(e.row.vendor);
     setWhich(e.field);
     setShow(true);
+    console.log('set show!');
   };
   const closeModal = (bool) => {
     setShow(false);
@@ -120,7 +122,21 @@ function ListModels() {
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
-        {which === 'edit' && <EditModel modelNumber={modelNumber} vendor={vendor} handleClose={closeModal} />}
+        {which === 'edit' && (
+          <EditModel
+            modelNumber={modelNumber}
+            vendor={vendor}
+            handleClose={closeModal}
+          />
+        )}
+        {which === 'view' && (
+          <EditModel
+            modelNumber={modelNumber}
+            vendor={vendor}
+            handleClose={closeModal}
+            viewOnly
+          />
+        )}
       </ModalAlert>
       {DisplayGrid({ rows, cols, cellHandler })}
     </div>

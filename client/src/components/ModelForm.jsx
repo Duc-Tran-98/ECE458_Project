@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated,
+  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -15,7 +15,10 @@ export default function ModelForm({
     changeHandler: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     validated: PropTypes.bool.isRequired,
+    // eslint-disable-next-line react/require-default-props
+    viewOnly: PropTypes.bool,
   };
+  const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   return (
     <Form
       className="needs-validation bg-light rounded"
@@ -34,6 +37,7 @@ export default function ModelForm({
               required
               value={modelNumber}
               onChange={changeHandler}
+              disabled={disabled}
             />
             <Form.Control.Feedback type="invalid">
               Please enter a valid model number.
@@ -50,6 +54,7 @@ export default function ModelForm({
               required
               value={vendor}
               onChange={changeHandler}
+              disabled={disabled}
             />
             <Form.Control.Feedback type="invalid">
               Please enter a valid vendor.
@@ -68,6 +73,7 @@ export default function ModelForm({
               name="calibrationFrequency"
               value={calibrationFrequency}
               onChange={changeHandler}
+              disabled={disabled}
             />
           </Form.Group>
         </div>
@@ -83,6 +89,7 @@ export default function ModelForm({
               name="description"
               value={description}
               onChange={changeHandler}
+              disabled={disabled}
             />
             <Form.Control.Feedback type="invalid">
               Please enter a valid description.
@@ -99,16 +106,18 @@ export default function ModelForm({
               name="comment"
               value={comment}
               onChange={changeHandler}
+              disabled={disabled}
             />
           </Form.Group>
         </div>
       </div>
-
-      <div className="d-flex justify-content-center mt-3 mb-3">
-        <Button variant="primary" type="submit">
-          Submit
-        </Button>
-      </div>
+      {(typeof viewOnly === 'undefined' || !viewOnly) && (
+        <div className="d-flex justify-content-center mt-3 mb-3">
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </div>
+      )}
     </Form>
   );
 }
