@@ -31,13 +31,6 @@ function App() {
       </header>
       <main>
         <Switch>
-          <Route path="/viewModels">
-            {loggedIn ? (
-              <ListModels />
-            ) : (
-              <ErrorPage message="You need to sign in first!" />
-            )}
-          </Route>
           <Route path="/test">
             <ComponentTest />
           </Route>
@@ -50,6 +43,13 @@ function App() {
             </Route>
             <Route path="/addModel">
               <CreateModel />
+            </Route>
+            <Route path="/viewModels">
+              {loggedIn ? (
+                <ListModels />
+              ) : (
+                <ErrorPage message="You need to sign in first!" />
+              )}
             </Route>
           </UserProvider>
         </Switch>

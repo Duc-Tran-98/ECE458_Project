@@ -16,6 +16,8 @@ module.exports = {
     getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
   },
   Mutation: {
+    // eslint-disable-next-line max-len
+    deleteModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.deleteModel({ modelNumber, vendor }),
     editModel: async (
       _,
       {

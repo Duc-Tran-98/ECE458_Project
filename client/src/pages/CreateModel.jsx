@@ -9,7 +9,7 @@ import ModelForm from '../components/ModelForm';
 function CreateModel() {
   const [validated, setValidated] = useState(false);
   const [formState, setFormState] = useState({
-    modelNumber: '', vendor: '', description: '', comment: '', calibrationFrequency: 0,
+    modelNumber: '', vendor: '', description: '', comment: '', calibrationFrequency: '0',
   });
 
   const handleSubmit = (event) => {

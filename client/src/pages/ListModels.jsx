@@ -3,7 +3,7 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
@@ -15,8 +15,11 @@ import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
+import DeleteModel from '../queries/DeleteModel';
+import UserContext from '../components/UserContext';
 
 function ListModels() {
+  const user = useContext(UserContext);
   const [rows, setModels] = useState([]);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
@@ -48,7 +51,6 @@ function ListModels() {
     setVendor(e.row.vendor);
     setWhich(e.field);
     setShow(true);
-    console.log('set show!');
   };
   const closeModal = (bool) => {
     setShow(false);
@@ -56,6 +58,14 @@ function ListModels() {
     if (bool) { // If updated successfully, update rows
       Query({ query, queryName, handleResponse });
     }
+  };
+  const handleRes = (response) => {
+    // eslint-disable-next-line no-alert
+    alert(response.message);
+    closeModal(response.success);
+  };
+  const delModel = () => {
+    DeleteModel({ modelNumber, vendor, handleResponse: handleRes });
   };
   const cols = [
     { field: 'id', headerName: 'Numb', width: 50 },
@@ -72,6 +82,7 @@ function ListModels() {
       headerName: ' ',
       width: 60,
       disableColumnMenu: true,
+      hide: !user.isAdmin,
       renderCell: () => (
         <div className="row">
           <div className="col mt-2">
@@ -89,6 +100,7 @@ function ListModels() {
       headerName: ' ',
       width: 60,
       disableColumnMenu: true,
+      hide: !user.isAdmin,
       renderCell: () => (
         <div className="row">
           <div className="col mt-2">
@@ -136,6 +148,31 @@ function ListModels() {
             handleClose={closeModal}
             viewOnly
           />
+        )}
+        {which === 'delete' && (
+          <div>
+            <div className="h4 row text-center">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
+            <div className="d-flex justify-content-center">
+              <div className="me-5">
+                <button
+                  className="btn btn-warning"
+                  type="button"
+                  onClick={delModel}
+                >
+                  Yes
+                </button>
+              </div>
+              <div className="ms-5">
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={closeModal}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </ModalAlert>
       {DisplayGrid({ rows, cols, cellHandler })}

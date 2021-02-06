@@ -17,6 +17,24 @@ class ModelAPI extends DataSource {
     this.context = config.context;
   }
 
+  async deleteModel({ modelNumber, vendor }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.getModel({ modelNumber, vendor });
+    const modelReference = model.dataValues.id;
+    await this.store.instruments.findAll({ where: { modelReference } }).then(async (data) => {
+      if (data && data[0]) {
+        response.message = 'ERROR: Instrument is dependent on model!';
+      } else {
+        await this.store.models.destroy({ where: { modelNumber, vendor } });
+        response.message = 'Model deleted!';
+        response.success = true;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
   async editModel({
     id,
     modelNumber,

@@ -55,6 +55,7 @@ const typeDefs = gql`
       password: String!
       isAdmin: Boolean!
     ): String!
+    deleteModel(modelNumber: String!, vendor: String!): String!
     addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
     addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
