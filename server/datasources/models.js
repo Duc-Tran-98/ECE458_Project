@@ -17,6 +17,56 @@ class ModelAPI extends DataSource {
     this.context = config.context;
   }
 
+  async deleteModel({ modelNumber, vendor }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.getModel({ modelNumber, vendor });
+    const modelReference = model.dataValues.id;
+    await this.store.instruments.findAll({ where: { modelReference } }).then(async (data) => {
+      if (data && data[0]) {
+        response.message = 'ERROR: Instrument is dependent on model!';
+      } else {
+        await this.store.models.destroy({ where: { modelNumber, vendor } });
+        response.message = 'Model deleted!';
+        response.success = true;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async editModel({
+    id,
+    modelNumber,
+    vendor,
+    description,
+    comment,
+    calibrationFrequency,
+  }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const response = { message: '', success: false };
+    await this.getModel({ modelNumber, vendor }).then((value) => {
+      if (value) {
+        response.message = 'That model number and vendor pair already exists!';
+      } else {
+        this.store.models.update(
+          {
+            modelNumber,
+            vendor,
+            description,
+            comment,
+            calibrationFrequency,
+          },
+          { where: { id } },
+        );
+        response.message = 'Model Updated Successfully!';
+        response.success = true;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
   async getAllModels() {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -27,7 +77,9 @@ class ModelAPI extends DataSource {
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
+    const model = await this.store.models.findAll({
+      where: { modelNumber, vendor },
+    });
     if (model && model[0]) {
       return model[0];
     }

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 // Resolvers define the technique for fetching the types defined in the
 // schema.
 const bcrypt = require('bcryptjs');
@@ -6,18 +5,42 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
+    // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
-    getModel: (_, { modelNumber, vendor }, { dataSources }) => dataSources.modelAPI.getModel({ modelNumber, vendor }),
+    // eslint-disable-next-line max-len
+    getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
+    // eslint-disable-next-line max-len
     getInstrument: (_, { modelNumber, vendor, serialNumber }, { dataSources }) => dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    // eslint-disable-next-line max-len
     getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
   },
   Mutation: {
-    addModel: async (_, {
-      modelNumber, vendor, description, comment, calibrationFrequency,
-    }, { dataSources }) => {
+    // eslint-disable-next-line max-len
+    deleteModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.deleteModel({ modelNumber, vendor }),
+    editModel: async (
+      _,
+      {
+        modelNumber, vendor, description, comment, calibrationFrequency, id,
+      },
+      { dataSources },
+    ) => await dataSources.modelAPI.editModel({
+      modelNumber,
+      vendor,
+      description,
+      comment,
+      calibrationFrequency,
+      id,
+    }),
+    addModel: async (
+      _,
+      {
+        modelNumber, vendor, description, comment, calibrationFrequency,
+      },
+      { dataSources },
+    ) => {
       const response = await dataSources.modelAPI.addModel({
         modelNumber,
         vendor,
@@ -25,12 +48,15 @@ module.exports = {
         comment,
         calibrationFrequency,
       });
-      console.log(response);
       return response;
     },
-    addInstrument: async (_, {
-      modelNumber, vendor, serialNumber, comment,
-    }, { dataSources }) => {
+    addInstrument: async (
+      _,
+      {
+        modelNumber, vendor, serialNumber, comment,
+      },
+      { dataSources },
+    ) => {
       const response = await dataSources.instrumentAPI.addInstrument({
         modelNumber,
         vendor,
@@ -39,17 +65,23 @@ module.exports = {
       });
       return response;
     },
-    addCalibrationEvent: async (_, {
-      modelNumber, vendor, serialNumber, user, date, comment,
-    }, { dataSources }) => {
-      const response = await dataSources.calibrationEventAPI.addCalibrationEvent({
-        modelNumber,
-        vendor,
-        serialNumber,
-        user,
-        date,
-        comment,
-      });
+    addCalibrationEvent: async (
+      _,
+      {
+        modelNumber, vendor, serialNumber, user, date, comment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEvent(
+        {
+          modelNumber,
+          vendor,
+          serialNumber,
+          user,
+          date,
+          comment,
+        },
+      );
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {

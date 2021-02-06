@@ -24,6 +24,7 @@ module.exports.createStore = async () => {
     host,
     dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
     port,
+    // eslint-disable-next-line no-console
     logging: console.log,
     database,
   });
@@ -168,7 +169,7 @@ module.exports.createStore = async () => {
     { freezeTableName: true },
   );
 
-  db.sync();
+  db.sync({ alter: true });
 
   return {
     db,

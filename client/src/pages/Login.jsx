@@ -52,15 +52,14 @@ const Login = ({ handleLogin }) => {
     const query = print(LOGIN_MUTATION);
     function handleResponse(response) {
       // console.log(response);
+      // eslint-disable-next-line no-alert
+      alert(response.message);
       if (response.success) {
         window.sessionStorage.setItem(
           'token',
           Buffer.from(userName, 'ascii').toString('base64'),
         );
-        alert(response.message);
         handleLogin();
-      } else {
-        alert('Invalid username/password');
       }
     }
     Query({

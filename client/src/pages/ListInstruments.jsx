@@ -11,14 +11,17 @@ import DisplayGrid from '../components/UITable';
 // import ErrorPage from './ErrorPage';
 
 function deleteEntry() {
+  // eslint-disable-next-line no-alert
   alert('Deleting entry initiated');
 }
 
 function editEntry() {
+  // eslint-disable-next-line no-alert
   alert('Edit entry initiated');
 }
 
 function focusEntry() {
+  // eslint-disable-next-line no-alert
   alert('Focus entry initiated');
 }
 
