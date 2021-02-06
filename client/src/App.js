@@ -9,7 +9,7 @@ import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
-// import ErrorPage from './pages/ErrorPage';
+import ErrorPage from './pages/ErrorPage';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -31,6 +31,16 @@ function App() {
       </header>
       <main>
         <Switch>
+          <Route path="/viewModels">
+            {loggedIn ? (
+              <ListModels />
+            ) : (
+              <ErrorPage message="You need to sign in first!" />
+            )}
+          </Route>
+          <Route path="/test">
+            <ComponentTest />
+          </Route>
           <UserProvider>
             <Route exact path="/">
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
@@ -40,12 +50,6 @@ function App() {
             </Route>
             <Route path="/addModel">
               <CreateModel />
-            </Route>
-            <Route path="/test">
-              <ComponentTest />
-            </Route>
-            <Route path="/viewModels">
-              <ListModels />
             </Route>
           </UserProvider>
         </Switch>

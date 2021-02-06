@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
@@ -7,20 +7,16 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
-import UserContext from '../components/UserContext';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
-import ErrorPage from './ErrorPage';
+import EditModel from '../components/EditModel';
 
 function ListModels() {
-  const user = useContext(UserContext);
-  // console.log(user);
-  if (!user.isLoggedIn) {
-    return <ErrorPage message="You need to sign in to see this page!" />;
-  }
   const [rows, setModels] = useState([]);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
+  const [modelNumber, setModelNumber] = useState('');
+  const [vendor, setVendor] = useState('');
   const GET_MODELS_QUERY = gql`
     query Models{
       getAllModels{
@@ -43,6 +39,8 @@ function ListModels() {
     Query({ query, queryName, handleResponse });
   }
   const cellHandler = (e) => {
+    setModelNumber(e.row.modelNumber);
+    setVendor(e.row.vendor);
     setWhich(e.field);
     setShow(true);
   };
@@ -114,7 +112,9 @@ function ListModels() {
   ];
   return (
     <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={closeModal} show={show} title={which} />
+      <ModalAlert handleClose={closeModal} show={show} title={which}>
+        {which === 'edit' && <EditModel modelNumber={modelNumber} vendor={vendor} />}
+      </ModalAlert>
       {DisplayGrid({ rows, cols, cellHandler })}
     </div>
   );
