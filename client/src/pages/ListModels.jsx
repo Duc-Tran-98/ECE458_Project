@@ -1,3 +1,7 @@
+/*
+This class is starting to get a bit complex, so may want
+to refactor this into smaller components when possible
+*/
 import { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';

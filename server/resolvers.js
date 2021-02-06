@@ -44,7 +44,6 @@ module.exports = {
         comment,
         calibrationFrequency,
       });
-      console.log(response);
       return response;
     },
     addInstrument: async (
