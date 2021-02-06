@@ -26,7 +26,7 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
-  async findInstrument({ modelNumber, vendor, serialNumber }) {
+  async getInstrument({ modelNumber, vendor, serialNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
     const instrument = await this.store.instruments.findAll({
@@ -47,11 +47,11 @@ class InstrumentAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.modelAPI.findModel({ modelNumber, vendor }).then(async (model) => {
+    await this.modelAPI.getModel({ modelNumber, vendor }).then(async (model) => {
       if (model) {
-        await this.findInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
+        await this.getInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
           if (instrument) {
-            response.message = 'ERROR: Instrument with this modelNumber/vendor/serialNumber already exists';
+            response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
           } else {
             const modelReference = model.dataValues.id;
             // eslint-disable-next-line prefer-destructuring
@@ -66,11 +66,11 @@ class InstrumentAPI extends DataSource {
               comment,
               calibrationFrequency,
             });
-            response.message = 'Added new instrument!';
+            response.message = `Added new instrument: ${vendor} ${modelNumber} ${serialNumber}!`;
           }
         });
       } else {
-        response.message = 'ERROR: No corresponding model exists';
+        response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
       }
     });
     return JSON.stringify(response);

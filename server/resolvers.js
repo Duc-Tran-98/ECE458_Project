@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // Resolvers define the technique for fetching the types defined in the
 // schema.
 const bcrypt = require('bcryptjs');
@@ -5,15 +6,13 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
-    // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
     getModel: (_, { modelNumber, vendor }, { dataSources }) => dataSources.modelAPI.getModel({ modelNumber, vendor }),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
-    getAllCalibrationEvents: (_, __, {
-      dataSources,
-    }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
+    getInstrument: (_, { modelNumber, vendor, serialNumber }, { dataSources }) => dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
   },
   Mutation: {
     addModel: async (_, {

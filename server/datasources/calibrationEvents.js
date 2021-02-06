@@ -35,6 +35,23 @@ class CalibrationEventAPI extends DataSource {
     return calibrationEvents;
   }
 
+  async getCalibrationEventsByInstrument({ modelNumber, vendor, serialNumber }) {
+    let calibrationHistoryIdReference = -1;
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.instrumentAPI.getInstrument({
+      modelNumber, vendor, serialNumber,
+    }).then((instrument) => {
+      if (instrument) {
+        calibrationHistoryIdReference = instrument.dataValues.id;
+      }
+    });
+    const calibrationEvents = await this.store.calibrationEvents.findAll(
+      { where: { calibrationHistoryIdReference } },
+    );
+    return calibrationEvents;
+  }
+
   async addCalibrationEvent({
     modelNumber,
     vendor,
@@ -46,7 +63,7 @@ class CalibrationEventAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.instrumentAPI.findInstrument({
+    await this.instrumentAPI.getInstrument({
       modelNumber, vendor, serialNumber,
     }).then((instrument) => {
       if (instrument) {
@@ -63,7 +80,7 @@ class CalibrationEventAPI extends DataSource {
         });
         response.message = 'Added new calibration event!';
       } else {
-        response.message = 'ERROR: No instrument with this modelNumber/vendor/serialNumber exists';
+        response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`;
       }
     });
     return JSON.stringify(response);
