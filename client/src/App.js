@@ -9,6 +9,8 @@ import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
+import ListInstruments from './pages/ListInstruments';
+
 // import ErrorPage from './pages/ErrorPage';
 
 function App() {
@@ -46,6 +48,9 @@ function App() {
             </Route>
             <Route path="/viewModels">
               <ListModels />
+            </Route>
+            <Route path="/viewInstruments">
+              <ListInstruments />
             </Route>
           </UserProvider>
         </Switch>

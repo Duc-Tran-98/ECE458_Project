@@ -1,10 +1,10 @@
 import React from 'react';
-import UITable from '../components/UITable';
+import SearchSuggest from '../components/SearchSuggest';
 
 function ComponentTest() {
   return (
     <div className="bg-light">
-      <UITable />
+      <SearchSuggest />
     </div>
   );
 }
