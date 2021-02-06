@@ -41,6 +41,14 @@ function CreateInstrumentPage() {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
+  const suggestHandler = (e, v) => {
+    console.log(e, v);
+    if (e.target.id.includes('modelNumber')) {
+      setFormState({ ...formState, modelNumber: v.modelNumber });
+    } else {
+      setFormState({ ...formState, vendor: v.vendor });
+    }
+  };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
     return <ErrorPage message="You don't have the right permissions!" />;
@@ -61,6 +69,7 @@ function CreateInstrumentPage() {
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={validated}
+        suggestHandler={suggestHandler}
       />
     </div>
   );

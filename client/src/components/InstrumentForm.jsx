@@ -2,20 +2,35 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
+import AsyncSuggest from './AsyncSuggest';
+
+const GET_MODELS_QUERY = gql`
+  query Models {
+    getAllModels {
+      modelNumber
+      vendor
+    }
+  }
+`;
+const query = print(GET_MODELS_QUERY);
+const queryName = 'getAllModels';
 
 export default function InstrumentForm({
-  modelNumber,
+  // modelNumber,
   vendor,
   // calibrationFrequency,
   comment,
   handleSubmit,
   changeHandler,
+  suggestHandler,
   serialNumber,
   validated,
   viewOnly,
 }) {
   InstrumentForm.propTypes = {
-    modelNumber: PropTypes.string.isRequired,
+    // modelNumber: PropTypes.string.isRequired,
     vendor: PropTypes.string.isRequired,
     // calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
@@ -23,6 +38,7 @@ export default function InstrumentForm({
     handleSubmit: PropTypes.func.isRequired,
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
+    suggestHandler: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
   };
@@ -38,30 +54,36 @@ export default function InstrumentForm({
         <div className="col mt-2">
           <Form.Group controlId="formModelNumber">
             <Form.Label className="h4">Model Number</Form.Label>
-            <Form.Control
-              name="modelNumber"
-              type="text"
-              placeholder="####"
-              required
-              value={modelNumber}
-              onChange={changeHandler}
+            <AsyncSuggest
+              query={query}
+              label="Model Number"
+              queryName={queryName}
+              id="modelNumber"
+              suggestHandler={suggestHandler}
             />
-            <Form.Control.Feedback type="invalid">
-              Please enter a valid model number.
-            </Form.Control.Feedback>
           </Form.Group>
         </div>
         <div className="col mt-2">
           <Form.Group controlId="formVendor">
             <Form.Label className="h4">Vendor</Form.Label>
-            <Form.Control
-              name="vendor"
-              type="text"
-              placeholder="Vendor"
-              required
-              value={vendor}
-              onChange={changeHandler}
-            />
+            {viewOnly ? (
+              <Form.Control
+                name="vendor"
+                type="text"
+                placeholder="Vendor"
+                required
+                value={vendor}
+                onChange={changeHandler}
+              />
+            ) : (
+              <AsyncSuggest
+                query={query}
+                label="Vendor"
+                queryName={queryName}
+                id="vendor"
+                suggestHandler={suggestHandler}
+              />
+            )}
             <Form.Control.Feedback type="invalid">
               Please enter a valid vendor.
             </Form.Control.Feedback>
