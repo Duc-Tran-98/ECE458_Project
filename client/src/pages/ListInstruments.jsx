@@ -45,7 +45,7 @@ function ListInstruments() {
   const query = print(GET_INSTRUMENTS_QUERY);
   const queryName = 'getAllInstruments';
   const handleResponse = (response) => {
-    // console.log(response);
+    console.log(`getAllInstruments\n${response}`);
     setInstruments(response);
   };
   if (rows === null || rows.length === 0) {

@@ -64,14 +64,7 @@ class InstrumentAPI extends DataSource {
               serialNumber,
               isCalibratable,
               comment,
-
-              // vendor: String!
-              // modelNumber: String!
-              // serialNumber: String!
-              // modelReference: Int!
-              // isCalibratable: Boolean!
-              // comment: String
-              // calibrationHistoryId: Int!
+              calibrationFrequency,
             });
             response.message = 'Added new instrument!';
           }
