@@ -9,6 +9,7 @@ const typeDefs = gql`
     getAllModels: [Model]
     getAllInstruments: [Instrument]
     getAllCalibrationEvents: [CalibrationEvent]
+    getModel(modelNumber: String!, vendor: String!): Model
   }
   type User {
     id: ID!

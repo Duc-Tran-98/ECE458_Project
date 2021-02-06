@@ -9,6 +9,7 @@ module.exports = {
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+    getModel: (_, { modelNumber, vendor }, { dataSources }) => dataSources.modelAPI.getModel({ modelNumber, vendor }),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
     getAllCalibrationEvents: (_, __, {
       dataSources,
