@@ -16,7 +16,10 @@ class EditModel extends Component {
       description: '',
       comment: '',
       calibrationFrequency: '',
+      id: '',
     };
+    // eslint-disable-next-line react/prop-types
+    this.handleClose = props.handleClose;
     this.changeHandler = this.changeHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -24,7 +27,8 @@ class EditModel extends Component {
   componentDidMount() {
     const FIND_MODEL = gql`
           query FindModel($modelNumber: String!, $vendor: String!) {
-            findModel(modelNumber: $modelNumber, vendor: $vendor) {
+            getModel(modelNumber: $modelNumber, vendor: $vendor) {
+              id
               description
               comment
               calibrationFrequency
@@ -32,13 +36,17 @@ class EditModel extends Component {
           }
         `;
     const query = print(FIND_MODEL);
-    const queryName = 'findModel';
+    const queryName = 'getModel';
     const { modelNumber, vendor } = this.state;
     const getVariables = () => ({ modelNumber, vendor });
     const handleResponse = (response) => {
       // console.log(response);
-      const { description, comment, calibrationFrequency } = response;
-      this.setState({ description, comment, calibrationFrequency });
+      const {
+        description, comment, calibrationFrequency, id,
+      } = response;
+      this.setState({
+        description, comment, calibrationFrequency, id,
+      });
     };
     Query({
       query,
@@ -51,6 +59,42 @@ class EditModel extends Component {
   // eslint-disable-next-line class-methods-use-this
   handleSubmit(e) {
     e.preventDefault();
+    const EDIT_MODEL = gql`
+      mutation EditModel(
+        $modelNumber: String!
+        $vendor: String!
+        $description: String!
+        $comment: String
+        $calibrationFrequency: Int
+        $id: Int!
+      ) {
+        editModel(modelNumber: $modelNumber, vendor: $vendor, comment: $comment, description: $description, calibrationFrequency: $calibrationFrequency, id: $id)
+      }
+    `;
+    const query = print(EDIT_MODEL);
+    const queryName = 'editModel';
+    let { id } = this.state;
+    id = parseInt(id, 10);
+    const {
+      description, comment, calibrationFrequency, modelNumber, vendor,
+    } = this.state;
+    const getVariables = () => ({
+      description,
+      comment,
+      calibrationFrequency,
+      id,
+      modelNumber,
+      vendor,
+    });
+    const handleResponse = (response) => {
+      if (response.success) {
+        this.handleClose(true);
+      }
+      alert(response.message);
+    };
+    Query({
+      query, queryName, getVariables, handleResponse,
+    });
   }
 
   changeHandler(e) {

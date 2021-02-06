@@ -35,7 +35,7 @@ function ListModels() {
     setModels(response);
   };
   if (rows === null || rows.length === 0) {
-    console.log('query for rows');
+    // console.log('query for rows');
     Query({ query, queryName, handleResponse });
   }
   const cellHandler = (e) => {
@@ -44,9 +44,12 @@ function ListModels() {
     setWhich(e.field);
     setShow(true);
   };
-  const closeModal = () => {
+  const closeModal = (bool) => {
     setShow(false);
     setWhich('');
+    if (bool) { // If updated successfully, update rows
+      Query({ query, queryName, handleResponse });
+    }
   };
   const cols = [
     { field: 'id', headerName: 'Numb', width: 50 },
@@ -113,7 +116,7 @@ function ListModels() {
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
-        {which === 'edit' && <EditModel modelNumber={modelNumber} vendor={vendor} />}
+        {which === 'edit' && <EditModel modelNumber={modelNumber} vendor={vendor} handleClose={closeModal} />}
       </ModalAlert>
       {DisplayGrid({ rows, cols, cellHandler })}
     </div>
