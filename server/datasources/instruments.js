@@ -45,15 +45,15 @@ class InstrumentAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.modelAPI.getModel({ modelNumber, vendor }).then(async (model) => {
-      if (model) {
+    await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
+      if (model && model[0]) {
         await this.getInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
           if (instrument) {
             response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
           } else {
             const modelReference = model[0].dataValues.id;
             // eslint-disable-next-line prefer-destructuring
-            const calibrationFrequency = model.dataValues.calibrationFrequency;
+            const calibrationFrequency = model[0].dataValues.calibrationFrequency;
             const isCalibratable = (calibrationFrequency > 0);
             this.store.instruments.create({
               modelReference,

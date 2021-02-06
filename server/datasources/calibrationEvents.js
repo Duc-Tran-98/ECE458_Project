@@ -39,11 +39,12 @@ class CalibrationEventAPI extends DataSource {
     let calibrationHistoryIdReference = -1;
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.instrumentAPI.getInstrument({
-      modelNumber, vendor, serialNumber,
+    await this.store.instruments.findAll({
+      where:
+      { modelNumber, vendor, serialNumber },
     }).then((instrument) => {
-      if (instrument) {
-        calibrationHistoryIdReference = instrument.dataValues.id;
+      if (instrument && instrument[0]) {
+        calibrationHistoryIdReference = instrument[0].dataValues.id;
       }
     });
     const calibrationEvents = await this.store.calibrationEvents.findAll(
@@ -63,22 +64,22 @@ class CalibrationEventAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.instrumentAPI.getInstrument({
-      modelNumber, vendor, serialNumber,
+    await this.store.instruments.findAll({
+      where: { modelNumber, vendor, serialNumber },
     }).then((instrument) => {
-      if (instrument) {
+      if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        const calibrationHistoryIdReference = instrument.dataValues.id;
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
           date,
           comment,
         });
-        response.message = 'Added new calibration event!';
+        response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {
         response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`;
       }

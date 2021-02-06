@@ -13,9 +13,15 @@ module.exports = {
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
     // eslint-disable-next-line max-len
-    getInstrument: (_, { modelNumber, vendor, serialNumber }, { dataSources }) => dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
     // eslint-disable-next-line max-len
     getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
+    getCalibrationEventsByInstrument: async (
+      _,
+      { modelNumber, vendor, serialNumber },
+      { dataSources },
+    // eslint-disable-next-line max-len
+    ) => dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({ modelNumber, vendor, serialNumber }),
   },
   Mutation: {
     // eslint-disable-next-line max-len
