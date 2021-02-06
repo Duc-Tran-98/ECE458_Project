@@ -53,7 +53,7 @@ class InstrumentAPI extends DataSource {
           } else {
             const modelReference = model[0].dataValues.id;
             // eslint-disable-next-line prefer-destructuring
-            const calibrationFrequency = model.dataValues.calibrationFrequency;
+            const calibrationFrequency = model[0].dataValues.calibrationFrequency;
             const isCalibratable = (calibrationFrequency > 0);
             this.store.instruments.create({
               modelReference,
@@ -68,7 +68,7 @@ class InstrumentAPI extends DataSource {
           }
         });
       } else {
-        response.message = 'ERROR: No corresponding model exists';
+        response.message = 'ERROR: No corresponding model exists!';
       }
     });
     return JSON.stringify(response);

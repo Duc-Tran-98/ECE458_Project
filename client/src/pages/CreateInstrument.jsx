@@ -1,13 +1,16 @@
 import React, { useContext, useState } from 'react';
-import CreateModel from '../queries/CreateModel';
+import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
-import ModelForm from '../components/ModelForm';
+import InstrumentForm from '../components/InstrumentForm';
 
-function CreateModelPage() {
+function CreateInstrumentPage() {
   const [validated, setValidated] = useState(false);
   const [formState, setFormState] = useState({
-    modelNumber: '', vendor: '', description: '', comment: '', calibrationFrequency: '0',
+    modelNumber: '',
+    vendor: '',
+    comment: '',
+    serialNumber: '0',
   });
 
   const handleSubmit = (event) => {
@@ -16,23 +19,18 @@ function CreateModelPage() {
     if (form.checkValidity() === false) {
       event.stopPropagation();
     } else {
-      let { calibrationFrequency } = formState;
-      if (typeof calibrationFrequency === 'string') { // If user increments input, it becomes string so change it back to number
-        calibrationFrequency = parseInt(calibrationFrequency, 10);
-      }
       const {
-        modelNumber, vendor, description, comment,
+        modelNumber, vendor, comment, serialNumber,
       } = formState;
       const handleResponse = (response) => {
         // eslint-disable-next-line no-alert
         alert(response.message);
       };
-      CreateModel({
+      CreateInstrument({
         modelNumber,
         vendor,
-        description,
+        serialNumber,
         comment,
-        calibrationFrequency,
         handleResponse,
       });
     }
@@ -48,16 +46,18 @@ function CreateModelPage() {
     return <ErrorPage message="You don't have the right permissions!" />;
   }
   const {
-    modelNumber, vendor, description, comment, calibrationFrequency,
+    modelNumber,
+    vendor,
+    serialNumber,
+    comment,
   } = formState;
   return (
     <div className="d-flex justify-content-center mt-5">
-      <ModelForm
+      <InstrumentForm
         modelNumber={modelNumber}
         vendor={vendor}
-        description={description}
         comment={comment}
-        calibrationFrequency={calibrationFrequency}
+        serialNumber={serialNumber}
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={validated}
@@ -66,4 +66,4 @@ function CreateModelPage() {
   );
 }
 
-export default CreateModelPage;
+export default CreateInstrumentPage;
