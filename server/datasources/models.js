@@ -24,7 +24,7 @@ class ModelAPI extends DataSource {
     return models;
   }
 
-  async findModel({ modelNumber, vendor }) {
+  async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
     const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
@@ -44,9 +44,9 @@ class ModelAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.findModel({ modelNumber, vendor }).then((value) => {
+    await this.getModel({ modelNumber, vendor }).then((value) => {
       if (value) {
-        response.message = 'Model Number & Vendor pair already exists';
+        response.message = `Model ${vendor} ${modelNumber} already exists`;
       } else {
         this.store.models.create({
           modelNumber,
@@ -55,7 +55,7 @@ class ModelAPI extends DataSource {
           comment,
           calibrationFrequency,
         });
-        response.message = 'Added new model!';
+        response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
       }
     });
     return JSON.stringify(response);

@@ -9,7 +9,11 @@ const typeDefs = gql`
     getAllModels: [Model]
     getAllInstruments: [Instrument]
     getAllCalibrationEvents: [CalibrationEvent]
+<<<<<<< HEAD
     findModel(modelNumber: String!, vendor: String!): Model!
+=======
+    getModel(modelNumber: String!, vendor: String!): Model
+>>>>>>> d17ca7734a5336e35569793cedcbb5ceabc5b6bd
   }
   type User {
     id: ID!

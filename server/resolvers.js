@@ -9,6 +9,8 @@ module.exports = {
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+    // eslint-disable-next-line max-len
+    getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
     // eslint-disable-next-line max-len
     findModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.findModel({ modelNumber, vendor }),
