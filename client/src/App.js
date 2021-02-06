@@ -10,6 +10,9 @@ import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
 import ErrorPage from './pages/ErrorPage';
+import ListInstruments from './pages/ListInstruments';
+
+// import ErrorPage from './pages/ErrorPage';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -50,6 +53,9 @@ function App() {
               ) : (
                 <ErrorPage message="You need to sign in first!" />
               )}
+            </Route>
+            <Route path="/viewInstruments">
+              <ListInstruments />
             </Route>
           </UserProvider>
         </Switch>
