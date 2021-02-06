@@ -1,11 +1,9 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
-const ModelAPI = require('./models');
 
 class InstrumentAPI extends DataSource {
   constructor({ store }) {
     super();
-    this.modelAPI = new ModelAPI({ store });
     this.store = store;
   }
 
@@ -47,13 +45,13 @@ class InstrumentAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.modelAPI.findModel({ modelNumber, vendor }).then(async (model) => {
-      if (model) {
+    await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
+      if (model && model[0]) {
         await this.findInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
           if (instrument) {
             response.message = 'ERROR: Instrument with this modelNumber/vendor/serialNumber already exists';
           } else {
-            const modelReference = model.dataValues.id;
+            const modelReference = model[0].dataValues.id;
             // eslint-disable-next-line prefer-destructuring
             const calibrationFrequency = model.dataValues.calibrationFrequency;
             const isCalibratable = (calibrationFrequency > 0);

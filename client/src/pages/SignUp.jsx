@@ -78,6 +78,7 @@ const SignUp = () => {
       const query = print(SIGNUP_MUTATION);
       const queryName = 'signup';
       const handleResponse = (response) => {
+        // eslint-disable-next-line no-alert
         alert(response.message);
       };
       Query({
