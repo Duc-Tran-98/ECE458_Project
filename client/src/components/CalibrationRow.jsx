@@ -4,10 +4,18 @@ import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import MouseOverPopover from './PopOver';
 
-export default function CalibrationRow({ handleDelete, id }) {
+export default function CalibrationRow({
+  handleDelete, id, onChangeCalibRow, user, comment, date, entry,
+}) {
   CalibrationRow.propTypes = {
     handleDelete: PropTypes.func.isRequired,
     id: PropTypes.number.isRequired,
+    onChangeCalibRow: PropTypes.func.isRequired,
+    user: PropTypes.string.isRequired,
+    comment: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    entry: PropTypes.object.isRequired,
   };
   return (
     <div className="d-flex justify-content-center border-bottom border-dark ">
@@ -25,6 +33,8 @@ export default function CalibrationRow({ handleDelete, id }) {
               name="user"
               type="text"
               placeholder="Unknown"
+              value={user}
+              onChange={(e) => onChangeCalibRow(e, entry)}
               required
             />
             <Form.Control.Feedback type="invalid">
@@ -36,9 +46,11 @@ export default function CalibrationRow({ handleDelete, id }) {
           <Form.Group controlId="formDate">
             <Form.Label className="h4">Date</Form.Label>
             <Form.Control
-              name="vendor"
+              name="date"
               type="date"
-                // placeholder="Vendor"
+              value={date}
+              // placeholder="Vendor"
+              onChange={(e) => onChangeCalibRow(e, entry)}
               required
             />
             <Form.Control.Feedback type="invalid">
@@ -54,6 +66,8 @@ export default function CalibrationRow({ handleDelete, id }) {
               placeholder="Sample comment"
               rows={2}
               name="comment"
+              value={comment}
+              onChange={(e) => onChangeCalibRow(e, entry)}
               style={{ resize: 'none' }}
             />
           </Form.Group>
@@ -71,7 +85,7 @@ export default function CalibrationRow({ handleDelete, id }) {
               >
                 <path
                   fillRule="evenodd"
-                    // eslint-disable-next-line max-len
+                  // eslint-disable-next-line max-len
                   d="M16 8a5 5 0 0 1-9.975.5H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5h2.025A5 5 0 0 1 16 8zm-2 0a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5A.5.5 0 0 0 14 8z"
                 />
               </svg>

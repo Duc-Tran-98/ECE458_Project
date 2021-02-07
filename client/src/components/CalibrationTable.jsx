@@ -5,31 +5,28 @@ import PropTypes from 'prop-types';
 import CalibrationRow from './CalibrationRow';
 import MouseOverPopover from './PopOver';
 
-export default function CalibrationTable({ rows, addRow, deleteRow }) {
+export default function CalibrationTable({
+  rows, addRow, deleteRow, onChangeCalibRow,
+}) {
   CalibrationTable.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     rows: PropTypes.array.isRequired,
     addRow: PropTypes.func.isRequired,
     deleteRow: PropTypes.func.isRequired,
+    onChangeCalibRow: PropTypes.func.isRequired,
   };
-  //   const [rows, setRows] = useState([0]);
-  //   const [nextId, setNextId] = useState(1);
-  //   const addRow = () => {
-  //     const newRows = rows;
-  //     newRows.push(nextId);
-  //     setNextId(nextId + 1);
-  //     setRows(newRows);
-  //   };
-  //   const deleteRow = (rowId) => {
-  //     if (rows.length > 1) {
-  //       const newRows = rows.filter((id) => id !== rowId);
-  //       setRows(newRows);
-  //     } else {
-  //       // eslint-disable-next-line no-alert
-  //       alert('Cannot delete the last row');
-  //     }
-  //   };
-  const list = rows.map((id) => <CalibrationRow key={id} handleDelete={deleteRow} id={id} />);
+  const list = rows.map((entry) => (
+    <CalibrationRow
+      key={entry.id}
+      handleDelete={deleteRow}
+      id={entry.id}
+      onChangeCalibRow={onChangeCalibRow}
+      user={entry.user}
+      comment={entry.comment}
+      date={entry.date}
+      entry={entry}
+    />
+  ));
   return (
     <Form className="needs-validation bg-light rounded" noValidate>
       {list}
