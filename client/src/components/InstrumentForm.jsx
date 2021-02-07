@@ -1,6 +1,6 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+// import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -28,10 +28,14 @@ export default function InstrumentForm({
   serialNumber,
   validated,
   viewOnly,
+  modelNumber,
+  vendor,
 }) {
   InstrumentForm.propTypes = {
-    // modelNumber: PropTypes.string.isRequired,
-    // vendor: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/require-default-props
+    modelNumber: PropTypes.string,
+    // eslint-disable-next-line react/require-default-props
+    vendor: PropTypes.string,
     // calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     changeHandler: PropTypes.func.isRequired,
@@ -40,7 +44,7 @@ export default function InstrumentForm({
     serialNumber: PropTypes.string.isRequired,
     onInputChange: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
-    viewOnly: PropTypes.bool,
+    viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
   };
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
@@ -55,14 +59,24 @@ export default function InstrumentForm({
       <div className="mt-4 d-flex justify-content-center">
         <Form.Group>
           <Form.Label className="h4 text-center">Model Selection</Form.Label>
-          <AsyncSuggest
-            query={query}
-            queryName={queryName}
-            onInputChange={onInputChange}
-            label="Choose a model"
-            getOptionSelected={formatSelected}
-            getOptionLabel={formatOption}
-          />
+          {viewOnly ? (
+            <Form.Control
+              type="text"
+              name="modelSelection"
+              value={`${vendor} ${modelNumber}`}
+              onChange={changeHandler}
+              disabled={disabled}
+            />
+          ) : (
+            <AsyncSuggest
+              query={query}
+              queryName={queryName}
+              onInputChange={onInputChange}
+              label="Choose a model"
+              getOptionSelected={formatSelected}
+              getOptionLabel={formatOption}
+            />
+          )}
         </Form.Group>
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
@@ -98,18 +112,18 @@ export default function InstrumentForm({
           </Form.Group>
         </div>
       </div>
-      {(typeof viewOnly === 'undefined' || !viewOnly) && (
+    </Form>
+  );
+}
+
+/*
+{(typeof viewOnly === 'undefined' || !viewOnly) && (
         <div className="d-flex justify-content-center mt-3 mb-3">
           <Button variant="primary" type="submit">
             Submit
           </Button>
         </div>
       )}
-    </Form>
-  );
-}
-
-/*
 <div className="col mt-2">
           <Form.Group controlId="formModelNumber">
             <Form.Label className="h4">Model Number</Form.Label>

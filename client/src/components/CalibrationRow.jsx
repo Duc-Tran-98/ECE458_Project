@@ -1,3 +1,7 @@
+/*
+This class deals with what a calibration event should be
+*/
+
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -15,16 +19,11 @@ export default function CalibrationRow({
     comment: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
-    entry: PropTypes.object.isRequired,
+    entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
   };
+  const today = new Date().toISOString().split('T')[0];
   return (
     <div className="d-flex justify-content-center border-bottom border-dark ">
-      {/* <Form
-        className="needs-validation bg-light rounded"
-        noValidate
-        //   validated={validated}
-        //   onSubmit={handleSubmit}
-      > */}
       <div className="row mx-3">
         <div className="col mt-1">
           <Form.Group controlId="formUser">
@@ -48,8 +47,8 @@ export default function CalibrationRow({
             <Form.Control
               name="date"
               type="date"
+              max={today}
               value={date}
-              // placeholder="Vendor"
               onChange={(e) => onChangeCalibRow(e, entry)}
               required
             />
@@ -93,7 +92,6 @@ export default function CalibrationRow({
           </Button>
         </div>
       </div>
-      {/* </Form> */}
     </div>
   );
 }

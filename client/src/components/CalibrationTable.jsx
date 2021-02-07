@@ -1,3 +1,6 @@
+/*
+This class deals with how to display lots of calibration events
+*/
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -15,6 +18,7 @@ export default function CalibrationTable({
     deleteRow: PropTypes.func.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
   };
+  // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (
     <CalibrationRow
       key={entry.id}
