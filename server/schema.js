@@ -63,6 +63,30 @@ const typeDefs = gql`
     comment: String
   }
 
+  input ModelInput {
+    vendor: String!
+    modelNumber: String!
+    description: String!
+    comment: String
+    calibrationFrequency: Int
+  }
+
+  input InstrumentInput {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    comment: String
+  }
+
+  input CalibrationEventInput {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    user: String!
+    date: String!
+    comment: String
+  }
+
   # Mutation type allows clients to change state
   type Mutation {
     # User related mutations
@@ -86,6 +110,9 @@ const typeDefs = gql`
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
     editModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int, id: Int!): String!
+
+    #bulk import
+    bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
   }
 `;
 
