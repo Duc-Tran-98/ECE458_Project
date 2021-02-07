@@ -1,12 +1,10 @@
 import React from 'react';
-import SearchSuggest from '../components/SearchSuggest';
-import Asynchronous from '../components/AsyncSuggest';
+import CalibrationTable from '../components/CalibrationTable';
 
 function ComponentTest() {
   return (
     <div className="bg-light">
-      <SearchSuggest />
-      <Asynchronous />
+      <CalibrationTable />
     </div>
   );
 }

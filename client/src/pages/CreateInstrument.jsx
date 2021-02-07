@@ -3,6 +3,8 @@ import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import InstrumentForm from '../components/InstrumentForm';
+import VerticalLinearStepper from '../components/VerticalStepper';
+import CalibrationTable from '../components/CalibrationTable';
 
 function CreateInstrumentPage() {
   const [validated, setValidated] = useState(false);
@@ -12,6 +14,7 @@ function CreateInstrumentPage() {
     comment: '',
     serialNumber: '0',
   });
+  // const [calibHistory, setCalibHistory] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -50,23 +53,37 @@ function CreateInstrumentPage() {
     return <ErrorPage message="You don't have the right permissions!" />;
   }
   const {
-    modelNumber,
-    vendor,
-    serialNumber,
-    comment,
+    modelNumber, vendor, serialNumber, comment,
   } = formState;
+  const getSteps = () => ['Select Model', 'Input Calibration History', 'Review'];
+  const getStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <InstrumentForm
+            modelNumber={modelNumber}
+            vendor={vendor}
+            comment={comment}
+            serialNumber={serialNumber}
+            handleSubmit={handleSubmit}
+            changeHandler={changeHandler}
+            validated={validated}
+            onInputChange={onInputChange}
+          />
+        );
+      case 1:
+        return (
+          <CalibrationTable />
+        );
+      case 2:
+        return 'Review!';
+      default:
+        return 'Unknown step';
+    }
+  };
   return (
     <div className="d-flex justify-content-center mt-5">
-      <InstrumentForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        comment={comment}
-        serialNumber={serialNumber}
-        handleSubmit={handleSubmit}
-        changeHandler={changeHandler}
-        validated={validated}
-        onInputChange={onInputChange}
-      />
+      <VerticalLinearStepper getSteps={getSteps} getStepContent={getStepContent} />
     </div>
   );
 }

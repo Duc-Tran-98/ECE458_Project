@@ -63,12 +63,6 @@ export default function InstrumentForm({
             getOptionSelected={formatSelected}
             getOptionLabel={formatOption}
           />
-          <Form.Control.Feedback type="invalid">
-            Please select a model.
-          </Form.Control.Feedback>
-          <Form.Control.Feedback type="valid">
-            Looks good!
-          </Form.Control.Feedback>
         </Form.Group>
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
