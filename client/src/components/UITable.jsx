@@ -27,9 +27,9 @@ export default function DisplayGrid({ rows, cols, cellHandler }) {
           toolbarDensityComfortable: 'Large',
         }}
         autoHeight
-        onSelectionChange={(newSelection) => {
-          console.log(newSelection);
-        }}
+        // onSelectionChange={(newSelection) => {
+        //   console.log(newSelection);
+        // }}
         onCellClick={(e) => {
           // console.log(e);
           if (cellHandler) {
