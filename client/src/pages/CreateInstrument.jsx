@@ -11,6 +11,7 @@ import ErrorPage from './ErrorPage';
 import InstrumentForm from '../components/InstrumentForm';
 import VerticalLinearStepper from '../components/VerticalStepper';
 import CalibrationTable from '../components/CalibrationTable';
+import AddCalibEvent from '../queries/AddCalibEvent';
 
 function CreateInstrumentPage() {
   const [calibHistory, setCalibHistory] = useState([{
@@ -60,7 +61,7 @@ function CreateInstrumentPage() {
   };
 
   const handleSubmit = async () => {
-    // This is to submit all the data; does not do anything ATM
+    // This is to submit all the data
     const {
       modelNumber, vendor, comment, serialNumber,
     } = formState;
@@ -72,8 +73,21 @@ function CreateInstrumentPage() {
     });
     // eslint-disable-next-line no-alert
     alert(response.message);
-    // const handleResponse = () => {};
-    // return response.success;
+    if (response.success) { // If we successfully added new instrument
+      const validEvents = calibHistory.filter((entry) => entry.user.length > 0); // Collect valid entries
+      if (validEvents.length > 0) { // If there are valid entries, add them to DB
+        const handleRes = (res) => {
+          console.log(res);
+        };
+        AddCalibEvent({
+          events: validEvents,
+          modelNumber,
+          vendor,
+          serialNumber,
+          handleResponse: handleRes,
+        });
+      }
+    }
   };
 
   const changeHandler = (e) => { // This is for updating the instrument's fields from regular inputs
