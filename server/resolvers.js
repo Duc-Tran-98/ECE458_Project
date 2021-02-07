@@ -90,6 +90,8 @@ module.exports = {
       });
       return response;
     },
+    // eslint-disable-next-line max-len
+    deleteInstrument: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.deleteInstrument({ id }),
     addCalibrationEvent: async (
       _,
       {

@@ -75,6 +75,16 @@ class InstrumentAPI extends DataSource {
     return null;
   }
 
+  async deleteInstrument({ id }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.destroy({ where: { id } });
+    response.message = 'Deleted Instrument';
+    response.success = true;
+    return JSON.stringify(response);
+  }
+
   async addInstrument({
     modelNumber,
     vendor,

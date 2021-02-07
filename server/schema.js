@@ -82,6 +82,7 @@ const typeDefs = gql`
 
     # Instrument related mutations
     addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+    deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
@@ -8,23 +8,11 @@ import SearchIcon from '@material-ui/icons/Search';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
+import ModalAlert from '../components/ModalAlert';
+import UserContext from '../components/UserContext';
+import DeleteInstrument from '../queries/DeleteInstrument';
 // import UserContext from '../components/UserContext';
 // import ErrorPage from './ErrorPage';
-
-function deleteEntry() {
-  // eslint-disable-next-line no-alert
-  alert('Deleting entry initiated');
-}
-
-function editEntry() {
-  // eslint-disable-next-line no-alert
-  alert('Edit entry initiated');
-}
-
-function focusEntry() {
-  // eslint-disable-next-line no-alert
-  alert('Focus entry initiated');
-}
 
 function ListInstruments() {
   // const user = useContext(UserContext);
@@ -32,8 +20,16 @@ function ListInstruments() {
   // if (!user.isLoggedIn) {
   //   return <ErrorPage message="You need to sign in to see this page!" />;
   // }
+  const user = useContext(UserContext);
   const [rows, setInstruments] = useState([]);
   const [queried, setQueried] = useState(false);
+  const [show, setShow] = useState(false);
+  const [which, setWhich] = useState('');
+  const [modelNumber, setModelNumber] = useState('');
+  const [vendor, setVendor] = useState('');
+  const [serialNumber, setSerialNumber] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [id, setId] = useState('');
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments{
       getAllInstruments{
@@ -57,6 +53,32 @@ function ListInstruments() {
     setQueried(true);
     Query({ query, queryName, handleResponse });
   }
+  const cellHandler = (e) => {
+    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+      setModelNumber(e.row.modelNumber);
+      setVendor(e.row.vendor);
+      setWhich(e.field);
+      setShow(true);
+      setId(e.row.id);
+      setSerialNumber(e.row.serialNumber);
+    }
+  };
+  const closeModal = (bool) => {
+    setShow(false);
+    setWhich('');
+    if (bool) {
+      // If updated successfully, update rows
+      Query({ query, queryName, handleResponse });
+    }
+  };
+  const handleRes = (response) => {
+    // eslint-disable-next-line no-alert
+    alert(response.message);
+    closeModal(response.success);
+  };
+  const delInstrument = () => {
+    DeleteInstrument({ id, handleResponse: handleRes });
+  };
   const cols = [
     {
       field: 'id',
@@ -102,24 +124,110 @@ function ListInstruments() {
     },
     { field: 'comment', headerName: 'Comment', width: 300 },
     {
-      field: 'options',
+      field: 'view',
       headerName: ' ',
-      width: 100,
+      width: 60,
+      disableColumnMenu: true,
       renderCell: () => (
-        <div>
-          <ButtonBase onClick={editEntry}>
-            <EditIcon color="primary" />
-          </ButtonBase>
-          <ButtonBase onClick={deleteEntry}>
-            <DeleteIcon color="secondary" />
-          </ButtonBase>
-          <ButtonBase onClick={focusEntry}>
-            <SearchIcon />
-          </ButtonBase>
+        <div className="row">
+          <div className="col mt-1">
+            <MouseOverPopover message="View Instrument">
+              <ButtonBase>
+                <SearchIcon />
+              </ButtonBase>
+            </MouseOverPopover>
+          </div>
         </div>
       ),
     },
   ];
-  return DisplayGrid({ rows, cols });
+  if (user.isAdmin) {
+    cols.push(
+      {
+        field: 'edit',
+        headerName: ' ',
+        width: 60,
+        disableColumnMenu: true,
+        renderCell: () => (
+          <div className="row">
+            <div className="col mt-1">
+              <MouseOverPopover message="Edit Instrument">
+                <ButtonBase>
+                  <EditIcon color="primary" />
+                </ButtonBase>
+              </MouseOverPopover>
+            </div>
+          </div>
+        ),
+      },
+      {
+        field: 'delete',
+        headerName: ' ',
+        width: 60,
+        disableColumnMenu: true,
+        renderCell: () => (
+          <div className="row">
+            <div className="col mt-1">
+              <MouseOverPopover message="Delete Instrument">
+                <ButtonBase>
+                  <DeleteIcon color="secondary" />
+                </ButtonBase>
+              </MouseOverPopover>
+            </div>
+          </div>
+        ),
+      },
+    );
+  }
+  return (
+    <div style={{ height: '90vh' }}>
+      <ModalAlert handleClose={closeModal} show={show} title={which}>
+        {which === 'delete' && (
+          <div>
+            <div className="h4 row text-center">{`You are about to delete ${vendor}-${modelNumber}-${serialNumber}. Are you sure?`}</div>
+            <div className="d-flex justify-content-center">
+              <div className="me-5">
+                <button
+                  className="btn btn-warning"
+                  type="button"
+                  onClick={delInstrument}
+                >
+                  Yes
+                </button>
+              </div>
+              <div className="ms-5">
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={closeModal}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </ModalAlert>
+      {DisplayGrid({ rows, cols, cellHandler })}
+    </div>
+  );
 }
 export default ListInstruments;
+
+/*
+{which === 'edit' && (
+          <EditModel
+            modelNumber={modelNumber}
+            vendor={vendor}
+            handleClose={closeModal}
+          />
+        )}
+        {which === 'view' && (
+          <EditModel
+            modelNumber={modelNumber}
+            vendor={vendor}
+            handleClose={closeModal}
+            viewOnly
+          />
+        )}
+*/
