@@ -9,16 +9,27 @@ module.exports = {
     // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
+
     // Model Queries
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+    // eslint-disable-next-line max-len
     getAllModelsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithModelNum({ modelNumber }),
+    // eslint-disable-next-line max-len
     getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
+
     // Instrument Queries
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
     // eslint-disable-next-line max-len
+    getAllInstrumentsWithModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber, vendor }),
+    // eslint-disable-next-line max-len
+    getAllInstrumentsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber }),
+    // eslint-disable-next-line max-len
+    getAllInstrumentsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithVendor({ vendor }),
+    // eslint-disable-next-line max-len
     getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => await dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+
     // Calibration Queries
     // eslint-disable-next-line max-len
     getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
