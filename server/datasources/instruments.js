@@ -20,7 +20,46 @@ class InstrumentAPI extends DataSource {
   async getAllInstruments() {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instruments = await this.store.instruments.findAll();
+    const instruments = await this.store.instruments.findAll({ limit: null, offset: null });
+    return instruments;
+  }
+
+  async getAllInstrumentsWithModel({ modelNumber, vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll(
+      {
+        limit: null,
+        offset: null,
+        where: { modelNumber, vendor },
+      },
+    );
+    return instruments;
+  }
+
+  async getAllInstrumentsWithModelNum({ modelNumber }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll(
+      {
+        limit: null,
+        offset: null,
+        where: { modelNumber },
+      },
+    );
+    return instruments;
+  }
+
+  async getAllInstrumentsWithVendor({ vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll(
+      {
+        limit: null,
+        offset: null,
+        where: { vendor },
+      },
+    );
     return instruments;
   }
 

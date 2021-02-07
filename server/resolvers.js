@@ -5,15 +5,21 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
+    // User Queries
     // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
+    // Model Queries
     getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+    getAllModelsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithModelNum({ modelNumber }),
+    getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
+    // Instrument Queries
     getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
     // eslint-disable-next-line max-len
-    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => await dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    // Calibration Queries
     // eslint-disable-next-line max-len
     getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
     getCalibrationEventsByInstrument: async (

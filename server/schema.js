@@ -10,10 +10,15 @@ const typeDefs = gql`
 
     # Model Related Queries
     getAllModels: [Model]
+    getAllModelsWithModelNum(modelNumber: String!): [Model]
+    getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
 
     # Instrument Related Queries
     getAllInstruments: [Instrument]
+    getAllInstrumentsWithModel(modelNumber: String!, vendor: String!): [Instrument]
+    getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
+    getAllInstrumentsWithVendor(vendor: String!): [Instrument]
     getInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): Instrument
 
     # Calibration Event Related Queries

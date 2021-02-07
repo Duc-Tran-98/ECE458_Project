@@ -74,6 +74,20 @@ class ModelAPI extends DataSource {
     return models;
   }
 
+  async getAllModelsWithModelNum({ modelNumber }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const models = await this.store.models.findAll({ where: { modelNumber } });
+    return models;
+  }
+
+  async getAllModelsWithVendor({ vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const models = await this.store.models.findAll({ where: { vendor } });
+    return models;
+  }
+
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
