@@ -1,10 +1,9 @@
 import React from 'react';
-import SearchSuggest from '../components/SearchSuggest';
 
 function ComponentTest() {
   return (
     <div className="bg-light">
-      <SearchSuggest />
+      <h1>Hello! I am a test. Add some components to try me out :)</h1>
     </div>
   );
 }

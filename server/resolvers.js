@@ -5,17 +5,36 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 module.exports = {
   Query: {
+    // User Queries
     // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
-    getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+
+    // Model Queries
+    // eslint-disable-next-line max-len
+    getAllModels: (_, { limit, offset }, { dataSources }) => dataSources.modelAPI.getAllModels({ limit, offset }),
+    // eslint-disable-next-line max-len
+    getAllModelsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithModelNum({ modelNumber }),
+    // eslint-disable-next-line max-len
+    getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
-    getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
+
+    // Instrument Queries
     // eslint-disable-next-line max-len
-    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     // eslint-disable-next-line max-len
-    getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
+    getAllInstrumentsWithModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber, vendor }),
+    // eslint-disable-next-line max-len
+    getAllInstrumentsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber }),
+    // eslint-disable-next-line max-len
+    getAllInstrumentsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithVendor({ vendor }),
+    // eslint-disable-next-line max-len
+    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => await dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+
+    // Calibration Queries
+    // eslint-disable-next-line max-len
+    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({ limit, offset }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, serialNumber },

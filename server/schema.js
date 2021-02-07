@@ -9,15 +9,20 @@ const typeDefs = gql`
     getUser(userName: String!): User!
 
     # Model Related Queries
-    getAllModels: [Model]
+    getAllModels(limit: Int, offset: Int): [Model]
+    getAllModelsWithModelNum(modelNumber: String!): [Model]
+    getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
 
     # Instrument Related Queries
-    getAllInstruments: [Instrument]
+    getAllInstruments(limit: Int, offset: Int): [Instrument]
+    getAllInstrumentsWithModel(modelNumber: String!, vendor: String!): [Instrument]
+    getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
+    getAllInstrumentsWithVendor(vendor: String!): [Instrument]
     getInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): Instrument
 
     # Calibration Event Related Queries
-    getAllCalibrationEvents: [CalibrationEvent]
+    getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
     getCalibrationEventsByInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): [CalibrationEvent]
   }
 

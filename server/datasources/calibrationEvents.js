@@ -28,10 +28,10 @@ class CalibrationEventAPI extends DataSource {
     this.context = config.context;
   }
 
-  async getAllCalibrationEvents() {
+  async getAllCalibrationEvents({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const calibrationEvents = await this.store.calibrationEvents.findAll();
+    const calibrationEvents = await this.store.calibrationEvents.findAll({ limit, offset });
     return calibrationEvents;
   }
 

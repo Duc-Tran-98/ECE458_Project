@@ -67,10 +67,24 @@ class ModelAPI extends DataSource {
     return JSON.stringify(response);
   }
 
-  async getAllModels() {
+  async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const models = await this.store.models.findAll();
+    const models = await this.store.models.findAll({ limit, offset });
+    return models;
+  }
+
+  async getAllModelsWithModelNum({ modelNumber }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const models = await this.store.models.findAll({ where: { modelNumber } });
+    return models;
+  }
+
+  async getAllModelsWithVendor({ vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const models = await this.store.models.findAll({ where: { vendor } });
     return models;
   }
 
