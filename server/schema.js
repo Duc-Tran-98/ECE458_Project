@@ -4,13 +4,28 @@ const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. 
   type Query {
+    # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllModels: [Model]
-    getAllInstruments: [Instrument]
-    getAllCalibrationEvents: [CalibrationEvent]
+
+    # Model Related Queries
+    getAllModels(limit: Int, offset: Int): [Model]
+    getAllModelsWithModelNum(modelNumber: String!): [Model]
+    getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
+
+    # Instrument Related Queries
+    getAllInstruments(limit: Int, offset: Int): [Instrument]
+    getAllInstrumentsWithModel(modelNumber: String!, vendor: String!): [Instrument]
+    getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
+    getAllInstrumentsWithVendor(vendor: String!): [Instrument]
+    getInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): Instrument
+
+    # Calibration Event Related Queries
+    getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
+    getCalibrationEventsByInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): [CalibrationEvent]
   }
+
   type User {
     id: ID!
     email: String!
@@ -20,6 +35,7 @@ const typeDefs = gql`
     password: String!
     isAdmin: Boolean!
   }
+
   type Model {
     id: ID!
     vendor: String!
@@ -28,6 +44,7 @@ const typeDefs = gql`
     comment: String
     calibrationFrequency: Int
   }
+
   type Instrument {
     vendor: String!
     modelNumber: String!
@@ -37,6 +54,7 @@ const typeDefs = gql`
     comment: String
     id: Int!
   }
+
   type CalibrationEvent {
     id: ID!
     calibrationHistoryIdReference: Int!
@@ -44,8 +62,10 @@ const typeDefs = gql`
     date: String!
     comment: String
   }
+
   # Mutation type allows clients to change state
   type Mutation {
+    # User related mutations
     login(userName: String!, password: String!): String!
     signup(
       email: String!
@@ -55,9 +75,15 @@ const typeDefs = gql`
       password: String!
       isAdmin: Boolean!
     ): String!
+
+    # Model related Mutations
     deleteModel(modelNumber: String!, vendor: String!): String!
     addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
+
+    # Instrument related mutations
     addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+
+    # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
     editModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int, id: Int!): String!
   }
