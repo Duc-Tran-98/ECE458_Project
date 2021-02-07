@@ -2,7 +2,7 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. 
+  # clients can execute, along with the return type for each.
   type Query {
     # User Related Queries
     isAdmin(userName: String!): Boolean!
@@ -16,14 +16,25 @@ const typeDefs = gql`
 
     # Instrument Related Queries
     getAllInstruments(limit: Int, offset: Int): [Instrument]
-    getAllInstrumentsWithModel(modelNumber: String!, vendor: String!): [Instrument]
+    getAllInstrumentsWithModel(
+      modelNumber: String!
+      vendor: String!
+    ): [Instrument]
     getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
     getAllInstrumentsWithVendor(vendor: String!): [Instrument]
-    getInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): Instrument
+    getInstrument(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+    ): Instrument
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
-    getCalibrationEventsByInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): [CalibrationEvent]
+    getCalibrationEventsByInstrument(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+    ): [CalibrationEvent]
   }
 
   type User {

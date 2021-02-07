@@ -54,6 +54,7 @@ function ListModels() {
       setVendor(e.row.vendor);
       setWhich(e.field);
       setShow(true);
+      console.log(e);
     }
   };
   const closeModal = (bool) => {

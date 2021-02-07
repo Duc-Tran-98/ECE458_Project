@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form';
 import { QueryAndThen } from './UseQuery';
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected,
+  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -16,6 +16,11 @@ export default function AsyncSuggest({
     label: PropTypes.string.isRequired, // label to display
     getOptionLabel: PropTypes.func.isRequired, // how query results are formatted
     getOptionSelected: PropTypes.func.isRequired, // which fields of selected option to assign to value
+    // eslint-disable-next-line react/forbid-prop-types
+    value: PropTypes.object,
+  };
+  AsyncSuggest.defaultProps = {
+    value: null,
   };
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -25,7 +30,6 @@ export default function AsyncSuggest({
   //     if (typeof v !== 'undefined') console.log(v.modelNumber);
   //     if (typeof r !== 'undefined') console.log(`r = ${r}`);
   //   };
-
   React.useEffect(() => {
     let active = true;
     if (!loading) {
@@ -63,6 +67,7 @@ export default function AsyncSuggest({
       getOptionLabel={getOptionLabel}
       options={options}
       loading={loading}
+      value={value}
       autoComplete
       autoHighlight
       disableClearable
