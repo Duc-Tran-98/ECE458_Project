@@ -112,6 +112,25 @@ class InstrumentAPI extends DataSource {
     });
     return JSON.stringify(response);
   }
+
+  async deleteInstrument({ modelNumber, vendor, serialNumber }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.getInstrument({ modelNumber, vendor, serialNumber });
+    if (instrument == null) {
+      response.message = `The instrument ${vendor} ${modelNumber} ${serialNumber} could not be found!`;
+      response.success = false;
+      return JSON.stringify(response);
+    }
+    await this.store.calibrationEvents.destroy(
+      { where: { calibrationHistoryIdReference: instrument.dataValues.id } },
+    );
+    await this.store.instruments.destroy({ where: { modelNumber, vendor, serialNumber } });
+    response.message = `Deleted instrument: ${vendor} ${modelNumber} ${serialNumber}`;
+    response.success = true;
+    return JSON.stringify(response);
+  }
 }
 
 module.exports = InstrumentAPI;

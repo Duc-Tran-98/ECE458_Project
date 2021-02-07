@@ -90,6 +90,18 @@ module.exports = {
       });
       return response;
     },
+    deleteInstrument: async (
+      _,
+      { modelNumber, vendor, serialNumber },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.deleteInstrument({
+        modelNumber,
+        vendor,
+        serialNumber,
+      });
+      return response;
+    },
     addCalibrationEvent: async (
       _,
       {

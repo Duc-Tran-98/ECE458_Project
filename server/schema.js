@@ -77,15 +77,16 @@ const typeDefs = gql`
     ): String!
 
     # Model related Mutations
-    deleteModel(modelNumber: String!, vendor: String!): String!
     addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
+    deleteModel(modelNumber: String!, vendor: String!): String!
+    editModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int, id: Int!): String!
 
     # Instrument related mutations
     addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+    deleteInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): String!
 
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
-    editModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int, id: Int!): String!
   }
 `;
 
