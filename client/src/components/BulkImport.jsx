@@ -31,11 +31,8 @@ export default function BulkImport() {
   };
 
   // TODO - refactor into pretty UI error
-  const requiredError = (headerName, rowNumber, columnNumber) => {
-    // const message = `<div class="red">${headerName} is required in the <strong>${rowNumber} row</strong> / <strong>${columnNumber} column</strong></div>`;
-    const message = `${headerName} is required in the ${rowNumber} row / ${columnNumber} column`;
-    return message;
-  };
+  const requiredError = (headerName, rowNumber, columnNumber) => `REQUIRED: ${headerName} (${rowNumber}, ${columnNumber})`;
+  const validateError = (headerName, rowNumber, columnNumber) => `INVALID: ${headerName} (${rowNumber}, ${columnNumber})`;
 
   const validateASCII = (field, length) => {
     const validLength = field.length <= length;
@@ -52,6 +49,7 @@ export default function BulkImport() {
         validate(vendor) {
           return validateASCII(vendor, characterLimits.model.vendor);
         },
+        validateError,
       },
       {
         name: 'Model Number',
@@ -61,6 +59,7 @@ export default function BulkImport() {
         validate(modelNumber) {
           return validateASCII(modelNumber, characterLimits.model.modelNumber);
         },
+        validateError,
       },
       {
         name: 'Short Description',
@@ -70,16 +69,17 @@ export default function BulkImport() {
         validate(shortDescription) {
           return validateASCII(shortDescription, characterLimits.model.shortDescription);
         },
+        validateError,
       },
       {
         name: 'Comment',
         inputName: 'comment',
         required: true,
         requiredError,
-
         validate(comment) {
           return validateASCII(comment, characterLimits.model.comment);
         },
+        validateError,
       },
       {
         name: 'Calibration Frequency',
@@ -89,6 +89,7 @@ export default function BulkImport() {
         validate(calibrationFrequency) {
           return validateASCII(calibrationFrequency, characterLimits.model.calibrationFrequency);
         },
+        validateError,
       },
     ],
   };
