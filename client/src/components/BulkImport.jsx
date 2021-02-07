@@ -1,13 +1,14 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import XLSX from 'xlsx';
+import CSVFileValidator from 'csv-file-validator';
 
 export default function BulkImport() {
-  const fileData = {
-    models: [],
-    instruments: [],
-    calibration: [],
-  };
+  // const fileData = {
+  //   models: [],
+  //   instruments: [],
+  //   calibration: [],
+  // };
 
   // Create a reference to the hidden file input element
   const hiddenFileInput = React.useRef(null);
@@ -18,8 +19,50 @@ export default function BulkImport() {
     hiddenFileInput.current.click();
   };
 
+  // TODO - refactor into pretty UI error
+  const requiredError = (headerName, rowNumber, columnNumber) => `<div class="red">${headerName} is required in the <strong>${rowNumber} row</strong> / <strong>${columnNumber} column</strong></div>`;
+
+  const modelConfig = {
+    headers: [
+      {
+        name: 'Vendor',
+        inputName: 'vendor',
+        required: true,
+        requiredError,
+      },
+      {
+        name: 'Model Number',
+        inputName: 'modelNumber',
+        required: true,
+        requiredError,
+      },
+      {
+        name: 'Short Description',
+        inputName: 'shortDescription',
+        required: true,
+        requiredError,
+      },
+      {
+        name: 'Calibration Frequency',
+        inputName: 'calibrationFrequency',
+        required: true,
+        requiredError,
+      },
+    ],
+  };
+
   const parseModels = (worksheet) => {
     console.log(XLSX.utils.sheet_to_row_object_array(worksheet));
+    const modelCSV = XLSX.utils.sheet_to_csv(worksheet);
+
+    CSVFileValidator(modelCSV, modelConfig)
+      .then((csvData) => {
+        console.log(csvData.inValidMessages);
+        console.log(csvData.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const parseInstruments = (worksheet) => {
