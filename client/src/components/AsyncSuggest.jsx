@@ -20,7 +20,7 @@ export default function AsyncSuggest({
     value: PropTypes.object,
   };
   AsyncSuggest.defaultProps = {
-    value: '',
+    value: null,
   };
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);

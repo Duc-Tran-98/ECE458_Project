@@ -51,7 +51,7 @@ export default function InstrumentForm({
     val: PropTypes.object,
   };
   InstrumentForm.defaultProps = {
-    val: '',
+    val: null,
   };
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
