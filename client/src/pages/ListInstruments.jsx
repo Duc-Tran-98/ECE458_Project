@@ -11,8 +11,7 @@ import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
 import DeleteInstrument from '../queries/DeleteInstrument';
-// import UserContext from '../components/UserContext';
-// import ErrorPage from './ErrorPage';
+import EditInstrument from '../components/EditInstrument';
 
 function ListInstruments() {
   // const user = useContext(UserContext);
@@ -58,9 +57,9 @@ function ListInstruments() {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setWhich(e.field);
-      setShow(true);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
+      setShow(true);
     }
   };
   const closeModal = (bool) => {
@@ -182,6 +181,23 @@ function ListInstruments() {
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
+        {which === 'view' && (
+          <EditInstrument
+            modelNumber={modelNumber}
+            vendor={vendor}
+            handleClose={closeModal}
+            serialNumber={serialNumber}
+            viewOnly
+          />
+        )}
+        {which === 'edit' && (
+          <EditInstrument
+            modelNumber={modelNumber}
+            vendor={vendor}
+            handleClose={closeModal}
+            serialNumber={serialNumber}
+          />
+        )}
         {which === 'delete' && (
           <div>
             <div className="h4 row text-center">{`You are about to delete ${vendor}-${modelNumber}-${serialNumber}. Are you sure?`}</div>
