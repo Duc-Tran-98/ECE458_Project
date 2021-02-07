@@ -42,7 +42,7 @@ class InstrumentAPI extends DataSource {
     serialNumber,
     comment,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
@@ -65,6 +65,7 @@ class InstrumentAPI extends DataSource {
               calibrationFrequency,
             });
             response.message = 'Added new instrument!';
+            response.success = true;
           }
         });
       } else {

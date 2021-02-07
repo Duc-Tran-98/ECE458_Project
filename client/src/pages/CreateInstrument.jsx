@@ -30,6 +30,7 @@ function CreateInstrumentPage() {
     setCalibHistory(newHistory);
   };
   const [validated, setValidated] = useState(false);
+  const [allowNextStep, setNexStepOK] = useState([false, true, true]);
   const [formState, setFormState] = useState({ // This state is for an instrument
     modelNumber: '',
     vendor: '',
@@ -58,28 +59,21 @@ function CreateInstrumentPage() {
     }
   };
 
-  const handleSubmit = (event) => { // This is to submit all the data; does not do anything ATM
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    } else {
-      const {
-        modelNumber, vendor, comment, serialNumber,
-      } = formState;
-      const handleResponse = (response) => {
-        // eslint-disable-next-line no-alert
-        alert(response.message);
-      };
-      CreateInstrument({
-        modelNumber,
-        vendor,
-        serialNumber,
-        comment,
-        handleResponse,
-      });
-    }
-    setValidated(true);
+  const handleSubmit = async () => {
+    // This is to submit all the data; does not do anything ATM
+    const {
+      modelNumber, vendor, comment, serialNumber,
+    } = formState;
+    const response = await CreateInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+      comment,
+    });
+    // eslint-disable-next-line no-alert
+    alert(response.message);
+    // const handleResponse = () => {};
+    // return response.success;
   };
 
   const changeHandler = (e) => { // This is for updating the instrument's fields from regular inputs
@@ -89,9 +83,20 @@ function CreateInstrumentPage() {
     // console.log(e, v);
     setFormState({ ...formState, modelNumber: v.modelNumber, vendor: v.vendor });
   };
-  // const onStepChange = () => {
-  //   setValidated(true);
-  // };
+  const onStepChange = () => {
+    setValidated(true);
+    const { serialNumber, modelNumber, vendor } = formState;
+    if (serialNumber.length > 0 && modelNumber.length > 0 && vendor.length > 0) {
+      setNexStepOK([true, true, true]);
+    } else {
+      console.log(modelNumber.length, vendor.length, serialNumber.length);
+      let message = (modelNumber.length === 0) ? 'model number, ' : '';
+      message = message.concat('', (vendor.length === 0) ? 'vendor, ' : '');
+      message = message.concat('', (serialNumber.length === 0) ? 'serial number' : '');
+      // eslint-disable-next-line no-alert
+      alert(`Please enter ${message}`);
+    }
+  };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
     return <ErrorPage message="You don't have the right permissions!" />;
@@ -152,7 +157,7 @@ function CreateInstrumentPage() {
   };
   return (
     <div className="d-flex justify-content-center mt-5">
-      <VerticalLinearStepper getSteps={getSteps} getStepContent={getStepContent} />
+      <VerticalLinearStepper getSteps={getSteps} getStepContent={getStepContent} onStepChange={onStepChange} stepsOK={allowNextStep} onFinish={handleSubmit} />
     </div>
   );
 }

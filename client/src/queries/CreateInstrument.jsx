@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
-import Query from '../components/UseQuery';
+import Query, { QueryAndThen } from '../components/UseQuery';
 
-export default function CreateInstrument({
+export default async function CreateInstrument({
   modelNumber, vendor, serialNumber, comment, handleResponse,
 }) {
   CreateInstrument.propTypes = {
@@ -11,7 +11,10 @@ export default function CreateInstrument({
     vendor: PropTypes.string.isRequired,
     serialNumber: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
-    handleResponse: PropTypes.func.isRequired,
+    handleResponse: PropTypes.func,
+  };
+  CreateInstrument.defaultProps = {
+    handleResponse: null,
   };
   const ADD_INSTRUMENT = gql`
       mutation AddInstrument(
@@ -33,7 +36,15 @@ export default function CreateInstrument({
   const getVariables = () => ({
     modelNumber, vendor, serialNumber, comment,
   });
-  Query({
-    query, queryName, getVariables, handleResponse,
-  });
+  if (handleResponse) {
+    Query({
+      query,
+      queryName,
+      getVariables,
+      handleResponse,
+    });
+  } else {
+    // eslint-disable-next-line no-return-await
+    return await QueryAndThen({ query, queryName, getVariables });
+  }
 }
