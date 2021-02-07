@@ -19,30 +19,32 @@ const queryName = 'getAllModels';
 
 export default function InstrumentForm({
   // modelNumber,
-  vendor,
+  // vendor,
   // calibrationFrequency,
   comment,
   handleSubmit,
   changeHandler,
-  suggestHandler,
+  onInputChange,
   serialNumber,
   validated,
   viewOnly,
 }) {
   InstrumentForm.propTypes = {
     // modelNumber: PropTypes.string.isRequired,
-    vendor: PropTypes.string.isRequired,
+    // vendor: PropTypes.string.isRequired,
     // calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     changeHandler: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
-    suggestHandler: PropTypes.func.isRequired,
+    onInputChange: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
   };
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
+  const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
+  const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   return (
     <Form
       className="needs-validation bg-light rounded"
@@ -50,45 +52,24 @@ export default function InstrumentForm({
       validated={validated}
       onSubmit={handleSubmit}
     >
-      <div className="row mx-3">
-        <div className="col mt-2">
-          <Form.Group controlId="formModelNumber">
-            <Form.Label className="h4">Model Number</Form.Label>
-            <AsyncSuggest
-              query={query}
-              label="Model Number"
-              queryName={queryName}
-              id="modelNumber"
-              suggestHandler={suggestHandler}
-            />
-          </Form.Group>
-        </div>
-        <div className="col mt-2">
-          <Form.Group controlId="formVendor">
-            <Form.Label className="h4">Vendor</Form.Label>
-            {viewOnly ? (
-              <Form.Control
-                name="vendor"
-                type="text"
-                placeholder="Vendor"
-                required
-                value={vendor}
-                onChange={changeHandler}
-              />
-            ) : (
-              <AsyncSuggest
-                query={query}
-                label="Vendor"
-                queryName={queryName}
-                id="vendor"
-                suggestHandler={suggestHandler}
-              />
-            )}
-            <Form.Control.Feedback type="invalid">
-              Please enter a valid vendor.
-            </Form.Control.Feedback>
-          </Form.Group>
-        </div>
+      <div className="mt-4 d-flex justify-content-center">
+        <Form.Group>
+          <Form.Label className="h4 text-center">Model Selection</Form.Label>
+          <AsyncSuggest
+            query={query}
+            queryName={queryName}
+            onInputChange={onInputChange}
+            label="Choose a model"
+            getOptionSelected={formatSelected}
+            getOptionLabel={formatOption}
+          />
+          <Form.Control.Feedback type="invalid">
+            Please select a model.
+          </Form.Control.Feedback>
+          <Form.Control.Feedback type="valid">
+            Looks good!
+          </Form.Control.Feedback>
+        </Form.Group>
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
@@ -133,3 +114,44 @@ export default function InstrumentForm({
     </Form>
   );
 }
+
+/*
+<div className="col mt-2">
+          <Form.Group controlId="formModelNumber">
+            <Form.Label className="h4">Model Number</Form.Label>
+            <AsyncSuggest
+              query={query}
+              label="Model Number"
+              queryName={queryName}
+              id="modelNumber"
+              suggestHandler={suggestHandler}
+            />
+          </Form.Group>
+        </div>
+        <div className="col mt-2">
+          <Form.Group controlId="formVendor">
+            <Form.Label className="h4">Vendor</Form.Label>
+            {viewOnly ? (
+              <Form.Control
+                name="vendor"
+                type="text"
+                placeholder="Vendor"
+                required
+                value={vendor}
+                onChange={changeHandler}
+              />
+            ) : (
+              <AsyncSuggest
+                query={query}
+                label="Vendor"
+                queryName={queryName}
+                id="vendor"
+                suggestHandler={suggestHandler}
+              />
+            )}
+            <Form.Control.Feedback type="invalid">
+              Please enter a valid vendor.
+            </Form.Control.Feedback>
+          </Form.Group>
+        </div>
+*/

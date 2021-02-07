@@ -41,13 +41,9 @@ function CreateInstrumentPage() {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-  const suggestHandler = (e, v) => {
-    console.log(e, v);
-    if (e.target.id.includes('modelNumber')) {
-      setFormState({ ...formState, modelNumber: v.modelNumber });
-    } else {
-      setFormState({ ...formState, vendor: v.vendor });
-    }
+  const onInputChange = (e, v) => {
+    // console.log(e, v);
+    setFormState({ ...formState, modelNumber: v.modelNumber, vendor: v.vendor });
   };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
@@ -69,7 +65,7 @@ function CreateInstrumentPage() {
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={validated}
-        suggestHandler={suggestHandler}
+        onInputChange={onInputChange}
       />
     </div>
   );
