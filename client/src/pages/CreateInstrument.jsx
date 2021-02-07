@@ -14,7 +14,23 @@ function CreateInstrumentPage() {
     comment: '',
     serialNumber: '0',
   });
-  // const [calibHistory, setCalibHistory] = useState([]);
+  const [rows, setRows] = useState([0]);
+  const [nextId, setNextId] = useState(1);
+  const addRow = () => {
+    const newRows = rows;
+    newRows.push(nextId);
+    setNextId(nextId + 1);
+    setRows(newRows);
+  };
+  const deleteRow = (rowId) => {
+    if (rows.length > 1) {
+      const newRows = rows.filter((id) => id !== rowId);
+      setRows(newRows);
+    } else {
+      // eslint-disable-next-line no-alert
+      alert('Cannot delete the last row');
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -37,7 +53,6 @@ function CreateInstrumentPage() {
         handleResponse,
       });
     }
-
     setValidated(true);
   };
 
@@ -73,7 +88,7 @@ function CreateInstrumentPage() {
         );
       case 1:
         return (
-          <CalibrationTable />
+          <CalibrationTable rows={rows} addRow={addRow} deleteRow={deleteRow} />
         );
       case 2:
         return 'Review!';

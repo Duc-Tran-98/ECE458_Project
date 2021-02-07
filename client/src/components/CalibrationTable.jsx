@@ -1,27 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import PropTypes from 'prop-types';
 import CalibrationRow from './CalibrationRow';
 import MouseOverPopover from './PopOver';
 
-export default function CalibrationTable() {
-  const [rows, setRows] = useState([0]);
-  const [nextId, setNextId] = useState(1);
-  const addRow = () => {
-    const newRows = rows;
-    newRows.push(nextId);
-    setNextId(nextId + 1);
-    setRows(newRows);
+export default function CalibrationTable({ rows, addRow, deleteRow }) {
+  CalibrationTable.propTypes = {
+    // eslint-disable-next-line react/forbid-prop-types
+    rows: PropTypes.array.isRequired,
+    addRow: PropTypes.func.isRequired,
+    deleteRow: PropTypes.func.isRequired,
   };
-  const deleteRow = (rowId) => {
-    if (rows.length > 1) {
-      const newRows = rows.filter((id) => id !== rowId);
-      setRows(newRows);
-    } else {
-      // eslint-disable-next-line no-alert
-      alert('Cannot delete the last row');
-    }
-  };
+  //   const [rows, setRows] = useState([0]);
+  //   const [nextId, setNextId] = useState(1);
+  //   const addRow = () => {
+  //     const newRows = rows;
+  //     newRows.push(nextId);
+  //     setNextId(nextId + 1);
+  //     setRows(newRows);
+  //   };
+  //   const deleteRow = (rowId) => {
+  //     if (rows.length > 1) {
+  //       const newRows = rows.filter((id) => id !== rowId);
+  //       setRows(newRows);
+  //     } else {
+  //       // eslint-disable-next-line no-alert
+  //       alert('Cannot delete the last row');
+  //     }
+  //   };
   const list = rows.map((id) => <CalibrationRow key={id} handleDelete={deleteRow} id={id} />);
   return (
     <Form className="needs-validation bg-light rounded" noValidate>
