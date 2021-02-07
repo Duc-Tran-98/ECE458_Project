@@ -31,12 +31,12 @@ function CreateInstrumentPage() {
     setCalibHistory(newHistory);
   };
   const [validated, setValidated] = useState(false);
-  const [allowNextStep, setNexStepOK] = useState([false, true, true]);
   const [formState, setFormState] = useState({ // This state is for an instrument
     modelNumber: '',
     vendor: '',
     comment: '',
     serialNumber: '',
+    calibrationFrequency: 0,
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => { // This adds an entry to the array(array = calibration history)
@@ -65,27 +65,43 @@ function CreateInstrumentPage() {
     const {
       modelNumber, vendor, comment, serialNumber,
     } = formState;
-    const response = await CreateInstrument({
-      modelNumber,
-      vendor,
-      serialNumber,
-      comment,
-    });
-    // eslint-disable-next-line no-alert
-    alert(response.message);
-    if (response.success) { // If we successfully added new instrument
-      const validEvents = calibHistory.filter((entry) => entry.user.length > 0); // Collect valid entries
-      if (validEvents.length > 0) { // If there are valid entries, add them to DB
-        const handleRes = (res) => {
-          console.log(res);
-        };
-        AddCalibEvent({
-          events: validEvents,
-          modelNumber,
-          vendor,
-          serialNumber,
-          handleResponse: handleRes,
-        });
+    setValidated(true);
+    if (modelNumber.length === 0 || vendor.length === 0 || serialNumber.length === 0) {
+      let message = modelNumber.length === 0 ? 'model number, ' : '';
+      message = message.concat('', vendor.length === 0 ? 'vendor, ' : '');
+      message = message.concat(
+        '',
+        serialNumber.length === 0 ? 'serial number' : '',
+      );
+      // eslint-disable-next-line no-alert
+      alert(`Please enter ${message}`);
+    } else {
+      const response = await CreateInstrument({
+        modelNumber,
+        vendor,
+        serialNumber,
+        comment,
+      });
+      // eslint-disable-next-line no-alert
+      alert(response.message);
+      if (response.success) {
+        // If we successfully added new instrument
+        const validEvents = calibHistory.filter(
+          (entry) => entry.user.length > 0,
+        ); // Collect valid entries
+        if (validEvents.length > 0) {
+          // If there are valid entries, add them to DB
+          const handleRes = (res) => {
+            console.log(res);
+          };
+          AddCalibEvent({
+            events: validEvents,
+            modelNumber,
+            vendor,
+            serialNumber,
+            handleResponse: handleRes,
+          });
+        }
       }
     }
   };
@@ -95,28 +111,16 @@ function CreateInstrumentPage() {
   };
   const onInputChange = (e, v) => { // This if for updating instrument's fields from autocomplete input
     // console.log(e, v);
-    setFormState({ ...formState, modelNumber: v.modelNumber, vendor: v.vendor });
-  };
-  const onStepChange = () => {
-    setValidated(true);
-    const { serialNumber, modelNumber, vendor } = formState;
-    if (serialNumber.length > 0 && modelNumber.length > 0 && vendor.length > 0) {
-      setNexStepOK([true, true, true]);
-    } else {
-      console.log(modelNumber.length, vendor.length, serialNumber.length);
-      let message = (modelNumber.length === 0) ? 'model number, ' : '';
-      message = message.concat('', (vendor.length === 0) ? 'vendor, ' : '');
-      message = message.concat('', (serialNumber.length === 0) ? 'serial number' : '');
-      // eslint-disable-next-line no-alert
-      alert(`Please enter ${message}`);
-    }
+    setFormState({
+      ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency,
+    });
   };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
     return <ErrorPage message="You don't have the right permissions!" />;
   }
   const {
-    modelNumber, vendor, serialNumber, comment,
+    modelNumber, vendor, serialNumber, comment, calibrationFrequency,
   } = formState;
   // Caliblist is the list of calibration events where the username is not an empty string
   const calibList = calibHistory.map((entry) => entry.user.length > 0 && (
@@ -142,10 +146,23 @@ function CreateInstrumentPage() {
             onInputChange={onInputChange}
           />
         );
-      case 1: // Should check if instrument is calibratable here. If it is not, display CalibrationTable in viewOnly mode
+      case 1: // check if instrument is calibratable here. If it is, display CalibrationTable
+        if (calibrationFrequency !== 0) {
+          return (
+            <CalibrationTable
+              rows={calibHistory}
+              addRow={addRow}
+              deleteRow={deleteRow}
+              onChangeCalibRow={onChangeCalibRow}
+            />
+          );
+        }
         return (
-          <CalibrationTable rows={calibHistory} addRow={addRow} deleteRow={deleteRow} onChangeCalibRow={onChangeCalibRow} />
+          <div className="my-3">
+            <h3>Item Not calibratable</h3>
+          </div>
         );
+
       case 2:
         return (
           <div>
@@ -171,7 +188,7 @@ function CreateInstrumentPage() {
   };
   return (
     <div className="d-flex justify-content-center mt-5">
-      <VerticalLinearStepper getSteps={getSteps} getStepContent={getStepContent} onStepChange={onStepChange} stepsOK={allowNextStep} onFinish={handleSubmit} />
+      <VerticalLinearStepper getSteps={getSteps} getStepContent={getStepContent} onFinish={handleSubmit} />
     </div>
   );
 }

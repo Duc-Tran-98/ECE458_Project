@@ -11,6 +11,7 @@ const GET_MODELS_QUERY = gql`
     getAllModels {
       modelNumber
       vendor
+      calibrationFrequency
     }
   }
 `;

@@ -48,34 +48,19 @@ const useStyles = makeStyles((theme) => ({
 // }
 
 export default function VerticalLinearStepper({
-  getSteps, getStepContent, onStepChange, stepsOK, onFinish,
+  getSteps, getStepContent, onFinish,
 }) {
   VerticalLinearStepper.propTypes = {
     getSteps: PropTypes.func.isRequired,
     getStepContent: PropTypes.func.isRequired,
-    // eslint-disable-next-line react/require-default-props
-    onStepChange: PropTypes.func,
-    // eslint-disable-next-line react/forbid-prop-types
-    stepsOK: PropTypes.array,
     onFinish: PropTypes.func.isRequired,
-  };
-  VerticalLinearStepper.defaultProps = {
-    stepsOK: undefined,
-    onStepChange: undefined,
   };
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
 
   const handleNext = () => {
-    if (onStepChange) {
-      onStepChange();
-    }
-    if (typeof stepsOK !== 'undefined' && stepsOK[activeStep]) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else if (typeof stepsOK === 'undefined') {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
       onFinish();
     }
