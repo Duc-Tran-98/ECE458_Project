@@ -17,14 +17,53 @@ class InstrumentAPI extends DataSource {
     this.context = config.context;
   }
 
-  async getAllInstruments() {
+  async getAllInstruments({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instruments = await this.store.instruments.findAll();
+    const instruments = await this.store.instruments.findAll({ limit, offset });
     return instruments;
   }
 
-  async findInstrument({ modelNumber, vendor, serialNumber }) {
+  async getAllInstrumentsWithModel({ modelNumber, vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll(
+      {
+        limit: null,
+        offset: null,
+        where: { modelNumber, vendor },
+      },
+    );
+    return instruments;
+  }
+
+  async getAllInstrumentsWithModelNum({ modelNumber }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll(
+      {
+        limit: null,
+        offset: null,
+        where: { modelNumber },
+      },
+    );
+    return instruments;
+  }
+
+  async getAllInstrumentsWithVendor({ vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll(
+      {
+        limit: null,
+        offset: null,
+        where: { vendor },
+      },
+    );
+    return instruments;
+  }
+
+  async getInstrument({ modelNumber, vendor, serialNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
     const instrument = await this.store.instruments.findAll({
@@ -47,9 +86,9 @@ class InstrumentAPI extends DataSource {
     this.store = storeModel;
     await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
       if (model && model[0]) {
-        await this.findInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
+        await this.getInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
           if (instrument) {
-            response.message = 'ERROR: Instrument with this modelNumber/vendor/serialNumber already exists';
+            response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
           } else {
             const modelReference = model[0].dataValues.id;
             // eslint-disable-next-line prefer-destructuring
@@ -69,7 +108,7 @@ class InstrumentAPI extends DataSource {
           }
         });
       } else {
-        response.message = 'ERROR: No corresponding model exists!';
+        response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
       }
     });
     return JSON.stringify(response);

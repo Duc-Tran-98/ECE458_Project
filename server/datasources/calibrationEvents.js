@@ -28,10 +28,28 @@ class CalibrationEventAPI extends DataSource {
     this.context = config.context;
   }
 
-  async getAllCalibrationEvents() {
+  async getAllCalibrationEvents({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const calibrationEvents = await this.store.calibrationEvents.findAll();
+    const calibrationEvents = await this.store.calibrationEvents.findAll({ limit, offset });
+    return calibrationEvents;
+  }
+
+  async getCalibrationEventsByInstrument({ modelNumber, vendor, serialNumber }) {
+    let calibrationHistoryIdReference = -1;
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.findAll({
+      where:
+      { modelNumber, vendor, serialNumber },
+    }).then((instrument) => {
+      if (instrument && instrument[0]) {
+        calibrationHistoryIdReference = instrument[0].dataValues.id;
+      }
+    });
+    const calibrationEvents = await this.store.calibrationEvents.findAll(
+      { where: { calibrationHistoryIdReference } },
+    );
     return calibrationEvents;
   }
 
@@ -46,24 +64,24 @@ class CalibrationEventAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.instrumentAPI.findInstrument({
-      modelNumber, vendor, serialNumber,
+    await this.store.instruments.findAll({
+      where: { modelNumber, vendor, serialNumber },
     }).then((instrument) => {
-      if (instrument) {
+      if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        const calibrationHistoryIdReference = instrument.dataValues.id;
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
           date,
           comment,
         });
-        response.message = 'Added new calibration event!';
+        response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {
-        response.message = 'ERROR: No instrument with this modelNumber/vendor/serialNumber exists';
+        response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`;
       }
     });
     return JSON.stringify(response);
