@@ -1,8 +1,9 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
+// import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import PropTypes from 'prop-types';
+import Form from 'react-bootstrap/Form';
 import { QueryAndThen } from './UseQuery';
 
 export default function AsyncSuggest({
@@ -67,7 +68,31 @@ export default function AsyncSuggest({
       disableClearable
       onChange={onInputChange}
       renderInput={(params) => (
-        <TextField
+        <div ref={params.InputProps.ref}>
+          <Form.Control
+            type="text"
+            required
+            placeholder={label}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...params.inputProps}
+          />
+          <>{loading ? <LinearProgress /> : null}</>
+          <Form.Control.Feedback type="invalid">
+            Please
+            {' '}
+            {`${label}`}
+          </Form.Control.Feedback>
+          <Form.Control.Feedback type="valid">
+            Looks good!
+          </Form.Control.Feedback>
+        </div>
+      )}
+    />
+  );
+}
+
+/*
+ <TextField
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...params}
           label={label}
@@ -84,7 +109,4 @@ export default function AsyncSuggest({
             ),
           }}
         />
-      )}
-    />
-  );
-}
+*/
