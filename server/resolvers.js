@@ -11,7 +11,8 @@ module.exports = {
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
 
     // Model Queries
-    getAllModels: (_, __, { dataSources }) => dataSources.modelAPI.getAllModels(),
+    // eslint-disable-next-line max-len
+    getAllModels: (_, { limit, offset }, { dataSources }) => dataSources.modelAPI.getAllModels({ limit, offset }),
     // eslint-disable-next-line max-len
     getAllModelsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithModelNum({ modelNumber }),
     // eslint-disable-next-line max-len
@@ -20,7 +21,8 @@ module.exports = {
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
 
     // Instrument Queries
-    getAllInstruments: (_, __, { dataSources }) => dataSources.instrumentAPI.getAllInstruments(),
+    // eslint-disable-next-line max-len
+    getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     // eslint-disable-next-line max-len
     getAllInstrumentsWithModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber, vendor }),
     // eslint-disable-next-line max-len
@@ -32,7 +34,7 @@ module.exports = {
 
     // Calibration Queries
     // eslint-disable-next-line max-len
-    getAllCalibrationEvents: (_, __, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents(),
+    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({ limit, offset }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, serialNumber },

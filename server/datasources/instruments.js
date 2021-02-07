@@ -17,10 +17,10 @@ class InstrumentAPI extends DataSource {
     this.context = config.context;
   }
 
-  async getAllInstruments() {
+  async getAllInstruments({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instruments = await this.store.instruments.findAll({ limit: null, offset: null });
+    const instruments = await this.store.instruments.findAll({ limit, offset });
     return instruments;
   }
 
