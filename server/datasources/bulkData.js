@@ -31,15 +31,20 @@ class BulkDataAPI extends DataSource {
     // loop through models
     // validate (make sure doesn't already exist) if ERROR delete all previous adds
     // add
+    let anyError = false;
+    let addedModels = [];
+    let addedInstruments = [];
     await this.addModels(models).then(async (modelResponse) => {
-      if (models.length === modelResponse.length) {
-        // all models successfully added
-      } else {
-        // at least one model had errror
+      addedModels = modelResponse;
+      if (models.length !== modelResponse.length) {
+        anyError = true;
+      }
+    });
 
-        // await this.store.models.destroy({ where: { modelNumber, vendor } });
-        // array.forEach(item => console.log(item));
-        await this.deleteAddedModels(models, modelResponse);
+    await this.addInstruments(instruments).then(async (instrumentResponse) => {
+      addedInstruments = instrumentResponse;
+      if (instruments.length !== instrumentResponse.length) {
+        anyError = true;
       }
     });
 
@@ -52,15 +57,72 @@ class BulkDataAPI extends DataSource {
     // add
     // response.success = true;
     // response.message = 'Successful bulk import';
+    if (anyError) {
+      await this.deleteAddedInstruments(instruments, addedInstruments);
+      await this.deleteAddedModels(models, addedModels);
+    }
     return JSON.stringify(this.response);
   }
 
+  async addInstruments(instruments) {
+    // eslint-disable-next-line prefer-const
+    let added = [];
+    for (let i = 0; i < instruments.length; i += 1) {
+      const currentInstrument = instruments[i];
+      const vendor = currentInstrument.vendor;
+      const modelNumber = currentInstrument.modelNumber;
+      const serialNumber = currentInstrument.serialNumber;
+      const comment = currentInstrument.comment;
+      await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
+        if (model && model[0]) {
+          await this.getInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
+            if (instrument) {
+              this.response.errorList.push(`ERROR: Cannot add instrument ${vendor} ${modelNumber} ${serialNumber} already exists`);
+            } else {
+              const modelReference = model[0].dataValues.id;
+              // eslint-disable-next-line prefer-destructuring
+              const calibrationFrequency = model[0].dataValues.calibrationFrequency;
+              const isCalibratable = (calibrationFrequency > 0);
+              this.store.instruments.create({
+                modelReference,
+                vendor,
+                modelNumber,
+                serialNumber,
+                isCalibratable,
+                comment,
+                calibrationFrequency,
+              });
+              added.push(i);
+              console.log(`ADDED: Instrument ${vendor} ${modelNumber} ${serialNumber} !`);
+            }
+          });
+        } else {
+          this.response.errorList.push(`ERROR: Cannot add instrument, model ${vendor} ${modelNumber} does not exist`);
+        }
+      });
+    }
+    return added;
+  }
+
+  async deleteAddedInstruments(instruments, indices) {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const index of indices) {
+      const modelNumber = instruments[index].modelNumber;
+      const vendor = instruments[index].vendor;
+      const serialNumber = instruments[index].serialNumber;
+      await this.store.instruments.destroy({ where: { modelNumber, vendor, serialNumber } });
+      console.log(`DELETED: Instrument ${vendor} ${modelNumber} ${serialNumber} !`);
+    }
+  }
+
   async deleteAddedModels(models, indices) {
-    indices.forEach(async (index) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const index of indices) {
       const modelNumber = models[index].modelNumber;
       const vendor = models[index].vendor;
       await this.store.models.destroy({ where: { modelNumber, vendor } });
-    });
+      console.log(`DELETED: Model ${vendor} ${modelNumber} !`);
+    }
   }
 
   async addModels(models) {
@@ -86,6 +148,7 @@ class BulkDataAPI extends DataSource {
             comment,
             calibrationFrequency,
           });
+          console.log(`ADDED: Model ${vendor} ${modelNumber} !`);
           added.push(i);
         }
       });
@@ -101,6 +164,18 @@ class BulkDataAPI extends DataSource {
     });
     if (model && model[0]) {
       return model[0];
+    }
+    return null;
+  }
+
+  async getInstrument({ modelNumber, vendor, serialNumber }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.store.instruments.findAll({
+      where: { modelNumber, vendor, serialNumber },
+    });
+    if (instrument && instrument[0]) {
+      return instrument[0];
     }
     return null;
   }
