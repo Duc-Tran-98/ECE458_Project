@@ -1,6 +1,6 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
-// import Button from 'react-bootstrap/Button';
+import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -41,7 +41,7 @@ export default function InstrumentForm({
     // calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     changeHandler: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func,
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
     onInputChange: PropTypes.func.isRequired,
@@ -52,6 +52,8 @@ export default function InstrumentForm({
   };
   InstrumentForm.defaultProps = {
     val: null,
+    handleSubmit: null,
+    viewOnly: false,
   };
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
@@ -120,6 +122,13 @@ export default function InstrumentForm({
           </Form.Group>
         </div>
       </div>
+      {(handleSubmit !== null && !viewOnly) && (
+        <div className="d-flex justify-content-center mt-3 mb-3">
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </div>
+      )}
     </Form>
   );
 }

@@ -93,9 +93,20 @@ const typeDefs = gql`
     editModel(id: Int!, modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
 
     # Instrument related mutations
-    addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
-    deleteInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): String!
-    editInstrument(id: Int!, modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+    addInstrument(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+      comment: String
+    ): String!
+    editInstrument(
+      modelNumber: String!
+      vendor: String!
+      comment: String
+      serialNumber: String!
+      id: Int!
+    ): String!
+    deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!

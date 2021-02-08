@@ -3,6 +3,7 @@ import { print } from 'graphql';
 import React, { Component } from 'react';
 import InstrumentForm from './InstrumentForm';
 import Query from './UseQuery';
+import EditInstrumentQuery from '../queries/EditInstrument';
 
 class EditInstrument extends Component {
   constructor(props) {
@@ -15,7 +16,6 @@ class EditInstrument extends Component {
       // eslint-disable-next-line react/prop-types
       serialNumber: props.serialNumber,
       comment: '',
-      calibrationFrequency: '',
       id: '',
       validated: false,
       // eslint-disable-next-line react/prop-types
@@ -53,11 +53,8 @@ class EditInstrument extends Component {
     const handleResponse = (response) => {
       // console.log(response);
       const { comment, id } = response;
-      let { calibrationFrequency } = response;
-      calibrationFrequency = calibrationFrequency.toString();
       this.setState({
         comment,
-        calibrationFrequency,
         id,
       });
     };
@@ -75,10 +72,20 @@ class EditInstrument extends Component {
     if (typeof viewOnly === 'undefined' || !viewOnly) {
       e.preventDefault();
       const {
-        comment, calibrationFrequency, id,
+        comment, id, modelNumber, vendor, serialNumber,
       } = this.state;
       this.setState({ validated: true });
-      console.log(comment, calibrationFrequency, id);
+      console.log(comment, id);
+      const handleResponse = (response) => {
+        if (response.success) {
+          this.handleClose(true);
+        }
+        // eslint-disable-next-line no-alert
+        alert(response.message);
+      };
+      EditInstrumentQuery({
+        modelNumber, vendor, serialNumber, id, comment, handleResponse,
+      });
       //   const EDIT_MODEL = gql`
       //     mutation EditModel(
       //       $modelNumber: String!
@@ -136,7 +143,6 @@ class EditInstrument extends Component {
     this.setState({
       modelNumber: v.modelNumber,
       vendor: v.vendor,
-      calibrationFrequency: v.calibrationFrequency,
     });
   }
 

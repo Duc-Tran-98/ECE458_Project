@@ -75,6 +75,47 @@ class InstrumentAPI extends DataSource {
     return null;
   }
 
+  async editInstrument({
+    modelNumber, vendor, serialNumber, comment, id,
+  }) {
+    const response = { message: '', success: true };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.getAllInstrumentsWithModel({
+      modelNumber,
+      vendor,
+    });// Get all instruments associated with model
+    instruments.forEach((element) => {
+      if (element.serialNumber === serialNumber && element.id !== id) {
+        response.message = 'ERROR: That model-serial number pair already exists!';
+        response.success = false;
+      }// check that there are no unique conflicts, but exclude ourselves
+    });
+    if (response.success) {
+      this.store.instruments.update(
+        {
+          modelNumber,
+          vendor,
+          serialNumber,
+          comment,
+        },
+        { where: { id } },
+      );
+      response.message = 'Successfully editted instrument!';
+    }
+    return JSON.stringify(response);
+  }
+
+  async deleteInstrument({ id }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.destroy({ where: { id } });
+    response.message = 'Deleted Instrument';
+    response.success = true;
+    return JSON.stringify(response);
+  }
+
   async addInstrument({
     modelNumber,
     vendor,
@@ -109,78 +150,6 @@ class InstrumentAPI extends DataSource {
         response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
       }
     });
-    return JSON.stringify(response);
-  }
-
-  async deleteInstrument({ modelNumber, vendor, serialNumber }) {
-    const response = { message: '' };
-    const storeModel = await this.store;
-    this.store = storeModel;
-    const instrument = await this.getInstrument({ modelNumber, vendor, serialNumber });
-    if (instrument == null) {
-      response.message = `The instrument ${vendor} ${modelNumber} ${serialNumber} could not be found!`;
-      response.success = false;
-      return JSON.stringify(response);
-    }
-    await this.store.calibrationEvents.destroy(
-      { where: { calibrationHistoryIdReference: instrument.dataValues.id } },
-    );
-    await this.store.instruments.destroy({ where: { modelNumber, vendor, serialNumber } });
-    response.message = `Deleted instrument: ${vendor} ${modelNumber} ${serialNumber}`;
-    response.success = true;
-    return JSON.stringify(response);
-  }
-
-  async editInstrument({
-    id,
-    modelNumber,
-    vendor,
-    serialNumber,
-    comment,
-  }) {
-    const response = { message: '' };
-    const storeModel = await this.store;
-    this.store = storeModel;
-    const newModel = await this.store.models.findAll({ where: { modelNumber, vendor } });
-    if (newModel[0] == null) {
-      response.message = `${vendor} ${modelNumber} is not a valid model to change to!`;
-      response.success = false;
-      return JSON.stringify(response);
-    }
-    const oldInstrument = await this.store.instruments.findAll({ where: { id } });
-    const newInstrument = await this.getInstrument({ modelNumber, vendor, serialNumber });
-    if (oldInstrument[0] == null) {
-      response.message = `Instrument with ID: ${id} could not be found`;
-      response.success = false;
-      return JSON.stringify(response);
-    }
-    if (newInstrument != null) {
-      // eslint-disable-next-line max-len
-      const modelMatch = oldInstrument[0].dataValues.modelNumber === newInstrument.dataValues.modelNumber;
-      const vendorMatch = oldInstrument[0].dataValues.vendor === newInstrument.dataValues.vendor;
-      // eslint-disable-next-line max-len
-      const serialMatch = oldInstrument[0].dataValues.serialNumber === newInstrument.dataValues.serialNumber;
-      if (!modelMatch || !vendorMatch || !serialMatch) {
-        response.message = `Instrument ${vendor} ${modelNumber} ${serialNumber} already exists!`;
-        response.success = false;
-        return JSON.stringify(response);
-      }
-    }
-    const modelReference = newModel[0].dataValues.id;
-    const { calibrationFrequency } = newModel[0].dataValues;
-    this.store.instruments.update(
-      {
-        modelNumber,
-        vendor,
-        serialNumber,
-        modelReference,
-        calibrationFrequency,
-        comment,
-      },
-      { where: { id } },
-    );
-    response.message = `Instrument with ID: ${id} updated to ${vendor} ${modelNumber} ${serialNumber}`;
-    response.success = true;
     return JSON.stringify(response);
   }
 }
