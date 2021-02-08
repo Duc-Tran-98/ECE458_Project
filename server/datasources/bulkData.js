@@ -27,6 +27,28 @@ class BulkDataAPI extends DataSource {
     console.log(models);
     console.log(instruments);
     console.log(calibrationEvents);
+    console.log('-----------------------------------------------');
+    // var myStringArray = ["Hello","World"];
+    // var arrayLength = myStringArray.length;
+    // for (var i = 0; i < arrayLength; i++) {
+    //     console.log(myStringArray[i]);
+    //     //Do something
+    // }
+    for (let i = 0; i < models.length; i += 1) {
+      console.log(models[i]);
+    }
+    // loop through models
+    // validate (make sure doesn't already exist)
+    // add
+
+    // loop through instruments
+    // validate (make sure model exists, instrument doesn't)
+    // add
+
+    // loop through calibration events
+    // validate (make sure instrument exists, date is valid)
+    // add
+
     return JSON.stringify(response);
   }
 }
