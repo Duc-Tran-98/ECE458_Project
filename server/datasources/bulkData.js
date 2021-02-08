@@ -3,6 +3,15 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 
+function isValidDate(dateString) {
+  const regEx = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateString.match(regEx)) return false; // Invalid format
+  const d = new Date(dateString);
+  const dNum = d.getTime();
+  if (!dNum && dNum !== 0) return false; // NaN value, Invalid date
+  return d.toISOString().slice(0, 10) === dateString;
+}
+
 class BulkDataAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -34,6 +43,8 @@ class BulkDataAPI extends DataSource {
     let anyError = false;
     let addedModels = [];
     let addedInstruments = [];
+    let addedCalibrationIds = [];
+
     await this.addModels(models).then(async (modelResponse) => {
       addedModels = modelResponse;
       if (models.length !== modelResponse.length) {
@@ -48,20 +59,58 @@ class BulkDataAPI extends DataSource {
       }
     });
 
-    // loop through instruments
-    // validate (make sure model exists, instrument doesn't) if ERROR delete all previous adds
-    // add
+    await this.addCalibrationEvents(calibrationEvents).then(async (calibrationEventResponse) => {
+      addedCalibrationIds = calibrationEventResponse;
+      if (calibrationEvents.length !== calibrationEventResponse.length) {
+        anyError = true;
+      }
+    });
 
-    // loop through calibration events
-    // validate (make sure instrument exists, date is valid) if ERROR delete all previous adds
-    // add
-    // response.success = true;
-    // response.message = 'Successful bulk import';
     if (anyError) {
+      await this.deleteAddedCalibrationEvents(addedCalibrationIds);
       await this.deleteAddedInstruments(instruments, addedInstruments);
       await this.deleteAddedModels(models, addedModels);
+      this.response.success = false;
     }
     return JSON.stringify(this.response);
+  }
+
+  async addCalibrationEvents(calibrationEvents) {
+    // eslint-disable-next-line prefer-const
+    let added = [];
+    for (let i = 0; i < calibrationEvents.length; i += 1) {
+      const calibrationEvent = calibrationEvents[i];
+      const vendor = calibrationEvent.vendor;
+      const modelNumber = calibrationEvent.modelNumber;
+      const serialNumber = calibrationEvent.serialNumber;
+      const user = calibrationEvent.user;
+      const date = calibrationEvent.date;
+      const comment = calibrationEvent.comment;
+      const storeModel = await this.store;
+      this.store = storeModel;
+      await this.store.instruments.findAll({
+        where: { modelNumber, vendor, serialNumber },
+      }).then(async (instrument) => {
+        if (instrument && instrument[0]) {
+          if (!isValidDate(date)) { // checks if date is valid
+            this.response.errorList.push(`ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} Date must be in format YYYY-MM-DD`);
+            return;
+          }
+          const calibrationHistoryIdReference = instrument[0].dataValues.id;
+          const event = await this.store.calibrationEvents.create({
+            calibrationHistoryIdReference,
+            user,
+            date,
+            comment,
+          });
+          // console.log(event.dataValues.id);
+          added.push(event.dataValues.id);
+        } else {
+          this.response.errorList.push(`ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`);
+        }
+      });
+    }
+    return added;
   }
 
   async addInstruments(instruments) {
@@ -75,7 +124,9 @@ class BulkDataAPI extends DataSource {
       const comment = currentInstrument.comment;
       await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
         if (model && model[0]) {
-          await this.getInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
+          await this.getInstrument({
+            modelNumber, vendor, serialNumber,
+          }).then(async (instrument) => {
             if (instrument) {
               this.response.errorList.push(`ERROR: Cannot add instrument ${vendor} ${modelNumber} ${serialNumber} already exists`);
             } else {
@@ -83,7 +134,7 @@ class BulkDataAPI extends DataSource {
               // eslint-disable-next-line prefer-destructuring
               const calibrationFrequency = model[0].dataValues.calibrationFrequency;
               const isCalibratable = (calibrationFrequency > 0);
-              this.store.instruments.create({
+              await this.store.instruments.create({
                 modelReference,
                 vendor,
                 modelNumber,
@@ -93,7 +144,6 @@ class BulkDataAPI extends DataSource {
                 calibrationFrequency,
               });
               added.push(i);
-              console.log(`ADDED: Instrument ${vendor} ${modelNumber} ${serialNumber} !`);
             }
           });
         } else {
@@ -104,6 +154,13 @@ class BulkDataAPI extends DataSource {
     return added;
   }
 
+  async deleteAddedCalibrationEvents(ids) {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const id of ids) {
+      await this.store.calibrationEvents.destroy({ where: { id } });
+    }
+  }
+
   async deleteAddedInstruments(instruments, indices) {
     // eslint-disable-next-line no-restricted-syntax
     for await (const index of indices) {
@@ -111,7 +168,6 @@ class BulkDataAPI extends DataSource {
       const vendor = instruments[index].vendor;
       const serialNumber = instruments[index].serialNumber;
       await this.store.instruments.destroy({ where: { modelNumber, vendor, serialNumber } });
-      console.log(`DELETED: Instrument ${vendor} ${modelNumber} ${serialNumber} !`);
     }
   }
 
@@ -121,7 +177,6 @@ class BulkDataAPI extends DataSource {
       const modelNumber = models[index].modelNumber;
       const vendor = models[index].vendor;
       await this.store.models.destroy({ where: { modelNumber, vendor } });
-      console.log(`DELETED: Model ${vendor} ${modelNumber} !`);
     }
   }
 
@@ -135,20 +190,19 @@ class BulkDataAPI extends DataSource {
       const description = currentModel.description;
       const comment = currentModel.comment;
       const calibrationFrequency = currentModel.calibrationFrequency;
-      await this.getModel({ modelNumber, vendor }).then((value) => {
+      await this.getModel({ modelNumber, vendor }).then(async (value) => {
         if (value) {
           // invalid model
           this.response.success = false;
           this.response.errorList.push(`Model ${vendor} ${modelNumber} already exists!`);
         } else {
-          this.store.models.create({
+          await this.store.models.create({
             vendor,
             modelNumber,
             description,
             comment,
             calibrationFrequency,
           });
-          console.log(`ADDED: Model ${vendor} ${modelNumber} !`);
           added.push(i);
         }
       });
