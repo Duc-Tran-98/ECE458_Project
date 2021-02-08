@@ -1,3 +1,5 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-await-in-loop */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 
@@ -5,6 +7,7 @@ class BulkDataAPI extends DataSource {
   constructor({ store }) {
     super();
     this.store = store;
+    this.response = { success: true, errorList: [] };
   }
 
   /**
@@ -22,34 +25,84 @@ class BulkDataAPI extends DataSource {
     instruments,
     calibrationEvents,
   }) {
-    const response = { message: '' };
-    console.log(this.store);
-    console.log(models);
-    console.log(instruments);
-    console.log(calibrationEvents);
-    console.log('-----------------------------------------------');
-    // var myStringArray = ["Hello","World"];
-    // var arrayLength = myStringArray.length;
-    // for (var i = 0; i < arrayLength; i++) {
-    //     console.log(myStringArray[i]);
-    //     //Do something
-    // }
-    for (let i = 0; i < models.length; i += 1) {
-      console.log(models[i]);
-    }
+    this.response = { success: true, errorList: [] };
+    const storeModel = await this.store;
+    this.store = storeModel;
     // loop through models
-    // validate (make sure doesn't already exist)
+    // validate (make sure doesn't already exist) if ERROR delete all previous adds
     // add
+    await this.addModels(models).then(async (modelResponse) => {
+      if (models.length === modelResponse.length) {
+        // all models successfully added
+      } else {
+        // at least one model had errror
+
+        // await this.store.models.destroy({ where: { modelNumber, vendor } });
+        // array.forEach(item => console.log(item));
+        await this.deleteAddedModels(models, modelResponse);
+      }
+    });
 
     // loop through instruments
-    // validate (make sure model exists, instrument doesn't)
+    // validate (make sure model exists, instrument doesn't) if ERROR delete all previous adds
     // add
 
     // loop through calibration events
-    // validate (make sure instrument exists, date is valid)
+    // validate (make sure instrument exists, date is valid) if ERROR delete all previous adds
     // add
+    // response.success = true;
+    // response.message = 'Successful bulk import';
+    return JSON.stringify(this.response);
+  }
 
-    return JSON.stringify(response);
+  async deleteAddedModels(models, indices) {
+    indices.forEach(async (index) => {
+      const modelNumber = models[index].modelNumber;
+      const vendor = models[index].vendor;
+      await this.store.models.destroy({ where: { modelNumber, vendor } });
+    });
+  }
+
+  async addModels(models) {
+    // eslint-disable-next-line prefer-const
+    let added = [];
+    for (let i = 0; i < models.length; i += 1) {
+      const currentModel = models[i];
+      const vendor = currentModel.vendor;
+      const modelNumber = currentModel.modelNumber;
+      const description = currentModel.description;
+      const comment = currentModel.comment;
+      const calibrationFrequency = currentModel.calibrationFrequency;
+      await this.getModel({ modelNumber, vendor }).then((value) => {
+        if (value) {
+          // invalid model
+          this.response.success = false;
+          this.response.errorList.push(`Model ${vendor} ${modelNumber} already exists!`);
+        } else {
+          this.store.models.create({
+            vendor,
+            modelNumber,
+            description,
+            comment,
+            calibrationFrequency,
+          });
+          added.push(i);
+        }
+      });
+    }
+    return added;
+  }
+
+  async getModel({ modelNumber, vendor }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.store.models.findAll({
+      where: { vendor, modelNumber },
+    });
+    if (model && model[0]) {
+      return model[0];
+    }
+    return null;
   }
 }
 
