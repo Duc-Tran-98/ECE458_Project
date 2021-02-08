@@ -30,14 +30,14 @@ function ListInstruments() {
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
   const GET_INSTRUMENTS_QUERY = gql`
-    query Instruments{
-      getAllInstruments{
+    query Instruments {
+      getAllInstruments {
         id
         vendor
         modelNumber
         serialNumber
         modelReference
-        comment
+        description
         calibrationFrequency
       }
     }
@@ -46,6 +46,7 @@ function ListInstruments() {
   const queryName = 'getAllInstruments';
   const handleResponse = (response) => {
     // console.log(`getAllInstruments\n${response}`);
+    console.log(response);
     setInstruments(response);
   };
   if (!queried) {
@@ -89,6 +90,7 @@ function ListInstruments() {
     },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
+    { field: 'description', headerName: 'Description', width: 250 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
     {
       field: 'calibrationFrequency',
@@ -121,7 +123,6 @@ function ListInstruments() {
         </div>
       ),
     },
-    { field: 'comment', headerName: 'Comment', width: 300 },
     {
       field: 'view',
       headerName: ' ',
