@@ -78,14 +78,7 @@ const typeDefs = gql`
   type Mutation {
     # User related mutations
     login(userName: String!, password: String!): String!
-    signup(
-      email: String!
-      firstName: String!
-      lastName: String!
-      userName: String!
-      password: String!
-      isAdmin: Boolean!
-    ): String!
+    signup(email: String!, firstName: String!, lastName: String!, userName: String!, password: String!, isAdmin: Boolean!): String!
 
     # Model related Mutations
     addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
@@ -93,19 +86,8 @@ const typeDefs = gql`
     editModel(id: Int!, modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
 
     # Instrument related mutations
-    addInstrument(
-      modelNumber: String!
-      vendor: String!
-      serialNumber: String!
-      comment: String
-    ): String!
-    editInstrument(
-      modelNumber: String!
-      vendor: String!
-      comment: String
-      serialNumber: String!
-      id: Int!
-    ): String!
+    addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+    editInstrument(modelNumber: String!, vendor: String!, comment: String, serialNumber: String!, id: Int!): String!
     deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations

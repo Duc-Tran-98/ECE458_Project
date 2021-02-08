@@ -81,6 +81,12 @@ class InstrumentAPI extends DataSource {
     const response = { message: '', success: true };
     const storeModel = await this.store;
     this.store = storeModel;
+    const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
+    if (model[0] == null) {
+      response.message = 'ERROR: The model that is being changed to is not valid!';
+      response.success = false;
+      return JSON.stringify(response);
+    }
     const instruments = await this.getAllInstrumentsWithModel({
       modelNumber,
       vendor,
@@ -111,7 +117,7 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.destroy({ where: { id } });
-    response.message = 'Deleted Instrument';
+    response.message = `Deleted Instrument with ID: ${id}`;
     response.success = true;
     return JSON.stringify(response);
   }
