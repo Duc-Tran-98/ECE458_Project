@@ -75,16 +75,16 @@ module.exports = {
     editModel: async (
       _,
       {
-        modelNumber, vendor, description, comment, calibrationFrequency, id,
+        id, modelNumber, vendor, description, comment, calibrationFrequency,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
+      id,
       modelNumber,
       vendor,
       description,
       comment,
       calibrationFrequency,
-      id,
     }),
     addModel: async (
       _,

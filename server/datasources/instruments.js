@@ -134,17 +134,15 @@ class InstrumentAPI extends DataSource {
             const modelReference = model[0].dataValues.id;
             // eslint-disable-next-line prefer-destructuring
             const calibrationFrequency = model[0].dataValues.calibrationFrequency;
-            const isCalibratable = (calibrationFrequency > 0);
             this.store.instruments.create({
               modelReference,
               vendor,
               modelNumber,
               serialNumber,
-              isCalibratable,
               comment,
               calibrationFrequency,
             });
-            response.message = 'Added new instrument!';
+            response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
             response.success = true;
           }
         });
