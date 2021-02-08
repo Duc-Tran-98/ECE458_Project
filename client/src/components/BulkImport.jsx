@@ -13,13 +13,21 @@ export default function BulkImport() {
       comment: 200,
       calibrationFrequency: 10,
     },
+    instrument: {
+      vendor: 30,
+      modelNumber: 40,
+      serialNumber: 40,
+      comment: 200,
+    },
+    calibration: {
+      vendor: 30,
+      modelNumber: 40,
+      serialNumber: 40,
+      calibrationUsername: 50,
+      calibrationDate: 20,
+      calibrationComment: 200,
+    },
   };
-
-  // const fileData = {
-  //   models: [],
-  //   instruments: [],
-  //   calibration: [],
-  // };
 
   // Create a reference to the hidden file input element
   const hiddenFileInput = React.useRef(null);
@@ -74,8 +82,8 @@ export default function BulkImport() {
       {
         name: 'Comment',
         inputName: 'comment',
-        required: true,
-        requiredError,
+        required: false,
+        // requiredError,
         validate(comment) {
           return validateASCII(comment, characterLimits.model.comment);
         },
@@ -94,34 +102,151 @@ export default function BulkImport() {
     ],
   };
 
-  const parseModels = (worksheet) => {
-    console.log('Parsing models worksheet');
+  const instrumentConfig = {
+    headers: [
+      {
+        name: 'Vendor',
+        inputName: 'vendor',
+        required: true,
+        requiredError,
+        validate(vendor) {
+          return validateASCII(vendor, characterLimits.instrument.vendor);
+        },
+        validateError,
+      },
+      {
+        name: 'Model Number',
+        inputName: 'modelNumber',
+        required: true,
+        requiredError,
+        validate(modelNumber) {
+          return validateASCII(modelNumber, characterLimits.instrument.modelNumber);
+        },
+        validateError,
+      },
+      {
+        name: 'Serial Number',
+        inputName: 'serialNumber',
+        required: true,
+        requiredError,
+        validate(serialNumber) {
+          return validateASCII(serialNumber, characterLimits.instrument.shortDescription);
+        },
+        validateError,
+      },
+      {
+        name: 'Comment',
+        inputName: 'comment',
+        required: false,
+        // requiredError,
+        validate(comment) {
+          return validateASCII(comment, characterLimits.instrument.comment);
+        },
+        validateError,
+      },
+    ],
+  };
+
+  const calibrationConfig = {
+    headers: [
+      {
+        name: 'Vendor',
+        inputName: 'vendor',
+        required: true,
+        requiredError,
+        validate(vendor) {
+          return validateASCII(vendor, characterLimits.calibration.vendor);
+        },
+        validateError,
+      },
+      {
+        name: 'Model Number',
+        inputName: 'modelNumber',
+        required: true,
+        requiredError,
+        validate(modelNumber) {
+          return validateASCII(modelNumber, characterLimits.calibration.modelNumber);
+        },
+        validateError,
+      },
+      {
+        name: 'Serial Number',
+        inputName: 'serialNumber',
+        required: true,
+        requiredError,
+        validate(serialNumber) {
+          return validateASCII(serialNumber, characterLimits.calibration.serialNumber);
+        },
+        validateError,
+      },
+      {
+        name: 'Calibration Username',
+        inputName: 'calibrationUsername',
+        required: true,
+        requiredError,
+        validate(calibrationUsername) {
+          return validateASCII(calibrationUsername, characterLimits.calibration.calibrationUsername);
+        },
+        validateError,
+      },
+      {
+        name: 'Calibration Date',
+        inputName: 'calibrationDate',
+        required: true,
+        requiredError,
+        validate(calibrationDate) {
+          return validateASCII(calibrationDate, characterLimits.calibration.calibrationDate);
+        },
+        validateError,
+      },
+      {
+        name: 'Calibration Comment',
+        inputName: 'calibrationComment',
+        required: false,
+        // requiredError,
+        validate(calibrationComment) {
+          return validateASCII(calibrationComment, characterLimits.calibration.calibrationComment);
+        },
+        validateError,
+      },
+    ],
+  };
+
+  const validateWorksheet = (worksheet, config, sheetName) => {
+    console.log(`Validating ${sheetName}`);
 
     console.log(XLSX.utils.sheet_to_row_object_array(worksheet));
-    const modelCSV = XLSX.utils.sheet_to_csv(worksheet);
+    const csvFile = XLSX.utils.sheet_to_csv(worksheet);
 
-    CSVFileValidator(modelCSV, modelConfig)
-      .then((csvData) => {
-        console.log(csvData.inValidMessages);
-        console.log(csvData.data);
-      })
+    return CSVFileValidator(csvFile, config)
+      .then((csvData) => csvData.invalidMessages)
       .catch((err) => {
+        // TODO - handle error in overall file validation
         console.log(err);
       });
   };
 
-  // const parseInstruments = (worksheet) => {
-  //   console.log(XLSX.utils.sheet_to_row_object_array(worksheet));
-  // };
+  // const handleSheetValidationErrors(validationErrors, sheetName)
 
-  // const parseCalibration = (worksheet) => {
-  //   console.log(XLSX.utils.sheet_to_row_object_array(worksheet));
-  // };
+  const handleValidationErrors = (validationErrors) => {
+    console.log('Handling valiation errors');
+    console.log(validationErrors);
+
+    validationErrors.models
+      .then((result) => {
+        console.log(result);
+      });
+  };
 
   // Call a function (passed as a prop from the parent component)
   // to handle the user-selected file
   const handleUpload = (e) => {
     e.preventDefault();
+    const validationErrors = {
+      models: [],
+      instruments: [],
+      calibration: [],
+    };
 
     const { files } = e.target;
     const f = files[0];
@@ -137,11 +262,16 @@ export default function BulkImport() {
       // Validate sheet names are correct
 
       // Parse each worksheet by its sheet names
-      parseModels(readData.Sheets.Models);
-      // parseInstruments(readData.Sheets.Instruments);
-      // parseCalibration(readData.Sheets.Calibration);
+      validationErrors.models = validateWorksheet(readData.Sheets.Models, modelConfig, 'Models');
+      validationErrors.instruments = validateWorksheet(readData.Sheets.Instruments, instrumentConfig, 'Instruments');
+      validationErrors.calibration = validateWorksheet(readData.Sheets.Calibration, calibrationConfig, 'Calibration');
+
+      handleValidationErrors(validationErrors);
     };
+
     reader.readAsBinaryString(f);
+
+    // Handle any error messages
   };
 
   return (
