@@ -112,6 +112,13 @@ const typeDefs = gql`
       serialNumber: String!
       comment: String
     ): String!
+    editInstrument(
+      modelNumber: String!
+      vendor: String!
+      comment: String
+      serialNumber: String!
+      id: Int!
+    ): String!
     deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations

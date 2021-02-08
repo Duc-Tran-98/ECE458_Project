@@ -75,6 +75,37 @@ class InstrumentAPI extends DataSource {
     return null;
   }
 
+  async editInstrument({
+    modelNumber, vendor, serialNumber, comment, id,
+  }) {
+    const response = { message: '', success: true };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.getAllInstrumentsWithModel({
+      modelNumber,
+      vendor,
+    });// Get all instruments associated with model
+    instruments.forEach((element) => {
+      if (element.serialNumber === serialNumber && element.id !== id) {
+        response.message = 'ERROR: That model-serial number pair already exists!';
+        response.success = false;
+      }// check that there are no unique conflicts, but exclude ourselves
+    });
+    if (response.success) {
+      this.store.instruments.update(
+        {
+          modelNumber,
+          vendor,
+          serialNumber,
+          comment,
+        },
+        { where: { id } },
+      );
+      response.message = 'Successfully editted instrument!';
+    }
+    return JSON.stringify(response);
+  }
+
   async deleteInstrument({ id }) {
     const response = { message: '', success: false };
     const storeModel = await this.store;

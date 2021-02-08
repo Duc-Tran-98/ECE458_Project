@@ -142,7 +142,6 @@ function CreateInstrumentPage() {
             vendor={vendor}
             comment={comment}
             serialNumber={serialNumber}
-            handleSubmit={handleSubmit}
             changeHandler={changeHandler}
             validated={validated}
             onInputChange={onInputChange}
@@ -173,7 +172,6 @@ function CreateInstrumentPage() {
               vendor={vendor}
               comment={comment}
               serialNumber={serialNumber}
-              handleSubmit={handleSubmit}
               changeHandler={changeHandler}
               validated={validated}
               onInputChange={onInputChange}

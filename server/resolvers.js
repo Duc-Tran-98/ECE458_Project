@@ -24,23 +24,50 @@ module.exports = {
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     // eslint-disable-next-line max-len
-    getAllInstrumentsWithModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber, vendor }),
+    getAllInstrumentsWithModel: async (
+      _,
+      { modelNumber, vendor },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({
+      modelNumber,
+      vendor,
+    }),
     // eslint-disable-next-line max-len
-    getAllInstrumentsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber }),
+    getAllInstrumentsWithModelNum: async (
+      _,
+      { modelNumber },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({
+      modelNumber,
+    }),
     // eslint-disable-next-line max-len
     getAllInstrumentsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
-    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => await dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    getInstrument: async (
+      _,
+      { modelNumber, vendor, serialNumber },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+    }),
 
     // Calibration Queries
     // eslint-disable-next-line max-len
-    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({ limit, offset }),
+    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
+      limit,
+      offset,
+    }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, serialNumber },
       { dataSources },
-    // eslint-disable-next-line max-len
-    ) => dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({ modelNumber, vendor, serialNumber }),
+    ) => await dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+    }),
   },
   Mutation: {
     // eslint-disable-next-line max-len
@@ -75,6 +102,13 @@ module.exports = {
       });
       return response;
     },
+    // eslint-disable-next-line max-len
+    deleteInstrument: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.deleteInstrument({ id }),
+    editInstrument: async (_, {
+      modelNumber, vendor, serialNumber, comment, id,
+    }, { dataSources }) => await dataSources.instrumentAPI.editInstrument({
+      modelNumber, vendor, serialNumber, comment, id,
+    }),
     addInstrument: async (
       _,
       {
@@ -91,7 +125,6 @@ module.exports = {
       return response;
     },
     // eslint-disable-next-line max-len
-    deleteInstrument: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.deleteInstrument({ id }),
     addCalibrationEvent: async (
       _,
       {
