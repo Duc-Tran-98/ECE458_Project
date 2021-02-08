@@ -48,7 +48,7 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     await this.getModel({ modelNumber, vendor }).then((value) => {
       if (value) {
-        response.message = 'That model number and vendor pair already exists!';
+        response.message = `${vendor} ${modelNumber} already exists!`;
       } else {
         this.store.models.update(
           {
