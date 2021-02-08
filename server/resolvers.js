@@ -48,16 +48,16 @@ module.exports = {
     editModel: async (
       _,
       {
-        modelNumber, vendor, description, comment, calibrationFrequency, id,
+        id, modelNumber, vendor, description, comment, calibrationFrequency,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
+      id,
       modelNumber,
       vendor,
       description,
       comment,
       calibrationFrequency,
-      id,
     }),
     addModel: async (
       _,
@@ -99,6 +99,22 @@ module.exports = {
         modelNumber,
         vendor,
         serialNumber,
+      });
+      return response;
+    },
+    editInstrument: async (
+      _,
+      {
+        id, modelNumber, vendor, serialNumber, comment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.editInstrument({
+        id,
+        modelNumber,
+        vendor,
+        serialNumber,
+        comment,
       });
       return response;
     },
