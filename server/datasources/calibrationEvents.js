@@ -86,6 +86,31 @@ class CalibrationEventAPI extends DataSource {
     });
     return JSON.stringify(response);
   }
+
+  async deleteCalibrationEvent({ id }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.calibrationEvents.destroy({ where: { id } });
+    response.message = `Deleted Calibration Event with id ${id}`;
+    response.success = true;
+    return JSON.stringify(response);
+  }
+
+  async editCalibrationEvent({
+    user,
+    date,
+    comment,
+    id,
+  }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.calibrationEvents.update({ user, date, comment }, { where: { id } });
+    response.message = `Updated calibration event with ID: ${id}`;
+    response.success = true;
+    return JSON.stringify(response);
+  }
 }
 
 module.exports = CalibrationEventAPI;

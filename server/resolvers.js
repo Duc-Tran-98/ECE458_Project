@@ -23,7 +23,6 @@ module.exports = {
     // Instrument Queries
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
-    // eslint-disable-next-line max-len
     getAllInstrumentsWithModel: async (
       _,
       { modelNumber, vendor },
@@ -32,7 +31,6 @@ module.exports = {
       modelNumber,
       vendor,
     }),
-    // eslint-disable-next-line max-len
     getAllInstrumentsWithModelNum: async (
       _,
       { modelNumber },
@@ -42,7 +40,6 @@ module.exports = {
     }),
     // eslint-disable-next-line max-len
     getAllInstrumentsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithVendor({ vendor }),
-    // eslint-disable-next-line max-len
     getInstrument: async (
       _,
       { modelNumber, vendor, serialNumber },
@@ -54,8 +51,11 @@ module.exports = {
     }),
 
     // Calibration Queries
-    // eslint-disable-next-line max-len
-    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
+    getAllCalibrationEvents: (
+      _,
+      { limit, offset },
+      { dataSources },
+    ) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
       limit,
       offset,
     }),
@@ -142,6 +142,28 @@ module.exports = {
           comment,
         },
       );
+      return response;
+    },
+    deleteCalibrationEvent: async (_, { id }, { dataSources }) => {
+      const response = await dataSources.calibrationEventAPI.deleteCalibrationEvent({ id });
+      return response;
+    },
+    editCalibrationEvent: async (
+      _,
+      {
+        user,
+        date,
+        comment,
+        id,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.editCalibrationEvent({
+        user,
+        date,
+        comment,
+        id,
+      });
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {

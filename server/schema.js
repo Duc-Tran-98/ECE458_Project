@@ -92,6 +92,8 @@ const typeDefs = gql`
 
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
+    deleteCalibrationEvent(id: Int!): String!
+    editCalibrationEvent(user: String, date: String, comment: String, id: Int!): String!
   }
 `;
 

@@ -117,6 +117,7 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.destroy({ where: { id } });
+    await this.store.calibrationEvents.destroy({ where: { calibrationHistoryIdReference: id } });
     response.message = `Deleted Instrument with ID: ${id}`;
     response.success = true;
     return JSON.stringify(response);
