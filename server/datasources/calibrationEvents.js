@@ -53,6 +53,15 @@ class CalibrationEventAPI extends DataSource {
     return calibrationEvents;
   }
 
+  async getCalibrationEventsByReferenceId({ calibrationHistoryIdReference }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const calibrationEvents = await this.store.calibrationEvents.findAll(
+      { where: { calibrationHistoryIdReference } },
+    );
+    return calibrationEvents;
+  }
+
   async addCalibrationEvent({
     modelNumber,
     vendor,
@@ -82,6 +91,37 @@ class CalibrationEventAPI extends DataSource {
         response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {
         response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async addCalibrationEventById({
+    calibrationHistoryIdReference,
+    user,
+    date,
+    comment,
+  }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.findAll({
+      where: { id: calibrationHistoryIdReference },
+    }).then((instrument) => {
+      if (instrument && instrument[0]) {
+        if (!isValidDate(date)) { // checks if date is valid
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          return;
+        }
+        this.store.calibrationEvents.create({
+          calibrationHistoryIdReference,
+          user,
+          date,
+          comment,
+        });
+        response.message = `Added new calibration event to instrument ${instrument[0].dataValues.vendor} ${instrument[0].dataValues.modelNumber} ${instrument[0].dataValues.serialNumber}!`;
+      } else {
+        response.message = `ERROR: Instrument ${instrument[0].dataValues.vendor} ${instrument[0].dataValues.modelNumber} ${instrument[0].dataValues.serialNumber} does not exists`;
       }
     });
     return JSON.stringify(response);

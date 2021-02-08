@@ -68,6 +68,13 @@ module.exports = {
       vendor,
       serialNumber,
     }),
+    getCalibrationEventsByReferenceId: async (
+      _,
+      { calibrationHistoryIdReference },
+      { dataSources },
+    ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId(
+      { calibrationHistoryIdReference },
+    ),
   },
   Mutation: {
     // eslint-disable-next-line max-len
@@ -124,7 +131,6 @@ module.exports = {
       });
       return response;
     },
-    // eslint-disable-next-line max-len
     addCalibrationEvent: async (
       _,
       {
@@ -137,6 +143,23 @@ module.exports = {
           modelNumber,
           vendor,
           serialNumber,
+          user,
+          date,
+          comment,
+        },
+      );
+      return response;
+    },
+    addCalibrationEventById: async (
+      _,
+      {
+        calibrationHistoryIdReference, user, date, comment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEventById(
+        {
+          calibrationHistoryIdReference,
           user,
           date,
           comment,

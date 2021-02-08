@@ -35,6 +35,7 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): [CalibrationEvent]
+    getCalibrationEventsByReferenceId(calibrationHistoryIdReference: Int!): [CalibrationEvent]
   }
 
   type User {
@@ -92,6 +93,7 @@ const typeDefs = gql`
 
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
+    addCalibrationEventById(calibrationHistoryIdReference: Int!, date: String!, user: String! comment: String): String!
     deleteCalibrationEvent(id: Int!): String!
     editCalibrationEvent(user: String, date: String, comment: String, id: Int!): String!
   }
