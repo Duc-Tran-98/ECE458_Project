@@ -102,6 +102,24 @@ function CreateInstrumentPage() {
             handleResponse: handleRes,
           });
         }
+        // this section deals with resetting the form
+        setCalibHistory([
+          {
+            user: '',
+            date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
+            comment: '',
+            id: nextId,
+          },
+        ]);
+        setFormState({
+          // This state is for an instrument
+          modelNumber: '',
+          vendor: '',
+          comment: '',
+          serialNumber: '',
+          calibrationFrequency: 0,
+        });
+        setNextId(nextId + 1);
       }
     }
   };

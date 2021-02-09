@@ -139,8 +139,7 @@ class InstrumentAPI extends DataSource {
             response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
           } else {
             const modelReference = model[0].dataValues.id;
-            // eslint-disable-next-line prefer-destructuring
-            const calibrationFrequency = model[0].dataValues.calibrationFrequency;
+            const { description, calibrationFrequency } = model[0].dataValues;
             this.store.instruments.create({
               modelReference,
               vendor,
@@ -148,6 +147,7 @@ class InstrumentAPI extends DataSource {
               serialNumber,
               comment,
               calibrationFrequency,
+              description,
             });
             response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
             response.success = true;
