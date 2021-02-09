@@ -54,6 +54,7 @@ function ListModels() {
       setVendor(e.row.vendor);
       setWhich(e.field);
       setShow(true);
+      console.log(e);
     }
   };
   const closeModal = (bool) => {
@@ -72,7 +73,14 @@ function ListModels() {
     DeleteModel({ modelNumber, vendor, handleResponse: handleRes });
   };
   const cols = [
-    { field: 'id', headerName: 'Numb', width: 50 },
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 60,
+      hide: true,
+      disableColumnMenu: true,
+      type: 'number',
+    },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 300 },
@@ -80,6 +88,7 @@ function ListModels() {
       field: 'calibrationFrequency',
       headerName: 'Calibration Frequency',
       width: 200,
+      type: 'number',
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
@@ -107,42 +116,6 @@ function ListModels() {
       ),
     },
     {
-      field: 'edit',
-      headerName: ' ',
-      width: 60,
-      disableColumnMenu: true,
-      hide: !user.isAdmin,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="Edit Model">
-              <ButtonBase>
-                <EditIcon color="primary" />
-              </ButtonBase>
-            </MouseOverPopover>
-          </div>
-        </div>
-      ),
-    },
-    {
-      field: 'delete',
-      headerName: ' ',
-      width: 60,
-      disableColumnMenu: true,
-      hide: !user.isAdmin,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="Delete Model">
-              <ButtonBase>
-                <DeleteIcon color="secondary" />
-              </ButtonBase>
-            </MouseOverPopover>
-          </div>
-        </div>
-      ),
-    },
-    {
       field: 'view',
       headerName: ' ',
       width: 60,
@@ -160,6 +133,44 @@ function ListModels() {
       ),
     },
   ];
+  if (user.isAdmin) {
+    cols.push(
+      {
+        field: 'edit',
+        headerName: ' ',
+        width: 60,
+        disableColumnMenu: true,
+        renderCell: () => (
+          <div className="row">
+            <div className="col mt-1">
+              <MouseOverPopover message="Edit Model">
+                <ButtonBase>
+                  <EditIcon color="primary" />
+                </ButtonBase>
+              </MouseOverPopover>
+            </div>
+          </div>
+        ),
+      },
+      {
+        field: 'delete',
+        headerName: ' ',
+        width: 60,
+        disableColumnMenu: true,
+        renderCell: () => (
+          <div className="row">
+            <div className="col mt-1">
+              <MouseOverPopover message="Delete Model">
+                <ButtonBase>
+                  <DeleteIcon color="secondary" />
+                </ButtonBase>
+              </MouseOverPopover>
+            </div>
+          </div>
+        ),
+      },
+    );
+  }
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>

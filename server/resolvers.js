@@ -23,24 +23,58 @@ module.exports = {
     // Instrument Queries
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
-    // eslint-disable-next-line max-len
-    getAllInstrumentsWithModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber, vendor }),
-    // eslint-disable-next-line max-len
-    getAllInstrumentsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({ modelNumber }),
+    getAllInstrumentsWithModel: async (
+      _,
+      { modelNumber, vendor },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({
+      modelNumber,
+      vendor,
+    }),
+    getAllInstrumentsWithModelNum: async (
+      _,
+      { modelNumber },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({
+      modelNumber,
+    }),
     // eslint-disable-next-line max-len
     getAllInstrumentsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentsWithVendor({ vendor }),
-    // eslint-disable-next-line max-len
-    getInstrument: async (_, { modelNumber, vendor, serialNumber }, { dataSources }) => await dataSources.instrumentAPI.getInstrument({ modelNumber, vendor, serialNumber }),
+    getInstrument: async (
+      _,
+      { modelNumber, vendor, serialNumber },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+    }),
 
     // Calibration Queries
-    // eslint-disable-next-line max-len
-    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({ limit, offset }),
+    getAllCalibrationEvents: (
+      _,
+      { limit, offset },
+      { dataSources },
+    ) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
+      limit,
+      offset,
+    }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, serialNumber },
       { dataSources },
-    // eslint-disable-next-line max-len
-    ) => dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({ modelNumber, vendor, serialNumber }),
+    ) => await dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+    }),
+    getCalibrationEventsByReferenceId: async (
+      _,
+      { calibrationHistoryIdReference },
+      { dataSources },
+    ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId(
+      { calibrationHistoryIdReference },
+    ),
   },
   Mutation: {
     bulkImportData: async (
@@ -59,16 +93,16 @@ module.exports = {
     editModel: async (
       _,
       {
-        modelNumber, vendor, description, comment, calibrationFrequency, id,
+        id, modelNumber, vendor, description, comment, calibrationFrequency,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
+      id,
       modelNumber,
       vendor,
       description,
       comment,
       calibrationFrequency,
-      id,
     }),
     addModel: async (
       _,
@@ -86,6 +120,13 @@ module.exports = {
       });
       return response;
     },
+    // eslint-disable-next-line max-len
+    deleteInstrument: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.deleteInstrument({ id }),
+    editInstrument: async (_, {
+      modelNumber, vendor, serialNumber, comment, id,
+    }, { dataSources }) => await dataSources.instrumentAPI.editInstrument({
+      modelNumber, vendor, serialNumber, comment, id,
+    }),
     addInstrument: async (
       _,
       {
@@ -118,6 +159,45 @@ module.exports = {
           comment,
         },
       );
+      return response;
+    },
+    addCalibrationEventById: async (
+      _,
+      {
+        calibrationHistoryIdReference, user, date, comment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEventById(
+        {
+          calibrationHistoryIdReference,
+          user,
+          date,
+          comment,
+        },
+      );
+      return response;
+    },
+    deleteCalibrationEvent: async (_, { id }, { dataSources }) => {
+      const response = await dataSources.calibrationEventAPI.deleteCalibrationEvent({ id });
+      return response;
+    },
+    editCalibrationEvent: async (
+      _,
+      {
+        user,
+        date,
+        comment,
+        id,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.editCalibrationEvent({
+        user,
+        date,
+        comment,
+        id,
+      });
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {

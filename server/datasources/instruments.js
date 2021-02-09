@@ -75,13 +75,61 @@ class InstrumentAPI extends DataSource {
     return null;
   }
 
+  async editInstrument({
+    modelNumber, vendor, serialNumber, comment, id,
+  }) {
+    const response = { message: '', success: true };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
+    if (model[0] == null) {
+      response.message = 'ERROR: The model that is being changed to is not valid!';
+      response.success = false;
+      return JSON.stringify(response);
+    }
+    const instruments = await this.getAllInstrumentsWithModel({
+      modelNumber,
+      vendor,
+    });// Get all instruments associated with model
+    instruments.forEach((element) => {
+      if (element.serialNumber === serialNumber && element.id !== id) {
+        response.message = 'ERROR: That model-serial number pair already exists!';
+        response.success = false;
+      }// check that there are no unique conflicts, but exclude ourselves
+    });
+    if (response.success) {
+      this.store.instruments.update(
+        {
+          modelNumber,
+          vendor,
+          serialNumber,
+          comment,
+        },
+        { where: { id } },
+      );
+      response.message = 'Successfully editted instrument!';
+    }
+    return JSON.stringify(response);
+  }
+
+  async deleteInstrument({ id }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.destroy({ where: { id } });
+    await this.store.calibrationEvents.destroy({ where: { calibrationHistoryIdReference: id } });
+    response.message = `Deleted Instrument with ID: ${id}`;
+    response.success = true;
+    return JSON.stringify(response);
+  }
+
   async addInstrument({
     modelNumber,
     vendor,
     serialNumber,
     comment,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
@@ -91,19 +139,18 @@ class InstrumentAPI extends DataSource {
             response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
           } else {
             const modelReference = model[0].dataValues.id;
-            // eslint-disable-next-line prefer-destructuring
-            const calibrationFrequency = model[0].dataValues.calibrationFrequency;
-            const isCalibratable = (calibrationFrequency > 0);
+            const { description, calibrationFrequency } = model[0].dataValues;
             this.store.instruments.create({
               modelReference,
               vendor,
               modelNumber,
               serialNumber,
-              isCalibratable,
               comment,
               calibrationFrequency,
+              description,
             });
-            response.message = `Added new instrument: ${vendor} ${modelNumber} ${serialNumber}!`;
+            response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            response.success = true;
           }
         });
       } else {
