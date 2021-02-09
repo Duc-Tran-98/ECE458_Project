@@ -12,6 +12,7 @@ import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import EditInstrument from '../components/EditInstrument';
+import GetCalibHistory from '../queries/GetCalibHistory';
 
 function ListInstruments() {
   // const user = useContext(UserContext);
@@ -36,7 +37,6 @@ function ListInstruments() {
         vendor
         modelNumber
         serialNumber
-        modelReference
         description
         calibrationFrequency
       }
@@ -46,7 +46,7 @@ function ListInstruments() {
   const queryName = 'getAllInstruments';
   const handleResponse = (response) => {
     // console.log(`getAllInstruments\n${response}`);
-    console.log(response);
+    // console.log(response);
     setInstruments(response);
   };
   if (!queried) {
@@ -61,6 +61,7 @@ function ListInstruments() {
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setShow(true);
+      GetCalibHistory({ id: e.row.id });
     }
   };
   const closeModal = (bool) => {
