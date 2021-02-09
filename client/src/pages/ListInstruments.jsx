@@ -1,11 +1,10 @@
+/* eslint-disable max-len */
 import { useState, useContext } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
-import Query from '../components/UseQuery';
+import GetAllInstruments from '../queries/GetAllInstruments';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
@@ -30,28 +29,36 @@ function ListInstruments() {
   const [serialNumber, setSerialNumber] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
-  const GET_INSTRUMENTS_QUERY = gql`
-    query Instruments {
-      getAllInstruments {
-        id
-        vendor
-        modelNumber
-        serialNumber
-        description
-        calibrationFrequency
-      }
-    }
-  `;
-  const query = print(GET_INSTRUMENTS_QUERY);
-  const queryName = 'getAllInstruments';
   const handleResponse = (response) => {
     // console.log(`getAllInstruments\n${response}`);
-    // console.log(response);
+    response.forEach((element) => {
+      GetCalibHistory({
+        id: element.id,
+        mostRecent: true,
+        dateOnly: true,
+      }).then((value) => {
+        // eslint-disable-next-line no-param-reassign
+        element.date = (value) ? value.date : 'No history found';
+      });
+    });
     setInstruments(response);
   };
   if (!queried) {
     setQueried(true);
-    Query({ query, queryName, handleResponse });
+    GetAllInstruments({ handleResponse });
+    // const newCopy = rows;
+    // // console.log(response);
+    // rows.forEach((element) => {
+    //   GetCalibHistory({
+    //     id: element.id,
+    //     mostRecent: true,
+    //     dateOnly: true,
+    //   }).then((value) => {
+    //     const compositeData = { ...element, ...value }; // combine data objects
+    //     newCopy.push(compositeData); // put into new array
+    //   });
+    // });
+    // console.log(newCopy);
   }
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
@@ -61,7 +68,7 @@ function ListInstruments() {
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setShow(true);
-      GetCalibHistory({ id: e.row.id });
+      // GetCalibHistory({ id: e.row.id });
     }
   };
   const closeModal = (bool) => {
@@ -69,7 +76,7 @@ function ListInstruments() {
     setWhich('');
     if (bool) {
       // If updated successfully, update rows
-      Query({ query, queryName, handleResponse });
+      GetAllInstruments({ handleResponse });
     }
   };
   const handleRes = (response) => {
@@ -91,39 +98,9 @@ function ListInstruments() {
     },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 250 },
+    { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
-    {
-      field: 'calibrationFrequency',
-      headerName: 'Calibration Frequency',
-      width: 200,
-      type: 'number',
-      renderCell: (params) => (
-        <div className="row">
-          <div className="col mt-3">
-            {params.value === 0 ? (
-              <MouseOverPopover message="Instrument not calibratable">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="#f78102"
-                  className="bi bi-calendar-x"
-                  viewBox="0 0 32 32"
-                >
-                  {/* eslint-disable-next-line max-len */}
-                  <path d="M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708z" />
-                  {/* eslint-disable-next-line max-len */}
-                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-                </svg>
-              </MouseOverPopover>
-            ) : (
-              params.value
-            )}
-          </div>
-        </div>
-      ),
-    },
+    { field: 'date', headerName: 'Most Recent Calibration Date', width: 250 },
     {
       field: 'view',
       headerName: ' ',
@@ -226,7 +203,8 @@ function ListInstruments() {
           </div>
         )}
       </ModalAlert>
-      {DisplayGrid({ rows, cols, cellHandler })}
+      {/* eslint-disable-next-line object-shorthand */}
+      {DisplayGrid({ rows: rows, cols, cellHandler })}
     </div>
   );
 }
@@ -248,4 +226,36 @@ export default ListInstruments;
             viewOnly
           />
         )}
+            {
+      field: 'calibrationFrequency',
+      headerName: 'Calibration Frequency',
+      width: 200,
+      type: 'number',
+      renderCell: (params) => (
+        <div className="row">
+          <div className="col mt-3">
+            {params.value === 0 ? (
+              <MouseOverPopover message="Instrument not calibratable">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  fill="#f78102"
+                  className="bi bi-calendar-x"
+                  viewBox="0 0 32 32"
+                >
+
+                  // eslint-disable-next-line max-len
+                  <path d="M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708z" />
+
+                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                </svg>
+              </MouseOverPopover>
+            ) : (
+              params.value
+            )}
+          </div>
+        </div>
+      ),
+    },
 */
