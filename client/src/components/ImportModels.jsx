@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CSVReader from 'react-csv-reader';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import Query from './UseQuery';
+import ModalAlert from './ModalAlert';
 
 export default function ImportModels() {
   // mutation {
@@ -14,27 +15,47 @@ export default function ImportModels() {
   //         {vendor: "c", modelNumber: "mod1", description: "3", comment: "third model", calibrationFrequency: 12},
   //     ]
 
-  const IMPORT_MODELS = gql`
-      mutation {
-        input ModelObject {
-          $vendor: String!
-          $modelNumber: String!
-          $description: String!
-          $comment: String!
-          $calibrationFrequency: Int!
-        }
-        bulkImportData(
+  const [show, setShow] = useState(false);
+  const closeModal = () => {
+    setShow(false);
+  };
 
-        )
-        getInstrument(
-          vendor: $vendor
-          modelNumber: $modelNumber
-          description: $description
-          comment: $comment
-          calibrationFrequency: $calibrationFrequency
-        )
-        }
-    `;
+  // TODO: Fix gql query
+  const IMPORT_MODELS = gql`
+    input ModelInput {
+      vendor: String!
+      modelNumber: String!
+      shortDescription: String!
+      comment: String
+      calibrationFrequency: Int
+    }
+    mutation ImportModels(
+      $data: [ModelInput]!
+    ) {
+      bulkImportData(
+        models: [ModelInput]
+        instruments: []
+      )
+    }
+  
+  `;
+  // const IMPORT_MODELS = gql`
+  //     mutation ImportModels(
+  //         $vendor: String!
+  //         $modelNumber: String!
+  //         $shortDescription: String!
+  //         $comment: String!
+  //         $calibrationFrequency: Int!
+  //       ) {
+  //         bulkImportData(
+  //           vendor: $vendor
+  //           modelNumber: $modelNumber
+  //           description: $shortDescription
+  //           comment: $comment
+  //           calibrationFrequency: $calibrationFrequency
+  //         )
+  //       }
+  //   `;
 
   const characterLimits = {
     model: {
@@ -50,11 +71,6 @@ export default function ImportModels() {
   //       modelNumber: 40,
   //       serialNumber: 40,
   //       comment: 200,
-  //     },
-  //     calibration: {
-  //       vendor: 30,
-  //       modelNumber: 40,
-  //       serialNumber: 40,
   //       calibrationUsername: 50,
   //       calibrationDate: 20,
   //       calibrationComment: 200,
@@ -78,7 +94,6 @@ export default function ImportModels() {
     // Check all headers in data:
     const missingKeys = [];
     data.forEach((item, index) => {
-      console.log(requiredHeaders);
       console.log(item);
       if (!checkAllKeys(item, requiredHeaders)) {
         missingKeys.push(index);
@@ -88,7 +103,6 @@ export default function ImportModels() {
   };
 
   const checkDuplicateModels = (data) => {
-    console.log('Checking duplicate models');
     const duplicateModels = [];
     const modelMap = new Map();
 
@@ -155,6 +169,7 @@ export default function ImportModels() {
     const missingKeys = validateKeys(data);
     if (missingKeys.length) {
       console.log(`ERROR: Missing keys in rows: ${missingKeys}`);
+      setShow(true);
       return;
     }
 
@@ -176,19 +191,36 @@ export default function ImportModels() {
     // Now all fields have been validated, time to attempt a db push...
     const query = print(IMPORT_MODELS);
     const queryName = 'bulkImportData';
+    // const {
+    //   vendor, modelNumber, comment, calibrationFrequency, shortDescription,
+    // } = data[0];
+    // console.log(`vendor: ${vendor}, modelNumber: ${modelNumber}, comment: ${comment}, calibrationFrequency: ${calibrationFrequency}, description: ${shortDescription}`);
+    // const getVariables = () => ({
+    //   vendor, modelNumber, comment, calibrationFrequency, shortDescription,
+    // });
+
+    const getVariables = () => ({
+      data,
+    });
     const handleResponse = (response) => {
+      console.log('Query Response:');
       console.log(response);
     };
+    console.log('Sending query for bulk import...');
     Query({
       query,
       queryName,
+      getVariables,
       handleResponse,
     });
   };
 
   return (
     <>
-
+      <ModalAlert handleClose={closeModal} show={show} title="Error Message">
+        <h2>This is an error header</h2>
+      </ModalAlert>
+      {/* Another component inside to dynamically render information */}
       <CSVReader
         cssClass="csv-reader-input m-2 primary"
         label=""
