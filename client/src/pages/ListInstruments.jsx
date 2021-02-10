@@ -33,14 +33,14 @@ function ListInstruments() {
   const [id, setId] = useState('');
   const handleResponse = (response) => {
     response.forEach((element) => {
-      GetCalibHistory({
+      GetCalibHistory({ // Get calibration history for each instrument
         id: element.id,
         mostRecent: true,
         dateOnly: true,
       }).then((value) => {
         const today = new Date();
         // eslint-disable-next-line no-param-reassign
-        element.date = value ? value.date : 'No history found';
+        element.date = value ? value.date : 'No history found'; // If there's an entry, assign it
         // eslint-disable-next-line no-param-reassign
         element.calibrationStatus = 'NA';
         if (value) {
