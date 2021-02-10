@@ -128,13 +128,13 @@ class BulkDataAPI extends DataSource {
       const calibrationComment = currentInstrument.calibrationComment;
       if (calibrationUser == null && calibrationDate != null
         || calibrationUser != null && calibrationDate == null) {
-        this.response.errorList.push(`ERROR: Calibration event for instrument ${vendor} ${modelNumber} ${serialNumber} must have user and date`);
+        this.response.errorList.push(`ERROR: (Malformed Input) Calibration event for instrument ${vendor} ${modelNumber} ${serialNumber} must have user and date`);
         // eslint-disable-next-line no-continue
         continue;
       }
 
       if (calibrationDate != null && !isValidDate(calibrationDate)) {
-        this.response.errorList.push(`ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} Date must be in format YYYY-MM-DD`);
+        this.response.errorList.push(`ERROR: (Malformed Input) Instrument ${vendor} ${modelNumber} ${serialNumber} Date must be in format YYYY-MM-DD`);
         // eslint-disable-next-line no-continue
         continue;
       }
@@ -145,7 +145,7 @@ class BulkDataAPI extends DataSource {
             modelNumber, vendor, serialNumber,
           }).then(async (instrument) => {
             if (instrument) {
-              this.response.errorList.push(`ERROR: Cannot add instrument ${vendor} ${modelNumber} ${serialNumber} already exists`);
+              this.response.errorList.push(`ERROR: (Duplicate Input) Cannot add instrument ${vendor} ${modelNumber} ${serialNumber} already exists`);
             } else {
               const modelReference = model[0].dataValues.id;
               // eslint-disable-next-line prefer-destructuring
@@ -176,7 +176,7 @@ class BulkDataAPI extends DataSource {
             }
           });
         } else {
-          this.response.errorList.push(`ERROR: Cannot add instrument, model ${vendor} ${modelNumber} does not exist`);
+          this.response.errorList.push(`ERROR: (Invalid Input) Cannot add instrument, model ${vendor} ${modelNumber} does not exist`);
         }
       });
     }
@@ -223,7 +223,7 @@ class BulkDataAPI extends DataSource {
         if (value) {
           // invalid model
           this.response.success = false;
-          this.response.errorList.push(`Model ${vendor} ${modelNumber} already exists!`);
+          this.response.errorList.push(`ERROR (Duplicate Input) Model ${vendor} ${modelNumber} already exists!`);
         } else {
           await this.store.models.create({
             vendor,
