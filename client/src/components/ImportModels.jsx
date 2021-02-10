@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import CSVReader from 'react-csv-reader';
 import { camelCase } from 'lodash';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import ModalAlert from './ModalAlert';
-// import { gql } from '@apollo/client';
-// import { print } from 'graphql';
-// import Query from './UseQuery';
+import ImportError from './ImportError';
+import Query from './UseQuery';
 
 export default function ImportModels() {
   // mutation {
@@ -15,35 +16,39 @@ export default function ImportModels() {
   //         {vendor: "c", modelNumber: "mod1", description: "3", comment: "third model", calibrationFrequency: 12},
   //     ]
 
+  const [allRowErrors, setAllRowErrors] = useState([]);
   const [show, setShow] = useState(false);
   const closeModal = () => {
     setShow(false);
   };
 
   // TODO: Fix gql query
-  // const IMPORT_MODELS = gql`
-  //   type ModelType {
-  //     vendor: String!
-  //     modelNumber: String!
-  //     shortDescription: String!
-  //     comment: String
-  //     calibrationFrequency: Int
-  //   }
-  //   input ModelInput {
-  //     vendor: String!
-  //     modelNumber: String!
-  //     shortDescription: String!
-  //     comment: String
-  //     calibrationFrequency: Int
-  //   }
-  //   mutation ImportModels(
-  //     $data: [ModelInput]!
-  //   ) {
-  //     bulkImportData(
-  //       models: [ModelInput]
-  //     )
-  //   }
-  // `;
+  const IMPORT_MODELS = gql`
+    type ModelType {
+      vendor: String!
+      modelNumber: String!
+      description: String!
+      comment: String
+      calibrationFrequency: Int
+    }
+
+    input ModelInput {
+      vendor: String!
+      modelNumber: String!
+      description: String!
+      comment: String
+      calibrationFrequency: Int
+    }
+
+    mutation ImportModels(
+      $data: [ModelInput]!
+    ) {
+      bulkImportData(
+        models: $data
+        instruments: []
+      )
+    }
+  `;
 
   // FIXME: Might need to add instruments to bulk import query
   // var MovieSchema = `
@@ -62,7 +67,7 @@ export default function ImportModels() {
     model: {
       vendor: 30,
       modelNumber: 40,
-      shortDescription: 100,
+      description: 100,
       comment: 2000,
       calibrationFrequency: 10,
     },
@@ -72,13 +77,13 @@ export default function ImportModels() {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
-    transformHeader: (header) => camelCase(header),
+    transformHeader: (header) => ((header === 'Short-Description') ? 'description' : camelCase(header)),
   };
 
   // NOTE: Headers have been modified by lodash to be camelCase for ease of import
-  const requiredHeaders = ['vendor', 'modelNumber', 'shortDescription'];
+  const requiredHeaders = ['vendor', 'modelNumber', 'description'];
 
-  // TODO: Refactor missingKey to match original import
+  // TODO: Refactor missingKey to match original import (e.g. 'modelNumber' -> 'Model-Number')
   const getMissingKeys = (row, keys) => {
     const missingKeys = [];
     keys.forEach((item) => {
@@ -108,7 +113,7 @@ export default function ImportModels() {
     if (row.modelNumber && row.modelNumber.length > characterLimits.model.modelNumber) {
       invalidKeys.push('Model-Number');
     }
-    if (row.shortDescription && row.shortDescription.length > characterLimits.model.shortDescription) {
+    if (row.description && row.description.length > characterLimits.model.description) {
       invalidKeys.push('Short-Description');
     }
     if (row.comment && row.comment.length > characterLimits.model.comment) {
@@ -123,7 +128,7 @@ export default function ImportModels() {
   const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
 
   const handleCSVReader = (data /* , fileInfo */) => {
-    const allRowErrors = [];
+    const importRowErrors = [];
     data.forEach((row, index) => {
       // Check missing keys
       const missingKeys = getMissingKeys(row, requiredHeaders);
@@ -149,37 +154,54 @@ export default function ImportModels() {
           ...(isDuplicateModel) && { isDuplicateModel },
           ...(invalidCalibration) && { invalidCalibration },
         };
-        allRowErrors.push(rowError);
+        importRowErrors.push(rowError);
       }
     });
 
-    console.log('All Row Errors: ');
-    console.log(allRowErrors);
+    // Show modal alert
+    if (importRowErrors.length > 0) {
+      console.log(importRowErrors);
+      console.log('Errors found, setting allRowErrors to importRowErrors');
+      console.log('importRowErrors: ');
+      console.log(importRowErrors);
+      console.log('Before setAllRowErrors: ');
+      console.log(allRowErrors);
+      console.log('setAllRowErrors: ');
+      setAllRowErrors(importRowErrors);
+      // Async call
+      // setAllRowErrors(importRowErrors, () => {
+      //   setShow(true);
+      // });
+      console.log('After setAllRowErrors: ');
+      console.log(allRowErrors);
+      setShow(true);
+    } else {
+      console.log(data);
+      // Now all fields have been validated, time to attempt a db push...
+      const query = print(IMPORT_MODELS);
+      const queryName = 'bulkImportData';
 
-    // // Now all fields have been validated, time to attempt a db push...
-    // const query = print(IMPORT_MODELS);
-    // const queryName = 'bulkImportData';
-
-    // const getVariables = () => ({
-    //   data,
-    // });
-    // const handleResponse = (response) => {
-    //   console.log('Query Response:');
-    //   console.log(response);
-    // };
-    // console.log('Sending query for bulk import...');
-    // Query({
-    //   query,
-    //   queryName,
-    //   getVariables,
-    //   handleResponse,
-    // });
+      const getVariables = () => ({
+        data,
+      });
+      const handleResponse = (response) => {
+        console.log('Query Response:');
+        console.log(response);
+      };
+      console.log('Sending query for bulk import...');
+      Query({
+        query,
+        queryName,
+        getVariables,
+        handleResponse,
+      });
+    }
   };
 
   return (
     <>
       <ModalAlert handleClose={closeModal} show={show} title="Error Message">
-        <h2>This is an error header</h2>
+        <ImportError props={allRowErrors} />
       </ModalAlert>
       {/* Another component inside to dynamically render information */}
       <CSVReader
