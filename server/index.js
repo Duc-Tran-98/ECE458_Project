@@ -32,7 +32,6 @@ const server = new ApolloServer({
     // find a user by their email
     const users = await store.users.findOrCreate({ where: { email } });
     const user = (users && users[0]) || null;
-    // console.log(user);
     return { user: { ...user.dataValues } };
   },
   // Additional constructor options
@@ -47,5 +46,4 @@ server.listen().then(() => {
     Listening on port 4000
     Explore at https://studio.apollographql.com/dev
   `);
-  // console.log("datasources: " + dataSources.userAPI);
 });

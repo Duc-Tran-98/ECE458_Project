@@ -31,7 +31,6 @@ export default function InstrumentForm({
   viewOnly,
   modelNumber,
   vendor,
-  val,
 }) {
   InstrumentForm.propTypes = {
     // eslint-disable-next-line react/require-default-props
@@ -47,14 +46,12 @@ export default function InstrumentForm({
     onInputChange: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
-    // eslint-disable-next-line react/forbid-prop-types
-    val: PropTypes.object,
   };
   InstrumentForm.defaultProps = {
-    val: null,
     handleSubmit: null,
     viewOnly: false,
   };
+  const val = modelNumber.length > 0 ? { modelNumber, vendor } : null;
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;

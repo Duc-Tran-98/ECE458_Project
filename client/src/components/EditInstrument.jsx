@@ -51,7 +51,6 @@ class EditInstrument extends Component {
     const { modelNumber, vendor, serialNumber } = this.state;
     const getVariables = () => ({ modelNumber, vendor, serialNumber });
     const handleResponse = (response) => {
-      // console.log(response);
       const { comment, id } = response;
       this.setState({
         comment,
@@ -75,7 +74,6 @@ class EditInstrument extends Component {
         comment, id, modelNumber, vendor, serialNumber,
       } = this.state;
       this.setState({ validated: true });
-      console.log(comment, id);
       const handleResponse = (response) => {
         if (response.success) {
           this.handleClose(true);
@@ -139,7 +137,6 @@ class EditInstrument extends Component {
 
   onInputChange(e, v) {
     // This if for updating instrument's fields from autocomplete input
-    // console.log(e, v);
     this.setState({
       modelNumber: v.modelNumber,
       vendor: v.vendor,
@@ -148,7 +145,6 @@ class EditInstrument extends Component {
 
   changeHandler(e) {
     const { viewOnly } = this.state;
-    // console.log(e);
     if (typeof viewOnly === 'undefined' || !viewOnly) {
       this.setState({ [e.target.name]: e.target.value });
     }
