@@ -89,6 +89,9 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     comment: String
+    calibrationUser: String
+    calibrationDate: String
+    calibrationComment: String
   }
 
   input CalibrationEventInput {
@@ -120,7 +123,8 @@ const typeDefs = gql`
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
 
     #bulk import
-    bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
+    # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
+    bulkImportData(models: [ModelInput], instruments: [InstrumentInput]): String!
     addCalibrationEventById(calibrationHistoryIdReference: Int!, date: String!, user: String! comment: String): String!
     deleteCalibrationEvent(id: Int!): String!
     editCalibrationEvent(user: String, date: String, comment: String, id: Int!): String!
