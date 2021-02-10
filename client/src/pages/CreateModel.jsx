@@ -62,10 +62,19 @@ function CreateModelPage() {
     //     vendor: v.vendor,
     //   });
     // }
-    setFormState({
-      ...formState,
-      vendor: v.vendor,
-    });
+    console.log(e);
+    console.log(v);
+    if (v.inputValue) {
+      setFormState({
+        ...formState,
+        vendor: v.inputValue,
+      });
+    } else {
+      setFormState({
+        ...formState,
+        vendor: v.vendor,
+      });
+    }
   };
   const user = useContext(UserContext);
   if (!user.isAdmin) {

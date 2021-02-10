@@ -81,6 +81,7 @@ export default function ModelForm({
                 getOptionSelected={formatSelected}
                 getOptionLabel={formatOption}
                 value={val}
+                allowAdditions
               />
             )}
           </Form.Group>
