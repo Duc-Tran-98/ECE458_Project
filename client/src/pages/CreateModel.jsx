@@ -1,12 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
+import CreateModel from '../queries/CreateModel';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
-import Query from '../components/UseQuery';
 import ModelForm from '../components/ModelForm';
 
-function CreateModel() {
+function CreateModelPage() {
   const [validated, setValidated] = useState(false);
   const [formState, setFormState] = useState({
     modelNumber: '', vendor: '', description: '', comment: '', calibrationFrequency: '0',
@@ -25,22 +23,17 @@ function CreateModel() {
       const {
         modelNumber, vendor, description, comment,
       } = formState;
-      const ADD_MODEL = gql`
-        mutation AddModel($modelNumber: String!, $vendor: String!, $description: String!, $comment: String, $calibrationFrequency: Int) {
-          addModel(modelNumber: $modelNumber, vendor: $vendor, comment: $comment, description: $description, calibrationFrequency: $calibrationFrequency)
-        }
-      `;
-      const query = print(ADD_MODEL);
-      const queryName = 'addModel';
-      const getVariables = () => ({
-        modelNumber, vendor, description, comment, calibrationFrequency,
-      });
       const handleResponse = (response) => {
         // eslint-disable-next-line no-alert
         alert(response.message);
       };
-      Query({
-        query, queryName, getVariables, handleResponse,
+      CreateModel({
+        modelNumber,
+        vendor,
+        description,
+        comment,
+        calibrationFrequency,
+        handleResponse,
       });
     }
 
@@ -49,6 +42,20 @@ function CreateModel() {
 
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
+  };
+  const onInputChange = (e, v) => {
+    // This if for model's instrument's fields from autocomplete input
+    if (v.inputValue) { // If use inputs a new value
+      setFormState({
+        ...formState,
+        vendor: v.inputValue,
+      });
+    } else { // Else they picked an existing option
+      setFormState({
+        ...formState,
+        vendor: v.vendor,
+      });
+    }
   };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
@@ -68,9 +75,10 @@ function CreateModel() {
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={validated}
+        onInputChange={onInputChange}
       />
     </div>
   );
 }
 
-export default CreateModel;
+export default CreateModelPage;

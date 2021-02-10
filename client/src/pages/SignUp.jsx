@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
-import Query from '../components/UseQuery';
+import CreateUser from '../queries/CreateUser';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import NeedsValidation from '../components/NeedsValidation';
@@ -48,44 +46,12 @@ const SignUp = () => {
       isAdmin,
     } = formState;
     if (validateState() && true) {
-      const SIGNUP_MUTATION = gql`
-        mutation SignupMutation(
-          $email: String!
-          $password: String!
-          $firstName: String!
-          $lastName: String!
-          $userName: String!
-          $isAdmin: Boolean!
-        ) {
-          signup(
-            email: $email
-            password: $password
-            firstName: $firstName
-            lastName: $lastName
-            userName: $userName
-            isAdmin: $isAdmin
-          )
-        }
-      `;
-      const getVariables = () => ({
-        firstName,
-        lastName,
-        email,
-        password,
-        userName,
-        isAdmin,
-      });
-      const query = print(SIGNUP_MUTATION);
-      const queryName = 'signup';
       const handleResponse = (response) => {
         // eslint-disable-next-line no-alert
         alert(response.message);
       };
-      Query({
-        query,
-        queryName,
-        getVariables,
-        handleResponse,
+      CreateUser({
+        firstName, lastName, email, password, userName, isAdmin, handleResponse,
       });
     }
   };

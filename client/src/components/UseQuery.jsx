@@ -20,10 +20,29 @@ const Query = ({
     .post(route, data)
     .then((res) => {
       response = (typeof res.data.data[queryName] === 'string') ? JSON.parse(res.data.data[queryName]) : res.data.data[queryName];
-      // console.log(response);
       handleResponse(response);
     })
     .catch((err) => console.error(err));
 };
+
+export async function QueryAndThen({
+  query,
+  queryName,
+  getVariables,
+}) {
+  QueryAndThen.propTypes = {
+    query: PropTypes.string.isRequired, // This is the gql query printed
+    queryName: PropTypes.string.isRequired, // This is the name of the query
+    getVariables: PropTypes.func, // This is how we get the variables to pass into the query
+  };
+  const data = getVariables ? { query, variables: getVariables() } : { query };
+  // eslint-disable-next-line no-return-await
+  return await axios
+    .post(route, data)
+    .then((res) => (typeof res.data.data[queryName] === 'string'
+      ? JSON.parse(res.data.data[queryName])
+      : res.data.data[queryName]))
+    .catch((err) => console.error(err));
+}
 
 export default Query;

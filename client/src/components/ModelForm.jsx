@@ -2,9 +2,22 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
+import AsyncSuggest from './AsyncSuggest';
+
+const GET_MODELS_QUERY = gql`
+  query Models {
+    getAllModels {
+      vendor
+    }
+  }
+`;
+const query = print(GET_MODELS_QUERY);
+const queryName = 'getAllModels';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly,
+  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -17,8 +30,12 @@ export default function ModelForm({
     validated: PropTypes.bool.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
+    onInputChange: PropTypes.func.isRequired, // This what to do when autocomplete value changes
   };
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
+  const formatOption = (option) => `${option.vendor}`;
+  const formatSelected = (option, value) => option.vendor === value.vendor;
+  const val = { vendor };
   return (
     <Form
       className="needs-validation bg-light rounded"
@@ -45,20 +62,28 @@ export default function ModelForm({
           </Form.Group>
         </div>
         <div className="col mt-2">
-          <Form.Group controlId="formVendor">
+          <Form.Group>
             <Form.Label className="h4">Vendor</Form.Label>
-            <Form.Control
-              name="vendor"
-              type="text"
-              placeholder="Vendor"
-              required
-              value={vendor}
-              onChange={changeHandler}
-              disabled={disabled}
-            />
-            <Form.Control.Feedback type="invalid">
-              Please enter a valid vendor.
-            </Form.Control.Feedback>
+            {viewOnly ? (
+              <Form.Control
+                type="text"
+                name="modelSelection"
+                value={`${vendor} ${modelNumber}`}
+                onChange={changeHandler}
+                disabled={disabled}
+              />
+            ) : (
+              <AsyncSuggest
+                query={query}
+                queryName={queryName}
+                onInputChange={onInputChange}
+                label="Choose a vendor"
+                getOptionSelected={formatSelected}
+                getOptionLabel={formatOption}
+                value={val}
+                allowAdditions
+              />
+            )}
           </Form.Group>
         </div>
         <div className="col mt-2">

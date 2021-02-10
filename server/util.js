@@ -129,6 +129,10 @@ module.exports.createStore = async () => {
         allowNull: true,
       },
       comment: SQL.STRING(1024),
+      description: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
       id: {
         type: SQL.INTEGER,
         autoIncrement: true,

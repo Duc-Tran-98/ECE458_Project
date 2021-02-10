@@ -42,7 +42,6 @@ export const UserProvider = ({ children }) => {
       const query = print(GET_USER_QUERY);
       const handleResponse = (response) => {
         response.isLoggedIn = true;
-        // console.log(response);
         setUserState(response);
       };
       Query({

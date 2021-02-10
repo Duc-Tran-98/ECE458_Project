@@ -2,11 +2,12 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. 
+  # clients can execute, along with the return type for each.
   type Query {
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
+    getAllUsers: [User]
 
     # Model Related Queries
     getAllModels(limit: Int, offset: Int): [Model]
@@ -16,14 +17,26 @@ const typeDefs = gql`
 
     # Instrument Related Queries
     getAllInstruments(limit: Int, offset: Int): [Instrument]
-    getAllInstrumentsWithModel(modelNumber: String!, vendor: String!): [Instrument]
+    getAllInstrumentsWithModel(
+      modelNumber: String!
+      vendor: String!
+    ): [Instrument]
     getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
     getAllInstrumentsWithVendor(vendor: String!): [Instrument]
-    getInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): Instrument
+    getInstrument(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+    ): Instrument
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
-    getCalibrationEventsByInstrument(modelNumber: String!, vendor: String!, serialNumber: String!): [CalibrationEvent]
+    getCalibrationEventsByInstrument(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+    ): [CalibrationEvent]
+    getCalibrationEventsByReferenceId(calibrationHistoryIdReference: Int!): [CalibrationEvent]
   }
 
   type User {
@@ -52,6 +65,7 @@ const typeDefs = gql`
     modelReference: Int!
     calibrationFrequency: Int!
     comment: String
+    description: String!
     id: Int!
   }
 
@@ -67,25 +81,23 @@ const typeDefs = gql`
   type Mutation {
     # User related mutations
     login(userName: String!, password: String!): String!
-    signup(
-      email: String!
-      firstName: String!
-      lastName: String!
-      userName: String!
-      password: String!
-      isAdmin: Boolean!
-    ): String!
+    signup(email: String!, firstName: String!, lastName: String!, userName: String!, password: String!, isAdmin: Boolean!): String!
 
     # Model related Mutations
-    deleteModel(modelNumber: String!, vendor: String!): String!
     addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
+    deleteModel(modelNumber: String!, vendor: String!): String!
+    editModel(id: Int!, modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
 
     # Instrument related mutations
     addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
+    editInstrument(modelNumber: String!, vendor: String!, comment: String, serialNumber: String!, id: Int!): String!
+    deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations
     addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
-    editModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int, id: Int!): String!
+    addCalibrationEventById(calibrationHistoryIdReference: Int!, date: String!, user: String! comment: String): String!
+    deleteCalibrationEvent(id: Int!): String!
+    editCalibrationEvent(user: String, date: String, comment: String, id: Int!): String!
   }
 `;
 
