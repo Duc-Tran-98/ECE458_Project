@@ -6,12 +6,32 @@ import { print } from 'graphql';
 import Query from './UseQuery';
 
 export default function ImportModels() {
-  const IMPORT_MODELS = gql`
-      mutation ImportModels {
-        bulkImportData (
-          models: [
+  // mutation {
+  //   bulkImportData(
+  //     models: [
+  //         {vendor: "a", modelNumber: "mod1", description: "1", comment: "comment", calibrationFrequency: 1},
+  //       {vendor: "b", modelNumber: "mod1", description: "2"},
+  //         {vendor: "c", modelNumber: "mod1", description: "3", comment: "third model", calibrationFrequency: 12},
+  //     ]
 
-          ]
+  const IMPORT_MODELS = gql`
+      mutation {
+        input ModelObject {
+          $vendor: String!
+          $modelNumber: String!
+          $description: String!
+          $comment: String!
+          $calibrationFrequency: Int!
+        }
+        bulkImportData(
+
+        )
+        getInstrument(
+          vendor: $vendor
+          modelNumber: $modelNumber
+          description: $description
+          comment: $comment
+          calibrationFrequency: $calibrationFrequency
         )
         }
     `;
