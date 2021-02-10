@@ -148,14 +148,12 @@ function CreateInstrumentPage() {
     {`Comment: ${entry.comment}`}
   </li>
   ));
-  const value = (modelNumber.length > 0) ? { modelNumber, vendor } : null;
   const getSteps = () => ['Select Model', 'Input Calibration History', 'Review']; // These are the labels for the vertical stepper
   const getStepContent = (step) => { // This controls what content to display for each step in the vertical stepper
     switch (step) {
       case 0:
         return (
           <InstrumentForm
-            val={value}
             modelNumber={modelNumber}
             vendor={vendor}
             comment={comment}

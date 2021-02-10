@@ -43,6 +43,30 @@ function CreateModelPage() {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
+  const onInputChange = (e, v) => {
+    // This if for updating instrument's fields from autocomplete input
+    // if (typeof v === "string") {
+    //   setFormState({
+    //     ...formState,
+    //     vendor: v,
+    //   });
+    // } else if (v && v.inputValue) {
+    //   // Create a new value from the user input
+    //   setFormState({
+    //     ...formState,
+    //     vendor: v.inputValue,
+    //   });
+    // } else {
+    //   setFormState({
+    //     ...formState,
+    //     vendor: v.vendor,
+    //   });
+    // }
+    setFormState({
+      ...formState,
+      vendor: v.vendor,
+    });
+  };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
     return <ErrorPage message="You don't have the right permissions!" />;
@@ -61,9 +85,25 @@ function CreateModelPage() {
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={validated}
+        onInputChange={onInputChange}
       />
     </div>
   );
 }
 
 export default CreateModelPage;
+
+/*
+if (typeof v === 'string') {
+            setValue({
+              title: v,
+            });
+          } else if (v && v.inputValue) {
+            // Create a new value from the user input
+            setValue({
+              title: v.inputValue,
+            });
+          } else {
+            setValue(v);
+          }
+*/
