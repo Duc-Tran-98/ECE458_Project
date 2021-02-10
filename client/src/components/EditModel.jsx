@@ -42,7 +42,6 @@ class EditModel extends Component {
     const { modelNumber, vendor } = this.state;
     const getVariables = () => ({ modelNumber, vendor });
     const handleResponse = (response) => {
-      // console.log(response);
       const {
         description, comment, id,
       } = response;

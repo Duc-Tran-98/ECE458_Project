@@ -9,7 +9,7 @@ import CalibrationRow from './CalibrationRow';
 import MouseOverPopover from './PopOver';
 
 export default function CalibrationTable({
-  rows, addRow, deleteRow, onChangeCalibRow,
+  rows, addRow, deleteRow, onChangeCalibRow, onInputChange,
 }) {
   CalibrationTable.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
@@ -17,6 +17,7 @@ export default function CalibrationTable({
     addRow: PropTypes.func.isRequired,
     deleteRow: PropTypes.func.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
+    onInputChange: PropTypes.func.isRequired,
   };
   // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (
@@ -25,10 +26,10 @@ export default function CalibrationTable({
       handleDelete={deleteRow}
       id={entry.id}
       onChangeCalibRow={onChangeCalibRow}
-      user={entry.user}
       comment={entry.comment}
       date={entry.date}
       entry={entry}
+      onInputChange={onInputChange}
     />
   ));
   return (

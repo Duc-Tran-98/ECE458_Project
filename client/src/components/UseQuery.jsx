@@ -20,7 +20,6 @@ const Query = ({
     .post(route, data)
     .then((res) => {
       response = (typeof res.data.data[queryName] === 'string') ? JSON.parse(res.data.data[queryName]) : res.data.data[queryName];
-      // console.log(response);
       handleResponse(response);
     })
     .catch((err) => console.error(err));
