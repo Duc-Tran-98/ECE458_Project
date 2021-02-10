@@ -42,23 +42,27 @@ class BulkDataAPI extends DataSource {
     let addedModels = [];
     let addedInstruments = [];
 
-    await this.addModels(models).then(async (modelResponse) => {
-      addedModels = modelResponse;
-      if (models.length !== modelResponse.length) {
-        anyError = true;
-      }
-    });
+    if (models != null) {
+      await this.addModels(models).then(async (modelResponse) => {
+        addedModels = modelResponse;
+        if (models.length !== modelResponse.length) {
+          anyError = true;
+        }
+      });
+    }
 
-    await this.addInstruments(instruments).then(async (instrumentResponse) => {
-      addedInstruments = instrumentResponse;
-      if (instruments.length !== instrumentResponse.length) {
-        anyError = true;
-      }
-    });
+    if (instruments != null) {
+      await this.addInstruments(instruments).then(async (instrumentResponse) => {
+        addedInstruments = instrumentResponse;
+        if (instruments.length !== instrumentResponse.length) {
+          anyError = true;
+        }
+      });
+    }
 
     if (anyError) {
-      await this.deleteAddedInstruments(instruments, addedInstruments);
-      await this.deleteAddedModels(models, addedModels);
+      if (instruments != null) await this.deleteAddedInstruments(instruments, addedInstruments);
+      if (models != null) await this.deleteAddedModels(models, addedModels);
       this.response.success = false;
     }
     return JSON.stringify(this.response);
