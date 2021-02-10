@@ -151,6 +151,10 @@ class BulkDataAPI extends DataSource {
               // eslint-disable-next-line prefer-destructuring
               // const calibrationFrequency = model[0].dataValues.calibrationFrequency;
               const { description, calibrationFrequency } = model[0].dataValues;
+              if (calibrationUser != null && calibrationFrequency < 1) {
+                this.response.errorList.push(`ERROR: (Malformed Input) Instrument ${vendor} ${modelNumber} ${serialNumber} is not calibratable`);
+                return;
+              }
               const isCalibratable = (calibrationFrequency > 0);
               const inst = await this.store.instruments.create({
                 modelReference,
