@@ -8,14 +8,6 @@ import ImportError from './ImportError';
 import Query from './UseQuery';
 
 export default function ImportModels() {
-  // mutation {
-  //   bulkImportData(
-  //     models: [
-  //         {vendor: "a", modelNumber: "mod1", description: "1", comment: "comment", calibrationFrequency: 1},
-  //       {vendor: "b", modelNumber: "mod1", description: "2"},
-  //         {vendor: "c", modelNumber: "mod1", description: "3", comment: "third model", calibrationFrequency: 12},
-  //     ]
-
   const [allRowErrors, setAllRowErrors] = useState([]);
   const [show, setShow] = useState(false);
   const closeModal = () => {
@@ -24,44 +16,12 @@ export default function ImportModels() {
 
   // TODO: Fix gql query
   const IMPORT_MODELS = gql`
-    type ModelType {
-      vendor: String!
-      modelNumber: String!
-      description: String!
-      comment: String
-      calibrationFrequency: Int
-    }
-
-    input ModelInput {
-      vendor: String!
-      modelNumber: String!
-      description: String!
-      comment: String
-      calibrationFrequency: Int
-    }
-
-    mutation ImportModels(
-      $data: [ModelInput]!
-    ) {
-      bulkImportData(
-        models: $data
-        instruments: []
-      )
-    }
+  mutation ImportModels (
+    $data: [ModelInput]!
+  ) {
+    bulkImportData(models: $data)
+  }
   `;
-
-  // FIXME: Might need to add instruments to bulk import query
-  // var MovieSchema = `
-  // type Movie {
-  //  name: String
-  // }
-  // input MovieInput {
-  //  name: String
-  // }
-  // mutation {
-  //  addMovies(movies: [MovieInput]): [Movie]
-  // }
-  // `
 
   const characterLimits = {
     model: {
@@ -127,8 +87,17 @@ export default function ImportModels() {
 
   const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
 
+  const printTypes = (row) => {
+    console.log(`typeof(vendor): ${typeof (row.vendor)}`);
+    console.log(`typeof(modelNumber): ${typeof (row.modelNumber)}`);
+    console.log(`typeof(description): ${typeof (row.description)}`);
+    console.log(`typeof(comment): ${typeof (row.comment)}`);
+    console.log(`typeof(calibrationFrequency): ${typeof (row.calibrationFrequency)}`);
+  };
+
   const handleCSVReader = (data /* , fileInfo */) => {
     const importRowErrors = [];
+    printTypes(data[0]);
     data.forEach((row, index) => {
       // Check missing keys
       const missingKeys = getMissingKeys(row, requiredHeaders);
@@ -176,6 +145,7 @@ export default function ImportModels() {
       console.log(allRowErrors);
       setShow(true);
     } else {
+      console.log('Sending bulk model import request to databse with data: ');
       console.log(data);
       // Now all fields have been validated, time to attempt a db push...
       const query = print(IMPORT_MODELS);
@@ -185,10 +155,8 @@ export default function ImportModels() {
         data,
       });
       const handleResponse = (response) => {
-        console.log('Query Response:');
         console.log(response);
       };
-      console.log('Sending query for bulk import...');
       Query({
         query,
         queryName,
