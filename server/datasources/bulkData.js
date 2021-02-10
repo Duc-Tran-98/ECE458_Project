@@ -33,7 +33,6 @@ class BulkDataAPI extends DataSource {
   async bulkImportData({
     models,
     instruments,
-    // calibrationEvents,
   }) {
     this.response = { success: true, errorList: [] };
     const storeModel = await this.store;
@@ -42,7 +41,6 @@ class BulkDataAPI extends DataSource {
     let anyError = false;
     let addedModels = [];
     let addedInstruments = [];
-    // let addedCalibrationIds = [];
 
     await this.addModels(models).then(async (modelResponse) => {
       addedModels = modelResponse;
@@ -58,61 +56,13 @@ class BulkDataAPI extends DataSource {
       }
     });
 
-    // await this.addCalibrationEvents(calibrationEvents).then(async (calibrationEventResponse) => {
-    //   addedCalibrationIds = calibrationEventResponse;
-    //   if (calibrationEvents.length !== calibrationEventResponse.length) {
-    //     anyError = true;
-    //   }
-    // });
-
     if (anyError) {
-      // await this.deleteAddedCalibrationEvents(addedCalibrationIds);
       await this.deleteAddedInstruments(instruments, addedInstruments);
       await this.deleteAddedModels(models, addedModels);
       this.response.success = false;
     }
     return JSON.stringify(this.response);
   }
-
-  // async addCalibrationEvents(calibrationEvents) {
-  //   // eslint-disable-next-line prefer-const
-  //   let added = [];
-  //   for (let i = 0; i < calibrationEvents.length; i += 1) {
-  //     const calibrationEvent = calibrationEvents[i];
-  //     const vendor = calibrationEvent.vendor;
-  //     const modelNumber = calibrationEvent.modelNumber;
-  //     const serialNumber = calibrationEvent.serialNumber;
-  //     const user = calibrationEvent.user;
-  //     const date = calibrationEvent.date;
-  //     const comment = calibrationEvent.comment;
-  //     const storeModel = await this.store;
-  //     this.store = storeModel;
-  //     await this.store.instruments.findAll({
-  //       where: { modelNumber, vendor, serialNumber },
-  //     }).then(async (instrument) => {
-  //       if (instrument && instrument[0]) {
-  //         if (!isValidDate(date)) { // checks if date is valid
-  // eslint-disable-next-line max-len
-  //           this.response.errorList.push(`ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} Date must be in format YYYY-MM-DD`);
-  //           return;
-  //         }
-  //         const calibrationHistoryIdReference = instrument[0].dataValues.id;
-  //         const event = await this.store.calibrationEvents.create({
-  //           calibrationHistoryIdReference,
-  //           user,
-  //           date,
-  //           comment,
-  //         });
-  //         // console.log(event.dataValues.id);
-  //         added.push(event.dataValues.id);
-  //       } else {
-  // eslint-disable-next-line max-len
-  //         this.response.errorList.push(`ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`);
-  //       }
-  //     });
-  //   }
-  //   return added;
-  // }
 
   async addInstruments(instruments) {
     // eslint-disable-next-line prefer-const
@@ -149,8 +99,11 @@ class BulkDataAPI extends DataSource {
             } else {
               const modelReference = model[0].dataValues.id;
               // eslint-disable-next-line prefer-destructuring
-              // const calibrationFrequency = model[0].dataValues.calibrationFrequency;
               const { description, calibrationFrequency } = model[0].dataValues;
+              if (calibrationUser != null && calibrationFrequency < 1) {
+                this.response.errorList.push(`ERROR: (Malformed Input) Instrument ${vendor} ${modelNumber} ${serialNumber} is not calibratable`);
+                return;
+              }
               const isCalibratable = (calibrationFrequency > 0);
               const inst = await this.store.instruments.create({
                 modelReference,
@@ -182,13 +135,6 @@ class BulkDataAPI extends DataSource {
     }
     return added;
   }
-
-  // async deleteAddedCalibrationEvents(ids) {
-  //   // eslint-disable-next-line no-restricted-syntax
-  //   for await (const id of ids) {
-  //     await this.store.calibrationEvents.destroy({ where: { id } });
-  //   }
-  // }
 
   async deleteAddedInstruments(instruments, indices) {
     // eslint-disable-next-line no-restricted-syntax
