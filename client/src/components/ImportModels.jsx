@@ -22,6 +22,13 @@ export default function ImportModels() {
 
   // TODO: Fix gql query
   const IMPORT_MODELS = gql`
+    type ModelType {
+      vendor: String!
+      modelNumber: String!
+      shortDescription: String!
+      comment: String
+      calibrationFrequency: Int
+    }
     input ModelInput {
       vendor: String!
       modelNumber: String!
@@ -34,11 +41,12 @@ export default function ImportModels() {
     ) {
       bulkImportData(
         models: [ModelInput]
-        instruments: []
       )
-    }
-  
+    }  
   `;
+
+  // FIXME: Might need to add instruments to bulk import query
+
   // const IMPORT_MODELS = gql`
   //     mutation ImportModels(
   //         $vendor: String!
@@ -191,13 +199,6 @@ export default function ImportModels() {
     // Now all fields have been validated, time to attempt a db push...
     const query = print(IMPORT_MODELS);
     const queryName = 'bulkImportData';
-    // const {
-    //   vendor, modelNumber, comment, calibrationFrequency, shortDescription,
-    // } = data[0];
-    // console.log(`vendor: ${vendor}, modelNumber: ${modelNumber}, comment: ${comment}, calibrationFrequency: ${calibrationFrequency}, description: ${shortDescription}`);
-    // const getVariables = () => ({
-    //   vendor, modelNumber, comment, calibrationFrequency, shortDescription,
-    // });
 
     const getVariables = () => ({
       data,
