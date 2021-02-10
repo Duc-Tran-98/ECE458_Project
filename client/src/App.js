@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Certificate from './pages/Certificate';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
@@ -43,6 +44,9 @@ function App() {
             </Route>
             <Route path="/register">
               <SignUp />
+            </Route>
+            <Route path="/certificate">
+              <Certificate />
             </Route>
             <Route path="/addInstrument">
               <CreateInstrument />
