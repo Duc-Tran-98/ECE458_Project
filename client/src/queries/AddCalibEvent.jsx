@@ -14,7 +14,6 @@ export default async function AddCalibEvent({
     vendor: PropTypes.string.isRequired,
     serialNumber: PropTypes.string.isRequired,
   };
-  // console.log(events);
   const ADD_EVENT = gql`
       mutation AddEvent(
         $modelNumber: String!

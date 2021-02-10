@@ -43,6 +43,20 @@ function CreateModelPage() {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
+  const onInputChange = (e, v) => {
+    // This if for model's instrument's fields from autocomplete input
+    if (v.inputValue) { // If use inputs a new value
+      setFormState({
+        ...formState,
+        vendor: v.inputValue,
+      });
+    } else { // Else they picked an existing option
+      setFormState({
+        ...formState,
+        vendor: v.vendor,
+      });
+    }
+  };
   const user = useContext(UserContext);
   if (!user.isAdmin) {
     return <ErrorPage message="You don't have the right permissions!" />;
@@ -61,6 +75,7 @@ function CreateModelPage() {
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={validated}
+        onInputChange={onInputChange}
       />
     </div>
   );

@@ -30,6 +30,13 @@ function CreateInstrumentPage() {
     }
     setCalibHistory(newHistory);
   };
+  const onChangeUser = (e, v, entry) => { // Handler for autocomplete of username on calibrow
+    const newHistory = [...calibHistory];
+    const index = newHistory.indexOf(entry);
+    newHistory[index] = { ...entry };
+    newHistory[index].user = `${v.userName}`;
+    setCalibHistory(newHistory);
+  };
   const [validated, setValidated] = useState(false);
   const [formState, setFormState] = useState({ // This state is for an instrument
     modelNumber: '',
@@ -128,7 +135,6 @@ function CreateInstrumentPage() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   const onInputChange = (e, v) => { // This if for updating instrument's fields from autocomplete input
-    // console.log(e, v);
     setFormState({
       ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency,
     });
@@ -148,14 +154,12 @@ function CreateInstrumentPage() {
     {`Comment: ${entry.comment}`}
   </li>
   ));
-  const value = (modelNumber.length > 0) ? { modelNumber, vendor } : null;
   const getSteps = () => ['Select Model', 'Input Calibration History', 'Review']; // These are the labels for the vertical stepper
   const getStepContent = (step) => { // This controls what content to display for each step in the vertical stepper
     switch (step) {
-      case 0:
+      case 0: // Editable instrument form
         return (
           <InstrumentForm
-            val={value}
             modelNumber={modelNumber}
             vendor={vendor}
             comment={comment}
@@ -173,6 +177,7 @@ function CreateInstrumentPage() {
               addRow={addRow}
               deleteRow={deleteRow}
               onChangeCalibRow={onChangeCalibRow}
+              onInputChange={onChangeUser}
             />
           );
         }
@@ -182,7 +187,7 @@ function CreateInstrumentPage() {
           </div>
         );
 
-      case 2:
+      case 2: // Review state
         return (
           <div>
             <InstrumentForm

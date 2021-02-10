@@ -9,6 +9,7 @@ module.exports = {
     // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
+    getAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.getAllUsers(),
 
     // Model Queries
     // eslint-disable-next-line max-len

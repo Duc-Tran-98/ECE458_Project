@@ -48,7 +48,6 @@ export default async function GetCalibHistory({
         return response[0];
       }
     }
-    // console.log(response);
     return response;
   }
 }

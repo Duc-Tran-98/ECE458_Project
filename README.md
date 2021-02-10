@@ -61,3 +61,6 @@ If there any other errors, you can ask Angel or try Google.
 
 # Linting the Project
 The linter we are using for this project is [ESLint](https://eslint.org/). It is already included as a dependency in both the client and server packages (separate linting configurations exist in the `.eslintrc.json` files), so a fresh `npm install` should work. Be sure to also have the [ESLint VSCode](https://eslint.org/) plugin as well and your code will be perfect (well, depends how good you are ;))!
+
+# Credit where credit is due
+Big thanks to Material UI for saving us time with the autocomplete and datagrid components!

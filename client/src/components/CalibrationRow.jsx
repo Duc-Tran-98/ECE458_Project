@@ -6,39 +6,56 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import MouseOverPopover from './PopOver';
+import AsyncSuggest from './AsyncSuggest';
+
+const GET_USERS = gql`
+  query GetUsers {
+    getAllUsers {
+      userName
+      firstName
+      lastName
+    }
+  }
+`;
+
+const query = print(GET_USERS);
+const queryName = 'getAllUsers';
 
 export default function CalibrationRow({
-  handleDelete, id, onChangeCalibRow, user, comment, date, entry,
+  handleDelete, id, onChangeCalibRow, comment, date, entry, onInputChange,
 }) {
   CalibrationRow.propTypes = {
     handleDelete: PropTypes.func.isRequired,
     id: PropTypes.number.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
-    user: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
+    onInputChange: PropTypes.func.isRequired,
   };
   const today = new Date().toISOString().split('T')[0];
+  const formatOption = (option) => `${option.userName}`;
+  const formatSelected = (option, value) => option.userName === value.userName;
+  const val = { userName: entry.user };
   return (
     <div className="d-flex justify-content-center border-bottom border-dark ">
       <div className="row mx-3">
         <div className="col mt-1">
-          <Form.Group controlId="formUser">
+          <Form.Group>
             <Form.Label className="h4">User</Form.Label>
-            <Form.Control
-              name="user"
-              type="text"
-              placeholder="Unknown"
-              value={user}
-              onChange={(e) => onChangeCalibRow(e, entry)}
-              required
+            <AsyncSuggest
+              query={query}
+              queryName={queryName}
+              onInputChange={(e, v) => onInputChange(e, v, entry)}
+              label="Choose a user"
+              getOptionSelected={formatSelected}
+              getOptionLabel={formatOption}
+              value={val}
             />
-            <Form.Control.Feedback type="invalid">
-              Please select a user.
-            </Form.Control.Feedback>
           </Form.Group>
         </div>
         <div className="col mt-1">
@@ -95,3 +112,17 @@ export default function CalibrationRow({
     </div>
   );
 }
+
+/*
+<Form.Control
+              name="user"
+              type="text"
+              placeholder="Unknown"
+              value={user}
+              onChange={(e) => onChangeCalibRow(e, entry)}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              Please select a user.
+            </Form.Control.Feedback>
+*/
