@@ -30,6 +30,13 @@ function CreateInstrumentPage() {
     }
     setCalibHistory(newHistory);
   };
+  const onChangeUser = (e, v, entry) => { // Handler for autocomplete of username on calibrow
+    const newHistory = [...calibHistory];
+    const index = newHistory.indexOf(entry);
+    newHistory[index] = { ...entry };
+    newHistory[index].user = `${v.userName}`;
+    setCalibHistory(newHistory);
+  };
   const [validated, setValidated] = useState(false);
   const [formState, setFormState] = useState({ // This state is for an instrument
     modelNumber: '',
@@ -128,7 +135,6 @@ function CreateInstrumentPage() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   const onInputChange = (e, v) => { // This if for updating instrument's fields from autocomplete input
-    // console.log(e, v);
     setFormState({
       ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency,
     });
@@ -171,6 +177,7 @@ function CreateInstrumentPage() {
               addRow={addRow}
               deleteRow={deleteRow}
               onChangeCalibRow={onChangeCalibRow}
+              onInputChange={onChangeUser}
             />
           );
         }

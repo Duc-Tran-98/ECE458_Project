@@ -40,8 +40,6 @@ function ListModels() {
   const query = print(GET_MODELS_QUERY);
   const queryName = 'getAllModels';
   const handleResponse = (response) => {
-    // console.log(response);
-    console.log('query for rows');
     setModels(response);
   };
   if (!queried) {
@@ -54,7 +52,6 @@ function ListModels() {
       setVendor(e.row.vendor);
       setWhich(e.field);
       setShow(true);
-      console.log(e);
     }
   };
   const closeModal = (bool) => {

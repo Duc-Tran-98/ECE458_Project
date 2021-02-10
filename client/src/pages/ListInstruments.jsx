@@ -32,7 +32,6 @@ function ListInstruments() {
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
   const handleResponse = (response) => {
-    // console.log(`getAllInstruments\n${response}`);
     response.forEach((element) => {
       GetCalibHistory({
         id: element.id,

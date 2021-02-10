@@ -30,7 +30,6 @@ export default async function GetAllInstruments({ handleResponse }) {
   } else {
     // eslint-disable-next-line no-return-await
     const response = await QueryAndThen({ query, queryName });
-    // console.log(response);
     return response;
   }
 }

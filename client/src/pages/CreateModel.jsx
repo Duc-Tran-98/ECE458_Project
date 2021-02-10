@@ -45,8 +45,6 @@ function CreateModelPage() {
   };
   const onInputChange = (e, v) => {
     // This if for model's instrument's fields from autocomplete input
-    console.log(e);
-    console.log(v);
     if (v.inputValue) { // If use inputs a new value
       setFormState({
         ...formState,

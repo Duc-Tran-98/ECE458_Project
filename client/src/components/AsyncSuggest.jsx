@@ -29,11 +29,6 @@ export default function AsyncSuggest({
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
   const loading = open && availableOptions.length === 0;
-  //   const handleChange = (e, v, r) => {
-  //     if (typeof e !== 'undefined') console.log(e);
-  //     if (typeof v !== 'undefined') console.log(v.modelNumber);
-  //     if (typeof r !== 'undefined') console.log(`r = ${r}`);
-  //   };
   React.useEffect(() => {
     let active = true;
     if (!loading) {
@@ -41,7 +36,6 @@ export default function AsyncSuggest({
     }
     (async () => {
       const response = await QueryAndThen({ query, queryName });
-      //   console.log(response);
       if (active) {
         setOptions(response);
       }
