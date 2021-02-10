@@ -1,11 +1,11 @@
 import React from 'react';
-import BulkImport from '../components/BulkImport';
+// import BulkImport from '../components/BulkImport';
+import ImportModels from '../components/ImportModels';
 
 function ComponentTest() {
   return (
     <div className="bg-light">
-      <BulkImport />
-      <h1>Hello! I am a test. Add some components to try me out :</h1>
+      <ImportModels />
     </div>
   );
 }
