@@ -151,7 +151,7 @@ function CreateInstrumentPage() {
   const getSteps = () => ['Select Model', 'Input Calibration History', 'Review']; // These are the labels for the vertical stepper
   const getStepContent = (step) => { // This controls what content to display for each step in the vertical stepper
     switch (step) {
-      case 0:
+      case 0: // Editable instrument form
         return (
           <InstrumentForm
             modelNumber={modelNumber}
@@ -180,7 +180,7 @@ function CreateInstrumentPage() {
           </div>
         );
 
-      case 2:
+      case 2: // Review state
         return (
           <div>
             <InstrumentForm

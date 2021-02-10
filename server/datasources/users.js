@@ -61,6 +61,13 @@ class UserAPI extends DataSource {
     return exists ? user[0] : null;
   }
 
+  async getAllUsers() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const users = await this.store.users.findAll({});
+    return users;
+  }
+
   /**
    * This function attempts to create a user if they don't match a userName that's already in use
    */

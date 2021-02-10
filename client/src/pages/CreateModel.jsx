@@ -44,32 +44,15 @@ function CreateModelPage() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   const onInputChange = (e, v) => {
-    // This if for updating instrument's fields from autocomplete input
-    // if (typeof v === "string") {
-    //   setFormState({
-    //     ...formState,
-    //     vendor: v,
-    //   });
-    // } else if (v && v.inputValue) {
-    //   // Create a new value from the user input
-    //   setFormState({
-    //     ...formState,
-    //     vendor: v.inputValue,
-    //   });
-    // } else {
-    //   setFormState({
-    //     ...formState,
-    //     vendor: v.vendor,
-    //   });
-    // }
+    // This if for model's instrument's fields from autocomplete input
     console.log(e);
     console.log(v);
-    if (v.inputValue) {
+    if (v.inputValue) { // If use inputs a new value
       setFormState({
         ...formState,
         vendor: v.inputValue,
       });
-    } else {
+    } else { // Else they picked an existing option
       setFormState({
         ...formState,
         vendor: v.vendor,
@@ -101,18 +84,3 @@ function CreateModelPage() {
 }
 
 export default CreateModelPage;
-
-/*
-if (typeof v === 'string') {
-            setValue({
-              title: v,
-            });
-          } else if (v && v.inputValue) {
-            // Create a new value from the user input
-            setValue({
-              title: v.inputValue,
-            });
-          } else {
-            setValue(v);
-          }
-*/
