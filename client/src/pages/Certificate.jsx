@@ -68,6 +68,17 @@ function MyDocument() {
 //   const { loading, error, data } = useQuery(GET_INSTRUMENT_QUERY, { variables: { modelNumber: '1', vendor: 'DUKE', serialNumber: '2' } });
 //   if (loading) return 'loading...';
 //   if (error) return `Error! ${error.message}`;
+
+  const vendor = 'vendor';
+  const model = 'model';
+  const serial = 'serial';
+  const description = 'description';
+  const comment = 'comment';
+  const calibrationDate = 'date';
+  const expirationDate = 'date';
+  const name = 'name';
+  const username = 'username';
+
   return (
     <Document>
       <Page style={styles.page} size="LETTER">
@@ -81,11 +92,23 @@ function MyDocument() {
         </Text>
         <View style={styles.columnView}>
           <View style={styles.column}>
-            <Text style={styles.largeText}>Vendor: FLUKE</Text>
-            <Text style={styles.largeText}>Model Number: 123456789</Text>
+            <Text style={styles.largeText}>
+              Vendor:
+              {' '}
+              {vendor}
+            </Text>
+            <Text style={styles.largeText}>
+              Model Number:
+              {' '}
+              {model}
+            </Text>
           </View>
           <View style={styles.column}>
-            <Text style={styles.largeText}>Serial Number: 1234567890</Text>
+            <Text style={styles.largeText}>
+              Serial Number:
+              {' '}
+              {serial}
+            </Text>
           </View>
 
         </View>
@@ -94,7 +117,7 @@ function MyDocument() {
           Model Description:
         </Text>
         <Text style={styles.smallText}>
-          This is a really cool model im a big fan i love it. This is a really cool model im a big fan i love it. This is a really cool model im a big fan i love it
+          {description}
         </Text>
 
         <Text style={styles.largeText}>
@@ -102,25 +125,33 @@ function MyDocument() {
           Comment:
         </Text>
         <Text style={styles.smallText}>
-          This is a really cool model im a big fan i love it. This is a really cool model im a big fan i love it. This is a really cool model im a big fan i love it
+          {comment}
         </Text>
         <View style={styles.columnView}>
           <View style={styles.column}>
             <Text style={styles.largeText}>
               {'\n'}
-              Calibrated By: Natasha von Seelen
+              Calibrated By:
+              {' '}
+              {name}
             </Text>
             <Text style={styles.largeText}>
-              Username: nlv10
+              Username:
+              {' '}
+              {username}
             </Text>
           </View>
           <View style={styles.column}>
             <Text style={styles.largeText}>
               {'\n'}
-              Date of Calibration: 1/14/1999
+              Date of Calibration:
+              {' '}
+              {calibrationDate}
             </Text>
             <Text style={styles.largeText}>
-              Date of Expiration: 1/14/2021
+              Date of Expiration:
+              {' '}
+              {expirationDate}
             </Text>
 
           </View>
