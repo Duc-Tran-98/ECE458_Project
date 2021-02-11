@@ -3,18 +3,24 @@ import CSVReader from 'react-csv-reader';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import { useStateWithCallbackInstant } from 'use-state-with-callback';
 import ModalAlert from './ModalAlert';
 import ImportError from './ImportError';
 import Query from './UseQuery';
 
 export default function ImportModels() {
-  const [allRowErrors, setAllRowErrors] = useState([]);
   const [show, setShow] = useState(false);
+  // const [allRowErrors, setAllRowErrors] = useState([]);
+  const [allRowErrors, setAllRowErrors] = useStateWithCallbackInstant([], () => {
+    if (allRowErrors.length > 0) {
+      setShow(true);
+    }
+  });
   const closeModal = () => {
     setShow(false);
+    setAllRowErrors([]);
   };
 
-  // TODO: Fix gql query
   const IMPORT_MODELS = gql`
   mutation ImportModels (
     $data: [ModelInput]!
@@ -41,16 +47,14 @@ export default function ImportModels() {
   };
 
   // NOTE: Headers have been modified by lodash to be camelCase for ease of import
-  const requiredHeaders = ['vendor', 'modelNumber', 'description'];
+  // const requiredHeaders = ['vendor', 'modelNumber', 'description'];
 
-  // TODO: Refactor missingKey to match original import (e.g. 'modelNumber' -> 'Model-Number')
-  const getMissingKeys = (row, keys) => {
+  // TODO: Refactor missingKey to be more pretty
+  const getMissingKeys = (row) => {
     const missingKeys = [];
-    keys.forEach((item) => {
-      if (!row[item]) {
-        missingKeys.push(item);
-      }
-    });
+    if (!row.vendor) missingKeys.push('Vendor');
+    if (!row.modelNumber) missingKeys.push('Model-Number');
+    if (!row.description) missingKeys.push('Short-Description');
     return missingKeys.length > 0 ? missingKeys : null;
   };
 
@@ -87,20 +91,11 @@ export default function ImportModels() {
 
   const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
 
-  const printTypes = (row) => {
-    console.log(`typeof(vendor): ${typeof (row.vendor)}`);
-    console.log(`typeof(modelNumber): ${typeof (row.modelNumber)}`);
-    console.log(`typeof(description): ${typeof (row.description)}`);
-    console.log(`typeof(comment): ${typeof (row.comment)}`);
-    console.log(`typeof(calibrationFrequency): ${typeof (row.calibrationFrequency)}`);
-  };
-
   const handleCSVReader = (data /* , fileInfo */) => {
     const importRowErrors = [];
-    printTypes(data[0]);
     data.forEach((row, index) => {
       // Check missing keys
-      const missingKeys = getMissingKeys(row, requiredHeaders);
+      const missingKeys = getMissingKeys(row);
 
       let isDuplicateModel;
       if (row.vendor && row.modelNumber) {
@@ -129,21 +124,7 @@ export default function ImportModels() {
 
     // Show modal alert
     if (importRowErrors.length > 0) {
-      console.log(importRowErrors);
-      console.log('Errors found, setting allRowErrors to importRowErrors');
-      console.log('importRowErrors: ');
-      console.log(importRowErrors);
-      console.log('Before setAllRowErrors: ');
-      console.log(allRowErrors);
-      console.log('setAllRowErrors: ');
       setAllRowErrors(importRowErrors);
-      // Async call
-      // setAllRowErrors(importRowErrors, () => {
-      //   setShow(true);
-      // });
-      console.log('After setAllRowErrors: ');
-      console.log(allRowErrors);
-      setShow(true);
     } else {
       console.log('Sending bulk model import request to databse with data: ');
       console.log(data);
@@ -168,8 +149,8 @@ export default function ImportModels() {
 
   return (
     <>
-      <ModalAlert handleClose={closeModal} show={show} title="Error Message">
-        <ImportError props={allRowErrors} />
+      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
+        <ImportError allRowErrors={allRowErrors} />
       </ModalAlert>
       {/* Another component inside to dynamically render information */}
       <CSVReader
