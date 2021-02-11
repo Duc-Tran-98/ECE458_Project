@@ -12,6 +12,7 @@ import ListModels from './pages/ListModels';
 import ErrorPage from './pages/ErrorPage';
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
+import Import from './pages/Import';
 // import ErrorPage from './pages/ErrorPage';
 
 function App() {
@@ -60,6 +61,10 @@ function App() {
             <Route path="/viewInstruments">
               {loggedIn ? (<ListInstruments />) : (<ErrorPage message="You need to sign in first!" />)}
 
+            </Route>
+            <Route path="/import">
+              <Import />
+              {/* {loggedIn ? (<Import />) : (<ErrorPage message="You need to sign in first!" />)} */}
             </Route>
           </UserProvider>
         </Switch>

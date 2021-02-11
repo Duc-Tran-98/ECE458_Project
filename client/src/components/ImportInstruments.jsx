@@ -4,11 +4,12 @@ import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useStateWithCallbackInstant } from 'use-state-with-callback';
+import moment from 'moment';
 import ModalAlert from './ModalAlert';
-import ImportModelError from './ImportModelError';
+import ImportInstrumentError from './ImportInstrumentError';
 import Query from './UseQuery';
 
-export default function ImportModels() {
+export default function ImportInstruments() {
   const [show, setShow] = useState(false);
   // const [allRowErrors, setAllRowErrors] = useState([]);
   const [allRowErrors, setAllRowErrors] = useStateWithCallbackInstant([], () => {
@@ -28,21 +29,22 @@ export default function ImportModels() {
     setAllQueryErrors([]);
   };
 
-  const IMPORT_MODELS = gql`
-  mutation ImportModels (
-    $data: [ModelInput]!
+  const IMPORT_INSTRUMENTS = gql`
+  mutation ImportInstruments (
+    $dataWithUser: [InstrumentInput]!
   ) {
-    bulkImportData(models: $data)
+    bulkImportData(instruments: $dataWithUser)
   }
   `;
 
   const characterLimits = {
-    model: {
+    instrument: {
       vendor: 30,
       modelNumber: 40,
-      description: 100,
+      serialNumber: 40,
       comment: 2000,
-      calibrationFrequency: 10,
+      calibrationDate: 20,
+      calibrationComment: 2000,
     },
   };
 
@@ -50,80 +52,100 @@ export default function ImportModels() {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
-    transformHeader: (header) => ((header === 'Short-Description') ? 'description' : camelCase(header)),
+    transformHeader: (header) => camelCase(header),
   };
-
-  // NOTE: Headers have been modified by lodash to be camelCase for ease of import
-  // const requiredHeaders = ['vendor', 'modelNumber', 'description'];
 
   // TODO: Refactor missingKey to be more pretty
   const getMissingKeys = (row) => {
     const missingKeys = [];
     if (!row.vendor) missingKeys.push('Vendor');
     if (!row.modelNumber) missingKeys.push('Model-Number');
-    if (!row.description) missingKeys.push('Short-Description');
+    if (!row.serialNumber) missingKeys.push('Serial-Number');
     return missingKeys.length > 0 ? missingKeys : null;
   };
 
-  const checkDuplicateModel = (data, vendor, modelNumber, myIndex) => {
-    let isDuplicateModel = false;
+  const checkDuplicateInstrument = (data, vendor, modelNumber, serialNumber, myIndex) => {
+    let isDuplicateInstrument = false;
     data.forEach((row, index) => {
-      if (index !== myIndex && row.vendor === vendor && row.modelNumber === modelNumber) {
-        isDuplicateModel = true;
+      if (index !== myIndex && row.vendor === vendor && row.modelNumber === modelNumber && row.serialNumber === serialNumber) {
+        isDuplicateInstrument = true;
       }
     });
-    return isDuplicateModel;
+    return isDuplicateInstrument;
+  };
+
+  // TODO: Assuming instrument is calibratable, check this later
+  const validCalibrationDate = (calibrationDate) => {
+    // Check if date is missing
+    if (!calibrationDate) {
+      return 'Missing Calibration-Date';
+    }
+
+    // Check if date is in correct form
+    if (!moment(calibrationDate, 'MM/DD/YYYY', true)) {
+      return 'Calibration-Date Incorrect Form';
+    }
+
+    // Check if date is in the future
+    if (moment(calibrationDate).isAfter()) {
+      return 'Calibration-Date is in the Future';
+    }
+
+    // No errors
+    return null;
   };
 
   const validateRow = (row) => {
     // TODO: Make this less ugly
     const invalidKeys = [];
-    if (row.vendor && row.vendor.length > characterLimits.model.vendor) {
+    if (row.vendor && row.vendor.length > characterLimits.instrument.vendor) {
       invalidKeys.push('Vendor');
     }
-    if (row.modelNumber && row.modelNumber.length > characterLimits.model.modelNumber) {
+    if (row.modelNumber && row.modelNumber.length > characterLimits.instrument.modelNumber) {
       invalidKeys.push('Model-Number');
     }
-    if (row.description && row.description.length > characterLimits.model.description) {
-      invalidKeys.push('Short-Description');
+    if (row.serialNumber && row.serialNumber.length > characterLimits.instrument.serialNumber) {
+      invalidKeys.push('Serial-Number');
     }
-    if (row.comment && row.comment.length > characterLimits.model.comment) {
+    if (row.comment && row.comment.length > characterLimits.instrument.comment) {
       invalidKeys.push('Comment');
     }
-    if (row.calibrationFrequency && row.calibrationFrequency.length > characterLimits.model.calibrationFrequency) {
-      invalidKeys.push('Calibration-Frequency');
+    if (row.calibrationDate && row.calibrationDate.length > characterLimits.instrument.calibrationDate) {
+      invalidKeys.push('Calibration-Date');
+    }
+    if (row.calibrationComment && row.calibrationComment.length > characterLimits.instrument.calibrationComment) {
+      invalidKeys.push('Calibration-Comment');
     }
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
 
-  const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
-
   const handleCSVReader = (data /* , fileInfo */) => {
     const importRowErrors = [];
     data.forEach((row, index) => {
+      console.log(row);
       // Check missing keys
       const missingKeys = getMissingKeys(row);
 
-      let isDuplicateModel;
-      if (row.vendor && row.modelNumber) {
-        isDuplicateModel = checkDuplicateModel(data, row.vendor, row.modelNumber, index);
+      let isDuplicateInstrument;
+      if (row.vendor && row.modelNumber && row.serialNumber) {
+        isDuplicateInstrument = checkDuplicateInstrument(data, row.vendor, row.modelNumber, row.serialNumber, index);
       }
 
       // Validate entries by length
       const invalidEntries = validateRow(row);
 
-      // Validate calibration frequency
-      const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
+      // Validate calibration date (missing, form, future)
+      const invalidCalibrationDate = validCalibrationDate(row.calibrationDate);
 
       // If any errors exist, create errors object
-      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
+      if (missingKeys || invalidEntries || invalidCalibrationDate || isDuplicateInstrument) {
         const rowError = {
           data: row,
           row: index + 2,
           ...(missingKeys) && { missingKeys },
           ...(invalidEntries) && { invalidEntries },
-          ...(isDuplicateModel) && { isDuplicateModel },
-          ...(invalidCalibration) && { invalidCalibration },
+          ...(isDuplicateInstrument) && { isDuplicateInstrument },
+          ...(invalidCalibrationDate) && { invalidCalibrationDate },
         };
         importRowErrors.push(rowError);
       }
@@ -134,10 +156,19 @@ export default function ImportModels() {
       setAllRowErrors(importRowErrors);
     } else {
       // Now all fields have been validated, time to attempt a db push...
-      const query = print(IMPORT_MODELS);
+      const query = print(IMPORT_INSTRUMENTS);
       const queryName = 'bulkImportData';
 
-      const getVariables = () => ({ data });
+      // Append calibrationUser to format
+      const dataWithUser = data.map((obj) => ({
+        ...obj,
+        calibrationUser: 'admin',
+        calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD'),
+      }));
+
+      console.log(dataWithUser);
+
+      const getVariables = () => ({ dataWithUser });
       const handleResponse = (response) => {
         console.log(response);
         // TODO: If response is an error, post Modal Alert
@@ -157,14 +188,14 @@ export default function ImportModels() {
 
   return (
     <>
-      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
-        <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
+      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Instruments">
+        <ImportInstrumentError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
       {/* Another component inside to dynamically render information */}
       <CSVReader
         cssClass="csv-reader-input m-2"
         cssLabelClass="label label-primary m-2"
-        label="Import Models"
+        label="Import Instruments"
         onFileLoaded={handleCSVReader}
         // onError={this.handleDarkSideForce}
         parserOptions={papaparseOptions}

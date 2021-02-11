@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function ImportError({ allRowErrors, errorList }) {
-  ImportError.propTypes = {
+export default function ImportModelError({ allRowErrors, errorList }) {
+  ImportModelError.propTypes = {
     allRowErrors: PropTypes.instanceOf(Array).isRequired,
     errorList: PropTypes.instanceOf(Array).isRequired,
   };
