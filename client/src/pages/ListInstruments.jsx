@@ -30,6 +30,7 @@ function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  const [calibrationFrequency, setCalibrationFrequency] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
   const handleResponse = (response) => {
@@ -70,11 +71,12 @@ function ListInstruments() {
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
       setModelNumber(e.row.modelNumber);
+      setCalibrationFrequency(e.row.calibrationFrequency);
       setVendor(e.row.vendor);
       setWhich(e.field);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
-      if (e.field === 'view') {
+      if (e.field === 'view' && e.row.date !== 'No history found') {
         window.sessionStorage.setItem('serialNumber', e.row.serialNumber);
         window.sessionStorage.setItem('modelNumber', e.row.modelNumber);
         window.sessionStorage.setItem('modelDescription', e.row.description);
@@ -83,9 +85,10 @@ function ListInstruments() {
         window.sessionStorage.setItem('calibComment', e.row.calibComment);
         window.sessionStorage.setItem('vendor', e.row.vendor);
         GetUser({ userName: e.row.user }).then((value) => {
-          console.log(value);
-          const calibUser = `Username: ${e.row.user}, First name: ${value.firstName}, Last name: ${value.lastName}`;
-          window.sessionStorage.setItem('calibUser', calibUser);
+          if (value) {
+            const calibUser = `Username: ${e.row.user}, First name: ${value.firstName}, Last name: ${value.lastName}`;
+            window.sessionStorage.setItem('calibUser', calibUser);
+          }
         });
       }
       setShow(true);
@@ -236,9 +239,9 @@ function ListInstruments() {
               serialNumber={serialNumber}
               viewOnly
             />
-            <Link to="/viewCertificate">
-              View Certificate
-            </Link>
+            {calibrationFrequency > 0 && (
+              <Link to="/viewCertificate">View Certificate</Link>
+            )}
           </div>
         )}
         {which === 'edit' && (
