@@ -161,18 +161,17 @@ export default function ImportModels() {
     if (importRowErrors.length > 0) {
       setAllRowErrors(importRowErrors);
     } else {
-      // TODO: How to handle calibration with N/A?
       // Now all fields have been validated, time to attempt a db push...
       const query = print(IMPORT_MODELS);
       const queryName = 'bulkImportData';
 
       let filteredData = data.map((obj) => ({
-        ...obj,
+        vendor: String(obj.vendor),
         modelNumber: String(obj.modelNumber),
+        description: String(obj.description),
+        ...(obj.comment) && { comment: String(obj.comment) },
+        ...(obj.calibrationFrequency !== 'N/A') && { calibrationFrequency: parseInt(obj.calibrationFrequency, 10) },
       }));
-
-      console.log('filteredData (preMap): ');
-      console.log(filteredData);
 
       const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
@@ -185,9 +184,6 @@ export default function ImportModels() {
           filteredData = filteredData.map((obj) => ({
             ...obj,
             id: String(obj.vendor + obj.modelNumber),
-            vendor: String(obj.vendor),
-            modelNumber: String(obj.modelNumber),
-            description: String(obj.description),
           }));
 
           console.log('filteredData (postMap): ');
