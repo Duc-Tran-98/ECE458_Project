@@ -18,11 +18,6 @@ export default function DisplayGrid({
     setChecked: PropTypes.func,
   };
 
-  // console.log('rows: ');
-  // console.log(`${rows}`);
-  // console.log('cols: ');
-  // console.log(`${cols}`);
-
   const exportButton = () => (
     <Button onClick={handleExport}>Export</Button>
   );

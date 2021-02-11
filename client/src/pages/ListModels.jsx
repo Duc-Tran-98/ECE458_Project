@@ -3,13 +3,15 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
+import { useStateWithCallbackInstant } from 'use-state-with-callback';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
+import { CSVLink } from 'react-csv';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
@@ -27,6 +29,16 @@ function ListModels() {
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
+
+  const csvLink = useRef();
+
+  const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
+    console.log('Updating CSV Data');
+    if (csvData.length > 0) {
+      console.log(JSON.stringify(csvData));
+      setTimeout(csvLink.current.link.click(), 1000);
+    }
+  });
 
   const GET_MODELS_QUERY = gql`
     query Models{
@@ -171,6 +183,23 @@ function ListModels() {
     );
   }
 
+  const filterRowForCSV = (exportRows) => {
+    // const filteredRows = exportRows.map((element) => ({
+    //   Vendor: element.vendor,
+    //   'Model-Number': element.modelNumber,
+    //   Description: element.description,
+    //   'Calibration-Frequency': element.calibrationFrequency,
+    // }));
+    const filteredRows = exportRows.map((element) => ({
+      vendor: element.vendor,
+      modelNumber: element.modelNumber,
+      description: element.description,
+      comment: element.comment,
+      calibrationFrequency: element.calibrationFrequency,
+    }));
+    return filteredRows;
+  };
+
   // TODO: Implement export testing
   const handleExport = () => {
     // Selected comes in with row IDs, now parse these
@@ -185,8 +214,19 @@ function ListModels() {
       });
       console.log('exportRows: ');
       console.log(exportRows);
+      const filteredRows = filterRowForCSV(exportRows);
+      console.log(filteredRows);
+      setCSVData(filteredRows);
     }
   };
+
+  const headers = [
+    { label: 'Vendor', key: 'vendor' },
+    { label: 'Model-Number', key: 'modelNumber' },
+    { label: 'Short-Description', key: 'description' },
+    { label: 'Comment', key: 'comment' },
+    { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
+  ];
 
   return (
     <div style={{ height: '90vh' }}>
@@ -235,6 +275,13 @@ function ListModels() {
       {DisplayGrid({
         rows, cols, cellHandler, handleExport, setChecked,
       })}
+      <CSVLink
+        data={csvData}
+        headers={headers}
+        filename="models.csv"
+        className="hidden"
+        ref={csvLink}
+      />
     </div>
   );
 }
