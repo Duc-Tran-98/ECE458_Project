@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import CSVReader from 'react-csv-reader';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
@@ -200,21 +199,22 @@ export default function ImportModels() {
 
   return (
     <>
-      <Link to="/files/models.csv" target="_blank" download>Download Models Template</Link>
+      <div>
+        <CSVReader
+          cssClass="m-2"
+          cssLabelClass="label label-primary m-2"
+          label="Import Models"
+          onFileLoaded={handleCSVReader}
+        // onError={this.handleDarkSideForce}
+          parserOptions={papaparseOptions}
+          inputStyle={{ color: 'red' }}
+          skipEmptyLines
+          header
+        />
+      </div>
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
         <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
-      <CSVReader
-        cssClass="csv-reader-input m-2"
-        cssLabelClass="label label-primary m-2"
-        label="Import Models"
-        onFileLoaded={handleCSVReader}
-        // onError={this.handleDarkSideForce}
-        parserOptions={papaparseOptions}
-        inputStyle={{ color: 'red' }}
-        skipEmptyLines
-        header
-      />
       <div style={{
         display: showTable ? 'inline-block' : 'none',
         width: showTable ? '100%' : '0',
