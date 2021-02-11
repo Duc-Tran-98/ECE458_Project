@@ -60,7 +60,7 @@ export default function ImportInstruments() {
     },
   };
 
-  // id, vendor, modelNum, descript, serialNum, date
+  // TODO: hide certain columns for successfuly rendering
 
   const cols = [
     {
@@ -72,7 +72,7 @@ export default function ImportInstruments() {
       type: 'number',
     },
     { field: 'vendor', headerName: 'Vendor', width: 120 },
-    { field: 'modelNumber', headerName: 'Model-Number', width: 140 },
+    { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
     { field: 'comment', headerName: 'Comment', width: 250 },
