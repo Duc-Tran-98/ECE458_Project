@@ -35,7 +35,12 @@ export default function ImportInstruments() {
     }
   });
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   const closeModal = () => {
+    refreshPage();
     setShowModal(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
@@ -240,7 +245,7 @@ export default function ImportInstruments() {
         cssLabelClass="label label-primary m-2"
         label="Import Instruments"
         onFileLoaded={handleCSVReader}
-        // onError={this.handleDarkSideForce}
+        onError={refreshPage}
         parserOptions={papaparseOptions}
         inputStyle={{ color: 'red' }}
         skipEmptyLines

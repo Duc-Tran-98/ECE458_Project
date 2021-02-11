@@ -34,7 +34,12 @@ export default function ImportModels() {
     }
   });
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   const closeModal = () => {
+    refreshPage();
     setShow(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
@@ -205,7 +210,7 @@ export default function ImportModels() {
           cssLabelClass="label label-primary m-2"
           label="Import Models"
           onFileLoaded={handleCSVReader}
-        // onError={this.handleDarkSideForce}
+          onError={refreshPage}
           parserOptions={papaparseOptions}
           inputStyle={{ color: 'red' }}
           skipEmptyLines
@@ -216,16 +221,12 @@ export default function ImportModels() {
         <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
       <div style={{
-        display: showTable ? 'inline-block' : 'none',
+        display: showTable ? 'contents' : 'none',
         width: showTable ? '100%' : '0',
       }}
       >
         <h2>
-          Successfully Imported
-          {' '}
-          {importCount}
-          {' '}
-          Models!
+          {`Successfully Imported ${importCount} ${importCount === 1 ? 'Model' : 'Models'}`}
         </h2>
         <DisplayGrid rows={csvData} cols={cols} />
       </div>
