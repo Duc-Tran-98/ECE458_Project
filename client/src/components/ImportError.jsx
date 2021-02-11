@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function ImportError({ allRowErrors }) {
+export default function ImportError({ allRowErrors, errorList }) {
   ImportError.propTypes = {
     allRowErrors: PropTypes.instanceOf(Array).isRequired,
+    errorList: PropTypes.instanceOf(Array).isRequired,
   };
 
   const formatErrorLine = (rowError) => (
@@ -20,21 +21,19 @@ export default function ImportError({ allRowErrors }) {
       )}
       {rowError.isDuplicateModel && (
       <li>
-        Duplicate Model
-        {` (${rowError.data.vendor}, ${rowError.data.modelNumber})`}
+        {`Duplicate Model: (${rowError.data.vendor}, ${rowError.data.modelNumber})`}
       </li>
       )}
       {rowError.invalidCalibration && (
       <li>
-        Unable to parse Calibration-Frequency
-        {` (${rowError.data.calibrationFrequency})`}
+        {`Unable to parse Calibration-Frequency: (${rowError.data.calibrationFrequency})`}
       </li>
       )}
     </div>
 
   );
 
-  const errorItems = allRowErrors.map(((rowError) => (
+  const createParseErrorsList = allRowErrors.map(((rowError) => (
     <li key={rowError.row}>
       Row #
       {rowError.row}
@@ -43,11 +42,18 @@ export default function ImportError({ allRowErrors }) {
   )
   ));
 
+  const createQueryErrorsList = errorList.map((element, index) => (
+    // eslint-disable-next-line react/no-array-index-key
+    <li key={index}>
+      {element}
+    </li>
+  ));
+
   return (
     <>
       <p>Please fix the below errors and try again!</p>
-      <ul className="text-danger">{errorItems}</ul>
-
+      {errorList.length > 0 && <ul className="text-danger">{createQueryErrorsList}</ul>}
+      {allRowErrors.length > 0 && <ul className="text-danger">{createParseErrorsList}</ul>}
     </>
   );
 }

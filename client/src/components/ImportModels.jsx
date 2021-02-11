@@ -16,9 +16,16 @@ export default function ImportModels() {
       setShow(true);
     }
   });
+  const [allQueryErrors, setAllQueryErrors] = useStateWithCallbackInstant([], () => {
+    if (allQueryErrors.length > 0) {
+      setShow(true);
+    }
+  });
+
   const closeModal = () => {
     setShow(false);
     setAllRowErrors([]);
+    setAllQueryErrors([]);
   };
 
   const IMPORT_MODELS = gql`
@@ -126,17 +133,18 @@ export default function ImportModels() {
     if (importRowErrors.length > 0) {
       setAllRowErrors(importRowErrors);
     } else {
-      console.log('Sending bulk model import request to databse with data: ');
-      console.log(data);
       // Now all fields have been validated, time to attempt a db push...
       const query = print(IMPORT_MODELS);
       const queryName = 'bulkImportData';
 
-      const getVariables = () => ({
-        data,
-      });
+      const getVariables = () => ({ data });
       const handleResponse = (response) => {
         console.log(response);
+        // TODO: If response is an error, post Modal Alert
+        if (response.success === false) {
+          console.log(response.errorList);
+          setAllQueryErrors(response.errorList);
+        }
       };
       Query({
         query,
@@ -150,7 +158,7 @@ export default function ImportModels() {
   return (
     <>
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
-        <ImportError allRowErrors={allRowErrors} />
+        <ImportError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
       {/* Another component inside to dynamically render information */}
       <CSVReader
