@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CSVReader from 'react-csv-reader';
+import { Link } from 'react-router-dom';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -231,6 +232,7 @@ export default function ImportInstruments() {
 
   return (
     <>
+      <Link to="/files/instruments.csv" target="_blank" download>Download Instruments Template</Link>
       <ModalAlert handleClose={closeModal} show={showModal} title="Error Importing Instruments">
         <ImportInstrumentError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
