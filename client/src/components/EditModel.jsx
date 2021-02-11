@@ -24,31 +24,33 @@ class EditModel extends Component {
     this.handleClose = props.handleClose;
     this.changeHandler = this.changeHandler.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onInputChange = this.onInputChange.bind(this);
   }
 
   componentDidMount() {
     const FIND_MODEL = gql`
-          query FindModel($modelNumber: String!, $vendor: String!) {
-            getModel(modelNumber: $modelNumber, vendor: $vendor) {
-              id
-              description
-              comment
-              calibrationFrequency
-            }
-          }
-        `;
+      query FindModel($modelNumber: String!, $vendor: String!) {
+        getModel(modelNumber: $modelNumber, vendor: $vendor) {
+          id
+          description
+          comment
+          calibrationFrequency
+        }
+      }
+    `;
     const query = print(FIND_MODEL);
     const queryName = 'getModel';
     const { modelNumber, vendor } = this.state;
     const getVariables = () => ({ modelNumber, vendor });
     const handleResponse = (response) => {
-      const {
-        description, comment, id,
-      } = response;
+      const { description, comment, id } = response;
       let { calibrationFrequency } = response;
       calibrationFrequency = calibrationFrequency.toString();
       this.setState({
-        description, comment, calibrationFrequency, id,
+        description,
+        comment,
+        calibrationFrequency,
+        id,
       });
     };
     Query({
@@ -66,17 +68,24 @@ class EditModel extends Component {
       e.preventDefault();
       this.setState({ validated: true });
       const EDIT_MODEL = gql`
-      mutation EditModel(
-        $modelNumber: String!
-        $vendor: String!
-        $description: String!
-        $comment: String
-        $calibrationFrequency: Int
-        $id: Int!
-      ) {
-        editModel(modelNumber: $modelNumber, vendor: $vendor, comment: $comment, description: $description, calibrationFrequency: $calibrationFrequency, id: $id)
-      }
-    `;
+        mutation EditModel(
+          $modelNumber: String!
+          $vendor: String!
+          $description: String!
+          $comment: String
+          $calibrationFrequency: Int
+          $id: Int!
+        ) {
+          editModel(
+            modelNumber: $modelNumber
+            vendor: $vendor
+            comment: $comment
+            description: $description
+            calibrationFrequency: $calibrationFrequency
+            id: $id
+          )
+        }
+      `;
       const query = print(EDIT_MODEL);
       const queryName = 'editModel';
       let { id, calibrationFrequency } = this.state;
@@ -101,8 +110,22 @@ class EditModel extends Component {
         alert(response.message);
       };
       Query({
-        query, queryName, getVariables, handleResponse,
+        query,
+        queryName,
+        getVariables,
+        handleResponse,
       });
+    }
+  }
+
+  onInputChange(e, v) {
+    // This if for model's instrument's fields from autocomplete input
+    if (v.inputValue) {
+      // If use inputs a new value
+      this.setState({ vendor: v.inputValue });
+    } else {
+      // Else they picked an existing option
+      this.setState({ vendor: v.vendor });
     }
   }
 
@@ -135,6 +158,7 @@ class EditModel extends Component {
           changeHandler={this.changeHandler}
           validated={validated}
           viewOnly={viewOnly}
+          onInputChange={this.onInputChange}
         />
       </div>
     );

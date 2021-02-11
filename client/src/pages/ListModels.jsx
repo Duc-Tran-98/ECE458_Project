@@ -17,6 +17,7 @@ import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
 import DeleteModel from '../queries/DeleteModel';
 import UserContext from '../components/UserContext';
+import InfinityScroll from '../components/InfiniteScroll';
 
 function ListModels() {
   const user = useContext(UserContext);
@@ -179,12 +180,23 @@ function ListModels() {
           />
         )}
         {which === 'view' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            viewOnly
-          />
+          <div>
+            <EditModel
+              modelNumber={modelNumber}
+              vendor={vendor}
+              handleClose={closeModal}
+              viewOnly
+            />
+            <div
+              id="scrollableDiv"
+              style={{
+                'max-height': 'calc(100vh - 570px)',
+                'overflow-y': 'auto',
+              }}
+            >
+              <InfinityScroll />
+            </div>
+          </div>
         )}
         {which === 'delete' && (
           <div>

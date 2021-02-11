@@ -35,10 +35,11 @@ class InfinityScroll extends Component {
   render() {
     const { title, items, hasMore } = this.state;
     return (
-      <div>
+      <>
         <h1>{title}</h1>
         <hr />
         <InfiniteScroll
+          scrollableTarget="scrollableDiv"
           dataLength={items.length}
           next={this.fetchMoreData}
           hasMore={hasMore}
@@ -47,7 +48,7 @@ class InfinityScroll extends Component {
             <p style={{ textAlign: 'center' }}>
               <b>Yay! You have seen it all</b>
             </p>
-              )}
+          )}
         >
           {items.map((i, index) => (
             // eslint-disable-next-line react/no-array-index-key
@@ -57,7 +58,7 @@ class InfinityScroll extends Component {
             </div>
           ))}
         </InfiniteScroll>
-      </div>
+      </>
     );
   }
 }
