@@ -34,7 +34,12 @@ export default function ImportModels() {
     }
   });
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   const closeModal = () => {
+    refreshPage();
     setShow(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
@@ -199,32 +204,29 @@ export default function ImportModels() {
 
   return (
     <>
+      <div>
+        <CSVReader
+          cssClass="m-2"
+          cssLabelClass="label label-primary m-2"
+          label="Import Models"
+          onFileLoaded={handleCSVReader}
+          onError={refreshPage}
+          parserOptions={papaparseOptions}
+          inputStyle={{ color: 'red' }}
+          skipEmptyLines
+          header
+        />
+      </div>
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
         <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
-      {/* Another component inside to dynamically render information */}
-      <CSVReader
-        cssClass="csv-reader-input m-2"
-        cssLabelClass="label label-primary m-2"
-        label="Import Models"
-        onFileLoaded={handleCSVReader}
-        // onError={this.handleDarkSideForce}
-        parserOptions={papaparseOptions}
-        inputStyle={{ color: 'red' }}
-        skipEmptyLines
-        header
-      />
       <div style={{
-        display: showTable ? 'inline-block' : 'none',
+        display: showTable ? 'contents' : 'none',
         width: showTable ? '100%' : '0',
       }}
       >
         <h2>
-          Successfully Imported
-          {' '}
-          {importCount}
-          {' '}
-          Models!
+          {`Successfully Imported ${importCount} ${importCount === 1 ? 'Model' : 'Models'}`}
         </h2>
         <DisplayGrid rows={csvData} cols={cols} />
       </div>
