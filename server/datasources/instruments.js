@@ -24,42 +24,41 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
-  async getAllInstrumentsWithModel({ modelNumber, vendor }) {
+  async getAllInstrumentsWithModel({
+    modelNumber,
+    vendor,
+    limit = null,
+    offset = null,
+  }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instruments = await this.store.instruments.findAll(
-      {
-        limit: null,
-        offset: null,
-        where: { modelNumber, vendor },
-      },
-    );
+    const instruments = await this.store.instruments.findAll({
+      limit,
+      offset,
+      where: { modelNumber, vendor },
+    });
     return instruments;
   }
 
   async getAllInstrumentsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instruments = await this.store.instruments.findAll(
-      {
-        limit: null,
-        offset: null,
-        where: { modelNumber },
-      },
-    );
+    const instruments = await this.store.instruments.findAll({
+      limit: null,
+      offset: null,
+      where: { modelNumber },
+    });
     return instruments;
   }
 
   async getAllInstrumentsWithVendor({ vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instruments = await this.store.instruments.findAll(
-      {
-        limit: null,
-        offset: null,
-        where: { vendor },
-      },
-    );
+    const instruments = await this.store.instruments.findAll({
+      limit: null,
+      offset: null,
+      where: { vendor },
+    });
     return instruments;
   }
 
@@ -81,7 +80,9 @@ class InstrumentAPI extends DataSource {
     const response = { message: '', success: true };
     const storeModel = await this.store;
     this.store = storeModel;
-    const model = await this.store.models.findAll({ where: { modelNumber, vendor } });
+    const model = await this.store.models.findAll({
+      where: { modelNumber, vendor },
+    });
     if (model[0] == null) {
       response.message = 'ERROR: The model that is being changed to is not valid!';
       response.success = false;
@@ -90,12 +91,12 @@ class InstrumentAPI extends DataSource {
     const instruments = await this.getAllInstrumentsWithModel({
       modelNumber,
       vendor,
-    });// Get all instruments associated with model
+    }); // Get all instruments associated with model
     instruments.forEach((element) => {
       if (element.serialNumber === serialNumber && element.id !== id) {
         response.message = 'ERROR: That model-serial number pair already exists!';
         response.success = false;
-      }// check that there are no unique conflicts, but exclude ourselves
+      } // check that there are no unique conflicts, but exclude ourselves
     });
     if (response.success) {
       this.store.instruments.update(
@@ -117,46 +118,52 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.destroy({ where: { id } });
-    await this.store.calibrationEvents.destroy({ where: { calibrationHistoryIdReference: id } });
+    await this.store.calibrationEvents.destroy({
+      where: { calibrationHistoryIdReference: id },
+    });
     response.message = `Deleted Instrument with ID: ${id}`;
     response.success = true;
     return JSON.stringify(response);
   }
 
   async addInstrument({
-    modelNumber,
-    vendor,
-    serialNumber,
-    comment,
+    modelNumber, vendor, serialNumber, comment,
   }) {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.store.models.findAll({ where: { modelNumber, vendor } }).then(async (model) => {
-      if (model && model[0]) {
-        await this.getInstrument({ modelNumber, vendor, serialNumber }).then((instrument) => {
-          if (instrument) {
-            response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
-          } else {
-            const modelReference = model[0].dataValues.id;
-            const { description, calibrationFrequency } = model[0].dataValues;
-            this.store.instruments.create({
-              modelReference,
-              vendor,
-              modelNumber,
-              serialNumber,
-              comment,
-              calibrationFrequency,
-              description,
-            });
-            response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
-            response.success = true;
-          }
-        });
-      } else {
-        response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
-      }
-    });
+    await this.store.models
+      .findAll({ where: { modelNumber, vendor } })
+      .then(async (model) => {
+        if (model && model[0]) {
+          await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
+            (instrument) => {
+              if (instrument) {
+                response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
+              } else {
+                const modelReference = model[0].dataValues.id;
+                const {
+                  description,
+                  calibrationFrequency,
+                } = model[0].dataValues;
+                this.store.instruments.create({
+                  modelReference,
+                  vendor,
+                  modelNumber,
+                  serialNumber,
+                  comment,
+                  calibrationFrequency,
+                  description,
+                });
+                response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+                response.success = true;
+              }
+            },
+          );
+        } else {
+          response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
+        }
+      });
     return JSON.stringify(response);
   }
 }

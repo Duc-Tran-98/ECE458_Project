@@ -169,6 +169,7 @@ function ListModels() {
       },
     );
   }
+  // const variables = {modelNumber, vendor};
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
@@ -194,7 +195,29 @@ function ListModels() {
                 'overflow-y': 'auto',
               }}
             >
-              <InfinityScroll />
+              <InfinityScroll
+                title="Instances:"
+                query={print(gql`
+                  query GetInstrumentFromModel(
+                    $modelNumber: String!
+                    $vendor: String!
+                    $limit: Int
+                    $offset: Int
+                  ) {
+                    getAllInstrumentsWithModel(
+                      modelNumber: $modelNumber
+                      vendor: $vendor
+                      limit: $limit
+                      offset: $offset
+                    ) {
+                      serialNumber
+                      id
+                    }
+                  }
+                `)}
+                queryName="getAllInstrumentsWithModel"
+                variables={{ modelNumber, vendor }}
+              />
             </div>
           </div>
         )}
