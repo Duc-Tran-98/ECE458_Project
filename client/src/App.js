@@ -13,6 +13,7 @@ import ListModels from './pages/ListModels';
 import ErrorPage from './pages/ErrorPage';
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
+import BulkImport from './pages/BulkImport';
 // import MyDocument from './pages/Certificate';
 // import ErrorPage from './pages/ErrorPage';
 
@@ -71,6 +72,10 @@ function App() {
             </Route>
             <Route path="/viewCertificate">
               <Certificate />
+            </Route>
+            <Route path="/import">
+              <BulkImport />
+              {/* {loggedIn ? (<Import />) : (<ErrorPage message="You need to sign in first!" />)} */}
             </Route>
           </UserProvider>
         </Switch>

@@ -11,6 +11,12 @@ export default function DisplayGrid({ rows, cols, cellHandler }) {
     // eslint-disable-next-line react/require-default-props
     cellHandler: PropTypes.func,
   };
+
+  console.log('rows: ');
+  console.log(`${rows}`);
+  console.log('cols: ');
+  console.log(`${cols}`);
+
   return (
     <div>
       <DataGrid

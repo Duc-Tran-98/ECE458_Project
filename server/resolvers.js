@@ -78,6 +78,17 @@ module.exports = {
     ),
   },
   Mutation: {
+    bulkImportData: async (
+      _,
+      {
+        models, instruments, // calibrationEvents,
+      },
+      { dataSources },
+    ) => await dataSources.bulkDataAPI.bulkImportData({
+      models,
+      instruments,
+      // calibrationEvents,
+    }),
     // eslint-disable-next-line max-len
     deleteModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.deleteModel({ modelNumber, vendor }),
     editModel: async (
