@@ -2,7 +2,8 @@ import React from 'react';
 import {
   PDFViewer, Page, Text, Image, View, Document, StyleSheet,
 } from '@react-pdf/renderer';
-// import { gql, useQuery } from '@apollo/client';
+
+const strftime = require('strftime');
 
 // Create styles
 const styles = StyleSheet.create({
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
   },
   largeText: {
     fontFamily: 'Times-Roman',
-    fontSize: 18,
+    fontSize: 16,
     textAlign: 'left',
   },
   smallText: {
@@ -45,39 +46,41 @@ const styles = StyleSheet.create({
   columnView: {
     flexDirection: 'row',
   },
-  column: {
+  leftColumn: {
     flexGrow: 1,
+    maxWidth: '50%',
+    paddingLeft: 15,
+  },
+  rightColumn: {
+    flexGrow: 1,
+    maxWidth: '50%',
+    paddingRight: 15,
   },
 });
 
-// const GET_INSTRUMENT_QUERY = gql`
-//     query Instruments($modelNumber: String!, $vendor: String!, $serialNumber: String!){
-//       getInstrument(modelNumber: $modelNumber, vendor: $vendor, serialNumber: $serialNumber){
-//         modelNumber
-//         vendor
-//         serialNumber
-//       }
-//     }
-//   `;
-
 // Create Document Component
-function MyDocument() {
-//   console.log('before');
-//   console.log(useQuery(GET_INSTRUMENT_QUERY, { variables: { modelNumber: '1', vendor: 'DUKE', serialNumber: '2' } }));
-//   console.log('after');
-//   const { loading, error, data } = useQuery(GET_INSTRUMENT_QUERY, { variables: { modelNumber: '1', vendor: 'DUKE', serialNumber: '2' } });
-//   if (loading) return 'loading...';
-//   if (error) return `Error! ${error.message}`;
+function MyCertificate() {
+  const names = window.sessionStorage.getItem('calibUser');
+  // const parsedNames = names.match(/(Username:\s)([^,]+)(,\sFirst\sname:\s)([^,]+)(,\sLast\sname:\s)(.*)/g);
+  const regex = /(Username:\s)([^,]+)(,\sFirst\sname:\s)([^,]+)(,\sLast\sname:\s)(.*)/g;
+  const matches = regex.exec(names);
 
-  const vendor = 'vendor';
-  const model = 'model';
-  const serial = 'serial';
-  const description = 'description';
-  const comment = 'comment';
-  const calibrationDate = 'date';
-  const expirationDate = 'date';
-  const name = 'name';
-  const username = 'username';
+  const name = `${matches[4]} ${matches[6]}`;
+  const username = matches[2];
+
+  const vendor = window.sessionStorage.getItem('vendor');
+
+  const serial = window.sessionStorage.getItem('serialNumber');
+
+  const model = window.sessionStorage.getItem('modelNumber');
+
+  const description = window.sessionStorage.getItem('modelDescription');
+
+  const calibrationDate = window.sessionStorage.getItem('calibrationDate');
+
+  const expirationDate = strftime('%F', new Date(window.sessionStorage.getItem('expirationDate')));
+  // const expirationDate = strftime('%F %T', new Date(1307472705067));
+  const comment = window.sessionStorage.getItem('calibComment');
 
   return (
     <Document>
@@ -91,7 +94,7 @@ function MyDocument() {
           {'\n\n'}
         </Text>
         <View style={styles.columnView}>
-          <View style={styles.column}>
+          <View style={styles.rightColumn}>
             <Text style={styles.largeText}>
               Vendor:
               {' '}
@@ -103,7 +106,7 @@ function MyDocument() {
               {model}
             </Text>
           </View>
-          <View style={styles.column}>
+          <View style={styles.leftColumn}>
             <Text style={styles.largeText}>
               Serial Number:
               {' '}
@@ -128,7 +131,7 @@ function MyDocument() {
           {comment}
         </Text>
         <View style={styles.columnView}>
-          <View style={styles.column}>
+          <View style={styles.rightColumn}>
             <Text style={styles.largeText}>
               {'\n'}
               Calibrated By:
@@ -141,7 +144,7 @@ function MyDocument() {
               {username}
             </Text>
           </View>
-          <View style={styles.column}>
+          <View style={styles.leftColumn}>
             <Text style={styles.largeText}>
               {'\n'}
               Date of Calibration:
@@ -166,7 +169,7 @@ function Certificate() {
   return (
     <div>
       <PDFViewer style={styles.viewer}>
-        <MyDocument />
+        <MyCertificate />
       </PDFViewer>
     </div>
   );
