@@ -57,11 +57,12 @@ function App() {
               <CreateModel />
             </Route>
             <Route path="/viewModels">
-              {loggedIn ? (
+              <ListModels />
+              {/* {loggedIn ? (
                 <ListModels />
               ) : (
                 <ErrorPage message="You need to sign in first!" />
-              )}
+              )} */}
             </Route>
             <Route path="/viewInstruments">
               {loggedIn ? (

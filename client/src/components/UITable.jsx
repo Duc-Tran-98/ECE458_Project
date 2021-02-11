@@ -1,21 +1,31 @@
+/* eslint-disable react/require-default-props */
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
+import { Button } from 'react-bootstrap';
 
-export default function DisplayGrid({ rows, cols, cellHandler }) {
+export default function DisplayGrid({
+  rows, cols, cellHandler, handleExport, setChecked,
+}) {
   DisplayGrid.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     rows: PropTypes.array.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     cols: PropTypes.array.isRequired,
-    // eslint-disable-next-line react/require-default-props
     cellHandler: PropTypes.func,
+    // eslint-disable-next-line react/no-unused-prop-types
+    handleExport: PropTypes.func,
+    setChecked: PropTypes.func,
   };
 
-  console.log('rows: ');
-  console.log(`${rows}`);
-  console.log('cols: ');
-  console.log(`${cols}`);
+  // console.log('rows: ');
+  // console.log(`${rows}`);
+  // console.log('cols: ');
+  // console.log(`${cols}`);
+
+  const exportButton = () => (
+    <Button onClick={handleExport}>Export</Button>
+  );
 
   return (
     <div>
@@ -38,8 +48,14 @@ export default function DisplayGrid({ rows, cols, cellHandler }) {
             cellHandler(e);
           }
         }}
+        onSelectionChange={(newSelection) => {
+          setChecked(newSelection.rowIds);
+        }}
         disableSelectionOnClick
         className="bg-light"
+        components={{
+          Header: exportButton,
+        }}
       />
     </div>
   );

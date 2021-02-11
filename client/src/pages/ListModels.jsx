@@ -22,10 +22,12 @@ function ListModels() {
   const user = useContext(UserContext);
   const [rows, setModels] = useState([]);
   const [queried, setQuery] = useState(false);
+  const [checked, setChecked] = useState('');
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
+
   const GET_MODELS_QUERY = gql`
     query Models{
       getAllModels{
@@ -168,6 +170,24 @@ function ListModels() {
       },
     );
   }
+
+  // TODO: Implement export testing
+  const handleExport = () => {
+    // Selected comes in with row IDs, now parse these
+    const exportRows = [];
+    if (checked) {
+      checked.forEach((rowID) => {
+        rows.forEach((row) => {
+          if (row.id === rowID) {
+            exportRows.push(row);
+          }
+        });
+      });
+      console.log('exportRows: ');
+      console.log(exportRows);
+    }
+  };
+
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
@@ -212,7 +232,9 @@ function ListModels() {
           </div>
         )}
       </ModalAlert>
-      {DisplayGrid({ rows, cols, cellHandler })}
+      {DisplayGrid({
+        rows, cols, cellHandler, handleExport, setChecked,
+      })}
     </div>
   );
 }
