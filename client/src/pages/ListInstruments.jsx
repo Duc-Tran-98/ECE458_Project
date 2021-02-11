@@ -30,11 +30,6 @@ function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
-  // const [modelDescription, setModelDesc] = useState('');
-  // const [calibComment, setCalibComment] = useState('');
-  // const [calibUser, setCalibUser] = useState('');
-  // const [dateCalibrated, setDateCalibrated] = useState('');
-  // const [expirationDate, setExperationDate] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
   const handleResponse = (response) => {
@@ -86,6 +81,7 @@ function ListInstruments() {
         window.sessionStorage.setItem('calibrationDate', e.row.date);
         window.sessionStorage.setItem('expirationDate', new Date(e.row.date).addDays(e.row.calibrationFrequency));
         window.sessionStorage.setItem('calibComment', e.row.calibComment);
+        window.sessionStorage.setItem('vendor', e.row.vendor);
         GetUser({ userName: e.row.user }).then((value) => {
           console.log(value);
           const calibUser = `Username: ${e.row.user}, First name: ${value.firstName}, Last name: ${value.lastName}`;
