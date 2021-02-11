@@ -4,6 +4,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
@@ -12,7 +13,7 @@ import UserContext from '../components/UserContext';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import EditInstrument from '../components/EditInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
-
+import GetUser from '../queries/GetUser';
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
   const date = new Date(this.valueOf());
@@ -29,6 +30,11 @@ function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  // const [modelDescription, setModelDesc] = useState('');
+  // const [calibComment, setCalibComment] = useState('');
+  // const [calibUser, setCalibUser] = useState('');
+  // const [dateCalibrated, setDateCalibrated] = useState('');
+  // const [expirationDate, setExperationDate] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
   const handleResponse = (response) => {
@@ -36,11 +42,15 @@ function ListInstruments() {
       GetCalibHistory({ // Get calibration history for each instrument
         id: element.id,
         mostRecent: true,
-        dateOnly: true,
       }).then((value) => {
+        // console.log(value);
         const today = new Date();
         // eslint-disable-next-line no-param-reassign
         element.date = value ? value.date : 'No history found'; // If there's an entry, assign it
+        // eslint-disable-next-line no-param-reassign
+        element.user = value ? value.user : 'No user found';
+        // eslint-disable-next-line no-param-reassign
+        element.calibComment = value ? value.comment : 'No comment found';
         // eslint-disable-next-line no-param-reassign
         element.calibrationStatus = 'NA';
         if (value) {
@@ -69,6 +79,19 @@ function ListInstruments() {
       setWhich(e.field);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
+      if (e.field === 'view') {
+        window.sessionStorage.setItem('serialNumber', e.row.serialNumber);
+        window.sessionStorage.setItem('modelNumber', e.row.modelNumber);
+        window.sessionStorage.setItem('modelDescription', e.row.description);
+        window.sessionStorage.setItem('calibrationDate', e.row.date);
+        window.sessionStorage.setItem('expirationDate', new Date(e.row.date).addDays(e.row.calibrationFrequency));
+        window.sessionStorage.setItem('calibComment', e.row.calibComment);
+        GetUser({ userName: e.row.user }).then((value) => {
+          console.log(value);
+          const calibUser = `Username: ${e.row.user}, First name: ${value.firstName}, Last name: ${value.lastName}`;
+          window.sessionStorage.setItem('calibUser', calibUser);
+        });
+      }
       setShow(true);
     }
   };
@@ -209,13 +232,18 @@ function ListInstruments() {
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
         {which === 'view' && (
-          <EditInstrument
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            serialNumber={serialNumber}
-            viewOnly
-          />
+          <div>
+            <EditInstrument
+              modelNumber={modelNumber}
+              vendor={vendor}
+              handleClose={closeModal}
+              serialNumber={serialNumber}
+              viewOnly
+            />
+            <Link to="/viewCertificate">
+              View Certificate
+            </Link>
+          </div>
         )}
         {which === 'edit' && (
           <EditInstrument

@@ -13,6 +13,7 @@ import ListModels from './pages/ListModels';
 import ErrorPage from './pages/ErrorPage';
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
+// import MyDocument from './pages/Certificate';
 // import ErrorPage from './pages/ErrorPage';
 
 function App() {
@@ -62,8 +63,14 @@ function App() {
               )}
             </Route>
             <Route path="/viewInstruments">
-              {loggedIn ? (<ListInstruments />) : (<ErrorPage message="You need to sign in first!" />)}
-
+              {loggedIn ? (
+                <ListInstruments />
+              ) : (
+                <ErrorPage message="You need to sign in first!" />
+              )}
+            </Route>
+            <Route path="/viewCertificate">
+              <Certificate />
             </Route>
           </UserProvider>
         </Switch>
