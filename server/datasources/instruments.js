@@ -37,7 +37,9 @@ class InstrumentAPI extends DataSource {
       offset,
       where: { modelNumber, vendor },
     });
-    return instruments;
+    let total = await this.store.instruments.findAndCountAll({ where: { modelNumber, vendor } });
+    total = total.count;
+    return { rows: instruments, total };
   }
 
   async getAllInstrumentsWithModelNum({ modelNumber }) {

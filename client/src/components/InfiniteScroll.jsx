@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PropTypes from 'prop-types';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { QueryAndThen } from './UseQuery';
 
 const style = {
@@ -16,6 +17,7 @@ class InfinityScroll extends Component {
     this.state = {
       items: [],
       hasMore: true,
+      total: null,
       title: props.title,
       query: props.query,
       queryName: props.queryName,
@@ -37,25 +39,18 @@ class InfinityScroll extends Component {
   }
 
   fetchMoreData() {
-    const { query, queryName } = this.state;
+    const { query, queryName, total } = this.state;
     let { items } = this.state;
-    QueryAndThen({ query, queryName, getVariables: this.getVariables }).then(
-      (data) => {
-        items = items.concat(data);
-        console.log('items');
-        console.log(items);
-        this.setState({ items });
-      },
-    );
-    // const { items } = this.state;
-    // if (items.length >= 100) {
-    //   this.setState({ hasMore: false });
-    // }
-    // setTimeout(() => {
-    //   this.setState({
-    //     items: items.concat(Array.from({ length: 20 })),
-    //   });
-    // }, 500);
+    if (total && items.length >= total) { // If total not null and length exceeds/equal to total, stop scroll
+      this.setState({ hasMore: false });
+    } else { // else, set total and update state
+      QueryAndThen({ query, queryName, getVariables: this.getVariables }).then(
+        (data) => {
+          items = items.concat(data.rows);
+          this.setState({ total: data.total, items });
+        },
+      );
+    }
   }
 
   render() {
@@ -69,7 +64,7 @@ class InfinityScroll extends Component {
           dataLength={items.length}
           next={this.fetchMoreData}
           hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
+          loader={<LinearProgress />}
           endMessage={(
             <p style={{ textAlign: 'center' }}>
               <b>Yay! You have seen it all</b>
@@ -78,7 +73,7 @@ class InfinityScroll extends Component {
         >
           {items.map((entry) => (
             <div style={style} key={entry.id}>
-              serial #
+              Serial #
               {entry.serialNumber}
             </div>
           ))}

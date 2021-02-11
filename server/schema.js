@@ -22,7 +22,7 @@ const typeDefs = gql`
       vendor: String!
       limit: Int
       offset: Int
-    ): [Instrument]
+    ): InstrumentScrollFeed
     getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
     getAllInstrumentsWithVendor(vendor: String!): [Instrument]
     getInstrument(
@@ -51,6 +51,11 @@ const typeDefs = gql`
     userName: String!
     password: String!
     isAdmin: Boolean!
+  }
+
+  type InstrumentScrollFeed {
+    rows: [Instrument]
+    total: Int!
   }
 
   type Model {

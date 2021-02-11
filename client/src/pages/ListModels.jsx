@@ -210,8 +210,11 @@ function ListModels() {
                       limit: $limit
                       offset: $offset
                     ) {
-                      serialNumber
-                      id
+                      total
+                      rows {
+                        serialNumber
+                        id
+                      }
                     }
                   }
                 `)}

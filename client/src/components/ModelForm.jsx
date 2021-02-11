@@ -68,7 +68,7 @@ export default function ModelForm({
               <Form.Control
                 type="text"
                 name="modelSelection"
-                value={`${vendor} ${modelNumber}`}
+                value={`${vendor}`}
                 onChange={changeHandler}
                 disabled={disabled}
               />
