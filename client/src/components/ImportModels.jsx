@@ -185,10 +185,6 @@ export default function ImportModels() {
             ...obj,
             id: String(obj.vendor + obj.modelNumber),
           }));
-
-          console.log('filteredData (postMap): ');
-          console.log(filteredData);
-
           setCSVData(filteredData);
         }
       };

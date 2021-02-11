@@ -8,16 +8,21 @@ import moment from 'moment';
 import ModalAlert from './ModalAlert';
 import ImportInstrumentError from './ImportInstrumentError';
 import Query from './UseQuery';
+import DisplayGrid from './UITable';
 
 export default function ImportInstruments() {
   const [showModal, setShowModal] = useState(false);
-  //   const [showTable, setShowTable] = useState(false);
+  const [showTable, setShowTable] = useState(false);
+  const [importCount, setImportCount] = useState(0);
 
-  //   const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
-  //     if (csvData.length > 0) {
-  //       setShowTable(true);
-  //     }
-  //   });
+  const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
+    console.log('Updating CSV Data');
+    if (csvData.length > 0) {
+      setImportCount(csvData.length);
+      setShowTable(true);
+      console.log(JSON.stringify(csvData));
+    }
+  });
 
   const [allRowErrors, setAllRowErrors] = useStateWithCallbackInstant([], () => {
     if (allRowErrors.length > 0) {
@@ -54,6 +59,28 @@ export default function ImportInstruments() {
       calibrationComment: 2000,
     },
   };
+
+  // id, vendor, modelNum, descript, serialNum, date
+
+  const cols = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 60,
+      hide: true,
+      disableColumnMenu: true,
+      type: 'number',
+    },
+    { field: 'vendor', headerName: 'Vendor', width: 120 },
+    { field: 'modelNumber', headerName: 'Model-Number', width: 140 },
+    { field: 'description', headerName: 'Description', width: 225 },
+    { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
+    { field: 'comment', headerName: 'Comment', width: 250 },
+    { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
+    { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
+    { field: 'calibrationComment', headerName: 'Calib-Comment', width: 300 },
+
+  ];
 
   const papaparseOptions = {
     header: true,
@@ -166,26 +193,31 @@ export default function ImportInstruments() {
       const query = print(IMPORT_INSTRUMENTS);
       const queryName = 'bulkImportData';
 
+      // TODO: Handle model with no calibration (more special cases)
       // Append calibrationUser to format
-      const filteredData = data.map((obj) => ({
-        ...obj,
+      let filteredData = data.map((obj) => ({
         vendor: String(obj.vendor),
         modelNumber: String(obj.modelNumber),
-        calibrationUser: 'admin',
-        calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD'),
+        serialNumber: String(obj.serialNumber),
+        ...(obj.comment) && { comment: String(obj.comment) },
+        ...(obj.calibrationDate) && { calibrationUser: 'admin' },
+        ...(obj.calibrationDate) && { calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') },
+        ...(obj.calibrationDate && obj.calibrationComment) && { calibrationComment: obj.calibrationComment },
       }));
-
-      console.log(filteredData);
 
       const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
         console.log(response);
-        // TODO: If response is an error, post Modal Alert
         if (response.success === false) {
           console.log(response.errorList);
           setAllQueryErrors(response.errorList);
         } else {
-        //   setCSVData(data);
+          // Display data in data-grid component
+          filteredData = filteredData.map((obj) => ({
+            ...obj,
+            id: String(obj.vendor + obj.modelNumber + obj.serialNumber),
+          }));
+          setCSVData(filteredData);
         }
       };
       Query({
@@ -214,6 +246,20 @@ export default function ImportInstruments() {
         skipEmptyLines
         header
       />
+      <div style={{
+        display: showTable ? 'inline-block' : 'none',
+        width: showTable ? '100%' : '0',
+      }}
+      >
+        <h2>
+          Successfully Imported
+          {' '}
+          {importCount}
+          {' '}
+          Instruments!
+        </h2>
+        <DisplayGrid rows={csvData} cols={cols} />
+      </div>
     </>
   );
 }
