@@ -10,30 +10,37 @@ import ImportInstrumentError from './ImportInstrumentError';
 import Query from './UseQuery';
 
 export default function ImportInstruments() {
-  const [show, setShow] = useState(false);
-  // const [allRowErrors, setAllRowErrors] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  //   const [showTable, setShowTable] = useState(false);
+
+  //   const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
+  //     if (csvData.length > 0) {
+  //       setShowTable(true);
+  //     }
+  //   });
+
   const [allRowErrors, setAllRowErrors] = useStateWithCallbackInstant([], () => {
     if (allRowErrors.length > 0) {
-      setShow(true);
+      setShowModal(true);
     }
   });
   const [allQueryErrors, setAllQueryErrors] = useStateWithCallbackInstant([], () => {
     if (allQueryErrors.length > 0) {
-      setShow(true);
+      setShowModal(true);
     }
   });
 
   const closeModal = () => {
-    setShow(false);
+    setShowModal(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
   };
 
   const IMPORT_INSTRUMENTS = gql`
   mutation ImportInstruments (
-    $dataWithUser: [InstrumentInput]!
+    $filteredData: [InstrumentInput]!
   ) {
-    bulkImportData(instruments: $dataWithUser)
+    bulkImportData(instruments: $filteredData)
   }
   `;
 
@@ -160,21 +167,25 @@ export default function ImportInstruments() {
       const queryName = 'bulkImportData';
 
       // Append calibrationUser to format
-      const dataWithUser = data.map((obj) => ({
+      const filteredData = data.map((obj) => ({
         ...obj,
+        vendor: String(obj.vendor),
+        modelNumber: String(obj.modelNumber),
         calibrationUser: 'admin',
         calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD'),
       }));
 
-      console.log(dataWithUser);
+      console.log(filteredData);
 
-      const getVariables = () => ({ dataWithUser });
+      const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
         console.log(response);
         // TODO: If response is an error, post Modal Alert
         if (response.success === false) {
           console.log(response.errorList);
           setAllQueryErrors(response.errorList);
+        } else {
+        //   setCSVData(data);
         }
       };
       Query({
@@ -188,7 +199,7 @@ export default function ImportInstruments() {
 
   return (
     <>
-      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Instruments">
+      <ModalAlert handleClose={closeModal} show={showModal} title="Error Importing Instruments">
         <ImportInstrumentError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
       {/* Another component inside to dynamically render information */}

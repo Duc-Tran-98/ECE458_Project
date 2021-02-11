@@ -7,10 +7,22 @@ import { useStateWithCallbackInstant } from 'use-state-with-callback';
 import ModalAlert from './ModalAlert';
 import ImportModelError from './ImportModelError';
 import Query from './UseQuery';
+import DisplayGrid from './UITable';
 
 export default function ImportModels() {
   const [show, setShow] = useState(false);
-  // const [allRowErrors, setAllRowErrors] = useState([]);
+  const [showTable, setShowTable] = useState(false);
+  const [importCount, setImportCount] = useState(0);
+
+  const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
+    console.log('Updating CSV Data');
+    if (csvData.length > 0) {
+      setImportCount(csvData.length);
+      setShowTable(true);
+      console.log(JSON.stringify(csvData));
+    }
+  });
+
   const [allRowErrors, setAllRowErrors] = useStateWithCallbackInstant([], () => {
     if (allRowErrors.length > 0) {
       setShow(true);
@@ -28,11 +40,27 @@ export default function ImportModels() {
     setAllQueryErrors([]);
   };
 
+  const cols = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 60,
+      hide: true,
+      disableColumnMenu: true,
+      type: 'number',
+    },
+    { field: 'vendor', headerName: 'Vendor', width: 150 },
+    { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
+    { field: 'description', headerName: 'Short-Description', width: 240 },
+    { field: 'comment', headerName: 'Comment', width: 300 },
+    { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+  ];
+
   const IMPORT_MODELS = gql`
   mutation ImportModels (
-    $data: [ModelInput]!
+    $filteredData: [ModelInput]!
   ) {
-    bulkImportData(models: $data)
+    bulkImportData(models: $filteredData)
   }
   `;
 
@@ -133,17 +161,39 @@ export default function ImportModels() {
     if (importRowErrors.length > 0) {
       setAllRowErrors(importRowErrors);
     } else {
+      // TODO: How to handle calibration with N/A?
       // Now all fields have been validated, time to attempt a db push...
       const query = print(IMPORT_MODELS);
       const queryName = 'bulkImportData';
 
-      const getVariables = () => ({ data });
+      let filteredData = data.map((obj) => ({
+        ...obj,
+        modelNumber: String(obj.modelNumber),
+      }));
+
+      console.log('filteredData (preMap): ');
+      console.log(filteredData);
+
+      const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
         console.log(response);
-        // TODO: If response is an error, post Modal Alert
         if (response.success === false) {
           console.log(response.errorList);
           setAllQueryErrors(response.errorList);
+        } else {
+          // Display data in data-grid component
+          filteredData = filteredData.map((obj) => ({
+            ...obj,
+            id: String(obj.vendor + obj.modelNumber),
+            vendor: String(obj.vendor),
+            modelNumber: String(obj.modelNumber),
+            description: String(obj.description),
+          }));
+
+          console.log('filteredData (postMap): ');
+          console.log(filteredData);
+
+          setCSVData(filteredData);
         }
       };
       Query({
@@ -172,6 +222,20 @@ export default function ImportModels() {
         skipEmptyLines
         header
       />
+      <div style={{
+        display: showTable ? 'inline-block' : 'none',
+        width: showTable ? '100%' : '0',
+      }}
+      >
+        <h2>
+          Successfully Imported
+          {' '}
+          {importCount}
+          {' '}
+          Models!
+        </h2>
+        <DisplayGrid rows={csvData} cols={cols} />
+      </div>
     </>
   );
 }
