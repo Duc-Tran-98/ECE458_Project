@@ -1,17 +1,11 @@
 import React from 'react';
-// import BulkImport from '../components/BulkImport';
-import ImportModels from '../components/ImportModels';
-import ExportModels from '../components/ExportModels';
+// import InfinityScroll from '../components/InfiniteScroll';
 
 function ComponentTest() {
   return (
-    <div>
-      <div className="bg-light">
-        <ImportModels />
-      </div>
-      <div className="bg-light">
-        <ExportModels />
-      </div>
+    <div className="bg-light">
+      <h1>Hello! I am a test. Add some components to try me out :</h1>
+      {/* <InfinityScroll title="example" /> */}
     </div>
 
   );

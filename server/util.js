@@ -173,7 +173,7 @@ module.exports.createStore = async () => {
     { freezeTableName: true },
   );
 
-  db.sync({ alter: true });
+  db.sync();
 
   return {
     db,

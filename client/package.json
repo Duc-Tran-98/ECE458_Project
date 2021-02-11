@@ -10,6 +10,7 @@
     "@material-ui/data-grid": "^4.0.0-alpha.18",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "@react-pdf/renderer": "^1.6.13",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.2",
@@ -21,6 +22,7 @@
     "graphql": "^15.5.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
+    "pdfkit": "^0.11.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
@@ -28,11 +30,13 @@
     "react-csv-reader": "^3.1.2",
     "react-csv-to-table": "0.0.3",
     "react-dom": "^17.0.1",
+    "react-infinite-scroll-component": "^6.0.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "use-state-with-callback": "^2.0.3",
     "web-vitals": "^0.2.4",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "strftime": "^0.10.0"
   },
   "scripts": {
     "start": "react-scripts start",
