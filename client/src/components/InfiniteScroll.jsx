@@ -23,6 +23,7 @@ class InfinityScroll extends Component {
       queryName: props.queryName,
       variables: props.variables,
     };
+    this.renderItems = props.renderItems;
     this.fetchMoreData = this.fetchMoreData.bind(this);
     this.getVariables = this.getVariables.bind(this);
   }
@@ -71,12 +72,16 @@ class InfinityScroll extends Component {
             </p>
           )}
         >
-          {items.map((entry) => (
-            <div style={style} key={entry.id}>
-              Serial #
-              {entry.serialNumber}
-            </div>
-          ))}
+          {this.renderItems === null ? (
+            items.map((entry) => (
+              <div style={style} key={entry.id}>
+                ID
+                {entry.id}
+              </div>
+            ))
+          ) : (
+            <ul className="list-group">{this.renderItems(items)}</ul>
+          )}
         </InfiniteScroll>
       </>
     );
@@ -89,6 +94,11 @@ InfinityScroll.propTypes = {
   title: PropTypes.string.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   variables: PropTypes.object.isRequired,
+  renderItems: PropTypes.func, // How you want items to be displayed; optional
+};
+
+InfinityScroll.defaultProps = {
+  renderItems: null,
 };
 
 export default InfinityScroll;

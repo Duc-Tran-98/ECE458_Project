@@ -10,6 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
@@ -191,8 +192,8 @@ function ListModels() {
             <div
               id="scrollableDiv"
               style={{
-                'max-height': 'calc(100vh - 570px)',
-                'overflow-y': 'auto',
+                maxHeight: 'calc(100vh - 570px)',
+                overflowY: 'auto',
               }}
             >
               <InfinityScroll
@@ -220,6 +221,23 @@ function ListModels() {
                 `)}
                 queryName="getAllInstrumentsWithModel"
                 variables={{ modelNumber, vendor }}
+                renderItems={(items) => items.map((entry) => (
+                  <li className="list-group-item" key={entry.id}>
+                    <div className="d-flex justify-content-between">
+                      <span>
+                        Serial #
+                        {entry.serialNumber}
+                      </span>
+                      <span className="">
+                        <Link
+                          to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}`}
+                        >
+                          View Instrument
+                        </Link>
+                      </span>
+                    </div>
+                  </li>
+                ))}
               />
             </div>
           </div>
