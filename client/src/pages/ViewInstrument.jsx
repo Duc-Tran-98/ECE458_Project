@@ -188,7 +188,7 @@ export default function DetailedInstrumentView() {
                     </Link>
                   </MouseOverPopover>
                 </div>
-                {calibFrequency > 0 && (
+                {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
                   <div className="col">
                     <MouseOverPopover
                       className=""
