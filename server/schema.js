@@ -16,6 +16,7 @@ const typeDefs = gql`
     getModel(modelNumber: String!, vendor: String!): Model
 
     # Instrument Related Queries
+    countAllInstruments: Int!
     getAllInstruments(limit: Int, offset: Int): [Instrument]
     getAllInstrumentsWithModel(
       modelNumber: String!

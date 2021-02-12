@@ -17,6 +17,14 @@ class InstrumentAPI extends DataSource {
     this.context = config.context;
   }
 
+  async countAllInstruments() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let total = await this.store.instruments.findAndCountAll();
+    total = total.count;
+    return total;
+  }
+
   async getAllInstruments({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
