@@ -27,22 +27,23 @@ function App() {
   const handleSignOut = () => {
     setLoggedIn(false);
     window.sessionStorage.clear();
+    window.location.href = '/';
   };
   return (
     <Router>
-      <header>
-        <NavBar
-          title="Team Teams"
-          loggedIn={loggedIn}
-          handleSignOut={handleSignOut}
-        />
-      </header>
-      <main>
-        <Switch>
-          <Route path="/test">
-            <ComponentTest />
-          </Route>
-          <UserProvider>
+      <UserProvider>
+        <header>
+          <NavBar
+            title="Team Teams"
+            loggedIn={loggedIn}
+            handleSignOut={handleSignOut}
+          />
+        </header>
+        <main>
+          <Switch>
+            <Route path="/test">
+              <ComponentTest />
+            </Route>
             <Route exact path="/">
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>
@@ -89,9 +90,9 @@ function App() {
             <Route path="/import">
               <BulkImport />
             </Route>
-          </UserProvider>
-        </Switch>
-      </main>
+          </Switch>
+        </main>
+      </UserProvider>
     </Router>
   );
 }
