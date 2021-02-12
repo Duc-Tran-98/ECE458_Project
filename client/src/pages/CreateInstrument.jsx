@@ -108,7 +108,7 @@ function CreateInstrumentPage() {
         const validEvents = calibHistory.filter(
           (entry) => entry.user.length > 0,
         ); // Collect valid entries
-        if (validEvents.length > 0) {
+        if (validEvents.length > 0 && formState.calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
           const handleRes = (res) => {
             console.log(res);
@@ -124,7 +124,7 @@ function CreateInstrumentPage() {
         // this section deals with resetting the form
         setCalibHistory([
           {
-            user: '',
+            user: user.userName,
             date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
             comment: '',
             id: nextId,
@@ -219,7 +219,9 @@ function CreateInstrumentPage() {
               calibrationFrequency={calibrationFrequency}
               viewOnly
             />
-            <ul className="list-group">{calibList}</ul>
+            {calibrationFrequency > 0 && (
+              <ul className="list-group">{calibList}</ul>
+            )}
           </div>
         );
       default:

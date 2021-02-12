@@ -125,9 +125,11 @@ function ListModels() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Model">
-              <ButtonBase>
+              <Link
+                to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+              >
                 <SearchIcon />
-              </ButtonBase>
+              </Link>
             </MouseOverPopover>
           </div>
         </div>

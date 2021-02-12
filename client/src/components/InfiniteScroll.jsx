@@ -22,6 +22,7 @@ class InfinityScroll extends Component {
       query: props.query,
       queryName: props.queryName,
       variables: props.variables,
+      titleClassName: props.titleClassName,
     };
     this.renderItems = props.renderItems;
     this.fetchMoreData = this.fetchMoreData.bind(this);
@@ -40,7 +41,8 @@ class InfinityScroll extends Component {
   }
 
   fetchMoreData() {
-    const { query, queryName, total } = this.state;
+    const { query, queryName } = this.state;
+    const { total } = this.state;
     let { items } = this.state;
     if (total && items.length >= total) { // If total not null and length exceeds/equal to total, stop scroll
       this.setState({ hasMore: false });
@@ -48,17 +50,27 @@ class InfinityScroll extends Component {
       QueryAndThen({ query, queryName, getVariables: this.getVariables }).then(
         (data) => {
           items = items.concat(data.rows);
+          if (data.total < 10) {
+            this.setState({ hasMore: false });
+          }
           this.setState({ total: data.total, items });
         },
       );
+      // eslint-disable-next-line react/destructuring-assignment
+      // total = this.state.total;
+      // if (total <= 10) {
+      //   this.setState({ hasMore: false });
+      // }
     }
   }
 
   render() {
-    const { title, items, hasMore } = this.state;
+    const {
+      title, items, hasMore, titleClassName,
+    } = this.state;
     return (
       <>
-        <h2>{title}</h2>
+        <h2 className={titleClassName}>{title}</h2>
         <hr />
         <InfiniteScroll
           scrollableTarget="scrollableDiv"
@@ -95,10 +107,12 @@ InfinityScroll.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   variables: PropTypes.object.isRequired,
   renderItems: PropTypes.func, // How you want items to be displayed; optional
+  titleClassName: PropTypes.string, // Title classname; for styling
 };
 
 InfinityScroll.defaultProps = {
   renderItems: null,
+  titleClassName: '',
 };
 
 export default InfinityScroll;

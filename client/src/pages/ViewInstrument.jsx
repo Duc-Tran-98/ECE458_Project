@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import { Link } from 'react-router-dom';
 import InstrumentForm from '../components/InstrumentForm';
 import { QueryAndThen } from '../components/UseQuery';
 import GetCalibHistory from '../queries/GetCalibHistory';
-// import CalibrationRow from '../components/CalibrationRow';
+import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEvent from '../queries/AddCalibEvent';
@@ -101,11 +102,10 @@ export default function DetailedInstrumentView() {
   };
   const handleSubmit = () => {
     const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
-    console.log(validEvents);
     if (validEvents.length > 0) {
       // If there are valid entries, add them to DB
+      // eslint-disable-next-line no-unused-vars
       const handleRes = (res) => {
-        console.log(res);
         fetchData();
       };
       AddCalibEvent({
@@ -134,31 +134,57 @@ export default function DetailedInstrumentView() {
             calibrationFrequency={calibFrequency}
           />
         </div>
-        {calibFrequency > 0 ? (
-          <div className="row border-top border-dark">
-            <div
-              style={{
-                maxHeight: '45vh',
-                overflowY: 'auto',
-              }}
-            >
-              <div className="sticky-top bg-secondary text-light">
-                <h4>Calibration History:</h4>
-                <button type="button" className="btn btn-primary" onClick={handleSubmit}>Save</button>
+        <div className="row border-top border-dark">
+          <div
+            style={{
+              maxHeight: '45vh',
+              overflowY: 'auto',
+            }}
+          >
+            <div className="sticky-top bg-secondary text-light">
+              <div className="row">
+                <div className="col h4">Calibration History:</div>
+                <div className="col">
+                  <MouseOverPopover message="Save added calibration events">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleSubmit}
+                    >
+                      Save
+                    </button>
+                  </MouseOverPopover>
+                </div>
+                <div className="col">
+                  <MouseOverPopover
+                    className=""
+                    message="Go to model's detail view"
+                  >
+                    <Link
+                      className="text-light btn btn-primary btn-active"
+                      to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+                    >
+                      View Model
+                    </Link>
+                  </MouseOverPopover>
+                </div>
               </div>
+            </div>
+            {calibFrequency > 0 ? (
               <CalibrationTable
                 rows={calibHist}
                 addRow={addRow}
                 deleteRow={deleteRow}
                 onChangeCalibRow={onChangeCalibRow}
               />
-            </div>
+            ) : (
+              <div className="row mt-3">
+                <p className="text-center h4">Instrument not calibratable</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="row mt-3">
-            <p className="text-center h4">Instrument not calibratable</p>
-          </div>
-        )}
+        </div>
+
       </div>
     </div>
   );
