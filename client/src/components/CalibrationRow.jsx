@@ -6,26 +6,27 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
+// import { gql } from '@apollo/client';
+// import { print } from 'graphql';
 import MouseOverPopover from './PopOver';
-import AsyncSuggest from './AsyncSuggest';
+import UserContext from './UserContext';
+// import AsyncSuggest from './AsyncSuggest';
 
-const GET_USERS = gql`
-  query GetUsers {
-    getAllUsers {
-      userName
-      firstName
-      lastName
-    }
-  }
-`;
+// const GET_USERS = gql`
+//   query GetUsers {
+//     getAllUsers {
+//       userName
+//       firstName
+//       lastName
+//     }
+//   }
+// `;
 
-const query = print(GET_USERS);
-const queryName = 'getAllUsers';
+// const query = print(GET_USERS);
+// const queryName = 'getAllUsers';
 
 export default function CalibrationRow({
-  handleDelete, id, onChangeCalibRow, comment, date, entry, onInputChange, viewOnly,
+  handleDelete, id, onChangeCalibRow, comment, date, entry,
 }) {
   CalibrationRow.propTypes = {
     handleDelete: PropTypes.func,
@@ -35,16 +36,15 @@ export default function CalibrationRow({
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
-    onInputChange: PropTypes.func.isRequired,
-    viewOnly: PropTypes.bool,
   };
   CalibrationRow.defaultProps = {
     handleDelete: null,
-    viewOnly: false,
   };
+  const user = React.useContext(UserContext);
+  const { viewOnly } = entry;
   const today = new Date().toISOString().split('T')[0];
-  const formatOption = (option) => `${option.userName}`;
-  const formatSelected = (option, value) => option.userName === value.userName;
+  // const formatOption = (option) => `${option.userName}`;
+  // const formatSelected = (option, value) => option.userName === value.userName;
   const val = { userName: entry.user };
   return (
     <div className="d-flex justify-content-center border-bottom border-dark ">
@@ -60,14 +60,20 @@ export default function CalibrationRow({
                 disabled
               />
             ) : (
-              <AsyncSuggest
-                query={query}
-                queryName={queryName}
-                onInputChange={(e, v) => onInputChange(e, v, entry)}
-                label="Choose a user"
-                getOptionSelected={formatSelected}
-                getOptionLabel={formatOption}
-                value={val}
+              // <AsyncSuggest
+              //   query={query}
+              //   queryName={queryName}
+              //   onInputChange={(e, v) => onInputChange(e, v, entry)}
+              //   label="Choose a user"
+              //   getOptionSelected={formatSelected}
+              //   getOptionLabel={formatOption}
+              //   value={val}
+              // />
+              <Form.Control
+                name="user"
+                type="text"
+                value={user.userName}
+                disabled
               />
             )}
           </Form.Group>
@@ -104,7 +110,7 @@ export default function CalibrationRow({
             />
           </Form.Group>
         </div>
-        {handleDelete !== null && (
+        {(!viewOnly) && (
           <div className="col mt-4">
             <Button variant="primary" onClick={() => handleDelete(id)}>
               <MouseOverPopover message="Delete this row">
