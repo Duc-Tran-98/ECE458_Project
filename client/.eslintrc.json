@@ -25,5 +25,13 @@
         "max-len": ["error", { "code": 200 }],
         "jsx-a11y/label-has-associated-control": "off",
         "jsx-a11y/label-has-for":"off"
-    }
+    },
+    "settings": {
+        "import/resolver": {
+          "node": {
+            "extensions": [".js", ".jsx", ".ts", ".tsx"],
+            "moduleDirectory": ["node_modules", "src/"]
+          }
+        }
+      }
 }

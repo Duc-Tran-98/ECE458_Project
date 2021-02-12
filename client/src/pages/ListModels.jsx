@@ -18,7 +18,6 @@ import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
 import DeleteModel from '../queries/DeleteModel';
 import UserContext from '../components/UserContext';
-import InfinityScroll from '../components/InfiniteScroll';
 
 function ListModels() {
   const user = useContext(UserContext);
@@ -184,67 +183,6 @@ function ListModels() {
             vendor={vendor}
             handleClose={closeModal}
           />
-        )}
-        {which === 'view' && (
-          <div>
-            <EditModel
-              modelNumber={modelNumber}
-              vendor={vendor}
-              handleClose={closeModal}
-              viewOnly
-            />
-            <div
-              id="scrollableDiv"
-              style={{
-                maxHeight: 'calc(100vh - 570px)',
-                overflowY: 'auto',
-              }}
-            >
-              <InfinityScroll
-                title="Instances:"
-                query={print(gql`
-                  query GetInstrumentFromModel(
-                    $modelNumber: String!
-                    $vendor: String!
-                    $limit: Int
-                    $offset: Int
-                  ) {
-                    getAllInstrumentsWithModel(
-                      modelNumber: $modelNumber
-                      vendor: $vendor
-                      limit: $limit
-                      offset: $offset
-                    ) {
-                      total
-                      rows {
-                        serialNumber
-                        id
-                      }
-                    }
-                  }
-                `)}
-                queryName="getAllInstrumentsWithModel"
-                variables={{ modelNumber, vendor }}
-                renderItems={(items) => items.map((entry) => (
-                  <li className="list-group-item" key={entry.id}>
-                    <div className="d-flex justify-content-between">
-                      <span>
-                        Serial #
-                        {entry.serialNumber}
-                      </span>
-                      <span className="">
-                        <Link
-                          to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}`}
-                        >
-                          View Instrument
-                        </Link>
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              />
-            </div>
-          </div>
         )}
         {which === 'delete' && (
           <div>

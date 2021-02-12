@@ -22,7 +22,7 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
   return date;
 };
 
-function ListInstruments() {
+export default function ListInstruments() {
   const user = useContext(UserContext);
   const [rows, setInstruments] = useState([]);
   const [queried, setQueried] = useState(false);
@@ -39,7 +39,6 @@ function ListInstruments() {
       GetCalibHistory({ // Get calibration history for each instrument
         id: element.id,
         mostRecent: true,
-        dateOnly: true,
       }).then((value) => {
         // const today = new Date();
         // element.date = value ? value.date : 'No history found'; // If there's an entry, assign it
@@ -47,6 +46,10 @@ function ListInstruments() {
         element.date = element.calibrationFrequency === 0 ? 'Item not calibratable' : 'Not calibrated';
         // eslint-disable-next-line no-param-reassign
         element.calibrationStatus = element.calibrationFrequency > 0 ? 'OoO' : 'NA';
+        // eslint-disable-next-line no-param-reassign
+        element.user = value ? value.user : 'No user found';
+        // eslint-disable-next-line no-param-reassign
+        element.calibComment = value ? value.comment : 'No comment found';
         if (value) {
           // eslint-disable-next-line no-param-reassign
           element.date = value.date;
@@ -284,54 +287,3 @@ function ListInstruments() {
     </div>
   );
 }
-export default ListInstruments;
-
-/*
-{which === 'edit' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-          />
-        )}
-        {which === 'view' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            viewOnly
-          />
-        )}
-            {
-      field: 'calibrationFrequency',
-      headerName: 'Calibration Frequency',
-      width: 200,
-      type: 'number',
-      renderCell: (params) => (
-        <div className="row">
-          <div className="col mt-3">
-            {params.value === 0 ? (
-              <MouseOverPopover message="Instrument not calibratable">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="#f78102"
-                  className="bi bi-calendar-x"
-                  viewBox="0 0 32 32"
-                >
-
-                  // eslint-disable-next-line max-len
-                  <path d="M6.146 7.146a.5.5 0 0 1 .708 0L8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 0 1 0-.708z" />
-
-                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-                </svg>
-              </MouseOverPopover>
-            ) : (
-              params.value
-            )}
-          </div>
-        </div>
-      ),
-    },
-*/

@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Certificate from './pages/Certificate';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
@@ -14,6 +15,8 @@ import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
+import BulkImport from './pages/BulkImport';
+// import MyDocument from './pages/Certificate';
 // import ErrorPage from './pages/ErrorPage';
 
 function App() {
@@ -80,10 +83,15 @@ function App() {
                 <ErrorPage message="You need to sign in first!" />
               )}
             </Route>
+            <Route path="/viewCertificate">
+              <Certificate />
+            </Route>
+            <Route path="/import">
+              <BulkImport />
+            </Route>
           </UserProvider>
         </Switch>
       </main>
-      <footer />
     </Router>
   );
 }

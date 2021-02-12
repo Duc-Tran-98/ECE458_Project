@@ -9,6 +9,7 @@ import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEvent from '../queries/AddCalibEvent';
+import GetUser from '../queries/GetUser';
 
 export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
@@ -117,6 +118,23 @@ export default function DetailedInstrumentView() {
       });
     }
   };
+  // This code is for setting window variables for certificate
+  if (calibFrequency > 0 && calibHist.length > 0) {
+    window.sessionStorage.setItem('serialNumber', serialNumber);
+    window.sessionStorage.setItem('modelNumber', modelNumber);
+    window.sessionStorage.setItem('modelDescription', description);
+    window.sessionStorage.setItem('vendor', vendor);
+    window.sessionStorage.setItem('calibrationDate', calibHist[0].date);
+    window.sessionStorage.setItem('expirationDate', new Date(calibHist[0].date).addDays(calibFrequency));
+    window.sessionStorage.setItem('calibComment', calibHist[0].comment);
+    GetUser({ userName: calibHist[0].user }).then((value) => {
+      if (value) {
+        const calibUser = `Username: ${calibHist[0].user}, First name: ${value.firstName}, Last name: ${value.lastName}`;
+        window.sessionStorage.setItem('calibUser', calibUser);
+      }
+    });
+  }
+
   return (
     <div className="d-flex justify-content-center bg-light">
       <div className="col">
@@ -144,17 +162,19 @@ export default function DetailedInstrumentView() {
             <div className="sticky-top bg-secondary text-light">
               <div className="row">
                 <div className="col h4">Calibration History:</div>
-                <div className="col">
-                  <MouseOverPopover message="Save added calibration events">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={handleSubmit}
-                    >
-                      Save
-                    </button>
-                  </MouseOverPopover>
-                </div>
+                {calibFrequency > 0 && (
+                  <div className="col">
+                    <MouseOverPopover message="Save added calibration events">
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleSubmit}
+                      >
+                        Save
+                      </button>
+                    </MouseOverPopover>
+                  </div>
+                )}
                 <div className="col">
                   <MouseOverPopover
                     className=""
@@ -168,6 +188,21 @@ export default function DetailedInstrumentView() {
                     </Link>
                   </MouseOverPopover>
                 </div>
+                {calibFrequency > 0 && (
+                  <div className="col">
+                    <MouseOverPopover
+                      className=""
+                      message="View instrument's calibration certificate"
+                    >
+                      <Link
+                        className="text-light btn btn-primary btn-active"
+                        to="/viewCertificate"
+                      >
+                        View Certificate
+                      </Link>
+                    </MouseOverPopover>
+                  </div>
+                )}
               </div>
             </div>
             {calibFrequency > 0 ? (
@@ -184,7 +219,6 @@ export default function DetailedInstrumentView() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
