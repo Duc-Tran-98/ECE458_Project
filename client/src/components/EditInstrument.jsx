@@ -15,8 +15,10 @@ class EditInstrument extends Component {
       modelNumber: props.modelNumber,
       // eslint-disable-next-line react/prop-types
       serialNumber: props.serialNumber,
+      description: '',
       comment: '',
       id: '',
+      calibrationFrequency: 0,
       validated: false,
       // eslint-disable-next-line react/prop-types
       viewOnly: props.viewOnly, // Is this only for viewing
@@ -43,6 +45,7 @@ class EditInstrument extends Component {
           calibrationFrequency
           comment
           id
+          description
         }
       }
     `;
@@ -51,10 +54,14 @@ class EditInstrument extends Component {
     const { modelNumber, vendor, serialNumber } = this.state;
     const getVariables = () => ({ modelNumber, vendor, serialNumber });
     const handleResponse = (response) => {
-      const { comment, id } = response;
+      const {
+        comment, id, description, calibrationFrequency,
+      } = response;
       this.setState({
         comment,
         id,
+        description,
+        calibrationFrequency,
       });
     };
     Query({
@@ -158,6 +165,8 @@ class EditInstrument extends Component {
       comment,
       validated,
       viewOnly,
+      description,
+      calibrationFrequency,
     } = this.state;
     const value = { modelNumber, vendor };
     // const value = vendor.concat(' ', modelNumber);
@@ -174,6 +183,8 @@ class EditInstrument extends Component {
           validated={validated}
           onInputChange={this.onInputChange}
           viewOnly={viewOnly}
+          description={description}
+          calibrationFrequency={calibrationFrequency}
         />
       </div>
     );

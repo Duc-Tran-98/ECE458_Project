@@ -9,7 +9,7 @@ import CalibrationRow from './CalibrationRow';
 import MouseOverPopover from './PopOver';
 
 export default function CalibrationTable({
-  rows, addRow, deleteRow, onChangeCalibRow, onInputChange,
+  rows, addRow, deleteRow, onChangeCalibRow,
 }) {
   CalibrationTable.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
@@ -17,7 +17,6 @@ export default function CalibrationTable({
     addRow: PropTypes.func.isRequired,
     deleteRow: PropTypes.func.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
-    onInputChange: PropTypes.func.isRequired,
   };
   // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (
@@ -29,12 +28,15 @@ export default function CalibrationTable({
       comment={entry.comment}
       date={entry.date}
       entry={entry}
-      onInputChange={onInputChange}
     />
   ));
   return (
     <Form className="needs-validation bg-light rounded" noValidate>
-      {list}
+      {rows.length > 0 ? (list) : (
+        <div className="row">
+          <p className="text-center h5">Item not calibrated</p>
+        </div>
+      )}
       <div className="d-flex justify-content-center">
         <Button variant="primary" onClick={addRow} className="my-2">
           <MouseOverPopover message="Add new row">

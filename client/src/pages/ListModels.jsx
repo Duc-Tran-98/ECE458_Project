@@ -10,6 +10,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom';
 import Query from '../components/UseQuery';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
@@ -26,6 +27,7 @@ function ListModels() {
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
+  const [description, setDescription] = useState('');
   const GET_MODELS_QUERY = gql`
     query Models{
       getAllModels{
@@ -51,6 +53,7 @@ function ListModels() {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setWhich(e.field);
+      setDescription(e.row.description);
       setShow(true);
     }
   };
@@ -121,9 +124,11 @@ function ListModels() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Model">
-              <ButtonBase>
+              <Link
+                to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+              >
                 <SearchIcon />
-              </ButtonBase>
+              </Link>
             </MouseOverPopover>
           </div>
         </div>
@@ -168,6 +173,7 @@ function ListModels() {
       },
     );
   }
+  // const variables = {modelNumber, vendor};
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
@@ -176,14 +182,6 @@ function ListModels() {
             modelNumber={modelNumber}
             vendor={vendor}
             handleClose={closeModal}
-          />
-        )}
-        {which === 'view' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            viewOnly
           />
         )}
         {which === 'delete' && (
