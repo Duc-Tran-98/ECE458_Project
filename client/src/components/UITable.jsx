@@ -48,6 +48,7 @@ export default function DisplayGrid({
         }}
         disableSelectionOnClick
         className="bg-light"
+        // TODO: Only render when exportButton exists
         components={{
           Header: exportButton,
         }}

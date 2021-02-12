@@ -32,20 +32,19 @@ function ListModels() {
 
   const csvLink = useRef();
 
-  const clickRef = () => {
-    csvLink.current.link.click();
-  };
+  const [downloadCSV, setDownloadReady] = useStateWithCallback(false, () => {
+    if (downloadCSV) {
+      console.log('Downloading CSV Data');
+      csvLink.current.link.click();
+      setDownloadReady(false);
+    }
+  });
 
-  // const [csvData, setCSVData] = useState([]);
   const [csvData, setCSVData] = useStateWithCallback([], () => {
     console.log('Updating CSV Data');
     if (csvData.length > 0) {
       console.log(JSON.stringify(csvData));
-      // TODO: setTimeout takes snapshot, CSVLink not getting state in time
-      console.log('Clicking link with data^^^');
-      clickRef();
-      // while (!csvData);
-      // csvLink.current.link.click();
+      setDownloadReady(true);
     }
   });
 
@@ -237,6 +236,8 @@ function ListModels() {
     { label: 'Comment', key: 'comment' },
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
+
+  // const getData = () => csvData;
 
   return (
     <div style={{ height: '90vh' }}>

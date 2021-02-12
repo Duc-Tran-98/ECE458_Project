@@ -19,6 +19,7 @@
     "clsx": "^1.1.1",
     "csv": "^5.3.2",
     "csv-file-validator": "^1.10.1",
+    "export-to-csv": "^0.2.1",
     "graphql": "^15.5.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
@@ -33,10 +34,10 @@
     "react-infinite-scroll-component": "^6.0.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "strftime": "^0.10.0",
     "use-state-with-callback": "^2.0.3",
     "web-vitals": "^0.2.4",
-    "xlsx": "^0.16.9",
-    "strftime": "^0.10.0"
+    "xlsx": "^0.16.9"
   },
   "scripts": {
     "start": "react-scripts start",
