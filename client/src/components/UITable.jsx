@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import { DataGrid } from '@material-ui/data-grid';
+import { DataGrid, GridToolbar } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 
@@ -18,9 +18,9 @@ export default function DisplayGrid({
     setChecked: PropTypes.func,
   };
 
-  const exportButton = () => (
-    <Button onClick={handleExport}>Export</Button>
-  );
+  // const exportButton = () => (
+  //   <Button onClick={handleExport}>Export</Button>
+  // );
 
   return (
     <div>
@@ -50,7 +50,15 @@ export default function DisplayGrid({
         className="bg-light"
         // TODO: Only render when exportButton exists
         components={{
-          Header: exportButton,
+          Header: () => (
+            // <GridToolbar>
+            //   <Button onClick={handleExport}>Export</Button>
+            // </GridToolbar>
+            <span>
+              {handleExport && <Button onClick={handleExport}>Export</Button>}
+              <GridToolbar />
+            </span>
+          ),
         }}
       />
     </div>
