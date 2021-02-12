@@ -3,7 +3,9 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import { useState, useContext, useRef } from 'react';
+import {
+  useState, useContext, useRef, useEffect,
+} from 'react';
 import useStateWithCallback from 'use-state-with-callback';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -32,19 +34,28 @@ function ListModels() {
 
   const csvLink = useRef();
 
-  const [downloadCSV, setDownloadReady] = useStateWithCallback(false, () => {
-    if (downloadCSV) {
+  const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
+    if (downloadReady) {
       console.log('Downloading CSV Data');
       csvLink.current.link.click();
       setDownloadReady(false);
     }
   });
 
+  // Everytime setCSVData, want to download
   const [csvData, setCSVData] = useStateWithCallback([], () => {
     console.log('Updating CSV Data');
     if (csvData.length > 0) {
       console.log(JSON.stringify(csvData));
       setDownloadReady(true);
+    }
+  });
+
+  useEffect(() => {
+    if (csvLink && csvLink.current && downloadReady && csvData.length > 0) {
+      csvLink.current.link.click();
+      setCSVData([]);
+      setDownloadReady(false);
     }
   });
 
