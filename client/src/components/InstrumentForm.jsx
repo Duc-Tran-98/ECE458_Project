@@ -31,6 +31,7 @@ export default function InstrumentForm({
   modelNumber,
   vendor,
   description,
+  calibrationFrequency,
 }) {
   InstrumentForm.propTypes = {
     // eslint-disable-next-line react/require-default-props
@@ -47,11 +48,13 @@ export default function InstrumentForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
     description: PropTypes.string,
+    calibrationFrequency: PropTypes.number,
   };
   InstrumentForm.defaultProps = {
     handleSubmit: null,
     viewOnly: false,
     description: '',
+    calibrationFrequency: 0,
   };
   const val = modelNumber.length > 0 ? { modelNumber, vendor } : null;
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
@@ -98,6 +101,19 @@ export default function InstrumentForm({
               type="text"
               name="modelDescription"
               value={description}
+              disabled
+            />
+          </Form.Group>
+        </div>
+        <div className="col mt-3">
+          <Form.Group>
+            <Form.Label className="h4 text-center text-nowrap ">
+              Calibration Frequency
+            </Form.Label>
+            <Form.Control
+              type="text"
+              name="calibrationFrequency"
+              value={calibrationFrequency}
               disabled
             />
           </Form.Group>

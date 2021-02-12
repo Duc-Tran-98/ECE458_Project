@@ -175,6 +175,7 @@ function CreateInstrumentPage() {
             validated={validated}
             onInputChange={onInputChange}
             description={description}
+            calibrationFrequency={calibrationFrequency}
           />
         );
       case 1: // check if instrument is calibratable here. If it is, display CalibrationTable
@@ -206,11 +207,11 @@ function CreateInstrumentPage() {
               changeHandler={changeHandler}
               validated={validated}
               onInputChange={onInputChange}
+              description={description}
+              calibrationFrequency={calibrationFrequency}
               viewOnly
             />
-            <ul className="list-group">
-              {calibList}
-            </ul>
+            <ul className="list-group">{calibList}</ul>
           </div>
         );
       default:

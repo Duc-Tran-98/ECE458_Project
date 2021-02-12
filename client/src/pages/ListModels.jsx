@@ -232,7 +232,7 @@ function ListModels() {
                       </span>
                       <span className="">
                         <Link
-                          to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}`}
+                          to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}`}
                         >
                           View Instrument
                         </Link>

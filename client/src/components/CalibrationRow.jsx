@@ -25,10 +25,10 @@ const query = print(GET_USERS);
 const queryName = 'getAllUsers';
 
 export default function CalibrationRow({
-  handleDelete, id, onChangeCalibRow, comment, date, entry, onInputChange,
+  handleDelete, id, onChangeCalibRow, comment, date, entry, onInputChange, viewOnly,
 }) {
   CalibrationRow.propTypes = {
-    handleDelete: PropTypes.func.isRequired,
+    handleDelete: PropTypes.func,
     id: PropTypes.number.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
     comment: PropTypes.string.isRequired,
@@ -36,6 +36,11 @@ export default function CalibrationRow({
     // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
     onInputChange: PropTypes.func.isRequired,
+    viewOnly: PropTypes.bool,
+  };
+  CalibrationRow.defaultProps = {
+    handleDelete: null,
+    viewOnly: false,
   };
   const today = new Date().toISOString().split('T')[0];
   const formatOption = (option) => `${option.userName}`;
@@ -47,15 +52,24 @@ export default function CalibrationRow({
         <div className="col mt-1">
           <Form.Group>
             <Form.Label className="h4">User</Form.Label>
-            <AsyncSuggest
-              query={query}
-              queryName={queryName}
-              onInputChange={(e, v) => onInputChange(e, v, entry)}
-              label="Choose a user"
-              getOptionSelected={formatSelected}
-              getOptionLabel={formatOption}
-              value={val}
-            />
+            {viewOnly ? (
+              <Form.Control
+                name="user"
+                type="text"
+                value={val.userName}
+                disabled
+              />
+            ) : (
+              <AsyncSuggest
+                query={query}
+                queryName={queryName}
+                onInputChange={(e, v) => onInputChange(e, v, entry)}
+                label="Choose a user"
+                getOptionSelected={formatSelected}
+                getOptionLabel={formatOption}
+                value={val}
+              />
+            )}
           </Form.Group>
         </div>
         <div className="col mt-1">
@@ -68,6 +82,7 @@ export default function CalibrationRow({
               value={date}
               onChange={(e) => onChangeCalibRow(e, entry)}
               required
+              disabled={viewOnly}
             />
             <Form.Control.Feedback type="invalid">
               Please enter a date.
@@ -85,29 +100,32 @@ export default function CalibrationRow({
               value={comment}
               onChange={(e) => onChangeCalibRow(e, entry)}
               style={{ resize: 'none' }}
+              disabled={viewOnly}
             />
           </Form.Group>
         </div>
-        <div className="col mt-4">
-          <Button variant="primary" onClick={() => handleDelete(id)}>
-            <MouseOverPopover message="Delete this row">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                className="bi bi-node-minus-fill"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  // eslint-disable-next-line max-len
-                  d="M16 8a5 5 0 0 1-9.975.5H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5h2.025A5 5 0 0 1 16 8zm-2 0a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5A.5.5 0 0 0 14 8z"
-                />
-              </svg>
-            </MouseOverPopover>
-          </Button>
-        </div>
+        {handleDelete !== null && (
+          <div className="col mt-4">
+            <Button variant="primary" onClick={() => handleDelete(id)}>
+              <MouseOverPopover message="Delete this row">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  className="bi bi-node-minus-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    // eslint-disable-next-line max-len
+                    d="M16 8a5 5 0 0 1-9.975.5H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5h2.025A5 5 0 0 1 16 8zm-2 0a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5A.5.5 0 0 0 14 8z"
+                  />
+                </svg>
+              </MouseOverPopover>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
