@@ -6,8 +6,10 @@ import { QueryAndThen } from '../components/UseQuery';
 import GetCalibHistory from '../queries/GetCalibHistory';
 // import CalibrationRow from '../components/CalibrationRow';
 import CalibrationTable from '../components/CalibrationTable';
+import UserContext from '../components/UserContext';
 
 export default function DetailedInstrumentView() {
+  const user = React.useContext(UserContext);
   const query = print(gql`
     query GetInstrument(
       $modelNumber: String!
@@ -38,7 +40,7 @@ export default function DetailedInstrumentView() {
   const [calibFrequency, setCalibFrequency] = useState(0);
   const [queried, setQueried] = useState(false);
   const [calibHist, setCalibHist] = useState([]);
-  // const [nextId, setNextId] = useState(0);
+  const [nextId, setNextId] = useState(0);
   const getVariables = () => ({ modelNumber, serialNumber, vendor });
   const queryName = 'getInstrument';
   React.useEffect(() => {
@@ -57,23 +59,28 @@ export default function DetailedInstrumentView() {
           counter += 1;
         });
         setCalibHist(data);
+        setNextId(counter);
       });
       setQueried(true);
     }
   });
-  // const list = calibHist.map((entry) => (
-  //   <li className="list-group-item" key={entry.id}>
-  //     <CalibrationRow
-  //       id={entry.id}
-  //       onChangeCalibRow={() => undefined}
-  //       comment={entry.comment}
-  //       date={entry.date}
-  //       entry={entry}
-  //       onInputChange={() => undefined}
-  //       viewOnly
-  //     />
-  //   </li>
-  // ));
+  const addRow = () => {
+    // This adds an entry to the array(array = calibration history)
+    const newHistory = calibHist;
+    newHistory.push({
+      user: user.userName,
+      date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
+      comment: '',
+      id: nextId,
+      viewOnly: false,
+    });
+    setNextId(nextId + 1);
+    setCalibHist(newHistory);
+  };
+  const deleteRow = (rowId) => {
+    const newHistory = calibHist.filter((item) => item.id !== rowId);
+    setCalibHist(newHistory);
+  };
   return (
     <div className="d-flex justify-content-center bg-light">
       <div className="col">
@@ -92,26 +99,23 @@ export default function DetailedInstrumentView() {
           />
         </div>
         {calibFrequency > 0 ? (
-          <div className="row">
+          <div className="row border-top border-info">
             <div
               style={{
                 maxHeight: '45vh',
                 overflowY: 'auto',
               }}
             >
-              <h4>Calibration History:</h4>
-              {calibHist.length > 0 ? (
-                <CalibrationTable
-                  rows={calibHist}
-                  addRow={() => undefined}
-                  deleteRow={() => undefined}
-                  onChangeCalibRow={() => undefined}
-                />
-              ) : (
-                <div className="row mt-3">
-                  <p className="text-center h4">Instrument not calibrated!</p>
-                </div>
-              )}
+              <div className="sticky-top">
+                <h4>Calibration History:</h4>
+                <button type="button" className="btn btn-primary">Save</button>
+              </div>
+              <CalibrationTable
+                rows={calibHist}
+                addRow={addRow}
+                deleteRow={deleteRow}
+                onChangeCalibRow={() => undefined}
+              />
             </div>
           </div>
         ) : (

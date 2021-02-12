@@ -32,7 +32,11 @@ export default function CalibrationTable({
   ));
   return (
     <Form className="needs-validation bg-light rounded" noValidate>
-      {list}
+      {rows.length > 0 ? (list) : (
+        <div className="row">
+          <p className="text-center h5">Item not calibrated</p>
+        </div>
+      )}
       <div className="d-flex justify-content-center">
         <Button variant="primary" onClick={addRow} className="my-2">
           <MouseOverPopover message="Add new row">
