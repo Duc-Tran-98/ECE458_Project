@@ -28,6 +28,7 @@ function ListModels() {
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
+  const [description, setDescription] = useState('');
   const GET_MODELS_QUERY = gql`
     query Models{
       getAllModels{
@@ -53,6 +54,7 @@ function ListModels() {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setWhich(e.field);
+      setDescription(e.row.description);
       setShow(true);
     }
   };
@@ -230,7 +232,7 @@ function ListModels() {
                       </span>
                       <span className="">
                         <Link
-                          to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}`}
+                          to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}`}
                         >
                           View Instrument
                         </Link>

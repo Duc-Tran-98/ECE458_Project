@@ -38,12 +38,14 @@ function CreateInstrumentPage() {
     setCalibHistory(newHistory);
   };
   const [validated, setValidated] = useState(false);
-  const [formState, setFormState] = useState({ // This state is for an instrument
+  const [formState, setFormState] = useState({
+    // This state is for an instrument
     modelNumber: '',
     vendor: '',
     comment: '',
     serialNumber: '',
     calibrationFrequency: 0,
+    description: '',
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => { // This adds an entry to the array(array = calibration history)
@@ -136,7 +138,7 @@ function CreateInstrumentPage() {
   };
   const onInputChange = (e, v) => { // This if for updating instrument's fields from autocomplete input
     setFormState({
-      ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency,
+      ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency, description: v.description,
     });
   };
   const user = useContext(UserContext);
@@ -144,7 +146,12 @@ function CreateInstrumentPage() {
     return <ErrorPage message="You don't have the right permissions!" />;
   }
   const {
-    modelNumber, vendor, serialNumber, comment, calibrationFrequency,
+    modelNumber,
+    vendor,
+    serialNumber,
+    comment,
+    calibrationFrequency,
+    description,
   } = formState;
   // Caliblist is the list of calibration events where the username is not an empty string
   const calibList = calibHistory.map((entry) => entry.user.length > 0 && (
@@ -167,6 +174,7 @@ function CreateInstrumentPage() {
             changeHandler={changeHandler}
             validated={validated}
             onInputChange={onInputChange}
+            description={description}
           />
         );
       case 1: // check if instrument is calibratable here. If it is, display CalibrationTable

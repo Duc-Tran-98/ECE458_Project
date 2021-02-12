@@ -12,6 +12,7 @@ const GET_MODELS_QUERY = gql`
       modelNumber
       vendor
       calibrationFrequency
+      description
     }
   }
 `;
@@ -19,8 +20,6 @@ const query = print(GET_MODELS_QUERY);
 const queryName = 'getAllModels';
 
 export default function InstrumentForm({
-  // modelNumber,
-  // vendor,
   // calibrationFrequency,
   comment,
   handleSubmit,
@@ -31,6 +30,7 @@ export default function InstrumentForm({
   viewOnly,
   modelNumber,
   vendor,
+  description,
 }) {
   InstrumentForm.propTypes = {
     // eslint-disable-next-line react/require-default-props
@@ -46,10 +46,12 @@ export default function InstrumentForm({
     onInputChange: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
+    description: PropTypes.string,
   };
   InstrumentForm.defaultProps = {
     handleSubmit: null,
     viewOnly: false,
+    description: '',
   };
   const val = modelNumber.length > 0 ? { modelNumber, vendor } : null;
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
@@ -62,29 +64,44 @@ export default function InstrumentForm({
       validated={validated}
       onSubmit={handleSubmit}
     >
-      <div className="mt-4 d-flex justify-content-center">
-        <Form.Group>
-          <Form.Label className="h4 text-center">Model Selection</Form.Label>
-          {viewOnly ? (
+      <div className="row mx-3 mt-3">
+        <div className="col mt-3">
+          <Form.Group>
+            <Form.Label className="h4 text-center">Model Selection</Form.Label>
+            {viewOnly ? (
+              <Form.Control
+                type="text"
+                name="modelSelection"
+                value={`${vendor} ${modelNumber}`}
+                onChange={changeHandler}
+                disabled={disabled}
+              />
+            ) : (
+              <AsyncSuggest
+                query={query}
+                queryName={queryName}
+                onInputChange={onInputChange}
+                label="Choose a model"
+                getOptionSelected={formatSelected}
+                getOptionLabel={formatOption}
+                value={val}
+              />
+            )}
+          </Form.Group>
+        </div>
+        <div className="col mt-3">
+          <Form.Group>
+            <Form.Label className="h4 text-center">
+              Model Description
+            </Form.Label>
             <Form.Control
               type="text"
-              name="modelSelection"
-              value={`${vendor} ${modelNumber}`}
-              onChange={changeHandler}
-              disabled={disabled}
+              name="modelDescription"
+              value={description}
+              disabled
             />
-          ) : (
-            <AsyncSuggest
-              query={query}
-              queryName={queryName}
-              onInputChange={onInputChange}
-              label="Choose a model"
-              getOptionSelected={formatSelected}
-              getOptionLabel={formatOption}
-              value={val}
-            />
-          )}
-        </Form.Group>
+          </Form.Group>
+        </div>
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
@@ -115,11 +132,12 @@ export default function InstrumentForm({
               value={comment}
               onChange={changeHandler}
               disabled={disabled}
+              style={{ resize: 'none' }}
             />
           </Form.Group>
         </div>
       </div>
-      {(handleSubmit !== null && !viewOnly) && (
+      {handleSubmit !== null && !viewOnly && (
         <div className="d-flex justify-content-center mt-3 mb-3">
           <Button variant="primary" type="submit">
             Submit
