@@ -4,7 +4,7 @@ to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
 import { useState, useContext, useRef } from 'react';
-import { useStateWithCallbackInstant } from 'use-state-with-callback';
+import useStateWithCallback from 'use-state-with-callback';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
@@ -32,11 +32,20 @@ function ListModels() {
 
   const csvLink = useRef();
 
-  const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
+  const clickRef = () => {
+    csvLink.current.link.click();
+  };
+
+  // const [csvData, setCSVData] = useState([]);
+  const [csvData, setCSVData] = useStateWithCallback([], () => {
     console.log('Updating CSV Data');
     if (csvData.length > 0) {
       console.log(JSON.stringify(csvData));
-      setTimeout(csvLink.current.link.click(), 1000);
+      // TODO: setTimeout takes snapshot, CSVLink not getting state in time
+      console.log('Clicking link with data^^^');
+      clickRef();
+      // while (!csvData);
+      // csvLink.current.link.click();
     }
   });
 
@@ -215,6 +224,7 @@ function ListModels() {
       console.log('exportRows: ');
       console.log(exportRows);
       const filteredRows = filterRowForCSV(exportRows);
+      console.log('filteredRows');
       console.log(filteredRows);
       setCSVData(filteredRows);
     }
