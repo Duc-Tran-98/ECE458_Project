@@ -1,9 +1,11 @@
+/* eslint-disable func-names */
 /* eslint-disable max-len */
 import { useState, useContext } from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import DisplayGrid from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
@@ -29,6 +31,7 @@ function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  const [description, setDescription] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
   const handleResponse = (response) => {
@@ -38,7 +41,7 @@ function ListInstruments() {
         mostRecent: true,
         dateOnly: true,
       }).then((value) => {
-        const today = new Date();
+        // const today = new Date();
         // element.date = value ? value.date : 'No history found'; // If there's an entry, assign it
         // eslint-disable-next-line no-param-reassign
         element.date = element.calibrationFrequency === 0 ? 'Item not calibratable' : 'Not calibrated';
@@ -47,15 +50,15 @@ function ListInstruments() {
         if (value) {
           // eslint-disable-next-line no-param-reassign
           element.date = value.date;
-          const nextCalibDate = new Date(value.date).addDays(
-            // Calculate next calibration date
-            element.calibrationFrequency,
-          );
-          const daysInBtwn = Math.round(
-            (nextCalibDate.getTime() - today.getTime()) / (1000 * 3600 * 24),
-          );
+          const nextCalibDate = new Date(value.date)
+            .addDays(element.calibrationFrequency)
+            .toISOString()
+            .split('T')[0];
+          // const daysInBtwn = Math.round(
+          //   (nextCalibDate.getTime() - today.getTime()) / (1000 * 3600 * 24),
+          // );
           // eslint-disable-next-line no-param-reassign
-          element.calibrationStatus = daysInBtwn;
+          element.calibrationStatus = nextCalibDate;
         }
       });
     });
@@ -72,8 +75,14 @@ function ListInstruments() {
       setWhich(e.field);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
+      setDescription(e.row.description);
       setShow(true);
     }
+  };
+  const genDaysLeft = (date) => {
+    const today = new Date();
+    const exp = new Date(date);
+    return Math.round((exp.getTime() - today.getTime()) / (1000 * 3600 * 24));
   };
   const genClassName = (daysLeft) => {
     if (daysLeft > 30) {
@@ -128,7 +137,10 @@ function ListInstruments() {
         <div className="row">
           <div className="col mt-3">
             {params.value === 'OoO' && (
-              <MouseOverPopover message="Instrument not calibrated!">
+              <MouseOverPopover
+                className="mb-3"
+                message="Instrument not calibrated!"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -142,7 +154,10 @@ function ListInstruments() {
               </MouseOverPopover>
             )}
             {params.value === 'NA' ? (
-              <MouseOverPopover message="Instrument not calibratable">
+              <MouseOverPopover
+                className="mb-3"
+                message="Instrument not calibratable"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="48"
@@ -155,15 +170,14 @@ function ListInstruments() {
                   <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
                 </svg>
               </MouseOverPopover>
-            ) : (params.value !== 'OoO'
-              && (
-              <MouseOverPopover
-                message={`${params.value} days left till next calibration`}
-              >
-                <span className={genClassName(params.value)}>
-                  {params.value}
-                </span>
-              </MouseOverPopover>
+            ) : (
+              params.value !== 'OoO' && (
+                <MouseOverPopover
+                  className="mb-3"
+                  message={`${genDaysLeft(params.value)} days left till next calibration`}
+                >
+                  <span className={genClassName(genDaysLeft(params.value))}>{params.value}</span>
+                </MouseOverPopover>
               )
             )}
           </div>
@@ -179,9 +193,11 @@ function ListInstruments() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Instrument">
-              <ButtonBase>
+              <Link
+                to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`}
+              >
                 <SearchIcon />
-              </ButtonBase>
+              </Link>
             </MouseOverPopover>
           </div>
         </div>
@@ -229,15 +245,6 @@ function ListInstruments() {
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={closeModal} show={show} title={which}>
-        {which === 'view' && (
-          <EditInstrument
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            serialNumber={serialNumber}
-            viewOnly
-          />
-        )}
         {which === 'edit' && (
           <EditInstrument
             modelNumber={modelNumber}
