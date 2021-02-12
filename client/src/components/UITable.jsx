@@ -50,6 +50,7 @@ export function ServerPaginationGrid({
   cols,
   cellHandler,
   getRowCount,
+  shouldUpdate,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -58,6 +59,10 @@ export function ServerPaginationGrid({
     // eslint-disable-next-line react/require-default-props
     cellHandler: PropTypes.func,
     getRowCount: PropTypes.func.isRequired,
+    shouldUpdate: PropTypes.bool,
+  };
+  ServerPaginationGrid.defaultProps = {
+    shouldUpdate: false,
   };
   const limit = 10; // Can make this bigger if you want; configs how many rows to display/page
   const [page, setPage] = React.useState(1);
@@ -67,6 +72,24 @@ export function ServerPaginationGrid({
   const handlePageChange = (params) => {
     setPage(params.page);
   };
+  React.useEffect(() => {
+    let active = true;
+    getRowCount().then((val) => setRowCount(val));
+    (async () => {
+      setLoading(true);
+      const offset = (page - 1) * limit;
+      const newRows = await fetchData(limit, offset);
+      if (!active) {
+        return;
+      }
+      setRows(newRows);
+      setLoading(false);
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [shouldUpdate]);
   React.useEffect(() => {
     let active = true;
     if (rowCount === null) {

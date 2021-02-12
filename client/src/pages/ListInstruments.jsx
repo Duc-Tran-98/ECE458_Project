@@ -31,6 +31,7 @@ export default function ListInstruments() {
   const [serialNumber, setSerialNumber] = useState('');
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
+  const [update, setUpdate] = useState(false);
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
       setModelNumber(e.row.modelNumber);
@@ -56,9 +57,13 @@ export default function ListInstruments() {
     }
     return 'text-danger';
   };
-  const closeModal = () => {
+  const closeModal = (bool) => {
     setShow(false);
     setWhich('');
+    if (bool) {
+      setUpdate(bool);
+    }
+    setUpdate(false);
   };
   const handleRes = (response) => {
     // eslint-disable-next-line no-alert
@@ -203,7 +208,7 @@ export default function ListInstruments() {
   }
   return (
     <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={closeModal} show={show} title={which}>
+      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
         {which === 'edit' && (
           <EditInstrument
             modelNumber={modelNumber}
@@ -229,7 +234,7 @@ export default function ListInstruments() {
                 <button
                   className="btn btn-primary"
                   type="button"
-                  onClick={closeModal}
+                  onClick={() => closeModal(false)}
                 >
                   No
                 </button>
@@ -240,6 +245,7 @@ export default function ListInstruments() {
       </ModalAlert>
       <ServerPaginationGrid
         cols={cols}
+        shouldUpdate={update}
         getRowCount={CountInstruments}
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
