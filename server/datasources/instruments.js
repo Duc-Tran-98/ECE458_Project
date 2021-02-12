@@ -102,12 +102,14 @@ class InstrumentAPI extends DataSource {
       modelNumber,
       vendor,
     }); // Get all instruments associated with model
-    instruments.forEach((element) => {
-      if (element.serialNumber === serialNumber && element.id !== id) {
-        response.message = 'ERROR: That model-serial number pair already exists!';
-        response.success = false;
-      } // check that there are no unique conflicts, but exclude ourselves
-    });
+    if (instruments) {
+      instruments.rows.forEach((element) => {
+        if (element.serialNumber === serialNumber && element.id !== id) {
+          response.message = 'ERROR: That model-serial number pair already exists!';
+          response.success = false;
+        } // check that there are no unique conflicts, but exclude ourselves
+      });
+    }
     if (response.success) {
       this.store.instruments.update(
         {
