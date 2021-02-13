@@ -26,12 +26,12 @@ function ListModels() {
   const user = useContext(UserContext);
   const [rows, setModels] = useState([]);
   const [queried, setQuery] = useState(false);
-  const [checked, setChecked] = useState('');
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
 
+  const [checked, setChecked] = useState('');
   const csvLink = useRef();
 
   const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
@@ -203,12 +203,6 @@ function ListModels() {
   }
 
   const filterRowForCSV = (exportRows) => {
-    // const filteredRows = exportRows.map((element) => ({
-    //   Vendor: element.vendor,
-    //   'Model-Number': element.modelNumber,
-    //   Description: element.description,
-    //   'Calibration-Frequency': element.calibrationFrequency,
-    // }));
     const filteredRows = exportRows.map((element) => ({
       vendor: element.vendor,
       modelNumber: element.modelNumber,
@@ -219,7 +213,6 @@ function ListModels() {
     return filteredRows;
   };
 
-  // TODO: Implement export testing
   const handleExport = () => {
     // Selected comes in with row IDs, now parse these
     const exportRows = [];

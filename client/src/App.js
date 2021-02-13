@@ -10,7 +10,7 @@ import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
-import ErrorPage from './pages/ErrorPage';
+// import ErrorPage from './pages/ErrorPage';
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
 import BulkImport from './pages/BulkImport';
@@ -65,11 +65,12 @@ function App() {
               )} */}
             </Route>
             <Route path="/viewInstruments">
-              {loggedIn ? (
+              <ListInstruments />
+              {/* {loggedIn ? (
                 <ListInstruments />
               ) : (
                 <ErrorPage message="You need to sign in first!" />
-              )}
+              )} */}
             </Route>
             <Route path="/viewCertificate">
               <Certificate />

@@ -44,6 +44,8 @@ export default function DisplayGrid({
           }
         }}
         onSelectionChange={(newSelection) => {
+          console.log('Changed cell selection to rowIds: ');
+          console.log(newSelection.rowIds);
           setChecked(newSelection.rowIds);
         }}
         disableSelectionOnClick
