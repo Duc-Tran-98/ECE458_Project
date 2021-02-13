@@ -130,7 +130,6 @@ export function ServerPaginationGrid({
 
   const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
     if (downloadReady) {
-      console.log('Downloading CSV Data');
       csvLink.current.link.click();
       setDownloadReady(false);
     }
@@ -138,9 +137,9 @@ export function ServerPaginationGrid({
 
   // Everytime setCSVData, want to download
   const [csvData, setCSVData] = useStateWithCallback([], () => {
-    console.log('Updating CSV Data');
+    // console.log('Updating CSV Data');
     if (csvData.length > 0) {
-      console.log(JSON.stringify(csvData));
+      // console.log(JSON.stringify(csvData));
       setDownloadReady(true);
     }
   });
@@ -158,24 +157,15 @@ export function ServerPaginationGrid({
     // Selected comes in with row IDs, now parse these
     const exportRows = [];
     if (checked) {
-      console.log('checked == true');
-      console.log(rows);
       checked.forEach((rowID) => {
         rows.forEach((row) => {
-          console.log(row);
-          console.log(`row.id: ${row.id}`);
-          console.log(`rowID: ${rowID}`);
           // eslint-disable-next-line eqeqeq
           if (row.id == rowID) {
             exportRows.push(row);
           }
         });
       });
-      console.log('exportRows: ');
-      console.log(exportRows);
       const filteredRows = filterRowForCSV(exportRows);
-      console.log('filteredRows');
-      console.log(filteredRows);
       setCSVData(filteredRows);
     }
   };
@@ -222,6 +212,7 @@ export function ServerPaginationGrid({
         components={{
           Header: () => (
             <span>
+              {/* TODO: restyle button so next to other toolbar */}
               {handleExport && <Button onClick={handleExport} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
               <GridToolbar />
             </span>

@@ -16,8 +16,6 @@ const Query = ({
   };
   let response;
   const data = getVariables ? { query, variables: getVariables() } : { query };
-  console.log('Inside UseQuery with data: ');
-  console.log(data);
   axios
     .post(route, data)
     .then((res) => {
