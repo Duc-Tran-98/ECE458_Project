@@ -35,9 +35,15 @@ module.exports.createStore = async () => {
     dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
     port,
     // eslint-disable-next-line no-console
+    define: {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci',
+    },
     logging: console.log,
     database,
   });
+
+  db.query('SET NAMES utf8mb4;');
 
   const users = db.define(
     'users',
@@ -76,6 +82,12 @@ module.exports.createStore = async () => {
       },
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   const models = db.define(
@@ -100,10 +112,16 @@ module.exports.createStore = async () => {
         type: SQL.STRING,
         allowNull: false,
       },
-      comment: SQL.STRING(1024),
+      comment: SQL.STRING(2048),
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   const instruments = db.define(
@@ -138,7 +156,7 @@ module.exports.createStore = async () => {
         type: SQL.INTEGER,
         allowNull: true,
       },
-      comment: SQL.STRING(1024),
+      comment: SQL.STRING(2048),
       description: {
         type: SQL.STRING,
         allowNull: false,
@@ -150,6 +168,12 @@ module.exports.createStore = async () => {
       },
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   const calibrationEvents = db.define(
@@ -178,9 +202,15 @@ module.exports.createStore = async () => {
         type: SQL.DATEONLY,
         allowNull: false,
       },
-      comment: SQL.STRING(1024),
+      comment: SQL.STRING(2048),
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   db.sync();

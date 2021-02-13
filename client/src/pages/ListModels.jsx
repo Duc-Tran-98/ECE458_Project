@@ -3,14 +3,16 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import { useState, useContext } from 'react';
+import {
+  useState, useContext,
+} from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
-import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
 import { ServerPaginationGrid } from '../components/UITable';
+import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
@@ -34,6 +36,7 @@ function ListModels() {
       setShow(true);
     }
   };
+  // test
   const closeModal = (bool) => {
     setShow(false);
     setWhich('');
@@ -151,6 +154,27 @@ function ListModels() {
       },
     );
   }
+
+  // Pass into UITable
+  const filterRowForCSV = (exportRows) => {
+    const filteredRows = exportRows.map((element) => ({
+      vendor: element.vendor,
+      modelNumber: element.modelNumber,
+      description: element.description,
+      comment: element.comment,
+      calibrationFrequency: element.calibrationFrequency,
+    }));
+    return filteredRows;
+  };
+
+  const headers = [
+    { label: 'Vendor', key: 'vendor' },
+    { label: 'Model-Number', key: 'modelNumber' },
+    { label: 'Short-Description', key: 'description' },
+    { label: 'Comment', key: 'comment' },
+    { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
+  ];
+
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
@@ -193,6 +217,9 @@ function ListModels() {
         getRowCount={CountAllModels}
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="models.csv"
       />
     </div>
   );

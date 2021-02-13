@@ -1,13 +1,15 @@
 /* eslint-disable func-names */
 /* eslint-disable max-len */
-import { useState, useContext } from 'react';
+import {
+  useState, useContext,
+} from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
-import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
 import { ServerPaginationGrid } from '../components/UITable';
+import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
@@ -29,6 +31,7 @@ export default function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
   const [update, setUpdate] = useState(false);
@@ -210,6 +213,28 @@ export default function ListInstruments() {
       },
     );
   }
+
+  const filterRowForCSV = (exportRows) => {
+    const filteredRows = exportRows.map((element) => ({
+      vendor: element.vendor,
+      modelNumber: element.modelNumber,
+      serialNumber: element.serialNumber,
+      comment: element.comment,
+      calibrationDate: element.date,
+      calibrationComment: element.calibComment,
+    }));
+    return filteredRows;
+  };
+
+  const headers = [
+    { label: 'Vendor', key: 'vendor' },
+    { label: 'Model-Number', key: 'modelNumber' },
+    { label: 'Serial-Number', key: 'serialNumber' },
+    { label: 'Comment', key: 'comment' },
+    { label: 'Calibration-Date', key: 'calibrationDate' },
+    { label: 'Calibration-Comment', key: 'calibrationComment' },
+  ];
+
   return (
     <div style={{ height: '90vh' }}>
       <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
@@ -281,6 +306,9 @@ export default function ListInstruments() {
           });
           return response;
         })}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="models.csv"
       />
     </div>
   );

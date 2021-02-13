@@ -132,6 +132,8 @@ export default function ImportModels() {
   const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
 
   const handleCSVReader = (data /* , fileInfo */) => {
+    console.log('Called handleCSVReader with data:');
+    console.log(data);
     const importRowErrors = [];
     data.forEach((row, index) => {
       // Check missing keys
@@ -193,6 +195,11 @@ export default function ImportModels() {
           setCSVData(filteredData);
         }
       };
+
+      // TODO: Debug error
+      console.log('Sending Query to UseQuery with data: ');
+      console.log(filteredData);
+
       Query({
         query,
         queryName,
