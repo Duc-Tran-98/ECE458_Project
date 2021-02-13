@@ -17,6 +17,14 @@ class InstrumentAPI extends DataSource {
     this.context = config.context;
   }
 
+  async countAllInstruments() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let total = await this.store.instruments.findAndCountAll();
+    total = total.count;
+    return total;
+  }
+
   async getAllInstruments({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -94,12 +102,14 @@ class InstrumentAPI extends DataSource {
       modelNumber,
       vendor,
     }); // Get all instruments associated with model
-    instruments.forEach((element) => {
-      if (element.serialNumber === serialNumber && element.id !== id) {
-        response.message = 'ERROR: That model-serial number pair already exists!';
-        response.success = false;
-      } // check that there are no unique conflicts, but exclude ourselves
-    });
+    if (instruments) {
+      instruments.rows.forEach((element) => {
+        if (element.serialNumber === serialNumber && element.id !== id) {
+          response.message = 'ERROR: That model-serial number pair already exists!';
+          response.success = false;
+        } // check that there are no unique conflicts, but exclude ourselves
+      });
+    }
     if (response.success) {
       this.store.instruments.update(
         {

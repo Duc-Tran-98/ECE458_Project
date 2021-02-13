@@ -12,6 +12,7 @@ module.exports = {
     getAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.getAllUsers(),
 
     // Model Queries
+    countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
     // eslint-disable-next-line max-len
     getAllModels: (_, { limit, offset }, { dataSources }) => dataSources.modelAPI.getAllModels({ limit, offset }),
     // eslint-disable-next-line max-len
@@ -22,6 +23,8 @@ module.exports = {
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
 
     // Instrument Queries
+    // eslint-disable-next-line max-len
+    countAllInstruments: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countAllInstruments(),
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     getAllInstrumentsWithModel: async (

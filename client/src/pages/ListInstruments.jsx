@@ -6,8 +6,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
-import GetAllInstruments from '../queries/GetAllInstruments';
-import DisplayGrid from '../components/UITable';
+import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
+import { ServerPaginationGrid } from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
@@ -24,53 +24,14 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
 
 export default function ListInstruments() {
   const user = useContext(UserContext);
-  const [rows, setInstruments] = useState([]);
-  const [queried, setQueried] = useState(false);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
   const [description, setDescription] = useState('');
-  // eslint-disable-next-line no-unused-vars
   const [id, setId] = useState('');
-  const handleResponse = (response) => {
-    response.forEach((element) => {
-      GetCalibHistory({ // Get calibration history for each instrument
-        id: element.id,
-        mostRecent: true,
-      }).then((value) => {
-        // const today = new Date();
-        // element.date = value ? value.date : 'No history found'; // If there's an entry, assign it
-        // eslint-disable-next-line no-param-reassign
-        element.date = element.calibrationFrequency === 0 ? 'Item not calibratable' : 'Not calibrated';
-        // eslint-disable-next-line no-param-reassign
-        element.calibrationStatus = element.calibrationFrequency > 0 ? 'OoO' : 'NA';
-        // eslint-disable-next-line no-param-reassign
-        element.user = value ? value.user : 'No user found';
-        // eslint-disable-next-line no-param-reassign
-        element.calibComment = value ? value.comment : 'No comment found';
-        if (value) {
-          // eslint-disable-next-line no-param-reassign
-          element.date = value.date;
-          const nextCalibDate = new Date(value.date)
-            .addDays(element.calibrationFrequency)
-            .toISOString()
-            .split('T')[0];
-          // const daysInBtwn = Math.round(
-          //   (nextCalibDate.getTime() - today.getTime()) / (1000 * 3600 * 24),
-          // );
-          // eslint-disable-next-line no-param-reassign
-          element.calibrationStatus = nextCalibDate;
-        }
-      });
-    });
-    setInstruments(response);
-  };
-  if (!queried) {
-    setQueried(true);
-    GetAllInstruments({ handleResponse });
-  }
+  const [update, setUpdate] = useState(false);
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
       setModelNumber(e.row.modelNumber);
@@ -100,9 +61,9 @@ export default function ListInstruments() {
     setShow(false);
     setWhich('');
     if (bool) {
-      // If updated successfully, update rows
-      GetAllInstruments({ handleResponse });
+      setUpdate(bool);
     }
+    setUpdate(false);
   };
   const handleRes = (response) => {
     // eslint-disable-next-line no-alert
@@ -134,12 +95,12 @@ export default function ListInstruments() {
     {
       field: 'calibrationStatus',
       headerName: 'Calibration Expiration',
-      width: 200,
-      type: 'number',
+      width: 220,
+      type: 'date',
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
-            {params.value === 'OoO' && (
+            {params.value === 'Out of Calibration' && (
               <MouseOverPopover
                 className="mb-3"
                 message="Instrument not calibrated!"
@@ -156,7 +117,7 @@ export default function ListInstruments() {
                 </svg>
               </MouseOverPopover>
             )}
-            {params.value === 'NA' ? (
+            {params.value === 'N/A' ? (
               <MouseOverPopover
                 className="mb-3"
                 message="Instrument not calibratable"
@@ -174,12 +135,16 @@ export default function ListInstruments() {
                 </svg>
               </MouseOverPopover>
             ) : (
-              params.value !== 'OoO' && (
+              params.value !== 'Out of Calibration' && (
                 <MouseOverPopover
                   className="mb-3"
-                  message={`${genDaysLeft(params.value)} days left till next calibration`}
+                  message={`${genDaysLeft(
+                    params.value,
+                  )} days left till next calibration`}
                 >
-                  <span className={genClassName(genDaysLeft(params.value))}>{params.value}</span>
+                  <span className={genClassName(genDaysLeft(params.value))}>
+                    {params.value}
+                  </span>
                 </MouseOverPopover>
               )
             )}
@@ -247,7 +212,7 @@ export default function ListInstruments() {
   }
   return (
     <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={closeModal} show={show} title={which}>
+      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
         {which === 'edit' && (
           <EditInstrument
             modelNumber={modelNumber}
@@ -273,7 +238,7 @@ export default function ListInstruments() {
                 <button
                   className="btn btn-primary"
                   type="button"
-                  onClick={closeModal}
+                  onClick={() => closeModal(false)}
                 >
                   No
                 </button>
@@ -282,8 +247,41 @@ export default function ListInstruments() {
           </div>
         )}
       </ModalAlert>
-      {/* eslint-disable-next-line object-shorthand */}
-      {DisplayGrid({ rows: rows, cols, cellHandler })}
+      <ServerPaginationGrid
+        cols={cols}
+        shouldUpdate={update}
+        getRowCount={CountInstruments}
+        cellHandler={cellHandler}
+        fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
+          response.forEach((element) => {
+            GetCalibHistory({
+              // Get calibration history for each instrument
+              id: element.id,
+              mostRecent: true,
+            }).then((value) => {
+              // eslint-disable-next-line no-param-reassign
+              element.date = element.calibrationFrequency === 0
+                ? 'Item not calibratable'
+                : 'Not calibrated';
+              // eslint-disable-next-line no-param-reassign
+              element.calibrationStatus = element.calibrationFrequency === 0 ? 'N/A' : 'Out of Calibration';
+              if (value) {
+                // eslint-disable-next-line no-param-reassign
+                element.date = value.date;
+                const nextCalibDate = new Date(value.date)
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+                  // eslint-disable-next-line no-param-reassign
+                element.calibrationStatus = nextCalibDate;
+              }
+              // eslint-disable-next-line no-param-reassign
+              delete element.calibrationFrequency;
+            });
+          });
+          return response;
+        })}
+      />
     </div>
   );
 }
