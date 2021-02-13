@@ -163,7 +163,10 @@ export function ServerPaginationGrid({
       checked.forEach((rowID) => {
         rows.forEach((row) => {
           console.log(row);
-          if (row.id === parseInt(rowID, 10)) {
+          console.log(`row.id: ${row.id}`);
+          console.log(`rowID: ${rowID}`);
+          // eslint-disable-next-line eqeqeq
+          if (row.id == rowID) {
             exportRows.push(row);
           }
         });
@@ -219,7 +222,7 @@ export function ServerPaginationGrid({
         components={{
           Header: () => (
             <span>
-              {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '70px', left: '300px' }} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
+              {handleExport && <Button onClick={handleExport} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
               <GridToolbar />
             </span>
           ),
