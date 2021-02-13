@@ -184,20 +184,19 @@ module.exports.createStore = async () => {
   );
 
   db.sync();
-  const adminExist = users.findAll({ where: { userName: adminUsername } });
-  if ((adminExist && adminExist[0])) {
-    if (adminExist[0].userName !== adminUsername) {
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(adminPassword, salt);
-      users.create({
-        email: adminEmail,
-        firstName: adminFirstName,
-        lastName: adminLastName,
-        userName: adminUsername,
-        password: hash,
-        isAdmin: true,
-      });
-    }
+  const adminExist = await users.findAll({ where: { userName: adminUsername } });
+
+  if (adminExist[0] == null) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(adminPassword, salt);
+    users.create({
+      email: adminEmail,
+      firstName: adminFirstName,
+      lastName: adminLastName,
+      userName: adminUsername,
+      password: hash,
+      isAdmin: true,
+    });
   }
 
   return {
