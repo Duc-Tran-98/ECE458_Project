@@ -189,6 +189,7 @@ export function ServerPaginationGrid({
       <DataGrid
         rows={rows}
         columns={cols}
+        checkboxSelection
         pagination
         pageSize={limit}
         rowCount={rowCount}
