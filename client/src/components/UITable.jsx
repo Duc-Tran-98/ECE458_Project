@@ -64,13 +64,16 @@ export function ServerPaginationGrid({
   ServerPaginationGrid.defaultProps = {
     shouldUpdate: false,
   };
-  const limit = 10; // Can make this bigger if you want; configs how many rows to display/page
+  const [limit, setLimit] = React.useState(25); // Can make this bigger if you want; configs how many rows to display/page
   const [page, setPage] = React.useState(1);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [rowCount, setRowCount] = React.useState(null);
   const handlePageChange = (params) => {
     setPage(params.page);
+  };
+  const handlePageSizeChange = (e) => {
+    setLimit(e.pageSize);
   };
   React.useEffect(() => {
     let active = true;
@@ -124,6 +127,7 @@ export function ServerPaginationGrid({
         loading={loading}
         className="bg-light"
         showToolbar
+        rowsPerPageOptions={[25, 50, 100]}
         locateText={{
           toolbarDensity: 'Size',
           toolbarDensityLabel: 'Size',
@@ -131,6 +135,7 @@ export function ServerPaginationGrid({
           toolbarDensityStandard: 'Medium',
           toolbarDensityComfortable: 'Large',
         }}
+        onPageSizeChange={(e) => handlePageSizeChange(e)}
         onCellClick={(e) => {
           if (cellHandler) {
             cellHandler(e);
