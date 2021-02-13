@@ -114,25 +114,25 @@ export default function ImportInstruments() {
   };
 
   // TODO: Assuming instrument is calibratable, check this later
-  const validCalibrationDate = (calibrationDate) => {
-    // Check if date is missing
-    if (!calibrationDate) {
-      return 'Missing Calibration-Date';
-    }
+  // const validCalibrationDate = (calibrationDate) => {
+  //   // Check if date is missing
+  //   if (!calibrationDate) {
+  //     return 'Missing Calibration-Date';
+  //   }
 
-    // Check if date is in correct form
-    if (!moment(calibrationDate, 'MM/DD/YYYY', true)) {
-      return 'Calibration-Date Incorrect Form';
-    }
+  //   // Check if date is in correct form
+  //   if (!moment(calibrationDate, 'MM/DD/YYYY', true)) {
+  //     return 'Calibration-Date Incorrect Form';
+  //   }
 
-    // Check if date is in the future
-    if (moment(calibrationDate).isAfter()) {
-      return 'Calibration-Date is in the Future';
-    }
+  //   // Check if date is in the future
+  //   if (moment(calibrationDate).isAfter()) {
+  //     return 'Calibration-Date is in the Future';
+  //   }
 
-    // No errors
-    return null;
-  };
+  //   // No errors
+  //   return null;
+  // };
 
   const validateRow = (row) => {
     // TODO: Make this less ugly
@@ -174,17 +174,18 @@ export default function ImportInstruments() {
       const invalidEntries = validateRow(row);
 
       // Validate calibration date (missing, form, future)
-      const invalidCalibrationDate = validCalibrationDate(row.calibrationDate);
+      // const invalidCalibrationDate = validCalibrationDate(row.calibrationDate);
 
       // If any errors exist, create errors object
-      if (missingKeys || invalidEntries || invalidCalibrationDate || isDuplicateInstrument) {
+      // if (missingKeys || invalidEntries || invalidCalibrationDate || isDuplicateInstrument) {
+      if (missingKeys || invalidEntries || isDuplicateInstrument) {
         const rowError = {
           data: row,
           row: index + 2,
           ...(missingKeys) && { missingKeys },
           ...(invalidEntries) && { invalidEntries },
           ...(isDuplicateInstrument) && { isDuplicateInstrument },
-          ...(invalidCalibrationDate) && { invalidCalibrationDate },
+          // ...(invalidCalibrationDate) && { invalidCalibrationDate },
         };
         importRowErrors.push(rowError);
       }
