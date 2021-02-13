@@ -23,7 +23,7 @@ export default function DisplayGrid({
   // );
 
   return (
-    <div>
+    <>
       <DataGrid
         rows={rows}
         columns={cols}
@@ -57,12 +57,12 @@ export default function DisplayGrid({
             //   <Button onClick={handleExport}>Export</Button>
             // </GridToolbar>
             <span>
-              {handleExport && <Button onClick={handleExport}>Export</Button>}
+              {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '60px', left: '300px' }}>Export</Button>}
               <GridToolbar />
             </span>
           ),
         }}
       />
-    </div>
+    </>
   );
 }
