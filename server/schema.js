@@ -10,17 +10,21 @@ const typeDefs = gql`
     getAllUsers: [User]
 
     # Model Related Queries
+    countAllModels: Int!
     getAllModels(limit: Int, offset: Int): [Model]
     getAllModelsWithModelNum(modelNumber: String!): [Model]
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
 
     # Instrument Related Queries
+    countAllInstruments: Int!
     getAllInstruments(limit: Int, offset: Int): [Instrument]
     getAllInstrumentsWithModel(
       modelNumber: String!
       vendor: String!
-    ): [Instrument]
+      limit: Int
+      offset: Int
+    ): InstrumentScrollFeed
     getAllInstrumentsWithModelNum(modelNumber: String!): [Instrument]
     getAllInstrumentsWithVendor(vendor: String!): [Instrument]
     getInstrument(
@@ -36,7 +40,9 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): [CalibrationEvent]
-    getCalibrationEventsByReferenceId(calibrationHistoryIdReference: Int!): [CalibrationEvent]
+    getCalibrationEventsByReferenceId(
+      calibrationHistoryIdReference: Int!
+    ): [CalibrationEvent]
   }
 
   type User {
@@ -47,6 +53,11 @@ const typeDefs = gql`
     userName: String!
     password: String!
     isAdmin: Boolean!
+  }
+
+  type InstrumentScrollFeed {
+    rows: [Instrument]
+    total: Int!
   }
 
   type Model {
@@ -108,16 +119,47 @@ const typeDefs = gql`
   type Mutation {
     # User related mutations
     login(userName: String!, password: String!): String!
-    signup(email: String!, firstName: String!, lastName: String!, userName: String!, password: String!, isAdmin: Boolean!): String!
+    signup(
+      email: String!
+      firstName: String!
+      lastName: String!
+      userName: String!
+      password: String!
+      isAdmin: Boolean!
+    ): String!
 
     # Model related Mutations
-    addModel(modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
+    addModel(
+      modelNumber: String!
+      vendor: String!
+      description: String!
+      comment: String
+      calibrationFrequency: Int
+    ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
-    editModel(id: Int!, modelNumber: String!, vendor: String!, description: String!, comment: String, calibrationFrequency: Int): String!
+    editModel(
+      id: Int!
+      modelNumber: String!
+      vendor: String!
+      description: String!
+      comment: String
+      calibrationFrequency: Int
+    ): String!
 
     # Instrument related mutations
-    addInstrument(modelNumber: String!, vendor: String!, serialNumber: String!, comment: String): String!
-    editInstrument(modelNumber: String!, vendor: String!, comment: String, serialNumber: String!, id: Int!): String!
+    addInstrument(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+      comment: String
+    ): String!
+    editInstrument(
+      modelNumber: String!
+      vendor: String!
+      comment: String
+      serialNumber: String!
+      id: Int!
+    ): String!
     deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations
@@ -128,7 +170,12 @@ const typeDefs = gql`
     bulkImportData(models: [ModelInput], instruments: [InstrumentInput]): String!
     addCalibrationEventById(calibrationHistoryIdReference: Int!, date: String!, user: String! comment: String): String!
     deleteCalibrationEvent(id: Int!): String!
-    editCalibrationEvent(user: String, date: String, comment: String, id: Int!): String!
+    editCalibrationEvent(
+      user: String
+      date: String
+      comment: String
+      id: Int!
+    ): String!
   }
 `;
 

@@ -14,8 +14,11 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import { CSVLink } from 'react-csv';
+import { Link } from 'react-router-dom';
 import Query from '../components/UseQuery';
-import DisplayGrid from '../components/UITable';
+import DisplayGrid, { ServerPaginationGrid } from '../components/UITable';
+import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
+
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
@@ -24,8 +27,6 @@ import UserContext from '../components/UserContext';
 
 function ListModels() {
   const user = useContext(UserContext);
-  const [rows, setModels] = useState([]);
-  const [queried, setQuery] = useState(false);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
@@ -79,20 +80,24 @@ function ListModels() {
     Query({ query, queryName, handleResponse });
     setQuery(true);
   }
+  const [description, setDescription] = useState('');
+  const [update, setUpdate] = useState(false);
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setWhich(e.field);
+      setDescription(e.row.description);
       setShow(true);
     }
   };
   const closeModal = (bool) => {
     setShow(false);
     setWhich('');
-    if (bool) { // If updated successfully, update rows
-      Query({ query, queryName, handleResponse });
+    if (bool) {
+      setUpdate(bool);
     }
+    setUpdate(false);
   };
   const handleRes = (response) => {
     // eslint-disable-next-line no-alert
@@ -154,9 +159,11 @@ function ListModels() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Model">
-              <ButtonBase>
+              <Link
+                to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+              >
                 <SearchIcon />
-              </ButtonBase>
+              </Link>
             </MouseOverPopover>
           </div>
         </div>
@@ -245,20 +252,12 @@ function ListModels() {
 
   return (
     <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={closeModal} show={show} title={which}>
+      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
         {which === 'edit' && (
           <EditModel
             modelNumber={modelNumber}
             vendor={vendor}
             handleClose={closeModal}
-          />
-        )}
-        {which === 'view' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            viewOnly
           />
         )}
         {which === 'delete' && (
@@ -278,7 +277,7 @@ function ListModels() {
                 <button
                   className="btn btn-primary"
                   type="button"
-                  onClick={closeModal}
+                  onClick={() => closeModal(false)}
                 >
                   No
                 </button>
@@ -296,6 +295,13 @@ function ListModels() {
         filename="models.csv"
         className="hidden"
         ref={csvLink}
+      />
+      <ServerPaginationGrid
+        cols={cols}
+        shouldUpdate={update}
+        getRowCount={CountAllModels}
+        cellHandler={cellHandler}
+        fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
       />
     </div>
   );

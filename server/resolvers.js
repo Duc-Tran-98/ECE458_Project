@@ -12,6 +12,7 @@ module.exports = {
     getAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.getAllUsers(),
 
     // Model Queries
+    countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
     // eslint-disable-next-line max-len
     getAllModels: (_, { limit, offset }, { dataSources }) => dataSources.modelAPI.getAllModels({ limit, offset }),
     // eslint-disable-next-line max-len
@@ -23,14 +24,20 @@ module.exports = {
 
     // Instrument Queries
     // eslint-disable-next-line max-len
+    countAllInstruments: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countAllInstruments(),
+    // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     getAllInstrumentsWithModel: async (
       _,
-      { modelNumber, vendor },
+      {
+        modelNumber, vendor, limit, offset,
+      },
       { dataSources },
-    ) => await dataSources.instrumentAPI.getAllInstrumentsWithModelNum({
+    ) => await dataSources.instrumentAPI.getAllInstrumentsWithModel({
       modelNumber,
       vendor,
+      limit,
+      offset,
     }),
     getAllInstrumentsWithModelNum: async (
       _,
@@ -52,11 +59,8 @@ module.exports = {
     }),
 
     // Calibration Queries
-    getAllCalibrationEvents: (
-      _,
-      { limit, offset },
-      { dataSources },
-    ) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
+    // eslint-disable-next-line max-len
+    getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
       limit,
       offset,
     }),
@@ -73,9 +77,9 @@ module.exports = {
       _,
       { calibrationHistoryIdReference },
       { dataSources },
-    ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId(
-      { calibrationHistoryIdReference },
-    ),
+    ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
+      calibrationHistoryIdReference,
+    }),
   },
   Mutation: {
     bulkImportData: async (
@@ -123,10 +127,18 @@ module.exports = {
     },
     // eslint-disable-next-line max-len
     deleteInstrument: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.deleteInstrument({ id }),
-    editInstrument: async (_, {
-      modelNumber, vendor, serialNumber, comment, id,
-    }, { dataSources }) => await dataSources.instrumentAPI.editInstrument({
-      modelNumber, vendor, serialNumber, comment, id,
+    editInstrument: async (
+      _,
+      {
+        modelNumber, vendor, serialNumber, comment, id,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.editInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+      comment,
+      id,
     }),
     addInstrument: async (
       _,
@@ -180,25 +192,26 @@ module.exports = {
       return response;
     },
     deleteCalibrationEvent: async (_, { id }, { dataSources }) => {
-      const response = await dataSources.calibrationEventAPI.deleteCalibrationEvent({ id });
+      const response = await dataSources.calibrationEventAPI.deleteCalibrationEvent(
+        { id },
+      );
       return response;
     },
     editCalibrationEvent: async (
       _,
       {
-        user,
-        date,
-        comment,
-        id,
+        user, date, comment, id,
       },
       { dataSources },
     ) => {
-      const response = await dataSources.calibrationEventAPI.editCalibrationEvent({
-        user,
-        date,
-        comment,
-        id,
-      });
+      const response = await dataSources.calibrationEventAPI.editCalibrationEvent(
+        {
+          user,
+          date,
+          comment,
+          id,
+        },
+      );
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {

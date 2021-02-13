@@ -1,10 +1,20 @@
 // This file handles connection to the database and initializing tables if they don't already exists
 const SQL = require('sequelize');
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcryptjs');
 const config = require('./config');
 
 const {
-  host, port, user, password, database,
+  host,
+  port,
+  user,
+  password,
+  database,
+  adminUsername,
+  adminEmail,
+  adminFirstName,
+  adminLastName,
+  adminPassword,
 } = config;
 
 module.exports.createDB = async () => {
@@ -204,6 +214,20 @@ module.exports.createStore = async () => {
   );
 
   db.sync();
+  const adminExist = await users.findAll({ where: { userName: adminUsername } });
+
+  if (adminExist[0] == null) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(adminPassword, salt);
+    users.create({
+      email: adminEmail,
+      firstName: adminFirstName,
+      lastName: adminLastName,
+      userName: adminUsername,
+      password: hash,
+      isAdmin: true,
+    });
+  }
 
   return {
     db,

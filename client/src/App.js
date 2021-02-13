@@ -10,9 +10,14 @@ import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
+<<<<<<< HEAD
 // import ErrorPage from './pages/ErrorPage';
+=======
+>>>>>>> main
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
+import DetailedInstrumentView from './pages/ViewInstrument';
+import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
 // import MyDocument from './pages/Certificate';
 // import ErrorPage from './pages/ErrorPage';
@@ -25,64 +30,72 @@ function App() {
   const handleSignOut = () => {
     setLoggedIn(false);
     window.sessionStorage.clear();
+    window.location.href = '/';
   };
   return (
     <Router>
-      <header>
-        <NavBar
-          title="Team Teams"
-          loggedIn={loggedIn}
-          handleSignOut={handleSignOut}
-        />
-      </header>
-      <main>
-        <Switch>
-          <Route path="/test">
-            <ComponentTest />
-          </Route>
-          <UserProvider>
+      <UserProvider>
+        <header>
+          <NavBar
+            title="Hypothetical Power Team"
+            loggedIn={loggedIn}
+            handleSignOut={handleSignOut}
+          />
+        </header>
+        <main>
+          <Switch>
+            <Route path="/test">
+              <ComponentTest />
+            </Route>
             <Route exact path="/">
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/register">
-              <SignUp />
-            </Route>
-            <Route path="/certificate">
-              <Certificate />
+              {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/addInstrument">
-              <CreateInstrument />
+              {loggedIn ? <CreateInstrument /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/addModel">
-              <CreateModel />
+              {loggedIn ? <CreateModel /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewModels">
-              <ListModels />
-              {/* {loggedIn ? (
+              {loggedIn ? (
                 <ListModels />
               ) : (
-                <ErrorPage message="You need to sign in first!" />
-              )} */}
+                <Login handleLogin={handleLogin} />
+              )}
             </Route>
             <Route path="/viewInstruments">
-              <ListInstruments />
-              {/* {loggedIn ? (
+              {loggedIn ? (
                 <ListInstruments />
               ) : (
-                <ErrorPage message="You need to sign in first!" />
-              )} */}
+                <Login handleLogin={handleLogin} />
+              )}
+            </Route>
+            <Route path="/viewInstrument/">
+              {loggedIn ? (
+                <DetailedInstrumentView />
+              ) : (
+                <Login handleLogin={handleLogin} />
+              )}
+            </Route>
+            <Route path="/viewModel/">
+              {loggedIn ? (
+                <DetailedModelView />
+              ) : (
+                <Login handleLogin={handleLogin} />
+              )}
             </Route>
             <Route path="/viewCertificate">
-              <Certificate />
+              {loggedIn ? <Certificate /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/import">
-              <BulkImport />
-              {/* {loggedIn ? (<Import />) : (<ErrorPage message="You need to sign in first!" />)} */}
+              {loggedIn ? <BulkImport /> : <Login handleLogin={handleLogin} />}
             </Route>
-          </UserProvider>
-        </Switch>
-      </main>
-      <footer />
+          </Switch>
+        </main>
+      </UserProvider>
     </Router>
   );
 }

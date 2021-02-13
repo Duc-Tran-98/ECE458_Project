@@ -17,6 +17,14 @@ class ModelAPI extends DataSource {
     this.context = config.context;
   }
 
+  async countAllModels() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let total = await this.store.models.findAndCountAll();
+    total = total.count;
+    return total;
+  }
+
   async deleteModel({ modelNumber, vendor }) {
     const response = { message: '', success: false };
     const storeModel = await this.store;

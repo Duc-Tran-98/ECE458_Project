@@ -3,7 +3,6 @@ import {
   Button,
   Modal,
   ModalTitle,
-  ModalBody,
   ModalFooter,
 } from 'react-bootstrap';
 import ModalHeader from 'react-bootstrap/ModalHeader';
@@ -25,7 +24,9 @@ function ModalAlert({
         <ModalHeader>
           <ModalTitle>{title}</ModalTitle>
         </ModalHeader>
-        <ModalBody>{children}</ModalBody>
+        <Modal.Body>
+          {children}
+        </Modal.Body>
         <ModalFooter>
           <Button variant="secondary" onClick={handleClose}>
             Close

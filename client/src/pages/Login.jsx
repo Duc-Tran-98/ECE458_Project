@@ -18,9 +18,9 @@ const Login = ({ handleLogin }) => {
   useEffect(() => {
     NeedsValidation();
   });
-  const onChangeCheckbox = (event) => {
-    setFormState({ ...formState, isChecked: event.target.checked });
-  };
+  // const onChangeCheckbox = (event) => {
+  //   setFormState({ ...formState, isChecked: event.target.checked });
+  // };
   const submitForm = (e) => {
     e.preventDefault();
     const { userName, password } = formState;
@@ -123,7 +123,7 @@ const Login = ({ handleLogin }) => {
             </div>
           </div>
         </div>
-        <div className="form-check form-switch d-flex align-items-center ms-3">
+        {/* <div className="form-check form-switch d-flex align-items-center ms-3">
           <input
             type="checkbox"
             value=""
@@ -135,19 +135,19 @@ const Login = ({ handleLogin }) => {
           <label className="form-check-label ms-2" htmlFor="customCheck1">
             Remember me
           </label>
-        </div>
+        </div> */}
         <div className="d-flex justify-content-center mb-3 mt-3">
           <button className="btn btn-primary" type="submit">
             Log In
           </button>
         </div>
-        <div className="d-flex justify-content-center">
+        {/* <div className="d-flex justify-content-center">
           <p className="text-muted">
             Forgot
             {' '}
             <a href="/">password?</a>
           </p>
-        </div>
+        </div> */}
       </form>
     </div>
   );
