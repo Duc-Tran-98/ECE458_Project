@@ -18,10 +18,6 @@ export default function DisplayGrid({
     setChecked: PropTypes.func,
   };
 
-  // const exportButton = () => (
-  //   <Button onClick={handleExport}>Export</Button>
-  // );
-
   return (
     <>
       <DataGrid
@@ -44,18 +40,12 @@ export default function DisplayGrid({
           }
         }}
         onSelectionChange={(newSelection) => {
-          console.log('Changed cell selection to rowIds: ');
-          console.log(newSelection.rowIds);
           setChecked(newSelection.rowIds);
         }}
         disableSelectionOnClick
         className="bg-light"
-        // TODO: Only render when exportButton exists
         components={{
           Header: () => (
-            // <GridToolbar>
-            //   <Button onClick={handleExport}>Export</Button>
-            // </GridToolbar>
             <span>
               {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '62px', left: '300px' }} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
               <GridToolbar />
