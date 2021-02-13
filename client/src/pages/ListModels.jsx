@@ -4,14 +4,13 @@ to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
 import { useState, useContext } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
-import Query from '../components/UseQuery';
-import DisplayGrid from '../components/UITable';
+import { Link } from 'react-router-dom';
+import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
+import { ServerPaginationGrid } from '../components/UITable';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
@@ -20,46 +19,28 @@ import UserContext from '../components/UserContext';
 
 function ListModels() {
   const user = useContext(UserContext);
-  const [rows, setModels] = useState([]);
-  const [queried, setQuery] = useState(false);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
-  const GET_MODELS_QUERY = gql`
-    query Models{
-      getAllModels{
-        id
-        vendor
-        modelNumber
-        description
-        calibrationFrequency
-      }
-    }
-  `;
-  const query = print(GET_MODELS_QUERY);
-  const queryName = 'getAllModels';
-  const handleResponse = (response) => {
-    setModels(response);
-  };
-  if (!queried) {
-    Query({ query, queryName, handleResponse });
-    setQuery(true);
-  }
+  const [description, setDescription] = useState('');
+  const [update, setUpdate] = useState(false);
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setWhich(e.field);
+      setDescription(e.row.description);
       setShow(true);
     }
   };
   const closeModal = (bool) => {
     setShow(false);
     setWhich('');
-    if (bool) { // If updated successfully, update rows
-      Query({ query, queryName, handleResponse });
+    if (bool) {
+      setUpdate(bool);
     }
+    setUpdate(false);
   };
   const handleRes = (response) => {
     // eslint-disable-next-line no-alert
@@ -121,9 +102,11 @@ function ListModels() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Model">
-              <ButtonBase>
+              <Link
+                to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+              >
                 <SearchIcon />
-              </ButtonBase>
+              </Link>
             </MouseOverPopover>
           </div>
         </div>
@@ -170,20 +153,12 @@ function ListModels() {
   }
   return (
     <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={closeModal} show={show} title={which}>
+      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
         {which === 'edit' && (
           <EditModel
             modelNumber={modelNumber}
             vendor={vendor}
             handleClose={closeModal}
-          />
-        )}
-        {which === 'view' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            viewOnly
           />
         )}
         {which === 'delete' && (
@@ -203,7 +178,7 @@ function ListModels() {
                 <button
                   className="btn btn-primary"
                   type="button"
-                  onClick={closeModal}
+                  onClick={() => closeModal(false)}
                 >
                   No
                 </button>
@@ -212,7 +187,13 @@ function ListModels() {
           </div>
         )}
       </ModalAlert>
-      {DisplayGrid({ rows, cols, cellHandler })}
+      <ServerPaginationGrid
+        cols={cols}
+        shouldUpdate={update}
+        getRowCount={CountAllModels}
+        cellHandler={cellHandler}
+        fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
+      />
     </div>
   );
 }

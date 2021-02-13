@@ -14,9 +14,16 @@ import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEvent from '../queries/AddCalibEvent';
 
 function CreateInstrumentPage() {
-  const [calibHistory, setCalibHistory] = useState([{
-    user: '', date: new Date().toISOString().split('T')[0], comment: '', id: 0,
-  }]); // calibhistory is the array of calibration events.
+  const user = useContext(UserContext);
+  const [calibHistory, setCalibHistory] = useState([
+    {
+      user: user.userName,
+      date: new Date().toISOString().split('T')[0],
+      comment: '',
+      id: 0,
+      viewOnly: false,
+    },
+  ]); // calibhistory is the array of calibration events.
   const onChangeCalibRow = (e, entry) => { // This method deals with updating a particular calibration event
     const newHistory = [...calibHistory];
     const index = newHistory.indexOf(entry);
@@ -30,41 +37,46 @@ function CreateInstrumentPage() {
     }
     setCalibHistory(newHistory);
   };
-  const onChangeUser = (e, v, entry) => { // Handler for autocomplete of username on calibrow
-    const newHistory = [...calibHistory];
-    const index = newHistory.indexOf(entry);
-    newHistory[index] = { ...entry };
-    newHistory[index].user = `${v.userName}`;
-    setCalibHistory(newHistory);
-  };
+  // const onChangeUser = (e, v, entry) => { // Handler for autocomplete of username on calibrow
+  //   const newHistory = [...calibHistory];
+  //   const index = newHistory.indexOf(entry);
+  //   newHistory[index] = { ...entry };
+  //   newHistory[index].user = `${v.userName}`;
+  //   setCalibHistory(newHistory);
+  // };
   const [validated, setValidated] = useState(false);
-  const [formState, setFormState] = useState({ // This state is for an instrument
+  const [formState, setFormState] = useState({
+    // This state is for an instrument
     modelNumber: '',
     vendor: '',
     comment: '',
     serialNumber: '',
     calibrationFrequency: 0,
+    description: '',
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => { // This adds an entry to the array(array = calibration history)
     const newHistory = calibHistory;
     newHistory.push({
-      user: '',
+      user: user.userName,
       date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
       comment: '',
       id: nextId,
+      viewOnly: false,
     });
     setNextId(nextId + 1);
     setCalibHistory(newHistory);
   };
   const deleteRow = (rowId) => { // This is for deleting an entry from array
-    if (calibHistory.length > 1) {
-      const newHistory = calibHistory.filter((item) => item.id !== rowId);
-      setCalibHistory(newHistory);
-    } else {
-      // eslint-disable-next-line no-alert
-      alert('Cannot delete the last row');
-    }
+    // if (calibHistory.length > 1) {
+    //   const newHistory = calibHistory.filter((item) => item.id !== rowId);
+    //   setCalibHistory(newHistory);
+    // } else {
+    //   // eslint-disable-next-line no-alert
+    //   alert('Cannot delete the last row');
+    // }
+    const newHistory = calibHistory.filter((item) => item.id !== rowId);
+    setCalibHistory(newHistory);
   };
 
   const handleSubmit = async () => {
@@ -96,7 +108,7 @@ function CreateInstrumentPage() {
         const validEvents = calibHistory.filter(
           (entry) => entry.user.length > 0,
         ); // Collect valid entries
-        if (validEvents.length > 0) {
+        if (validEvents.length > 0 && formState.calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
           const handleRes = (res) => {
             console.log(res);
@@ -112,7 +124,7 @@ function CreateInstrumentPage() {
         // this section deals with resetting the form
         setCalibHistory([
           {
-            user: '',
+            user: user.userName,
             date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
             comment: '',
             id: nextId,
@@ -136,15 +148,19 @@ function CreateInstrumentPage() {
   };
   const onInputChange = (e, v) => { // This if for updating instrument's fields from autocomplete input
     setFormState({
-      ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency,
+      ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency, description: v.description,
     });
   };
-  const user = useContext(UserContext);
   if (!user.isAdmin) {
     return <ErrorPage message="You don't have the right permissions!" />;
   }
   const {
-    modelNumber, vendor, serialNumber, comment, calibrationFrequency,
+    modelNumber,
+    vendor,
+    serialNumber,
+    comment,
+    calibrationFrequency,
+    description,
   } = formState;
   // Caliblist is the list of calibration events where the username is not an empty string
   const calibList = calibHistory.map((entry) => entry.user.length > 0 && (
@@ -167,6 +183,8 @@ function CreateInstrumentPage() {
             changeHandler={changeHandler}
             validated={validated}
             onInputChange={onInputChange}
+            description={description}
+            calibrationFrequency={calibrationFrequency}
           />
         );
       case 1: // check if instrument is calibratable here. If it is, display CalibrationTable
@@ -177,7 +195,6 @@ function CreateInstrumentPage() {
               addRow={addRow}
               deleteRow={deleteRow}
               onChangeCalibRow={onChangeCalibRow}
-              onInputChange={onChangeUser}
             />
           );
         }
@@ -198,11 +215,13 @@ function CreateInstrumentPage() {
               changeHandler={changeHandler}
               validated={validated}
               onInputChange={onInputChange}
+              description={description}
+              calibrationFrequency={calibrationFrequency}
               viewOnly
             />
-            <ul className="list-group">
-              {calibList}
-            </ul>
+            {calibrationFrequency > 0 && (
+              <ul className="list-group">{calibList}</ul>
+            )}
           </div>
         );
       default:

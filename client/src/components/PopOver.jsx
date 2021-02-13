@@ -13,10 +13,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MouseOverPopover({ children, message }) {
+export default function MouseOverPopover({ children, message, className }) {
   MouseOverPopover.propTypes = {
     children: PropTypes.node.isRequired,
     message: PropTypes.string.isRequired,
+    className: PropTypes.string,
+  };
+  MouseOverPopover.defaultProps = {
+    className: '',
   };
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -32,7 +36,7 @@ export default function MouseOverPopover({ children, message }) {
   const open = Boolean(anchorEl);
 
   return (
-    <div>
+    <div className={className}>
       <Typography
         aria-owns={open ? 'mouse-over-popover' : undefined}
         aria-haspopup="true"

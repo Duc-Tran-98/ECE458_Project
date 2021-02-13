@@ -8,6 +8,7 @@ const InstrumentAPI = require('./datasources/instruments');
 const CalibrationEventAPI = require('./datasources/calibrationEvents');
 const { createStore, createDB } = require('./util');
 const resolvers = require('./resolvers');
+const BulkDataAPI = require('./datasources/bulkData');
 
 // Connect to db and init tables
 let store;
@@ -21,6 +22,7 @@ const dataSources = () => ({
   modelAPI: new ModelAPI({ store }),
   instrumentAPI: new InstrumentAPI({ store }),
   calibrationEventAPI: new CalibrationEventAPI({ store }),
+  bulkDataAPI: new BulkDataAPI({ store }),
 });
 
 const server = new ApolloServer({

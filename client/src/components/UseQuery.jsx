@@ -22,7 +22,11 @@ const Query = ({
       response = (typeof res.data.data[queryName] === 'string') ? JSON.parse(res.data.data[queryName]) : res.data.data[queryName];
       handleResponse(response);
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(JSON.stringify(err, null, 2));
+      console.error(err);
+      console.log(err.response);
+    });
 };
 
 export async function QueryAndThen({
