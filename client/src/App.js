@@ -47,11 +47,7 @@ function App() {
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/register">
-<<<<<<< HEAD
-              <SignUp />
-=======
               {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
->>>>>>> main
             </Route>
             <Route path="/addInstrument">
               {loggedIn ? <CreateInstrument /> : <Login handleLogin={handleLogin} />}
