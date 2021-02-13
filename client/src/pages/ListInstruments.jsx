@@ -95,12 +95,12 @@ export default function ListInstruments() {
     {
       field: 'calibrationStatus',
       headerName: 'Calibration Expiration',
-      width: 200,
-      type: 'number',
+      width: 220,
+      type: 'date',
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
-            {params.value === 'OoO' && (
+            {params.value === 'Out of Calibration' && (
               <MouseOverPopover
                 className="mb-3"
                 message="Instrument not calibrated!"
@@ -117,7 +117,7 @@ export default function ListInstruments() {
                 </svg>
               </MouseOverPopover>
             )}
-            {params.value === 'NA' ? (
+            {params.value === 'N/A' ? (
               <MouseOverPopover
                 className="mb-3"
                 message="Instrument not calibratable"
@@ -135,12 +135,16 @@ export default function ListInstruments() {
                 </svg>
               </MouseOverPopover>
             ) : (
-              params.value !== 'OoO' && (
+              params.value !== 'Out of Calibration' && (
                 <MouseOverPopover
                   className="mb-3"
-                  message={`${genDaysLeft(params.value)} days left till next calibration`}
+                  message={`${genDaysLeft(
+                    params.value,
+                  )} days left till next calibration`}
                 >
-                  <span className={genClassName(genDaysLeft(params.value))}>{params.value}</span>
+                  <span className={genClassName(genDaysLeft(params.value))}>
+                    {params.value}
+                  </span>
                 </MouseOverPopover>
               )
             )}
@@ -260,13 +264,7 @@ export default function ListInstruments() {
                 ? 'Item not calibratable'
                 : 'Not calibrated';
               // eslint-disable-next-line no-param-reassign
-              element.calibrationStatus = element.calibrationFrequency === 0 ? 'NA' : 'OoO';
-              // eslint-disable-next-line no-param-reassign
-              element.user = value ? value.user : 'No user found';
-              // eslint-disable-next-line no-param-reassign
-              element.calibComment = value
-                ? value.comment
-                : 'No comment found';
+              element.calibrationStatus = element.calibrationFrequency === 0 ? 'N/A' : 'Out of Calibration';
               if (value) {
                 // eslint-disable-next-line no-param-reassign
                 element.date = value.date;
@@ -277,6 +275,8 @@ export default function ListInstruments() {
                   // eslint-disable-next-line no-param-reassign
                 element.calibrationStatus = nextCalibDate;
               }
+              // eslint-disable-next-line no-param-reassign
+              delete element.calibrationFrequency;
             });
           });
           return response;
