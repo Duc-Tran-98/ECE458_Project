@@ -34,7 +34,7 @@ function App() {
       <UserProvider>
         <header>
           <NavBar
-            title="Team Teams"
+            title="Hypothetical Power Team"
             loggedIn={loggedIn}
             handleSignOut={handleSignOut}
           />
