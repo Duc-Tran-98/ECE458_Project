@@ -57,7 +57,7 @@ export default function DisplayGrid({
             //   <Button onClick={handleExport}>Export</Button>
             // </GridToolbar>
             <span>
-              {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '60px', left: '300px' }}>Export</Button>}
+              {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '60px', left: '300px' }} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
               <GridToolbar />
             </span>
           ),

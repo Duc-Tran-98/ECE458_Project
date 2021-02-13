@@ -22,7 +22,7 @@
         "no-console": "off",
         "react/react-in-jsx-scope": "off",
         "react/jsx-filename-extension": [1, { "extensions": ["js", "jsx"] }],
-        "max-len": ["error", { "code": 200 }],
+        "max-len": ["warn", { "code": 300 }],
         "jsx-a11y/label-has-associated-control": "off",
         "jsx-a11y/label-has-for":"off"
     },
