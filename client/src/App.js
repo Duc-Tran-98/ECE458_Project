@@ -46,9 +46,6 @@ function App() {
             <Route path="/register">
               <SignUp />
             </Route>
-            <Route path="/certificate">
-              <Certificate />
-            </Route>
             <Route path="/addInstrument">
               <CreateInstrument />
             </Route>
