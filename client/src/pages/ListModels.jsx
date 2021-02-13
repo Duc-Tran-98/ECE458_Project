@@ -4,21 +4,15 @@ to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
 import {
-  useState, useContext, useRef, useEffect,
+  useState, useContext,
 } from 'react';
-import useStateWithCallback from 'use-state-with-callback';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
-import { CSVLink } from 'react-csv';
 import { Link } from 'react-router-dom';
-import Query from '../components/UseQuery';
-import DisplayGrid, { ServerPaginationGrid } from '../components/UITable';
+import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
-
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
@@ -31,55 +25,6 @@ function ListModels() {
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
-
-  const [checked, setChecked] = useState('');
-  const csvLink = useRef();
-
-  const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
-    if (downloadReady) {
-      console.log('Downloading CSV Data');
-      csvLink.current.link.click();
-      setDownloadReady(false);
-    }
-  });
-
-  // Everytime setCSVData, want to download
-  const [csvData, setCSVData] = useStateWithCallback([], () => {
-    console.log('Updating CSV Data');
-    if (csvData.length > 0) {
-      console.log(JSON.stringify(csvData));
-      setDownloadReady(true);
-    }
-  });
-
-  useEffect(() => {
-    if (csvLink && csvLink.current && downloadReady && csvData.length > 0) {
-      csvLink.current.link.click();
-      setCSVData([]);
-      setDownloadReady(false);
-    }
-  });
-
-  const GET_MODELS_QUERY = gql`
-    query Models{
-      getAllModels{
-        id
-        vendor
-        modelNumber
-        description
-        calibrationFrequency
-      }
-    }
-  `;
-  const query = print(GET_MODELS_QUERY);
-  const queryName = 'getAllModels';
-  const handleResponse = (response) => {
-    setModels(response);
-  };
-  if (!queried) {
-    Query({ query, queryName, handleResponse });
-    setQuery(true);
-  }
   const [description, setDescription] = useState('');
   const [update, setUpdate] = useState(false);
   const cellHandler = (e) => {
@@ -91,6 +36,7 @@ function ListModels() {
       setShow(true);
     }
   };
+  // test
   const closeModal = (bool) => {
     setShow(false);
     setWhich('');
@@ -209,6 +155,7 @@ function ListModels() {
     );
   }
 
+  // Pass into UITable
   const filterRowForCSV = (exportRows) => {
     const filteredRows = exportRows.map((element) => ({
       vendor: element.vendor,
@@ -220,26 +167,6 @@ function ListModels() {
     return filteredRows;
   };
 
-  const handleExport = () => {
-    // Selected comes in with row IDs, now parse these
-    const exportRows = [];
-    if (checked) {
-      checked.forEach((rowID) => {
-        rows.forEach((row) => {
-          if (row.id === rowID) {
-            exportRows.push(row);
-          }
-        });
-      });
-      console.log('exportRows: ');
-      console.log(exportRows);
-      const filteredRows = filterRowForCSV(exportRows);
-      console.log('filteredRows');
-      console.log(filteredRows);
-      setCSVData(filteredRows);
-    }
-  };
-
   const headers = [
     { label: 'Vendor', key: 'vendor' },
     { label: 'Model-Number', key: 'modelNumber' },
@@ -247,8 +174,6 @@ function ListModels() {
     { label: 'Comment', key: 'comment' },
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
-
-  // const getData = () => csvData;
 
   return (
     <div style={{ height: '90vh' }}>
@@ -286,22 +211,15 @@ function ListModels() {
           </div>
         )}
       </ModalAlert>
-      {DisplayGrid({
-        rows, cols, cellHandler, handleExport, setChecked,
-      })}
-      <CSVLink
-        data={csvData}
-        headers={headers}
-        filename="models.csv"
-        className="hidden"
-        ref={csvLink}
-      />
       <ServerPaginationGrid
         cols={cols}
         shouldUpdate={update}
         getRowCount={CountAllModels}
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="models.csv"
       />
     </div>
   );

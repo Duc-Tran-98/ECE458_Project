@@ -1,19 +1,15 @@
 /* eslint-disable func-names */
 /* eslint-disable max-len */
 import {
-  useState, useContext, useRef, useEffect,
+  useState, useContext,
 } from 'react';
-import useStateWithCallback from 'use-state-with-callback';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
-import { CSVLink } from 'react-csv';
-import GetAllInstruments from '../queries/GetAllInstruments';
-import DisplayGrid from '../components/UITable';
-import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
 import { ServerPaginationGrid } from '../components/UITable';
+import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
@@ -35,36 +31,6 @@ export default function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
-  const [calibrationFrequency, setCalibrationFrequency] = useState(0);
-
-  const [checked, setChecked] = useState('');
-  const csvLink = useRef();
-
-  const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
-    if (downloadReady) {
-      console.log('Downloading CSV Data');
-      csvLink.current.link.click();
-      setDownloadReady(false);
-    }
-  });
-
-  // Everytime setCSVData, want to download
-  const [csvData, setCSVData] = useStateWithCallback([], () => {
-    console.log('Updating CSV Data');
-    if (csvData.length > 0) {
-      console.log(JSON.stringify(csvData));
-      setDownloadReady(true);
-    }
-  });
-
-  useEffect(() => {
-    if (csvLink && csvLink.current && downloadReady && csvData.length > 0) {
-      csvLink.current.link.click();
-      setCSVData([]);
-      setDownloadReady(false);
-    }
-  });
-
   // eslint-disable-next-line no-unused-vars
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
@@ -260,29 +226,6 @@ export default function ListInstruments() {
     return filteredRows;
   };
 
-  const handleExport = () => {
-    // Selected comes in with row IDs, now parse these
-    const exportRows = [];
-    if (checked) {
-      console.log('checked == true');
-      console.log(rows);
-      checked.forEach((rowID) => {
-        rows.forEach((row) => {
-          console.log(row);
-          if (row.id === parseInt(rowID, 10)) {
-            exportRows.push(row);
-          }
-        });
-      });
-      console.log('exportRows: ');
-      console.log(exportRows);
-      const filteredRows = filterRowForCSV(exportRows);
-      console.log('filteredRows');
-      console.log(filteredRows);
-      setCSVData(filteredRows);
-    }
-  };
-
   const headers = [
     { label: 'Vendor', key: 'vendor' },
     { label: 'Model-Number', key: 'modelNumber' },
@@ -329,17 +272,6 @@ export default function ListInstruments() {
           </div>
         )}
       </ModalAlert>
-      {/* eslint-disable-next-line object-shorthand */}
-      {DisplayGrid({
-        rows, cols, cellHandler, handleExport, setChecked,
-      })}
-      <CSVLink
-        data={csvData}
-        headers={headers}
-        filename="instruments.csv"
-        className="hidden"
-        ref={csvLink}
-        />
       <ServerPaginationGrid
         cols={cols}
         shouldUpdate={update}
@@ -374,6 +306,9 @@ export default function ListInstruments() {
           });
           return response;
         })}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="models.csv"
       />
     </div>
   );

@@ -10,10 +10,7 @@ import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
-<<<<<<< HEAD
 // import ErrorPage from './pages/ErrorPage';
-=======
->>>>>>> main
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';

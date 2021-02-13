@@ -3,9 +3,14 @@ import * as React from 'react';
 import { DataGrid, GridToolbar } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
+import useStateWithCallback from 'use-state-with-callback';
+import {
+  useState, useRef, useEffect,
+} from 'react';
+import { CSVLink } from 'react-csv';
 
 export default function DisplayGrid({
-  rows, cols, cellHandler, handleExport, setChecked,
+  rows, cols, cellHandler,
 }) {
   DisplayGrid.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
@@ -13,9 +18,6 @@ export default function DisplayGrid({
     // eslint-disable-next-line react/forbid-prop-types
     cols: PropTypes.array.isRequired,
     cellHandler: PropTypes.func,
-    // eslint-disable-next-line react/no-unused-prop-types
-    handleExport: PropTypes.func,
-    setChecked: PropTypes.func,
   };
 
   return (
@@ -39,19 +41,8 @@ export default function DisplayGrid({
             cellHandler(e);
           }
         }}
-        onSelectionChange={(newSelection) => {
-          setChecked(newSelection.rowIds);
-        }}
         disableSelectionOnClick
         className="bg-light"
-        components={{
-          Header: () => (
-            <span>
-              {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '62px', left: '300px' }} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
-              <GridToolbar />
-            </span>
-          ),
-        }}
       />
     </div>
   );
@@ -63,6 +54,9 @@ export function ServerPaginationGrid({
   cellHandler,
   getRowCount,
   shouldUpdate,
+  filterRowForCSV,
+  headers,
+  filename,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -72,6 +66,10 @@ export function ServerPaginationGrid({
     cellHandler: PropTypes.func,
     getRowCount: PropTypes.func.isRequired,
     shouldUpdate: PropTypes.bool,
+    filterRowForCSV: PropTypes.func.isRequired, // function to filter rows for export
+    // eslint-disable-next-line react/forbid-prop-types
+    headers: PropTypes.array.isRequired, // map db keys to CSV headers
+    filename: PropTypes.string.isRequired, // name the csv file
   };
   ServerPaginationGrid.defaultProps = {
     shouldUpdate: false,
@@ -126,8 +124,68 @@ export function ServerPaginationGrid({
       active = false;
     };
   }, [page, limit]);
+
+  const [checked, setChecked] = useState('');
+  const csvLink = useRef();
+
+  const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
+    if (downloadReady) {
+      console.log('Downloading CSV Data');
+      csvLink.current.link.click();
+      setDownloadReady(false);
+    }
+  });
+
+  // Everytime setCSVData, want to download
+  const [csvData, setCSVData] = useStateWithCallback([], () => {
+    console.log('Updating CSV Data');
+    if (csvData.length > 0) {
+      console.log(JSON.stringify(csvData));
+      setDownloadReady(true);
+    }
+  });
+
+  useEffect(() => {
+    if (csvLink && csvLink.current && downloadReady && csvData.length > 0) {
+      csvLink.current.link.click();
+      setCSVData([]);
+      setDownloadReady(false);
+    }
+  });
+
+  // Function for exporting data
+  const handleExport = () => {
+    // Selected comes in with row IDs, now parse these
+    const exportRows = [];
+    if (checked) {
+      console.log('checked == true');
+      console.log(rows);
+      checked.forEach((rowID) => {
+        rows.forEach((row) => {
+          console.log(row);
+          if (row.id === parseInt(rowID, 10)) {
+            exportRows.push(row);
+          }
+        });
+      });
+      console.log('exportRows: ');
+      console.log(exportRows);
+      const filteredRows = filterRowForCSV(exportRows);
+      console.log('filteredRows');
+      console.log(filteredRows);
+      setCSVData(filteredRows);
+    }
+  };
+
   return (
     <div style={{ width: '100%', height: '400' }}>
+      <CSVLink
+        data={csvData}
+        headers={headers}
+        filename={filename}
+        className="hidden"
+        ref={csvLink}
+      />
       <DataGrid
         rows={rows}
         columns={cols}
@@ -154,6 +212,17 @@ export function ServerPaginationGrid({
           }
         }}
         autoHeight
+        onSelectionChange={(newSelection) => {
+          setChecked(newSelection.rowIds);
+        }}
+        components={{
+          Header: () => (
+            <span>
+              {handleExport && <Button onClick={handleExport} style={{ position: 'fixed', top: '70px', left: '300px' }} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
+              <GridToolbar />
+            </span>
+          ),
+        }}
       />
     </div>
   );
