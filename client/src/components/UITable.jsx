@@ -1,6 +1,9 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import { DataGrid, GridToolbar } from '@material-ui/data-grid';
+import {
+  DataGrid,
+} from '@material-ui/data-grid';
+// import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import useStateWithCallback from 'use-state-with-callback';
@@ -8,8 +11,6 @@ import {
   useState, useRef, useEffect,
 } from 'react';
 import { CSVLink } from 'react-csv';
-
-// test
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
@@ -180,6 +181,7 @@ export function ServerPaginationGrid({
         className="hidden"
         ref={csvLink}
       />
+      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export</Button>}
       <DataGrid
         rows={rows}
         columns={cols}
@@ -210,14 +212,6 @@ export function ServerPaginationGrid({
           setChecked(newSelection.rowIds);
         }}
         showToolbar
-        components={{
-          Toolbar: () => (
-            <span>
-              <GridToolbar />
-              {handleExport && <Button onClick={handleExport} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
-            </span>
-          ),
-        }}
       />
     </div>
   );
