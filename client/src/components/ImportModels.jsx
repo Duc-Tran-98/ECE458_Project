@@ -34,6 +34,7 @@ export default function ImportModels() {
     }
   });
 
+  // TODO: Refactor this to reset the file selected
   const refreshPage = () => {
     window.location.reload();
   };

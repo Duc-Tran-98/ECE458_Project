@@ -9,6 +9,8 @@ import {
 } from 'react';
 import { CSVLink } from 'react-csv';
 
+// test
+
 export default function DisplayGrid({
   rows, cols, cellHandler,
 }) {
@@ -137,9 +139,7 @@ export function ServerPaginationGrid({
 
   // Everytime setCSVData, want to download
   const [csvData, setCSVData] = useStateWithCallback([], () => {
-    // console.log('Updating CSV Data');
     if (csvData.length > 0) {
-      // console.log(JSON.stringify(csvData));
       setDownloadReady(true);
     }
   });
@@ -157,6 +157,7 @@ export function ServerPaginationGrid({
     // Selected comes in with row IDs, now parse these
     const exportRows = [];
     if (checked) {
+      console.log(checked);
       checked.forEach((rowID) => {
         rows.forEach((row) => {
           // eslint-disable-next-line eqeqeq
@@ -190,7 +191,6 @@ export function ServerPaginationGrid({
         onPageChange={handlePageChange}
         loading={loading}
         className="bg-light"
-        showToolbar
         rowsPerPageOptions={[25, 50, 100]}
         locateText={{
           toolbarDensity: 'Size',
@@ -209,12 +209,12 @@ export function ServerPaginationGrid({
         onSelectionChange={(newSelection) => {
           setChecked(newSelection.rowIds);
         }}
+        showToolbar
         components={{
-          Header: () => (
+          Toolbar: () => (
             <span>
-              {/* TODO: restyle button so next to other toolbar */}
-              {handleExport && <Button onClick={handleExport} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
               <GridToolbar />
+              {handleExport && <Button onClick={handleExport} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
             </span>
           ),
         }}
