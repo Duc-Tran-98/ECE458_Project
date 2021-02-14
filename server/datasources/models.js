@@ -1,5 +1,6 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
+const SQL = require('sequelize');
 
 class ModelAPI extends DataSource {
   constructor({ store }) {
@@ -93,6 +94,13 @@ class ModelAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const models = await this.store.models.findAll({ where: { vendor } });
+    return models;
+  }
+
+  async getUniqueVendors() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const models = await this.store.models.findAll({ attributes: [[SQL.fn('DISTINCT', SQL.col('vendor')), 'vendor']] });
     return models;
   }
 

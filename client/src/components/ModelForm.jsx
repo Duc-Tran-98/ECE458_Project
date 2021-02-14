@@ -8,13 +8,13 @@ import AsyncSuggest from './AsyncSuggest';
 
 const GET_MODELS_QUERY = gql`
   query Models {
-    getAllModels {
+    getUniqueVendors {
       vendor
     }
   }
 `;
 const query = print(GET_MODELS_QUERY);
-const queryName = 'getAllModels';
+const queryName = 'getUniqueVendors';
 
 export default function ModelForm({
   modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange,
