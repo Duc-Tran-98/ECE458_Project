@@ -6,16 +6,16 @@ function validateModel({
   modelNumber = '', vendor = '', description = '', comment = '',
 }) {
   if (vendor.length > 30) {
-    return [true, 'Vendor input is too long'];
+    return [true, 'Vendor input must be under 30 characters!'];
   }
   if (modelNumber.length > 40) {
-    return [true, 'Model number input is too long'];
+    return [true, 'Model number must be under 40 characters!'];
   }
   if (description.length > 100) {
-    return [true, 'Description input is too long'];
+    return [true, 'Description input must be under 100 characters!'];
   }
   if (comment.length > 2000) {
-    return [true, 'Comment input is too long'];
+    return [true, 'Comment input must be under 2000 characters!'];
   }
   return [false];
 }
