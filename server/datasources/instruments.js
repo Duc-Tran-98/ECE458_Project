@@ -1,6 +1,24 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 
+function validateInstrument({
+  modelNumber, vendor, serialNumber, comment,
+}) {
+  if (vendor.length > 30) {
+    return [false, 'Vendor input must be under 30 characters!'];
+  }
+  if (modelNumber.length > 40) {
+    return [false, 'Model number input must be under 40 characters!'];
+  }
+  if (serialNumber.length > 40) {
+    return [false, 'Serial number input must be under 40 characters!'];
+  }
+  if (comment.length > 2000) {
+    return [false, 'Comment input must be under 2000 characters!'];
+  }
+  return [true];
+}
+
 class InstrumentAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -88,6 +106,14 @@ class InstrumentAPI extends DataSource {
     modelNumber, vendor, serialNumber, comment, id,
   }) {
     const response = { message: '', success: true };
+    const validation = validateInstrument({
+      modelNumber, vendor, serialNumber, comment,
+    });
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     const model = await this.store.models.findAll({
@@ -142,6 +168,14 @@ class InstrumentAPI extends DataSource {
     modelNumber, vendor, serialNumber, comment,
   }) {
     const response = { message: '', success: false };
+    const validation = validateInstrument({
+      modelNumber, vendor, serialNumber, comment,
+    });
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.models
