@@ -8,22 +8,24 @@ Before you start, make sure that you have a ".env" file in the root directory. Y
 
 If you don't have that file, mysql will not be able to run and the backend won't be able to connect to the DB!
 
+The .env file also configures the admin's credentials, so it is crucial that you have it!
+
 To start the development containers, run the following command in the root directory (the one where docker-compose.yml lives):
 docker-compose up -d --build
 
-That will build the docker images from the Dockerfiles, then setup and run all your containers. You will want to run this command once to get started, and may want to re-run it in the event that you add new packages to the front end. See Making Changes for more.
+That will build the docker images from the Dockerfiles, then setup and run all your containers. You will want to run this command once to get started, and may want to re-run it in the event that you add new packages via npm install. See Making Changes for more.
 
-The -d flag means to return to the terminal after the containers are up and running, and the --build flag specifies that docker should build the images needed to run the containers (an image is all your code and code dependencies wrapped up in one thing that docker can run).
+The -d flag means to return to the terminal after the containers are up and running, and the --build flag specifies that docker should build the images needed to run the containers (an image is your code and your dependencies wrapped up in one thing that docker can run).
 
 Your dev containers are equipped with hot-reloading, so making any changes to your code on your machine will
-automatically be copied and re-deployed to the containers.
+automatically be copied and re-deployed to the containers. However, we have had reports of various bugs in this department. See Common Errors for more.
 
-The frontend is on port 3000 of localhost
-The backend is on port 4000 of localhost
+The development frontend is on port 3000 of localhost
+The development backend is on port 4000 of localhost
 The phpmyadmin is on port 8081 of localhost
-The mysql server is on port 3306 of localhost
+The development mysql server is on port 3306 of localhost
 
-You can change these ports in the docker-compose.yml file.
+You can change these ports in the docker-compose.yml file, but if you do make sure to also change the corresponding Dockerfiles to use the same ports.
 
 # PHP ADMIN
 
@@ -31,6 +33,8 @@ This container is just for viewing the database while we are making changes duri
 user: root
 server: mysql
 password: {Enter password from .env file}
+
+You can also import/export your tables/DB and create new elements from phpMyAdmin, so it's rather useful.
 
 # Making changes
 
@@ -57,10 +61,12 @@ This will build the node_modules folder on your machine, which will then be copi
 
 If Docker says an HTTP request took too long, run "docker-compose down" from root directory, then try starting the dev containers again.
 
+If localhost:3000 can't compile because it's using some outdated files, try making some changes to the file like adding new lines and saving it. If that doesn't resolve the issue, try running docker-compose down -v and docker-compose up -d --build. Then if that doesn't work, try restarting your computer.
+
 If there any other errors, you can ask Angel or try Google.
 
 # Linting the Project
 The linter we are using for this project is [ESLint](https://eslint.org/). It is already included as a dependency in both the client and server packages (separate linting configurations exist in the `.eslintrc.json` files), so a fresh `npm install` should work. Be sure to also have the [ESLint VSCode](https://eslint.org/) plugin as well and your code will be perfect (well, depends how good you are ;))!
 
 # Credit where credit is due
-Big thanks to Material UI for saving us time with the autocomplete and datagrid components!
+Big thanks to Material UI for saving us time with the autocomplete and datagrid components! Also, thanks to Bootstrap, React, Apollo Server, GraphQL, Sequlize, and StackOverflow. 

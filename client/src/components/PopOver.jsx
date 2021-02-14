@@ -37,14 +37,14 @@ export default function MouseOverPopover({ children, message, className }) {
 
   return (
     <div className={className}>
-      <Typography
+      <div
         aria-owns={open ? 'mouse-over-popover' : undefined}
         aria-haspopup="true"
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
         {children}
-      </Typography>
+      </div>
       <Popover
         id="mouse-over-popover"
         className={classes.popover}
@@ -53,6 +53,8 @@ export default function MouseOverPopover({ children, message, className }) {
         }}
         open={open}
         anchorEl={anchorEl}
+        anchorReference="anchorEl"
+        container={document.getElementById('root')}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',

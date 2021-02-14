@@ -10,7 +10,7 @@ function SideNav({ isAdmin }) {
   };
 
   return (
-    <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+    <nav className="col-md-2 d-none d-md-block bg-light sidebar" style={{ height: '100vh' }}>
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
           <li className="nav-item">
