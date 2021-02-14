@@ -39,6 +39,7 @@ module.exports.createStore = async () => {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci',
     },
+    // eslint-disable-next-line no-console
     logging: console.log,
     database,
   });
