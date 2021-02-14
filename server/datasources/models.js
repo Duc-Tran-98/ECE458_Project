@@ -1,6 +1,24 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 
+function validateModel({
+  modelNumber = '', vendor = '', description = '', comment = '',
+}) {
+  if (vendor.length > 30) {
+    return [true, 'Vendor input is too long'];
+  }
+  if (modelNumber.length > 40) {
+    return [true, 'Model number input is too long'];
+  }
+  if (description.length > 100) {
+    return [true, 'Description input is too long'];
+  }
+  if (comment.length > 2000) {
+    return [true, 'Comment input is too long'];
+  }
+  return [false];
+}
+
 class ModelAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -54,6 +72,14 @@ class ModelAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { message: '', success: false };
+    const validation = validateModel({
+      modelNumber, vendor, description, comment,
+    });
+    if (validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then((value) => {
       if (value && value.id !== id) {
         response.message = 'That model number and vendor pair already exists!';
@@ -118,6 +144,14 @@ class ModelAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    const validation = validateModel({
+      modelNumber, vendor, description, comment,
+    });
+    if (validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then((value) => {
       if (value) {
         response.message = `Model ${vendor} ${modelNumber} already exists! asdfasdf`;
