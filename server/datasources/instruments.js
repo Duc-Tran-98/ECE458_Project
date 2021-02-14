@@ -5,18 +5,18 @@ function validateInstrument({
   modelNumber, vendor, serialNumber, comment,
 }) {
   if (vendor.length > 30) {
-    return [true, 'Vendor input must be under 30 characters!'];
+    return [false, 'Vendor input must be under 30 characters!'];
   }
   if (modelNumber.length > 40) {
-    return [true, 'Model number input must be under 40 characters!'];
+    return [false, 'Model number input must be under 40 characters!'];
   }
   if (serialNumber.length > 40) {
-    return [true, 'Serial number input must be under 40 characters!'];
+    return [false, 'Serial number input must be under 40 characters!'];
   }
   if (comment.length > 2000) {
-    return [true, 'Comment input must be under 2000 characters!'];
+    return [false, 'Comment input must be under 2000 characters!'];
   }
-  return [false];
+  return [true];
 }
 
 class InstrumentAPI extends DataSource {
@@ -109,7 +109,7 @@ class InstrumentAPI extends DataSource {
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment,
     });
-    if (validation[0]) {
+    if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
       return JSON.stringify(response);
@@ -171,7 +171,7 @@ class InstrumentAPI extends DataSource {
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment,
     });
-    if (validation[0]) {
+    if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
       return JSON.stringify(response);

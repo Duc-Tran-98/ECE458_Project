@@ -6,18 +6,18 @@ function validateModel({
   modelNumber = '', vendor = '', description = '', comment = '',
 }) {
   if (vendor.length > 30) {
-    return [true, 'Vendor input must be under 30 characters!'];
+    return [false, 'Vendor input must be under 30 characters!'];
   }
   if (modelNumber.length > 40) {
-    return [true, 'Model number must be under 40 characters!'];
+    return [false, 'Model number must be under 40 characters!'];
   }
   if (description.length > 100) {
-    return [true, 'Description input must be under 100 characters!'];
+    return [false, 'Description input must be under 100 characters!'];
   }
   if (comment.length > 2000) {
-    return [true, 'Comment input must be under 2000 characters!'];
+    return [false, 'Comment input must be under 2000 characters!'];
   }
-  return [false];
+  return [true];
 }
 
 class ModelAPI extends DataSource {
@@ -76,7 +76,7 @@ class ModelAPI extends DataSource {
     const validation = validateModel({
       modelNumber, vendor, description, comment,
     });
-    if (validation[0]) {
+    if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
       return JSON.stringify(response);
@@ -155,7 +155,7 @@ class ModelAPI extends DataSource {
     const validation = validateModel({
       modelNumber, vendor, description, comment,
     });
-    if (validation[0]) {
+    if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
       return JSON.stringify(response);
