@@ -1,10 +1,20 @@
 // This file handles connection to the database and initializing tables if they don't already exists
 const SQL = require('sequelize');
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcryptjs');
 const config = require('./config');
 
 const {
-  host, port, user, password, database,
+  host,
+  port,
+  user,
+  password,
+  database,
+  adminUsername,
+  adminEmail,
+  adminFirstName,
+  adminLastName,
+  adminPassword,
 } = config;
 
 module.exports.createDB = async () => {
@@ -25,9 +35,15 @@ module.exports.createStore = async () => {
     dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
     port,
     // eslint-disable-next-line no-console
+    define: {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci',
+    },
     logging: console.log,
     database,
   });
+
+  db.query('SET NAMES utf8mb4;');
 
   const users = db.define(
     'users',
@@ -66,6 +82,12 @@ module.exports.createStore = async () => {
       },
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   const models = db.define(
@@ -90,10 +112,16 @@ module.exports.createStore = async () => {
         type: SQL.STRING,
         allowNull: false,
       },
-      comment: SQL.STRING(1024),
+      comment: SQL.STRING(2048),
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   const instruments = db.define(
@@ -128,7 +156,7 @@ module.exports.createStore = async () => {
         type: SQL.INTEGER,
         allowNull: true,
       },
-      comment: SQL.STRING(1024),
+      comment: SQL.STRING(2048),
       description: {
         type: SQL.STRING,
         allowNull: false,
@@ -140,6 +168,12 @@ module.exports.createStore = async () => {
       },
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   const calibrationEvents = db.define(
@@ -168,12 +202,32 @@ module.exports.createStore = async () => {
         type: SQL.DATEONLY,
         allowNull: false,
       },
-      comment: SQL.STRING(1024),
+      comment: SQL.STRING(2048),
     },
     { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
   );
 
   db.sync();
+  const adminExist = await users.findAll({ where: { userName: adminUsername } });
+
+  if (adminExist[0] == null) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(adminPassword, salt);
+    users.create({
+      email: adminEmail,
+      firstName: adminFirstName,
+      lastName: adminLastName,
+      userName: adminUsername,
+      password: hash,
+      isAdmin: true,
+    });
+  }
 
   return {
     db,

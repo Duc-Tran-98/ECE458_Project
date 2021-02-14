@@ -3,16 +3,16 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import { useState, useContext } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
+import {
+  useState, useContext,
+} from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
-import Query from '../components/UseQuery';
-import DisplayGrid from '../components/UITable';
+import { ServerPaginationGrid } from '../components/UITable';
+import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import ModalAlert from '../components/ModalAlert';
 import EditModel from '../components/EditModel';
@@ -21,33 +21,12 @@ import UserContext from '../components/UserContext';
 
 function ListModels() {
   const user = useContext(UserContext);
-  const [rows, setModels] = useState([]);
-  const [queried, setQuery] = useState(false);
   const [show, setShow] = useState(false);
   const [which, setWhich] = useState('');
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [description, setDescription] = useState('');
-  const GET_MODELS_QUERY = gql`
-    query Models{
-      getAllModels{
-        id
-        vendor
-        modelNumber
-        description
-        calibrationFrequency
-      }
-    }
-  `;
-  const query = print(GET_MODELS_QUERY);
-  const queryName = 'getAllModels';
-  const handleResponse = (response) => {
-    setModels(response);
-  };
-  if (!queried) {
-    Query({ query, queryName, handleResponse });
-    setQuery(true);
-  }
+  const [update, setUpdate] = useState(false);
   const cellHandler = (e) => {
     if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
       setModelNumber(e.row.modelNumber);
@@ -57,12 +36,14 @@ function ListModels() {
       setShow(true);
     }
   };
+  // test
   const closeModal = (bool) => {
     setShow(false);
     setWhich('');
-    if (bool) { // If updated successfully, update rows
-      Query({ query, queryName, handleResponse });
+    if (bool) {
+      setUpdate(bool);
     }
+    setUpdate(false);
   };
   const handleRes = (response) => {
     // eslint-disable-next-line no-alert
@@ -173,10 +154,30 @@ function ListModels() {
       },
     );
   }
-  // const variables = {modelNumber, vendor};
+
+  // Pass into UITable
+  const filterRowForCSV = (exportRows) => {
+    const filteredRows = exportRows.map((element) => ({
+      vendor: element.vendor,
+      modelNumber: element.modelNumber,
+      description: element.description,
+      comment: element.comment,
+      calibrationFrequency: element.calibrationFrequency,
+    }));
+    return filteredRows;
+  };
+
+  const headers = [
+    { label: 'Vendor', key: 'vendor' },
+    { label: 'Model-Number', key: 'modelNumber' },
+    { label: 'Short-Description', key: 'description' },
+    { label: 'Comment', key: 'comment' },
+    { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
+  ];
+
   return (
     <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={closeModal} show={show} title={which}>
+      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
         {which === 'edit' && (
           <EditModel
             modelNumber={modelNumber}
@@ -201,7 +202,7 @@ function ListModels() {
                 <button
                   className="btn btn-primary"
                   type="button"
-                  onClick={closeModal}
+                  onClick={() => closeModal(false)}
                 >
                   No
                 </button>
@@ -210,7 +211,16 @@ function ListModels() {
           </div>
         )}
       </ModalAlert>
-      {DisplayGrid({ rows, cols, cellHandler })}
+      <ServerPaginationGrid
+        cols={cols}
+        shouldUpdate={update}
+        getRowCount={CountAllModels}
+        cellHandler={cellHandler}
+        fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="models.csv"
+      />
     </div>
   );
 }

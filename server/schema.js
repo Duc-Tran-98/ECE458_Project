@@ -10,12 +10,14 @@ const typeDefs = gql`
     getAllUsers: [User]
 
     # Model Related Queries
+    countAllModels: Int!
     getAllModels(limit: Int, offset: Int): [Model]
     getAllModelsWithModelNum(modelNumber: String!): [Model]
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
 
     # Instrument Related Queries
+    countAllInstruments: Int!
     getAllInstruments(limit: Int, offset: Int): [Instrument]
     getAllInstrumentsWithModel(
       modelNumber: String!
