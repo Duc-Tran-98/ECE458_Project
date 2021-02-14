@@ -11,6 +11,13 @@ function isValidDate(dateString) {
   return d.toISOString().slice(0, 10) === dateString;
 }
 
+function validateEvent(comment) {
+  if (comment.length > 2000) {
+    return [false, 'Comment input must be under 2000 characters!'];
+  }
+  return [true];
+}
+
 class CalibrationEventAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -71,6 +78,12 @@ class CalibrationEventAPI extends DataSource {
     comment,
   }) {
     const response = { message: '' };
+    const validation = validateEvent(comment);
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.findAll({
@@ -103,6 +116,12 @@ class CalibrationEventAPI extends DataSource {
     comment,
   }) {
     const response = { message: '' };
+    const validation = validateEvent(comment);
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.findAll({
@@ -144,6 +163,12 @@ class CalibrationEventAPI extends DataSource {
     id,
   }) {
     const response = { message: '' };
+    const validation = validateEvent(comment);
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.calibrationEvents.update({ user, date, comment }, { where: { id } });

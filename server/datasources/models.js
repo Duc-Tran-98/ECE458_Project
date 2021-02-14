@@ -2,6 +2,24 @@
 const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
 
+function validateModel({
+  modelNumber = '', vendor = '', description = '', comment = '',
+}) {
+  if (vendor.length > 30) {
+    return [false, 'Vendor input must be under 30 characters!'];
+  }
+  if (modelNumber.length > 40) {
+    return [false, 'Model number must be under 40 characters!'];
+  }
+  if (description.length > 100) {
+    return [false, 'Description input must be under 100 characters!'];
+  }
+  if (comment.length > 2000) {
+    return [false, 'Comment input must be under 2000 characters!'];
+  }
+  return [true];
+}
+
 class ModelAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -55,6 +73,14 @@ class ModelAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { message: '', success: false };
+    const validation = validateModel({
+      modelNumber, vendor, description, comment,
+    });
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then((value) => {
       if (value && value.id !== id) {
         response.message = 'That model number and vendor pair already exists!';
@@ -126,6 +152,14 @@ class ModelAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    const validation = validateModel({
+      modelNumber, vendor, description, comment,
+    });
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then((value) => {
       if (value) {
         response.message = `Model ${vendor} ${modelNumber} already exists!`;

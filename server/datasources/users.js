@@ -2,6 +2,24 @@
 const { DataSource } = require('apollo-datasource');
 const bcrypt = require('bcryptjs');
 
+function validateUser({
+  firstName, lastName, password, email,
+}) {
+  if (firstName.length > 128) {
+    return [false, 'First name must be under 128 characters!'];
+  }
+  if (lastName.length > 128) {
+    return [false, 'Last name must be under 128 characters!'];
+  }
+  if (password.length > 256) {
+    return [false, 'Password must be under 128 characters!'];
+  }
+  if (email.length > 320) {
+    return [false, 'Email must be under 128 characters!'];
+  }
+  return [true];
+}
+
 class UserAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -79,6 +97,14 @@ class UserAPI extends DataSource {
     isAdmin,
   }) {
     const response = { message: '' };
+    const validation = validateUser({
+      firstName, lastName, password, email,
+    });
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
     await this.findUser({ userName }).then((value) => {
       if (value) {
         response.message = 'Username already exists!';
