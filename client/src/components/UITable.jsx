@@ -1,6 +1,9 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import { DataGrid, GridToolbar } from '@material-ui/data-grid';
+import {
+  DataGrid,
+} from '@material-ui/data-grid';
+// import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import useStateWithCallback from 'use-state-with-callback';
@@ -137,9 +140,7 @@ export function ServerPaginationGrid({
 
   // Everytime setCSVData, want to download
   const [csvData, setCSVData] = useStateWithCallback([], () => {
-    // console.log('Updating CSV Data');
     if (csvData.length > 0) {
-      // console.log(JSON.stringify(csvData));
       setDownloadReady(true);
     }
   });
@@ -157,6 +158,7 @@ export function ServerPaginationGrid({
     // Selected comes in with row IDs, now parse these
     const exportRows = [];
     if (checked) {
+      console.log(checked);
       checked.forEach((rowID) => {
         rows.forEach((row) => {
           // eslint-disable-next-line eqeqeq
@@ -179,6 +181,7 @@ export function ServerPaginationGrid({
         className="hidden"
         ref={csvLink}
       />
+      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export</Button>}
       <DataGrid
         rows={rows}
         columns={cols}
@@ -190,7 +193,6 @@ export function ServerPaginationGrid({
         onPageChange={handlePageChange}
         loading={loading}
         className="bg-light"
-        showToolbar
         rowsPerPageOptions={[25, 50, 100]}
         locateText={{
           toolbarDensity: 'Size',
@@ -209,15 +211,7 @@ export function ServerPaginationGrid({
         onSelectionChange={(newSelection) => {
           setChecked(newSelection.rowIds);
         }}
-        components={{
-          Header: () => (
-            <span>
-              {/* TODO: restyle button so next to other toolbar */}
-              {handleExport && <Button onClick={handleExport} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall">Export</Button>}
-              <GridToolbar />
-            </span>
-          ),
-        }}
+        showToolbar
       />
     </div>
   );
