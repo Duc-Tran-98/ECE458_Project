@@ -308,7 +308,7 @@ export default function ListInstruments() {
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
-        filename="models.csv"
+        filename="instruments.csv"
       />
     </div>
   );
