@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable func-names */
 /* eslint-disable max-len */
 import {
@@ -105,6 +106,17 @@ export default function ListInstruments() {
       headerName: 'Most Recent Calibration',
       width: 250,
       type: 'date',
+    },
+    {
+      field: 'calibrationComment',
+      headerName: 'Calibration Comment',
+      width: 300,
+      hide: true,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
     },
     {
       field: 'calibrationStatus',
@@ -290,29 +302,24 @@ export default function ListInstruments() {
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
           response.forEach((element) => {
-            console.log(element);
             GetCalibHistory({
               // Get calibration history for each instrument
               id: element.id,
               mostRecent: true,
             }).then((value) => {
-              // eslint-disable-next-line no-param-reassign
               element.date = element.calibrationFrequency === 0
                 ? 'Item not calibratable'
                 : 'Not calibrated';
-              // eslint-disable-next-line no-param-reassign
+              element.calibrationComment = value.comment;
               element.calibrationStatus = element.calibrationFrequency === 0 ? 'N/A' : 'Out of Calibration';
               if (value) {
-                // eslint-disable-next-line no-param-reassign
                 element.date = value.date;
                 const nextCalibDate = new Date(value.date)
                   .addDays(element.calibrationFrequency)
                   .toISOString()
                   .split('T')[0];
-                  // eslint-disable-next-line no-param-reassign
                 element.calibrationStatus = nextCalibDate;
               }
-              // eslint-disable-next-line no-param-reassign
               delete element.calibrationFrequency;
             });
           });
