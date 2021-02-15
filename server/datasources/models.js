@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
@@ -81,7 +82,7 @@ class ModelAPI extends DataSource {
       response.message = validation[1];
       return JSON.stringify(response);
     }
-    await this.getModel({ modelNumber, vendor }).then((value) => {
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value && value.id !== id) {
         response.message = 'That model number and vendor pair already exists!';
       } else {
@@ -95,6 +96,22 @@ class ModelAPI extends DataSource {
           },
           { where: { id } },
         );
+        const modelReference = id;
+        const instrumentList = await this.store.instruments.findAll({
+          where: { modelReference },
+        });
+        // console.log(instrumentList);
+        for (let i = 0; i < instrumentList.length; i += 1) {
+          await this.store.instruments.update(
+            {
+              modelNumber,
+              vendor,
+              description,
+              calibrationFrequency,
+            },
+            { where: { id: instrumentList[i].dataValues.id } },
+          );
+        }
         response.message = 'Model Updated Successfully!';
         response.success = true;
       }

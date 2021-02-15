@@ -16,7 +16,8 @@ RUN npm run build
 FROM nginx:stable-alpine
 COPY --from=0 /app/build /usr/share/nginx/html
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY ./nginx/certificate.crt /etc/ssl/certificate.crt
-COPY ./nginx/private.key /etc/ssl/private.key
+COPY ./*.txt /usr/share/nginx/html
+# COPY ./nginx/certificate.crt /etc/ssl/certificate.crt
+# COPY ./nginx/private.key /etc/ssl/private.key
 EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]

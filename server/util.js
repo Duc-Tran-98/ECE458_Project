@@ -113,7 +113,10 @@ module.exports.createStore = async () => {
         type: SQL.STRING,
         allowNull: false,
       },
-      comment: SQL.STRING(2000),
+      comment: {
+        type: SQL.STRING(2000),
+        allowNull: true,
+      },
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
@@ -157,7 +160,10 @@ module.exports.createStore = async () => {
         type: SQL.INTEGER,
         allowNull: true,
       },
-      comment: SQL.STRING(2000),
+      comment: {
+        type: SQL.STRING(2000),
+        allowNull: true,
+      },
       description: {
         type: SQL.STRING,
         allowNull: false,
