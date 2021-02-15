@@ -1,7 +1,7 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
 import {
-  DataGrid,
+  DataGrid, GridToolbar,
 } from '@material-ui/data-grid';
 // import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
@@ -212,6 +212,9 @@ export function ServerPaginationGrid({
           setChecked(newSelection.rowIds);
         }}
         showToolbar
+        components={{
+          Toolbar: GridToolbar,
+        }}
       />
     </div>
   );
