@@ -1,7 +1,7 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
 import {
-  DataGrid,
+  DataGrid, GridToolbar,
 } from '@material-ui/data-grid';
 // import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
@@ -132,14 +132,15 @@ export function ServerPaginationGrid({
   const csvLink = useRef();
 
   const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
+    console.log('setting downloadReady');
     if (downloadReady) {
-      csvLink.current.link.click();
       setDownloadReady(false);
     }
   });
 
   // Everytime setCSVData, want to download
   const [csvData, setCSVData] = useStateWithCallback([], () => {
+    console.log('setting csvData');
     if (csvData.length > 0) {
       setDownloadReady(true);
     }
@@ -147,6 +148,7 @@ export function ServerPaginationGrid({
 
   useEffect(() => {
     if (csvLink && csvLink.current && downloadReady && csvData.length > 0) {
+      console.log('useEffect loop');
       csvLink.current.link.click();
       setCSVData([]);
       setDownloadReady(false);
@@ -181,7 +183,7 @@ export function ServerPaginationGrid({
         className="hidden"
         ref={csvLink}
       />
-      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export</Button>}
+      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export Selected Files</Button>}
       <DataGrid
         rows={rows}
         columns={cols}
@@ -212,6 +214,9 @@ export function ServerPaginationGrid({
           setChecked(newSelection.rowIds);
         }}
         showToolbar
+        components={{
+          Toolbar: GridToolbar,
+        }}
       />
     </div>
   );
