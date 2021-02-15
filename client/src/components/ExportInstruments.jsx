@@ -36,17 +36,14 @@ const ExportInstruments = () => {
 
   return (
     <>
-      <div>
-        <Button onClick={getTransactionData}>Export All Instruments</Button>
-        <CSVLink
-          data={transactionData}
-          headers={headers}
-          filename="instruments.csv"
-          className="hidden"
-          ref={csvLink}
-        />
-      </div>
-
+      <Button onClick={getTransactionData} className="m-2">Export All Instruments</Button>
+      <CSVLink
+        data={transactionData}
+        headers={headers}
+        filename="instruments.csv"
+        className="hidden"
+        ref={csvLink}
+      />
     </>
   );
 };

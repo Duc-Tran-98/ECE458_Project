@@ -35,17 +35,14 @@ const ExportModels = () => {
 
   return (
     <>
-      <div>
-        <Button onClick={getTransactionData}>Export All Models</Button>
-        <CSVLink
-          data={transactionData}
-          headers={headers}
-          filename="models.csv"
-          className="hidden"
-          ref={csvLink}
-        />
-      </div>
-
+      <Button onClick={getTransactionData} className="m-2">Export All Models</Button>
+      <CSVLink
+        data={transactionData}
+        headers={headers}
+        filename="models.csv"
+        className="hidden"
+        ref={csvLink}
+      />
     </>
   );
 };
