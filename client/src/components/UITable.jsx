@@ -183,7 +183,7 @@ export function ServerPaginationGrid({
         className="hidden"
         ref={csvLink}
       />
-      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export Selected Files</Button>}
+      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export Selected Rows</Button>}
       <DataGrid
         rows={rows}
         columns={cols}
