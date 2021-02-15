@@ -18,7 +18,7 @@ export default async function EditInstrumentQuery({
     handleResponse: null,
   };
   const EDIT_INST = gql`
-    mutation EditInst($modelNumber: String!, $vendor: String!, $serialNumber: String!, $comment: String!, $id: Int!) {
+    mutation EditInst($modelNumber: String!, $vendor: String!, $serialNumber: String!, $comment: String, $id: Int!) {
       editInstrument(modelNumber: $modelNumber, vendor: $vendor, serialNumber: $serialNumber, comment: $comment, id: $id)
     }
   `;
