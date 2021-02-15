@@ -78,7 +78,6 @@ export default function ImportInstruments() {
     },
     { field: 'vendor', headerName: 'Vendor', width: 120 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
     { field: 'comment', headerName: 'Comment', width: 250 },
     { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
@@ -139,6 +138,12 @@ export default function ImportInstruments() {
 
   const isEmptyLine = (obj) => {
     Object.values(obj).every((x) => (x === null || x === ''));
+  };
+
+  let csvInputStyle = { color: 'red' };
+
+  const refreshCSVReader = () => {
+    csvInputStyle = { color: 'blue' };
   };
 
   const handleCSVReader = (data /* , fileInfo */) => {
@@ -211,6 +216,9 @@ export default function ImportInstruments() {
         getVariables,
         handleResponse,
       });
+
+      // Refresh CSVReader component
+      refreshCSVReader();
     }
   };
 
@@ -227,7 +235,7 @@ export default function ImportInstruments() {
         onFileLoaded={handleCSVReader}
         onError={refreshPage}
         parserOptions={papaparseOptions}
-        inputStyle={{ color: 'red' }}
+        inputStyle={csvInputStyle}
         skipEmptyLines
         header
       />
