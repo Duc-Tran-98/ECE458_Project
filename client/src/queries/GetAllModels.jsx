@@ -16,6 +16,7 @@ export default async function GetAllModels({ limit, offset }) {
         modelNumber
         description
         calibrationFrequency
+        comment
       }
     }
   `;

@@ -40,7 +40,7 @@ export default function ImportModels() {
   };
 
   const closeModal = () => {
-    refreshPage();
+    // refreshPage();
     setShow(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
@@ -132,36 +132,48 @@ export default function ImportModels() {
 
   const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
 
+  let csvInputStyle = { color: 'red' };
+
+  const refreshCSVReader = () => {
+    csvInputStyle = { color: 'blue' };
+  };
+
+  const isEmptyLine = (obj) => {
+    Object.values(obj).every((x) => (x === null || x === ''));
+  };
+
   const handleCSVReader = (data /* , fileInfo */) => {
     console.log('Called handleCSVReader with data:');
     console.log(data);
     const importRowErrors = [];
     data.forEach((row, index) => {
       // Check missing keys
-      const missingKeys = getMissingKeys(row);
+      if (!isEmptyLine(row)) {
+        const missingKeys = getMissingKeys(row);
 
-      let isDuplicateModel;
-      if (row.vendor && row.modelNumber) {
-        isDuplicateModel = checkDuplicateModel(data, row.vendor, row.modelNumber, index);
-      }
+        let isDuplicateModel;
+        if (row.vendor && row.modelNumber) {
+          isDuplicateModel = checkDuplicateModel(data, row.vendor, row.modelNumber, index);
+        }
 
-      // Validate entries by length
-      const invalidEntries = validateRow(row);
+        // Validate entries by length
+        const invalidEntries = validateRow(row);
 
-      // Validate calibration frequency
-      const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
+        // Validate calibration frequency
+        const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
 
-      // If any errors exist, create errors object
-      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
-        const rowError = {
-          data: row,
-          row: index + 2,
-          ...(missingKeys) && { missingKeys },
-          ...(invalidEntries) && { invalidEntries },
-          ...(isDuplicateModel) && { isDuplicateModel },
-          ...(invalidCalibration) && { invalidCalibration },
-        };
-        importRowErrors.push(rowError);
+        // If any errors exist, create errors object
+        if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
+          const rowError = {
+            data: row,
+            row: index + 2,
+            ...(missingKeys) && { missingKeys },
+            ...(invalidEntries) && { invalidEntries },
+            ...(isDuplicateModel) && { isDuplicateModel },
+            ...(invalidCalibration) && { invalidCalibration },
+          };
+          importRowErrors.push(rowError);
+        }
       }
     });
 
@@ -196,17 +208,15 @@ export default function ImportModels() {
           setCSVData(filteredData);
         }
       };
-
-      // TODO: Debug error
-      console.log('Sending Query to UseQuery with data: ');
-      console.log(filteredData);
-
       Query({
         query,
         queryName,
         getVariables,
         handleResponse,
       });
+
+      // Refresh CSVReader component
+      refreshCSVReader();
     }
   };
 
@@ -220,7 +230,7 @@ export default function ImportModels() {
           onFileLoaded={handleCSVReader}
           onError={refreshPage}
           parserOptions={papaparseOptions}
-          inputStyle={{ color: 'red' }}
+          inputStyle={csvInputStyle}
           skipEmptyLines
           header
         />
@@ -229,11 +239,12 @@ export default function ImportModels() {
         <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
       <div style={{
-        display: showTable ? 'contents' : 'none',
+        display: showTable ? 'inline-block' : 'none',
         width: showTable ? '100%' : '0',
+        height: 'auto',
       }}
       >
-        <h2>
+        <h2 className="m-2">
           {`Successfully Imported ${importCount} ${importCount === 1 ? 'Model' : 'Models'}`}
         </h2>
         <DisplayGrid rows={csvData} cols={cols} />

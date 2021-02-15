@@ -40,7 +40,7 @@ export default function ImportInstruments() {
   };
 
   const closeModal = () => {
-    refreshPage();
+    // refreshPage();
     setShowModal(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
@@ -78,7 +78,6 @@ export default function ImportInstruments() {
     },
     { field: 'vendor', headerName: 'Vendor', width: 120 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
     { field: 'comment', headerName: 'Comment', width: 250 },
     { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
@@ -113,27 +112,6 @@ export default function ImportInstruments() {
     return isDuplicateInstrument;
   };
 
-  // TODO: Assuming instrument is calibratable, check this later
-  // const validCalibrationDate = (calibrationDate) => {
-  //   // Check if date is missing
-  //   if (!calibrationDate) {
-  //     return 'Missing Calibration-Date';
-  //   }
-
-  //   // Check if date is in correct form
-  //   if (!moment(calibrationDate, 'MM/DD/YYYY', true)) {
-  //     return 'Calibration-Date Incorrect Form';
-  //   }
-
-  //   // Check if date is in the future
-  //   if (moment(calibrationDate).isAfter()) {
-  //     return 'Calibration-Date is in the Future';
-  //   }
-
-  //   // No errors
-  //   return null;
-  // };
-
   const validateRow = (row) => {
     // TODO: Make this less ugly
     const invalidKeys = [];
@@ -158,40 +136,49 @@ export default function ImportInstruments() {
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
 
+  const isEmptyLine = (obj) => {
+    Object.values(obj).every((x) => (x === null || x === ''));
+  };
+
+  let csvInputStyle = { color: 'red' };
+
+  const refreshCSVReader = () => {
+    csvInputStyle = { color: 'blue' };
+  };
+
   const handleCSVReader = (data /* , fileInfo */) => {
+    console.log('Called handleCSVReader with data:');
+    console.log(data);
     const importRowErrors = [];
     data.forEach((row, index) => {
-      console.log(row);
-      // Check missing keys
-      const missingKeys = getMissingKeys(row);
+      if (!isEmptyLine(row)) {
+        // Check missing keys
+        const missingKeys = getMissingKeys(row);
 
-      let isDuplicateInstrument;
-      if (row.vendor && row.modelNumber && row.serialNumber) {
-        isDuplicateInstrument = checkDuplicateInstrument(data, row.vendor, row.modelNumber, row.serialNumber, index);
-      }
+        let isDuplicateInstrument;
+        if (row.vendor && row.modelNumber && row.serialNumber) {
+          isDuplicateInstrument = checkDuplicateInstrument(data, row.vendor, row.modelNumber, row.serialNumber, index);
+        }
 
-      // Validate entries by length
-      const invalidEntries = validateRow(row);
+        // Validate entries by length
+        const invalidEntries = validateRow(row);
 
-      // Validate calibration date (missing, form, future)
-      // const invalidCalibrationDate = validCalibrationDate(row.calibrationDate);
+        // Validate calibration date (missing, form, future)
 
-      // If any errors exist, create errors object
-      // if (missingKeys || invalidEntries || invalidCalibrationDate || isDuplicateInstrument) {
-      if (missingKeys || invalidEntries || isDuplicateInstrument) {
-        const rowError = {
-          data: row,
-          row: index + 2,
-          ...(missingKeys) && { missingKeys },
-          ...(invalidEntries) && { invalidEntries },
-          ...(isDuplicateInstrument) && { isDuplicateInstrument },
-          // ...(invalidCalibrationDate) && { invalidCalibrationDate },
-        };
-        importRowErrors.push(rowError);
+        // If any errors exist, create errors object
+        if (missingKeys || invalidEntries || isDuplicateInstrument) {
+          const rowError = {
+            data: row,
+            row: index + 2,
+            ...(missingKeys) && { missingKeys },
+            ...(invalidEntries) && { invalidEntries },
+            ...(isDuplicateInstrument) && { isDuplicateInstrument },
+          };
+          importRowErrors.push(rowError);
+        }
       }
     });
 
-    // Show modal alert
     if (importRowErrors.length > 0) {
       setAllRowErrors(importRowErrors);
     } else {
@@ -199,8 +186,6 @@ export default function ImportInstruments() {
       const query = print(IMPORT_INSTRUMENTS);
       const queryName = 'bulkImportData';
 
-      // TODO: Handle model with no calibration (more special cases)
-      // Append calibrationUser to format
       let filteredData = data.map((obj) => ({
         vendor: String(obj.vendor),
         modelNumber: String(obj.modelNumber),
@@ -232,6 +217,9 @@ export default function ImportInstruments() {
         getVariables,
         handleResponse,
       });
+
+      // Refresh CSVReader component
+      refreshCSVReader();
     }
   };
 
@@ -248,21 +236,18 @@ export default function ImportInstruments() {
         onFileLoaded={handleCSVReader}
         onError={refreshPage}
         parserOptions={papaparseOptions}
-        inputStyle={{ color: 'red' }}
+        inputStyle={csvInputStyle}
         skipEmptyLines
         header
       />
       <div style={{
         display: showTable ? 'inline-block' : 'none',
         width: showTable ? '100%' : '0',
+        height: 'auto',
       }}
       >
-        <h2>
-          Successfully Imported
-          {' '}
-          {importCount}
-          {' '}
-          Instruments!
+        <h2 className="m-2">
+          {`Successfully Imported ${importCount} ${importCount === 1 ? 'Instrument' : 'Instruments'}`}
         </h2>
         <DisplayGrid rows={csvData} cols={cols} />
       </div>

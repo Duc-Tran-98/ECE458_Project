@@ -90,6 +90,17 @@ export default function ListInstruments() {
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
     {
+      field: 'comment',
+      headerName: 'Comment',
+      width: 400,
+      hide: true,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    },
+    {
       field: 'date',
       headerName: 'Most Recent Calibration',
       width: 250,
@@ -279,6 +290,7 @@ export default function ListInstruments() {
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
           response.forEach((element) => {
+            console.log(element);
             GetCalibHistory({
               // Get calibration history for each instrument
               id: element.id,
@@ -308,7 +320,7 @@ export default function ListInstruments() {
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
-        filename="models.csv"
+        filename="instruments.csv"
       />
     </div>
   );

@@ -18,6 +18,7 @@ export default async function GetAllInstruments({ handleResponse, limit, offset 
         serialNumber
         description
         calibrationFrequency
+        comment
       }
     }
   `;

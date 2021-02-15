@@ -1,22 +1,23 @@
 import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
-import GetModelsForExport from '../queries/GetModelsForExport';
+import GetInstrumentsForExport from '../queries/GetInstrumentsForExport';
 
-const ExportModels = () => {
+const ExportInstruments = () => {
   const [transactionData, setTransactionData] = useState([]);
 
   let csvData = '1,2,3';
   const headers = [
     { label: 'Vendor', key: 'vendor' },
     { label: 'Model-Number', key: 'modelNumber' },
-    { label: 'Short-Description', key: 'description' },
+    { label: 'Serial-Number', key: 'serialNumber' },
     { label: 'Comment', key: 'comment' },
-    { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
+    { label: 'Calibration-Date', key: 'calibrationDate' },
+    { label: 'Calibration-Comment', key: 'calibrationComment' },
   ];
 
   const getData = async () => {
-    await GetModelsForExport().then((res) => {
+    await GetInstrumentsForExport().then((res) => {
       csvData = res;
     });
     return csvData;
@@ -36,11 +37,11 @@ const ExportModels = () => {
   return (
     <>
       <div>
-        <Button onClick={getTransactionData}>Export All Models</Button>
+        <Button onClick={getTransactionData}>Export All Instruments</Button>
         <CSVLink
           data={transactionData}
           headers={headers}
-          filename="models.csv"
+          filename="instruments.csv"
           className="hidden"
           ref={csvLink}
         />
@@ -50,4 +51,4 @@ const ExportModels = () => {
   );
 };
 
-export default ExportModels;
+export default ExportInstruments;
