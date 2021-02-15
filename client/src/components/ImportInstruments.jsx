@@ -85,10 +85,30 @@ export default function ImportInstruments({ setLoading }) {
     { field: 'vendor', headerName: 'Vendor', width: 120 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
     { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
+    {
+      field: 'comment',
+      headerName: 'Comment',
+      width: 300,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    },
     { field: 'comment', headerName: 'Comment', width: 250 },
     { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
-    { field: 'calibrationComment', headerName: 'Calib-Comment', width: 300 },
+    {
+      field: 'calibrationComment',
+      headerName: 'Calibration Comment',
+      width: 300,
+      hide: true,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    },
 
   ];
 

@@ -64,8 +64,16 @@ export default function ImportModels({ setLoading }) {
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
     { field: 'description', headerName: 'Short-Description', width: 240 },
-    { field: 'comment', headerName: 'Comment', width: 300 },
-    { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+    {
+      field: 'comment',
+      headerName: 'Comment',
+      width: 300,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
   ];
 
   const IMPORT_MODELS = gql`
