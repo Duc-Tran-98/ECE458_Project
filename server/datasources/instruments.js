@@ -137,11 +137,20 @@ class InstrumentAPI extends DataSource {
       });
     }
     if (response.success) {
+      // eslint-disable-next-line prefer-destructuring
+      // const calibrationFrequency = model.dataValues.calibrationFrequency;
+      // eslint-disable-next-line prefer-destructuring
+      // const description = model.dataValues.description;
+      // console.log(`${calibrationFrequency} ${description}`);
+      console.log(model);
+      // console.log(model.dataValues.description);
       this.store.instruments.update(
         {
           modelNumber,
           vendor,
           serialNumber,
+          // description,
+          // calibrationFrequency,
           comment,
         },
         { where: { id } },
