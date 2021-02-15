@@ -147,9 +147,10 @@ export default function ImportInstruments() {
   };
 
   const handleCSVReader = (data /* , fileInfo */) => {
+    console.log('Called handleCSVReader with data:');
+    console.log(data);
     const importRowErrors = [];
     data.forEach((row, index) => {
-      console.log(row);
       if (!isEmptyLine(row)) {
         // Check missing keys
         const missingKeys = getMissingKeys(row);
