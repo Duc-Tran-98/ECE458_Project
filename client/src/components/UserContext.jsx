@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
@@ -19,7 +20,7 @@ export const UserProvider = ({ children }) => {
     email: '',
   });
   useEffect(() => {
-    if (window.sessionStorage.getItem('token')) {
+    if (window.sessionStorage.getItem('token') && !user.isLoggedIn) {
       // If user logged in
       const queryName = 'getUser';
       const GET_USER_QUERY = gql`
@@ -50,7 +51,6 @@ export const UserProvider = ({ children }) => {
         getVariables,
         handleResponse, // This will get user information
       });
-      window.sessionStorage.clear();
     }
   });
   return (

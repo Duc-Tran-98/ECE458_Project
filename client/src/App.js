@@ -6,21 +6,23 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Certificate from './pages/Certificate';
 import Home from './pages/Home';
-import ComponentTest from './pages/ComponentTest';
+// import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
-// import ErrorPage from './pages/ErrorPage';
 import ListInstruments from './pages/ListInstruments';
 import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
-// import MyDocument from './pages/Certificate';
-// import ErrorPage from './pages/ErrorPage';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  React.useEffect(() => {
+    if (window.sessionStorage.getItem('token') && !loggedIn) { // If previously logged in and refreshed page
+      setLoggedIn(true); // loggedIn goes back to false, so we set it back to true
+    }
+  }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
   const handleLogin = () => {
     setLoggedIn(true);
   };
@@ -41,9 +43,9 @@ function App() {
         </header>
         <main>
           <Switch>
-            <Route path="/test">
+            {/* <Route path="/test">
               <ComponentTest />
-            </Route>
+            </Route> */}
             <Route exact path="/">
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>
