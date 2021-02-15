@@ -5,12 +5,17 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useStateWithCallbackInstant } from 'use-state-with-callback';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import ModalAlert from './ModalAlert';
 import ImportInstrumentError from './ImportInstrumentError';
 import Query from './UseQuery';
 import DisplayGrid from './UITable';
 
-export default function ImportInstruments() {
+export default function ImportInstruments({ setLoading }) {
+  ImportInstruments.propTypes = {
+    setLoading: PropTypes.func.isRequired,
+  };
+
   const [showModal, setShowModal] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [importCount, setImportCount] = useState(0);
@@ -18,6 +23,7 @@ export default function ImportInstruments() {
   const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
     console.log('Updating CSV Data');
     if (csvData.length > 0) {
+      setLoading(false);
       setImportCount(csvData.length);
       setShowTable(true);
       console.log(JSON.stringify(csvData));
@@ -182,6 +188,8 @@ export default function ImportInstruments() {
     if (importRowErrors.length > 0) {
       setAllRowErrors(importRowErrors);
     } else {
+      setLoading(true);
+
       // Now all fields have been validated, time to attempt a db push...
       const query = print(IMPORT_INSTRUMENTS);
       const queryName = 'bulkImportData';
@@ -198,6 +206,7 @@ export default function ImportInstruments() {
 
       const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
+        setLoading(false);
         console.log(response);
         if (response.success === false) {
           console.log(response.errorList);
