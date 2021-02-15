@@ -40,7 +40,7 @@ export default function ImportModels() {
   };
 
   const closeModal = () => {
-    refreshPage();
+    // refreshPage();
     setShow(false);
     setAllRowErrors([]);
     setAllQueryErrors([]);
@@ -229,8 +229,9 @@ export default function ImportModels() {
         <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
       </ModalAlert>
       <div style={{
-        display: showTable ? 'contents' : 'none',
+        display: showTable ? 'inline-block' : 'none',
         width: showTable ? '100%' : '0',
+        height: 'auto',
       }}
       >
         <h2>
