@@ -12,8 +12,8 @@ const ExportInstruments = () => {
     { label: 'Model-Number', key: 'modelNumber' },
     { label: 'Serial-Number', key: 'serialNumber' },
     { label: 'Comment', key: 'comment' },
-    { label: 'Calibration-Date', key: 'calibrationDate' },
-    { label: 'Calibration-Comment', key: 'calibrationComment' },
+    { label: 'Calibration-Date', key: 'recentCalDate' },
+    { label: 'Calibration-Comment', key: 'recentCalComment' },
   ];
 
   const getData = async () => {

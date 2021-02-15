@@ -4,14 +4,14 @@ import { QueryAndThen } from '../components/UseQuery';
 
 export default async function GetInstrumentsForExport() {
   const GET_INSTRUMENTS_QUERY = gql`
-    query Instruments {
-      getAllInstruments{
+    query instruments {
+      getAllInstrumentsWithInfo{
         vendor
-        modelNumber
-        serialNumber
-        comment
-        date
-        calibrationComment
+          modelNumber
+          serialNumber
+          comment
+          recentCalDate
+          recentCalComment
       }
     }
   `;
@@ -19,5 +19,6 @@ export default async function GetInstrumentsForExport() {
   const queryName = 'getAllInstruments';
 
   const response = await QueryAndThen({ query, queryName });
+  console.log(response);
   return response;
 }
