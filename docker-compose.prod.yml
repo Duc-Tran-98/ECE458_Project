@@ -5,6 +5,8 @@ services:
     container_name: mysql
     image: mysql:5.7.33
     restart: always
+    env_file:
+      - "./.env"
     environment:
       - MYSQL_ROOT_PASSWORD #get password from .env file in same directory
     expose:
@@ -20,6 +22,8 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    env_file:
+      - "./.env"
     container_name: backend
     build:
       context: ./server/
