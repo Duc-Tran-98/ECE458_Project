@@ -246,7 +246,7 @@ export default function ImportInstruments() {
         height: 'auto',
       }}
       >
-        <h2>
+        <h2 className="m-2">
           {`Successfully Imported ${importCount} ${importCount === 1 ? 'Instrument' : 'Instruments'}`}
         </h2>
         <DisplayGrid rows={csvData} cols={cols} />

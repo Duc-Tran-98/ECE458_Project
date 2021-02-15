@@ -244,7 +244,7 @@ export default function ImportModels() {
         height: 'auto',
       }}
       >
-        <h2>
+        <h2 className="m-2">
           {`Successfully Imported ${importCount} ${importCount === 1 ? 'Model' : 'Models'}`}
         </h2>
         <DisplayGrid rows={csvData} cols={cols} />
