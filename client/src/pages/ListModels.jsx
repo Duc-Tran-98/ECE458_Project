@@ -66,6 +66,17 @@ function ListModels() {
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 300 },
     {
+      field: 'comment',
+      headerName: 'Comment',
+      width: 400,
+      hide: true,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    },
+    {
       field: 'calibrationFrequency',
       headerName: 'Calibration Frequency',
       width: 200,
