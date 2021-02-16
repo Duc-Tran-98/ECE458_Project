@@ -28,6 +28,8 @@ module.exports = {
     countAllInstruments: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countAllInstruments(),
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
+    // eslint-disable-next-line max-len
+    getAllInstrumentsWithInfo: async (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstrumentsWithInfo({ limit, offset }),
     getAllInstrumentsWithModel: async (
       _,
       {

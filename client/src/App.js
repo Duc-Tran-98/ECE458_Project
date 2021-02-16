@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Certificate from './pages/Certificate';
 import Home from './pages/Home';
-// import ComponentTest from './pages/ComponentTest';
+import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
@@ -34,7 +34,7 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <header>
+        <header className="sticky-top">
           <NavBar
             title="Hypothetical Power Team"
             loggedIn={loggedIn}
@@ -43,9 +43,9 @@ function App() {
         </header>
         <main>
           <Switch>
-            {/* <Route path="/test">
+            <Route path="/test">
               <ComponentTest />
-            </Route> */}
+            </Route>
             <Route exact path="/">
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>

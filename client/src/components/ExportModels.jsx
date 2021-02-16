@@ -1,9 +1,14 @@
 import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import GetModelsForExport from '../queries/GetModelsForExport';
 
-const ExportModels = () => {
+const ExportModels = ({ setLoading }) => {
+  ExportModels.propTypes = {
+    setLoading: PropTypes.func.isRequired,
+  };
+
   const [transactionData, setTransactionData] = useState([]);
 
   let csvData = '1,2,3';
@@ -22,30 +27,46 @@ const ExportModels = () => {
     return csvData;
   };
 
+  const filterTransactionData = (r) => {
+    const filteredData = [];
+    r.forEach((row) => {
+      const updatedRow = {
+        vendor: row.vendor.replace(/"/g, '""'),
+        modelNumber: row.modelNumber.replace(/"/g, '""'),
+        description: row.description.replace(/"/g, '""'),
+        comment: row.comment.replace(/"/g, '""'),
+        calibrationFrequency: row.calibrationFrequency,
+      };
+      filteredData.push(updatedRow);
+    });
+    return filteredData;
+  };
+
   const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
 
   const getTransactionData = async () => {
+    setLoading(true);
     await getData()
       .then((r) => {
-        setTransactionData(r);
+        const filteredData = filterTransactionData(r);
+        setTransactionData(filteredData);
       })
       .catch((e) => console.log(e));
+    setLoading(false);
     csvLink.current.link.click();
   };
 
   return (
     <>
-      <div>
-        <Button onClick={getTransactionData}>Export models to CSV</Button>
-        <CSVLink
-          data={transactionData}
-          headers={headers}
-          filename="models.csv"
-          className="hidden"
-          ref={csvLink}
-        />
-      </div>
-
+      <Button onClick={getTransactionData} className="m-2">Export All Models</Button>
+      <CSVLink
+        data={transactionData}
+        headers={headers}
+        filename="models.csv"
+        className="hidden"
+        ref={csvLink}
+        enclosingCharacter={'"'}
+      />
     </>
   );
 };
