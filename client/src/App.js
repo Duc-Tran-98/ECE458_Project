@@ -34,7 +34,7 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <header>
+        <header className="sticky-top">
           <NavBar
             title="Hypothetical Power Team"
             loggedIn={loggedIn}
