@@ -16,7 +16,7 @@ export default async function GetInstrumentsForExport() {
     }
   `;
   const query = print(GET_INSTRUMENTS_QUERY);
-  const queryName = 'getAllInstruments';
+  const queryName = 'getAllInstrumentsWithInfo';
 
   const response = await QueryAndThen({ query, queryName });
   console.log(response);
