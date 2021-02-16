@@ -23,11 +23,7 @@ const Query = ({
       handleResponse(response);
     })
     .catch((err) => {
-      console.log('Caught error in UseQuery, logging in several ways:');
-      console.error(JSON.stringify(err, null, 2));
-      console.error(err);
       console.log(err);
-      console.log(err.response);
     });
 };
 

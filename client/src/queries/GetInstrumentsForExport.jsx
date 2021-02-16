@@ -19,6 +19,5 @@ export default async function GetInstrumentsForExport() {
   const queryName = 'getAllInstrumentsWithInfo';
 
   const response = await QueryAndThen({ query, queryName });
-  console.log(response);
   return response;
 }
