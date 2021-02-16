@@ -52,7 +52,7 @@ function Home() {
           <h2>User Guide</h2>
           <p>
             Our system is designed to make tracking and calibrating equipment simple, easy, and error-proof. We provide a unified equipment inventory and calibration system that can replace
-            an basic spreadsheet system.
+            a basic spreadsheet system.
 
             Our system allows an administrator to easily add, remove, and modify models and instruments.
           </p>
