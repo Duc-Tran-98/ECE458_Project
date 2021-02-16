@@ -244,7 +244,7 @@ export default function ListInstruments() {
       serialNumber: element.serialNumber,
       comment: element.comment,
       calibrationDate: element.date,
-      calibrationComment: element.calibComment,
+      calibrationComment: element.calibrationComment,
     }));
     return filteredRows;
   };
