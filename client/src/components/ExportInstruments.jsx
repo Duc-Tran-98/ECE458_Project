@@ -1,9 +1,13 @@
 import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import GetInstrumentsForExport from '../queries/GetInstrumentsForExport';
 
-const ExportInstruments = () => {
+const ExportInstruments = ({ setLoading }) => {
+  ExportInstruments.propTypes = {
+    setLoading: PropTypes.func.isRequired,
+  };
   const [transactionData, setTransactionData] = useState([]);
 
   let csvData = '1,2,3';
@@ -26,11 +30,13 @@ const ExportInstruments = () => {
   const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
 
   const getTransactionData = async () => {
+    setLoading(true);
     await getData()
       .then((r) => {
         setTransactionData(r);
       })
       .catch((e) => console.log(e));
+    setLoading(false);
     csvLink.current.link.click();
   };
 
