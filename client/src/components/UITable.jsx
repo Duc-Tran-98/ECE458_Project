@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { CSVLink } from 'react-csv';
 
+import LinearProgress from '@material-ui/core/LinearProgress';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
 
@@ -85,6 +86,8 @@ export function ServerPaginationGrid({
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [rowCount, setRowCount] = React.useState(null);
+  const [loadingExport, setLoadingExport] = React.useState(null);
+
   const handlePageChange = (params) => {
     setPage(params.page);
   };
@@ -135,7 +138,6 @@ export function ServerPaginationGrid({
   const csvLink = useRef();
 
   const [downloadReady, setDownloadReady] = useStateWithCallback(false, () => {
-    console.log('setting downloadReady');
     if (downloadReady) {
       setDownloadReady(false);
     }
@@ -143,7 +145,6 @@ export function ServerPaginationGrid({
 
   // Everytime setCSVData, want to download
   const [csvData, setCSVData] = useStateWithCallback([], () => {
-    console.log('setting csvData');
     if (csvData.length > 0) {
       setDownloadReady(true);
     }
@@ -151,7 +152,6 @@ export function ServerPaginationGrid({
 
   useEffect(() => {
     if (csvLink && csvLink.current && downloadReady && csvData.length > 0) {
-      console.log('useEffect loop');
       csvLink.current.link.click();
       setCSVData([]);
       setDownloadReady(false);
@@ -163,7 +163,6 @@ export function ServerPaginationGrid({
     // Selected comes in with row IDs, now parse these
     const exportRows = [];
     if (checked) {
-      console.log(checked);
       checked.forEach((rowID) => {
         rows.forEach((row) => {
           // eslint-disable-next-line eqeqeq
@@ -188,8 +187,9 @@ export function ServerPaginationGrid({
       />
       {handleExport && (
       <span>
-        {filename.includes('model') && <ExportModels />}
-        {filename.includes('instrument') && <ExportInstruments />}
+        {loadingExport && <LinearProgress color="secondary" />}
+        {filename.includes('model') && <ExportModels setLoading={setLoadingExport} />}
+        {filename.includes('instrument') && <ExportInstruments setLoading={setLoadingExport} />}
         <Button onClick={handleExport} className="m-2">Export Selected Rows</Button>
       </span>
       )}

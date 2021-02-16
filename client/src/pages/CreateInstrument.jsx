@@ -110,8 +110,8 @@ function CreateInstrumentPage() {
         ); // Collect valid entries
         if (validEvents.length > 0 && formState.calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
-          const handleRes = (res) => {
-            console.log(res);
+          const handleRes = () => {
+            // console.log(res);
           };
           AddCalibEvent({
             events: validEvents,
