@@ -103,10 +103,5 @@ dist
 # TernJS port file
 .tern-port
 
-# ssl stuff
-ca_bundle.crt 
-certificate.crt 
-private.key
-
 # DS Store for Macs
 .DS_Store

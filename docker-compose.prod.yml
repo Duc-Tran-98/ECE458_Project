@@ -34,6 +34,7 @@ services:
       - mysql
     volumes:
       - "./server/:/usr/src/app"
+      - "/usr/src/app/node_modules"
     networks:
       - app-network
   # Frontend
