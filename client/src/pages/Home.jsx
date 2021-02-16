@@ -48,7 +48,9 @@ function Home() {
             </div>
            */}
           </div>
-          <h2>Developr Guide</h2>
+          <h2>Developer Guide</h2>
+          <p>PUT GUIDE HERE</p>
+          <p>Created for ECE 458 by Angel Huizar, Louis Jensen, Max Smith, Duc Tran, and Natasha Von Seelen</p>
         </main>
       </div>
     </div>
