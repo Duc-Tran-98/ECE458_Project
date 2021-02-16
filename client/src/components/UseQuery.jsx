@@ -42,9 +42,7 @@ export async function QueryAndThen({
     getVariables: PropTypes.func, // This is how we get the variables to pass into the query
   };
   const data = getVariables ? { query, variables: getVariables() } : { query };
-  // FIXME: This is undefined, shouldn't it be assigned above ^^
-  console.log('QueryAndThen (data)');
-  console.log(data);
+
   // eslint-disable-next-line no-return-await
   return await axios
     .post(route, data)
