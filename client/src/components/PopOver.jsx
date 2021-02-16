@@ -18,7 +18,7 @@ export default function MouseOverPopover({ children, message, className }) {
       <OverlayTrigger
         placement="bottom"
         delay={{ show: 250, hide: 400 }}
-        trigger="hover"
+        trigger={['hover', 'hover']} // duplicated 'hover' as workaround to remove repeated unneccesary warnings
         overlay={<Tooltip id="tooltip-bottom">{message}</Tooltip>}
       >
         {children}
