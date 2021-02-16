@@ -12,6 +12,9 @@ import {
 } from 'react';
 import { CSVLink } from 'react-csv';
 
+import ExportInstruments from './ExportInstruments';
+import ExportModels from './ExportModels';
+
 export default function DisplayGrid({
   rows, cols, cellHandler,
 }) {
@@ -183,7 +186,13 @@ export function ServerPaginationGrid({
         className="hidden"
         ref={csvLink}
       />
-      {handleExport && <Button onClick={handleExport} className="bg-light MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeLarge MuiButton-sizeLarge" style={{ width: '100%' }}>Export Selected Rows</Button>}
+      {handleExport && (
+      <span>
+        {filename.includes('model') && <ExportModels />}
+        {filename.includes('instrument') && <ExportInstruments />}
+        <Button onClick={handleExport} className="m-2">Export Selected Rows</Button>
+      </span>
+      )}
       <DataGrid
         rows={rows}
         columns={cols}

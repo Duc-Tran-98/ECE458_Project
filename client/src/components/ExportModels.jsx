@@ -22,12 +22,28 @@ const ExportModels = () => {
     return csvData;
   };
 
+  const filterTransactionData = (r) => {
+    const filteredData = [];
+    r.forEach((row) => {
+      const updatedRow = {
+        vendor: row.vendor.replace(/"/g, '""'),
+        modelNumber: row.modelNumber.replace(/"/g, '""'),
+        description: row.description.replace(/"/g, '""'),
+        comment: row.comment.replace(/"/g, '""'),
+        calibrationFrequency: row.calibrationFrequency,
+      };
+      filteredData.push(updatedRow);
+    });
+    return filteredData;
+  };
+
   const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
 
   const getTransactionData = async () => {
     await getData()
       .then((r) => {
-        setTransactionData(r);
+        const filteredData = filterTransactionData(r);
+        setTransactionData(filteredData);
       })
       .catch((e) => console.log(e));
     csvLink.current.link.click();
@@ -35,17 +51,15 @@ const ExportModels = () => {
 
   return (
     <>
-      <div>
-        <Button onClick={getTransactionData}>Export All Models</Button>
-        <CSVLink
-          data={transactionData}
-          headers={headers}
-          filename="models.csv"
-          className="hidden"
-          ref={csvLink}
-        />
-      </div>
-
+      <Button onClick={getTransactionData} className="m-2">Export All Models</Button>
+      <CSVLink
+        data={transactionData}
+        headers={headers}
+        filename="models.csv"
+        className="hidden"
+        ref={csvLink}
+        enclosingCharacter={'"'}
+      />
     </>
   );
 };

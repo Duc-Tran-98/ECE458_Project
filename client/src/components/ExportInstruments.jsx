@@ -12,8 +12,8 @@ const ExportInstruments = () => {
     { label: 'Model-Number', key: 'modelNumber' },
     { label: 'Serial-Number', key: 'serialNumber' },
     { label: 'Comment', key: 'comment' },
-    { label: 'Calibration-Date', key: 'calibrationDate' },
-    { label: 'Calibration-Comment', key: 'calibrationComment' },
+    { label: 'Calibration-Date', key: 'recentCalDate' },
+    { label: 'Calibration-Comment', key: 'recentCalComment' },
   ];
 
   const getData = async () => {
@@ -36,17 +36,14 @@ const ExportInstruments = () => {
 
   return (
     <>
-      <div>
-        <Button onClick={getTransactionData}>Export All Instruments</Button>
-        <CSVLink
-          data={transactionData}
-          headers={headers}
-          filename="instruments.csv"
-          className="hidden"
-          ref={csvLink}
-        />
-      </div>
-
+      <Button onClick={getTransactionData} className="m-2">Export All Instruments</Button>
+      <CSVLink
+        data={transactionData}
+        headers={headers}
+        filename="instruments.csv"
+        className="hidden"
+        ref={csvLink}
+      />
     </>
   );
 };

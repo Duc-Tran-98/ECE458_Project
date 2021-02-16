@@ -20,6 +20,7 @@ const typeDefs = gql`
     # Instrument Related Queries
     countAllInstruments: Int!
     getAllInstruments(limit: Int, offset: Int): [Instrument]
+    getAllInstrumentsWithInfo(limit: Int, offset: Int): [InstrumentWithCalibration]
     getAllInstrumentsWithModel(
       modelNumber: String!
       vendor: String!
@@ -79,6 +80,20 @@ const typeDefs = gql`
     comment: String
     description: String!
     id: Int!
+  }
+
+  type InstrumentWithCalibration {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    modelReference: Int!
+    calibrationFrequency: Int!
+    comment: String
+    description: String!
+    id: Int!
+    recentCalDate: String
+    recentCalUser: String
+    recentCalComment: String
   }
 
   type CalibrationEvent {

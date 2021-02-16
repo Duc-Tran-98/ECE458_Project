@@ -50,6 +50,51 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
+  async getAllInstrumentsWithInfo({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll({ limit, offset });
+    const dataArray = [];
+    for (let i = 0; i < instruments.length; i += 1) {
+      const calibrationHistoryIdReference = instruments[i].dataValues.id;
+      let calUser;
+      let calDate;
+      let calComment;
+      if (instruments[i].dataValues.calibrationFrequency != null) {
+        // eslint-disable-next-line no-await-in-loop
+        const cal = await this.store.calibrationEvents.findAll({
+          limit: 1,
+          where: {
+            calibrationHistoryIdReference,
+          },
+          order: [['date', 'DESC']],
+        });
+        calUser = cal[0].dataValues.user;
+        calDate = cal[0].dataValues.date;
+        calComment = cal[0].dataValues.comment;
+      } else {
+        calUser = null;
+        calDate = null;
+        calComment = null;
+      }
+      const data = {
+        vendor: instruments[i].dataValues.vendor,
+        modelNumber: instruments[i].dataValues.modelNumber,
+        serialNumber: instruments[i].dataValues.serialNumber,
+        modelReference: instruments[i].dataValues.modelReference,
+        calibrationFrequency: instruments[i].dataValues.calibrationFrequency,
+        comment: instruments[i].dataValues.comment,
+        description: instruments[i].dataValues.description,
+        id: instruments[i].dataValues.id,
+        recentCalDate: calDate,
+        recentCalUser: calUser,
+        recentCalComment: calComment,
+      };
+      dataArray.push(data);
+    }
+    return dataArray;
+  }
+
   async getAllInstrumentsWithModel({
     modelNumber,
     vendor,

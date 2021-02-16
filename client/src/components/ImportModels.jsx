@@ -4,12 +4,17 @@ import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useStateWithCallbackInstant } from 'use-state-with-callback';
+import PropTypes from 'prop-types';
 import ModalAlert from './ModalAlert';
 import ImportModelError from './ImportModelError';
 import Query from './UseQuery';
 import DisplayGrid from './UITable';
 
-export default function ImportModels() {
+export default function ImportModels({ setLoading }) {
+  ImportModels.propTypes = {
+    setLoading: PropTypes.func.isRequired,
+  };
+
   const [show, setShow] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [importCount, setImportCount] = useState(0);
@@ -17,6 +22,7 @@ export default function ImportModels() {
   const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
     console.log('Updating CSV Data');
     if (csvData.length > 0) {
+      setLoading(false);
       setImportCount(csvData.length);
       setShowTable(true);
       console.log(JSON.stringify(csvData));
@@ -58,8 +64,16 @@ export default function ImportModels() {
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
     { field: 'description', headerName: 'Short-Description', width: 240 },
-    { field: 'comment', headerName: 'Comment', width: 300 },
-    { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+    {
+      field: 'comment',
+      headerName: 'Comment',
+      width: 300,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
   ];
 
   const IMPORT_MODELS = gql`
@@ -181,6 +195,7 @@ export default function ImportModels() {
     if (importRowErrors.length > 0) {
       setAllRowErrors(importRowErrors);
     } else {
+      setLoading(true);
       // Now all fields have been validated, time to attempt a db push...
       const query = print(IMPORT_MODELS);
       const queryName = 'bulkImportData';
@@ -195,6 +210,7 @@ export default function ImportModels() {
 
       const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
+        setLoading(false);
         console.log(response);
         if (response.success === false) {
           console.log(response.errorList);

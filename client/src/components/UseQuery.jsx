@@ -42,13 +42,20 @@ export async function QueryAndThen({
     getVariables: PropTypes.func, // This is how we get the variables to pass into the query
   };
   const data = getVariables ? { query, variables: getVariables() } : { query };
+
   // eslint-disable-next-line no-return-await
   return await axios
     .post(route, data)
     .then((res) => (typeof res.data.data[queryName] === 'string'
       ? JSON.parse(res.data.data[queryName])
       : res.data.data[queryName]))
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.log('Caught error in UseQuery, logging in several ways:');
+      console.error(JSON.stringify(err, null, 2));
+      console.error(err);
+      console.log(err);
+      console.log(err.response);
+    });
 }
 
 export default Query;
