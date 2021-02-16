@@ -21,12 +21,10 @@ export default function ImportInstruments({ setLoading }) {
   const [importCount, setImportCount] = useState(0);
 
   const [csvData, setCSVData] = useStateWithCallbackInstant([], () => {
-    console.log('Updating CSV Data');
     if (csvData.length > 0) {
       setLoading(false);
       setImportCount(csvData.length);
       setShowTable(true);
-      console.log(JSON.stringify(csvData));
     }
   });
 
@@ -173,8 +171,6 @@ export default function ImportInstruments({ setLoading }) {
   };
 
   const handleCSVReader = (data /* , fileInfo */) => {
-    console.log('Called handleCSVReader with data:');
-    console.log(data);
     const importRowErrors = [];
     data.forEach((row, index) => {
       if (!isEmptyLine(row)) {
@@ -227,9 +223,7 @@ export default function ImportInstruments({ setLoading }) {
       const getVariables = () => ({ filteredData });
       const handleResponse = (response) => {
         setLoading(false);
-        console.log(response);
         if (response.success === false) {
-          console.log(response.errorList);
           setAllQueryErrors(response.errorList);
         } else {
           // Display data in data-grid component
