@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import OAuth from '../components/OAuth';
 
 export default function ComponentTest() {
   return (
-    <CircularProgress />
+    <OAuth />
   );
 }
