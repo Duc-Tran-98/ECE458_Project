@@ -127,7 +127,7 @@ class ModelAPI extends DataSource {
   }
 
   async getModelsWithFilter({
-    vendor, modelNumber, description, categories,
+    vendor, modelNumber, description, categories, limit = null, offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -162,8 +162,21 @@ class ModelAPI extends DataSource {
     const models = await this.store.models.findAll({
       include: includeData,
       where: filters,
+      limit,
+      offset,
     });
-
+    if (categories) {
+      // eslint-disable-next-line prefer-const
+      let modelsWithCategories = [];
+      const checker = (arr, target) => target.every((v) => arr.includes(v));
+      for (let i = 0; i < models.length; i += 1) {
+        const hasCategories = models[i].dataValues.categories.map((a) => a.name);
+        if (checker(hasCategories, categories)) {
+          modelsWithCategories.push(models[i]);
+        }
+      }
+      return modelsWithCategories;
+    }
     return models;
   }
 

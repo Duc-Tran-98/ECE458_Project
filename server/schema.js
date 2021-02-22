@@ -16,7 +16,7 @@ const typeDefs = gql`
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
     getUniqueVendors: [Model]
-    getModelsWithFilter(vendor: String, modelNumber: String, description: String, categories: [String]): [ModelOutput]
+    getModelsWithFilter(vendor: String, modelNumber: String, description: String, categories: [String], limit: Int, offset: Int): [ModelOutput]
 
     # Instrument Related Queries
     countAllInstruments: Int!

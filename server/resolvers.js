@@ -25,7 +25,7 @@ module.exports = {
     getModelsWithFilter: async (
       _,
       {
-        vendor, modelNumber, description, categories,
+        vendor, modelNumber, description, categories, limit, offset,
       },
       { dataSources },
     ) => await dataSources.modelAPI.getModelsWithFilter({
@@ -33,6 +33,8 @@ module.exports = {
       modelNumber,
       description,
       categories,
+      limit,
+      offset,
     }),
 
     // eslint-disable-next-line max-len
