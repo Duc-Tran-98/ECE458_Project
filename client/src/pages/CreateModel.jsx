@@ -65,7 +65,7 @@ function CreateModelPage() {
     modelNumber, vendor, description, comment, calibrationFrequency,
   } = formState;
   return (
-    <div className="d-flex justify-content-center mt-5">
+    <>
       <ModelForm
         modelNumber={modelNumber}
         vendor={vendor}
@@ -77,7 +77,7 @@ function CreateModelPage() {
         validated={validated}
         onInputChange={onInputChange}
       />
-    </div>
+    </>
   );
 }
 

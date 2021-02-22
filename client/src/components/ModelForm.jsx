@@ -1,6 +1,5 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -38,13 +37,13 @@ export default function ModelForm({
   const val = { vendor };
   return (
     <Form
-      className="needs-validation bg-light rounded"
+      className="needs-validation bg-theme rounded"
       noValidate
       validated={validated}
       onSubmit={handleSubmit}
     >
       <div className="row mx-3">
-        <div className="col mt-2">
+        <div className="col mt-3">
           <Form.Group controlId="formModelNumber">
             <Form.Label className="h4">Model Number</Form.Label>
             <Form.Control
@@ -61,7 +60,7 @@ export default function ModelForm({
             </Form.Control.Feedback>
           </Form.Group>
         </div>
-        <div className="col mt-2">
+        <div className="col mt-3">
           <Form.Group>
             <Form.Label className="h4">Vendor</Form.Label>
             {viewOnly ? (
@@ -86,7 +85,9 @@ export default function ModelForm({
             )}
           </Form.Group>
         </div>
-        <div className="col mt-2">
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
+        <div className="col mt-3">
           <Form.Group controlId="formCalibrationFrequency">
             <Form.Label className="h4 text-nowrap ">
               Calibration Frequency
@@ -102,8 +103,6 @@ export default function ModelForm({
             />
           </Form.Group>
         </div>
-      </div>
-      <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Group controlId="formDescription">
             <Form.Label className="h4">Description</Form.Label>
@@ -121,6 +120,8 @@ export default function ModelForm({
             </Form.Control.Feedback>
           </Form.Group>
         </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Group controlId="formComment">
             <Form.Label className="h4">Comment</Form.Label>
@@ -138,9 +139,9 @@ export default function ModelForm({
       </div>
       {(typeof viewOnly === 'undefined' || !viewOnly) && (
         <div className="d-flex justify-content-center mt-3 mb-3">
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
+          <button type="submit" className="btn btn-theme">
+            Add Model
+          </button>
         </div>
       )}
     </Form>

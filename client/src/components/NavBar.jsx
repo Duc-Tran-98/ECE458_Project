@@ -12,7 +12,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
   const user = React.useContext(UserContext);
 
   const navContent = loggedIn ? (
-    <ul className="navbar-nav mr-auto">
+    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
       <li className="nav-item">
         <NavLink className="nav-link" exact to="/">
           <svg
@@ -212,38 +212,26 @@ function NavBar({ loggedIn, handleSignOut, title }) {
     </ul>
   );
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <Link to="/" className="navbar-brand">
-        {title}
-      </Link>
-      {/* This button is displayed when the screen is less than large */}
-      <button
-        className="navbar-toggler border border-light"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <svg
-          width="1em"
-          height="1em"
-          viewBox="0 0 16 16"
-          className="navbar-toggler-icon bi bi-caret-down-square-fill"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
+    <nav className="navbar navbar-expand-lg nav-bg-theme navbar-dark">
+      <div className="container-fluid">
+        <Link to="/" className="navbar-brand">
+          {title}
+        </Link>
+        {/* This button is displayed when the screen is less than large */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
-          <path
-            fillRule="evenodd"
-            d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4 4a.5.5 0 0 0-.374.832l4 4.5a.5.5 0 0 0 .748 0l4-4.5A.5.5 0 0 0 12 6H4z"
-          />
-        </svg>
-      </button>
-
-      <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        {navContent}
-        {/* <form className="form-inline my-2 my-lg-0">
+          <span className="navbar-toggler-icon" />
+        </button>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          {navContent}
+          {/* <form className="form-inline my-2 my-lg-0">
           <input
             className="form-control mr-sm-2"
             type="search"
@@ -273,6 +261,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
             </svg>
           </button>
         </form> */}
+        </div>
       </div>
     </nav>
   );

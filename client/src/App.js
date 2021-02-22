@@ -34,14 +34,14 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <header className="sticky-top">
+        <header className="sticky-top text-light">
           <NavBar
-            title="Hypothetical Power Team"
+            title="HPC IMS"
             loggedIn={loggedIn}
             handleSignOut={handleSignOut}
           />
         </header>
-        <main>
+        <main className="d-flex justify-content-center mt-5">
           <Switch>
             <Route path="/test">
               <ComponentTest />
@@ -53,17 +53,17 @@ function App() {
               {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/addInstrument">
-              {loggedIn ? <CreateInstrument /> : <Login handleLogin={handleLogin} />}
+              {loggedIn ? (
+                <CreateInstrument />
+              ) : (
+                <Login handleLogin={handleLogin} />
+              )}
             </Route>
             <Route path="/addModel">
               {loggedIn ? <CreateModel /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewModels">
-              {loggedIn ? (
-                <ListModels />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <ListModels /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewInstruments">
               {loggedIn ? (
