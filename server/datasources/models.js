@@ -126,6 +126,47 @@ class ModelAPI extends DataSource {
     return models;
   }
 
+  async getModelsWithFilter({
+    vendor, modelNumber, description, categories,
+  }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let includeData;
+    if (categories) {
+      includeData = [
+        {
+          model: this.store.modelCategories,
+          as: 'categories',
+          through: 'modelCategoryRelationships',
+          where: {
+            name: categories,
+          },
+        },
+      ];
+    } else {
+      includeData = [
+        {
+          model: this.store.modelCategories,
+          as: 'categories',
+          through: 'modelCategoryRelationships',
+        },
+      ];
+    }
+
+    // eslint-disable-next-line prefer-const
+    let filters = [];
+    if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+    if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+    if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
+
+    const models = await this.store.models.findAll({
+      include: includeData,
+      where: filters,
+    });
+
+    return models;
+  }
+
   async getAllModelsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;

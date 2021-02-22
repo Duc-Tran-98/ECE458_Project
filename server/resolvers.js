@@ -22,6 +22,20 @@ module.exports = {
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
     // eslint-disable-next-line max-len
+    getModelsWithFilter: async (
+      _,
+      {
+        vendor, modelNumber, description, categories,
+      },
+      { dataSources },
+    ) => await dataSources.modelAPI.getModelsWithFilter({
+      vendor,
+      modelNumber,
+      description,
+      categories,
+    }),
+
+    // eslint-disable-next-line max-len
     getUniqueVendors: async (_, __, { dataSources }) => await dataSources.modelAPI.getUniqueVendors(),
     // Instrument Queries
     // eslint-disable-next-line max-len

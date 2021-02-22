@@ -16,6 +16,7 @@ const typeDefs = gql`
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
     getUniqueVendors: [Model]
+    getModelsWithFilter(vendor: String, modelNumber: String, description: String, categories: [String]): [ModelWithCat]
 
     # Instrument Related Queries
     countAllInstruments: Int!
@@ -69,6 +70,20 @@ const typeDefs = gql`
     description: String!
     comment: String
     calibrationFrequency: Int
+  }
+
+  type ModelWithCat {
+    id: ID!
+    vendor: String!
+    modelNumber: String!
+    description: String!
+    comment: String
+    calibrationFrequency: Int
+    categories: [Category]
+  }
+
+  type Category {
+    name: String!
   }
 
   type Instrument {

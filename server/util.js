@@ -151,38 +151,45 @@ module.exports.createStore = async () => {
     },
   );
 
-  const modelCategoryRelationships = db.define(
-    'modelCategoryRelationships',
-    {
-      modelId: {
-        type: SQL.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'models',
-          key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-      },
-      categoryId: {
-        type: SQL.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'modelCategories',
-          key: 'id',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-      },
-    },
-    { freezeTableName: true },
-    {
-      define: {
-        charset: 'utf8mb4',
-        collate: 'utf8mb4_unicode_ci',
-      },
-    },
-  );
+  // const modelCategoryRelationships = db.define(
+  //   'modelCategoryRelationships',
+  //   {
+  //     modelId: {
+  //       type: SQL.INTEGER,
+  //       allowNull: false,
+  //       references: {
+  //         model: 'models',
+  //         key: 'id',
+  //       },
+  //       onUpdate: 'CASCADE',
+  //       onDelete: 'CASCADE',
+  //     },
+  //     categoryId: {
+  //       type: SQL.INTEGER,
+  //       allowNull: false,
+  //       references: {
+  //         model: 'modelCategories',
+  //         key: 'id',
+  //       },
+  //       onUpdate: 'CASCADE',
+  //       onDelete: 'CASCADE',
+  //     },
+  //   },
+  //   { freezeTableName: true },
+  //   {
+  //     define: {
+  //       charset: 'utf8mb4',
+  //       collate: 'utf8mb4_unicode_ci',
+  //     },
+  //   },
+  // );
+
+  models.belongsToMany(modelCategories, {
+    as: 'categories', through: 'modelCategoryRelationships', sourceKey: 'id', targetKey: 'id',
+  });
+  modelCategories.belongsToMany(models, {
+    as: 'models', through: 'modelCategoryRelationships', sourceKey: 'id', targetKey: 'id',
+  });
 
   const instruments = db.define(
     'instruments',
@@ -299,6 +306,6 @@ module.exports.createStore = async () => {
     instruments,
     calibrationEvents,
     modelCategories,
-    modelCategoryRelationships,
+    // modelCategoryRelationships,
   };
 };
