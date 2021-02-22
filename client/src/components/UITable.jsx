@@ -85,7 +85,7 @@ export function ServerPaginationGrid({
   const [page, setPage] = React.useState(1);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [rowCount, setRowCount] = React.useState(null);
+  const [rowCount, setRowCount] = React.useState(0);
   const [loadingExport, setLoadingExport] = React.useState(null);
 
   const handlePageChange = (params) => {
@@ -190,7 +190,7 @@ export function ServerPaginationGrid({
         {loadingExport && <LinearProgress color="secondary" />}
         {filename.includes('model') && <ExportModels setLoading={setLoadingExport} />}
         {filename.includes('instrument') && <ExportInstruments setLoading={setLoadingExport} />}
-        <Button onClick={handleExport} className="m-2">Export Selected Rows</Button>
+        <Button onClick={handleExport} className="m-2 btn-dark">Export Selected Rows</Button>
       </span>
       )}
       <DataGrid
@@ -203,8 +203,8 @@ export function ServerPaginationGrid({
         paginationMode="server"
         onPageChange={handlePageChange}
         loading={loading}
-        className="bg-light"
-        rowsPerPageOptions={[25, 50, 100]}
+        className=""
+        rowsPerPageOptions={[25, 50, 100, rowCount]}
         locateText={{
           toolbarDensity: 'Size',
           toolbarDensityLabel: 'Size',

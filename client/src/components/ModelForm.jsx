@@ -37,7 +37,7 @@ export default function ModelForm({
   const val = { vendor };
   return (
     <Form
-      className="needs-validation bg-theme rounded"
+      className="needs-validation"
       noValidate
       validated={validated}
       onSubmit={handleSubmit}
@@ -139,7 +139,7 @@ export default function ModelForm({
       </div>
       {(typeof viewOnly === 'undefined' || !viewOnly) && (
         <div className="d-flex justify-content-center mt-3 mb-3">
-          <button type="submit" className="btn btn-theme">
+          <button type="submit" className="btn btn-dark">
             Add Model
           </button>
         </div>

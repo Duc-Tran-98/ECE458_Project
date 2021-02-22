@@ -79,8 +79,7 @@ function ListModels() {
     {
       field: 'calibrationFrequency',
       headerName: 'Calibration Frequency',
-      width: 200,
-      type: 'number',
+      width: 195,
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
@@ -109,8 +108,8 @@ function ListModels() {
     },
     {
       field: 'view',
-      headerName: ' ',
-      width: 60,
+      headerName: 'View',
+      width: 80,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
@@ -131,8 +130,8 @@ function ListModels() {
     cols.push(
       {
         field: 'edit',
-        headerName: ' ',
-        width: 60,
+        headerName: 'Edit',
+        width: 80,
         disableColumnMenu: true,
         renderCell: () => (
           <div className="row">
@@ -148,8 +147,8 @@ function ListModels() {
       },
       {
         field: 'delete',
-        headerName: ' ',
-        width: 60,
+        headerName: 'Delete',
+        width: 100,
         disableColumnMenu: true,
         renderCell: () => (
           <div className="row">
@@ -187,7 +186,7 @@ function ListModels() {
   ];
 
   return (
-    <div style={{ height: '90vh' }}>
+    <>
       <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
         {which === 'edit' && (
           <EditModel
@@ -232,7 +231,7 @@ function ListModels() {
         headers={headers}
         filename="models.csv"
       />
-    </div>
+    </>
   );
 }
 export default ListModels;

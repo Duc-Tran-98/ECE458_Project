@@ -3,24 +3,23 @@ body {
   /* Navy blue */
 }
 
+#root .btn{
+ background: #fca311;
+  font-weight: bold;
+  color: black;
+}
+
 .modal-open {
   overflow: inherit;
 }
 
 .bg-theme {
   background: #e5e5e5;
-  width: 75vw;
-  max-height: 75vh;
+  width: 85vw;
   /* Platinum color */
 }
 
 .nav-bg-theme {
   background: #404040;
   /* Dark gray/smoke color */
-}
-
-.btn-theme {
-  background: #fca311;
-  font-weight: bold;
-  /* Goldish color */
 }
