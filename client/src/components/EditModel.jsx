@@ -147,7 +147,7 @@ class EditModel extends Component {
       viewOnly,
     } = this.state;
     return (
-      <div className="d-flex justify-content-center">
+      <>
         <ModelForm
           modelNumber={modelNumber}
           vendor={vendor}
@@ -160,7 +160,7 @@ class EditModel extends Component {
           viewOnly={viewOnly}
           onInputChange={this.onInputChange}
         />
-      </div>
+      </>
     );
   }
 }

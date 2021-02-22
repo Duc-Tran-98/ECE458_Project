@@ -9,8 +9,19 @@ body {
   color: black;
 }
 
+.modal .btn{
+  background: #fca311;
+  font-weight: bold;
+  color: black;
+}
+
 .modal-open {
   overflow: inherit;
+}
+
+.modal-100w{
+  padding-right: 1vw;
+  min-width: 100%;
 }
 
 .bg-theme {

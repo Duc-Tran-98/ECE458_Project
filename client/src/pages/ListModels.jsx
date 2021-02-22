@@ -187,7 +187,14 @@ function ListModels() {
 
   return (
     <>
-      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
+      <ModalAlert
+        handleClose={() => closeModal(false)}
+        show={show}
+        title={`${which.toUpperCase()} MODEL`}
+        footer={which === 'edit' && (
+          <button type="button" className="btn btn-dark mx-3">Save Changes</button>
+        )}
+      >
         {which === 'edit' && (
           <EditModel
             modelNumber={modelNumber}
@@ -196,21 +203,21 @@ function ListModels() {
           />
         )}
         {which === 'delete' && (
-          <div>
-            <div className="h4 row text-center">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
+          <>
+            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
             <div className="d-flex justify-content-center">
-              <div className="me-5">
+              <div className="mx-5 mt-3">
                 <button
-                  className="btn btn-warning"
+                  className="btn btn-dark"
                   type="button"
                   onClick={delModel}
                 >
                   Yes
                 </button>
               </div>
-              <div className="ms-5">
+              <div className="mx-5 mt-3">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-dark"
                   type="button"
                   onClick={() => closeModal(false)}
                 >
@@ -218,7 +225,7 @@ function ListModels() {
                 </button>
               </div>
             </div>
-          </div>
+          </>
         )}
       </ModalAlert>
       <ServerPaginationGrid

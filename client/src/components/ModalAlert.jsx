@@ -9,26 +9,38 @@ import ModalHeader from 'react-bootstrap/ModalHeader';
 import PropTypes from 'prop-types';
 
 function ModalAlert({
-  handleClose, show, title, children,
+  handleClose, show, title, children, footer,
 }) {
   ModalAlert.propTypes = {
     handleClose: PropTypes.func.isRequired,
     show: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
+    footer: PropTypes.node,
+  };
+
+  ModalAlert.defaultProps = {
+    footer: null,
   };
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        animation={false}
+        contentClassName="bg-theme rounded"
+        dialogClassName="d-flex justify-content-center modal-100w"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
         <ModalHeader>
-          <ModalTitle>{title}</ModalTitle>
+          <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
         </ModalHeader>
-        <Modal.Body>
-          {children}
-        </Modal.Body>
-        <ModalFooter>
-          <Button variant="secondary" onClick={handleClose}>
+        <Modal.Body className="border-top border-dark">{children}</Modal.Body>
+        <ModalFooter className="my-3 mx-3">
+          {footer}
+          <Button className="btn btn-dark" onClick={handleClose}>
             Close
           </Button>
         </ModalFooter>
