@@ -128,6 +128,62 @@ module.exports.createStore = async () => {
     },
   );
 
+  const modelCategories = db.define(
+    'modelCategories',
+    {
+      id: {
+        type: SQL.INTEGER,
+        autoIncrement: true,
+        unique: true,
+      },
+      name: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
+  const modelCategoryRelationships = db.define(
+    'modelCategoryRelationships',
+    {
+      modelId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'models',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      categoryId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'modelCategories',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
   const instruments = db.define(
     'instruments',
     {
@@ -242,5 +298,7 @@ module.exports.createStore = async () => {
     models,
     instruments,
     calibrationEvents,
+    modelCategories,
+    modelCategoryRelationships,
   };
 };
