@@ -64,6 +64,7 @@ export function ServerPaginationGrid({
   filterRowForCSV,
   headers,
   filename,
+  onRowClick,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -77,9 +78,11 @@ export function ServerPaginationGrid({
     // eslint-disable-next-line react/forbid-prop-types
     headers: PropTypes.array.isRequired, // map db keys to CSV headers
     filename: PropTypes.string.isRequired, // name the csv file
+    onRowClick: PropTypes.func,
   };
   ServerPaginationGrid.defaultProps = {
     shouldUpdate: false,
+    onRowClick: null,
   };
   const [limit, setLimit] = React.useState(25); // Can make this bigger if you want; configs how many rows to display/page
   const [page, setPage] = React.useState(1);
@@ -216,6 +219,11 @@ export function ServerPaginationGrid({
         onCellClick={(e) => {
           if (cellHandler) {
             cellHandler(e);
+          }
+        }}
+        onRowClick={(e) => {
+          if (onRowClick) {
+            onRowClick(e);
           }
         }}
         autoHeight

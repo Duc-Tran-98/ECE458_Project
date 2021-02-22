@@ -38,9 +38,9 @@ function ModalAlert({
           <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
         </ModalHeader>
         <Modal.Body className="border-top border-dark">{children}</Modal.Body>
-        <ModalFooter className="my-3 mx-3">
+        <ModalFooter className="my-3">
           {footer}
-          <Button className="btn btn-dark" onClick={handleClose}>
+          <Button className="btn btn-dark mx-3" onClick={handleClose}>
             Close
           </Button>
         </ModalFooter>

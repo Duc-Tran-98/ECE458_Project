@@ -12,17 +12,15 @@ export default function DetailedModelView() {
   const vendor = urlParams.get('vendor');
   const description = urlParams.get('description');
   return (
-    <div className="d-flex justify-content-center bg-light">
+    <>
       <div className="col">
         <div className="row">
           <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={() => undefined}
-            viewOnly
+            initModelNumber={modelNumber}
+            initVendor={vendor}
           />
         </div>
-        <div className="row">
+        <div className="row px-3">
           <div
             id="scrollableDiv"
             style={{
@@ -32,7 +30,7 @@ export default function DetailedModelView() {
           >
             <InfinityScroll
               title="Instances:"
-              titleClassName="ps-3 bg-secondary text-light"
+              titleClassName="px-3 bg-secondary text-light sticky-top"
               query={print(gql`
                 query GetInstrumentFromModel(
                   $modelNumber: String!
@@ -77,6 +75,6 @@ export default function DetailedModelView() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

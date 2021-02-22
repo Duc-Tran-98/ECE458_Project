@@ -5,21 +5,14 @@ import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ModelForm from './ModelForm';
 import Query from './UseQuery';
-import ModalAlert from './ModalAlert';
 
 export default function EditModel({
-  initVendor, initModelNumber, show, onClose,
+  initVendor, initModelNumber,
 }) {
   EditModel.propTypes = {
-    show: PropTypes.bool.isRequired,
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
-    onClose: PropTypes.func,
   };
-  EditModel.defaultProps = {
-    onClose: undefined,
-  };
-  const [visible, setVisible] = React.useState(show); // control visibility of modal alert
   const [model, setModel] = React.useState({ // set model state
     modelNumber: initModelNumber,
     vendor: initVendor,
@@ -32,8 +25,7 @@ export default function EditModel({
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
 
   React.useEffect(() => { // This is called when the prop show changes value
-    if (show === true) {
-      const FIND_MODEL = gql`
+    const FIND_MODEL = gql`
   query FindModel($modelNumber: String!, $vendor: String!) {
     getModel(modelNumber: $modelNumber, vendor: $vendor) {
       id
@@ -43,40 +35,33 @@ export default function EditModel({
     }
   }
 `;
-      const query = print(FIND_MODEL);
-      const queryName = 'getModel';
-      const getVariables = () => ({
+    const query = print(FIND_MODEL);
+    const queryName = 'getModel';
+    const getVariables = () => ({
+      modelNumber: initModelNumber,
+      vendor: initVendor,
+    });
+    const handleResponse = (response) => {
+      const { description, comment, id } = response;
+      let { calibrationFrequency } = response;
+      calibrationFrequency = calibrationFrequency.toString();
+      setModel({
+        ...model,
+        description,
+        comment,
+        id,
+        calibrationFrequency,
         modelNumber: initModelNumber,
         vendor: initVendor,
       });
-      const handleResponse = (response) => {
-        const { description, comment, id } = response;
-        let { calibrationFrequency } = response;
-        calibrationFrequency = calibrationFrequency.toString();
-        setModel({
-          ...model,
-          description,
-          comment,
-          id,
-          calibrationFrequency,
-          modelNumber: initModelNumber,
-          vendor: initVendor,
-        });
-        setVisible(show);
-      };
-      Query({
-        query,
-        queryName,
-        getVariables,
-        handleResponse,
-      });
-    }
-  }, [show]);
-
-  const handleClose = (bool) => { // handle closing the modal
-    setVisible(false);
-    if (typeof onClose !== 'undefined') onClose(bool);
-  };
+    };
+    Query({
+      query,
+      queryName,
+      getVariables,
+      handleResponse,
+    });
+  }, [initModelNumber, initVendor]);
 
   const onInputChange = (e, v) => { // handle input change from async suggest
     if (v.inputValue) {
@@ -135,9 +120,8 @@ export default function EditModel({
       setResponseMsg(response.message);
       if (response.success) {
         setTimeout(() => {
-          handleClose(true); // close after 1.5s on success
           setResponseMsg('');
-        }, 1500);
+        }, 1000);
       }
     };
     Query({
@@ -155,6 +139,7 @@ export default function EditModel({
     comment,
     calibrationFrequency,
   } = model;
+  // eslint-disable-next-line no-unused-vars
   const footElement = responseMsg.length > 0 ? (
     <button type="button" className="btn btn-dark">
       {responseMsg}
@@ -165,18 +150,7 @@ export default function EditModel({
     </button>
   ); // foot element controls when to display Save Changes buttion or response msg
   return (
-    <ModalAlert
-      handleClose={() => handleClose(false)}
-      show={visible}
-      title="EDIT MODEL"
-      footer={
-        loading ? (
-          <CircularProgress /> // If waiting for response, indicate to user via spinner
-        ) : (
-          footElement // else, dispaly foot element
-        )
-      }
-    >
+    <>
       <ModelForm
         modelNumber={modelNumber}
         vendor={vendor}
@@ -189,6 +163,17 @@ export default function EditModel({
         diffSubmit
         onInputChange={onInputChange}
       />
-    </ModalAlert>
+      <div className="d-flex justify-content-center my-3">
+        <div className="">{loading ? (<CircularProgress />) : (footElement)}</div>
+      </div>
+    </>
   );
 }
+
+/*
+loading ? (
+          <CircularProgress /> // If waiting for response, indicate to user via spinner
+        ) : (
+          footElement // else, dispaly foot element
+        )
+*/
