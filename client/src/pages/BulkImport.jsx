@@ -13,7 +13,7 @@ export default function BulkImport() {
     <>
       <h1 className="m-2">Welcome to the Import Page!</h1>
       <h4 className="m-2">Here are some helpful downloads to get you started:</h4>
-      <p className="m-2">TLDR: Upload files one at a time adhering to the templates provided below.</p>
+      <p className="m-2">Upload files one at a time adhering to the templates provided below.</p>
       <ImportTemplates />
       {loadingModels && <LinearProgress color="secondary" />}
       <ImportModels setLoading={setLoadingModels} />
