@@ -3,17 +3,23 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 
 function ListModels() {
+  const history = useHistory();
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [description, setDescription] = useState('');
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
+  const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+
   const cellHandler = (e) => {
     if (e.field === 'view') {
       setDescription(e.row.description);
@@ -115,10 +121,24 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
+  console.log(initPage, initLimit);
+
   return (
     <>
       <ServerPaginationGrid
         cols={cols}
+        initPage={initPage}
+        initLimit={initLimit}
+        onPageChange={(page, limit) => {
+          history.push(`/viewModels?page=${page}&limit=${limit}`);
+          setInitLimit(limit);
+          setInitPage(page);
+        }}
+        onPageSizeChange={(page, limit) => {
+          history.push(`/viewModels?page=${page}&limit=${limit}`);
+          setInitLimit(limit);
+          setInitPage(page);
+        }}
         getRowCount={CountAllModels}
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}

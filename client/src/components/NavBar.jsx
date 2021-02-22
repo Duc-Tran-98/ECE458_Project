@@ -34,7 +34,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="/viewModels">
+        <NavLink className="nav-link" to="/viewModels?page=1&limit=25">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

@@ -60,11 +60,13 @@ export function ServerPaginationGrid({
   cols,
   cellHandler,
   getRowCount,
-  shouldUpdate,
   filterRowForCSV,
   headers,
   filename,
-  onRowClick,
+  initPage,
+  initLimit,
+  onPageChange,
+  onPageSizeChange,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -73,37 +75,46 @@ export function ServerPaginationGrid({
     // eslint-disable-next-line react/require-default-props
     cellHandler: PropTypes.func,
     getRowCount: PropTypes.func.isRequired,
-    shouldUpdate: PropTypes.bool,
     filterRowForCSV: PropTypes.func.isRequired, // function to filter rows for export
     // eslint-disable-next-line react/forbid-prop-types
     headers: PropTypes.array.isRequired, // map db keys to CSV headers
     filename: PropTypes.string.isRequired, // name the csv file
-    onRowClick: PropTypes.func,
+    initPage: PropTypes.number,
+    initLimit: PropTypes.number,
+    onPageChange: PropTypes.func,
+    onPageSizeChange: PropTypes.func,
   };
   ServerPaginationGrid.defaultProps = {
-    shouldUpdate: false,
-    onRowClick: null,
+    initPage: 1,
+    initLimit: 25,
+    onPageChange: null,
+    onPageSizeChange: null,
   };
-  const [limit, setLimit] = React.useState(25); // Can make this bigger if you want; configs how many rows to display/page
-  const [page, setPage] = React.useState(1);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [rowCount, setRowCount] = React.useState(0);
   const [loadingExport, setLoadingExport] = React.useState(null);
 
   const handlePageChange = (params) => {
-    setPage(params.page);
+    onPageChange(params.page, initLimit);
   };
   const handlePageSizeChange = (e) => {
-    setLimit(e.pageSize);
+    // if (initPage !== 1 && e.pageSize >= rowCount) { // if not on first page and want to view >= row count, go back to first page then display
+    //   onPageSizeChange(1, e.pageSize);
+    // } else {
+    //   onPageSizeChange(initPage, e.pageSize);
+    // }
+    onPageSizeChange(initPage, e.pageSize);
   };
+
   React.useEffect(() => {
     let active = true;
     getRowCount().then((val) => setRowCount(val));
+
     (async () => {
       setLoading(true);
-      const offset = (page - 1) * limit;
-      const newRows = await fetchData(limit, offset);
+      const offset = (initPage - 1) * initLimit;
+      const newRows = await fetchData(initLimit, offset);
       if (!active) {
         return;
       }
@@ -114,28 +125,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [shouldUpdate]);
-  React.useEffect(() => {
-    let active = true;
-    if (rowCount === null) {
-      getRowCount().then((val) => (setRowCount(val)));
-    }
-
-    (async () => {
-      setLoading(true);
-      const offset = (page - 1) * limit;
-      const newRows = await fetchData(limit, offset);
-      if (!active) {
-        return;
-      }
-      setRows(newRows);
-      setLoading(false);
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [page, limit]);
+  }, [initLimit, initPage]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
@@ -159,7 +149,7 @@ export function ServerPaginationGrid({
       setCSVData([]);
       setDownloadReady(false);
     }
-  });
+  }, [downloadReady]);
 
   // Function for exporting data
   const handleExport = () => {
@@ -189,19 +179,25 @@ export function ServerPaginationGrid({
         ref={csvLink}
       />
       {handleExport && (
-      <span>
-        {loadingExport && <LinearProgress color="secondary" />}
-        {filename.includes('model') && <ExportModels setLoading={setLoadingExport} />}
-        {filename.includes('instrument') && <ExportInstruments setLoading={setLoadingExport} />}
-        <Button onClick={handleExport} className="m-2 btn-dark">Export Selected Rows</Button>
-      </span>
+        <span>
+          {loadingExport && <LinearProgress color="secondary" />}
+          {filename.includes('model') && (
+            <ExportModels setLoading={setLoadingExport} />
+          )}
+          {filename.includes('instrument') && (
+            <ExportInstruments setLoading={setLoadingExport} />
+          )}
+          <Button onClick={handleExport} className="m-2 btn-dark">
+            Export Selected Rows
+          </Button>
+        </span>
       )}
       <DataGrid
         rows={rows}
         columns={cols}
-        checkboxSelection
         pagination
-        pageSize={limit}
+        page={initPage}
+        pageSize={initLimit}
         rowCount={rowCount}
         paginationMode="server"
         onPageChange={handlePageChange}
@@ -219,11 +215,6 @@ export function ServerPaginationGrid({
         onCellClick={(e) => {
           if (cellHandler) {
             cellHandler(e);
-          }
-        }}
-        onRowClick={(e) => {
-          if (onRowClick) {
-            onRowClick(e);
           }
         }}
         autoHeight
