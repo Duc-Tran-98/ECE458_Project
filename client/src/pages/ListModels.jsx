@@ -187,21 +187,25 @@ function ListModels() {
 
   return (
     <>
+      <EditModel
+        initModelNumber={modelNumber}
+        initVendor={vendor}
+        show={which === 'edit'}
+        onClose={closeModal}
+      />
+
       <ModalAlert
         handleClose={() => closeModal(false)}
         show={show}
         title={`${which.toUpperCase()} MODEL`}
-        footer={which === 'edit' && (
-          <button type="button" className="btn btn-dark mx-3">Save Changes</button>
-        )}
       >
-        {which === 'edit' && (
+        {/* {which === "edit" && (
           <EditModel
             modelNumber={modelNumber}
             vendor={vendor}
             handleClose={closeModal}
           />
-        )}
+        )} */}
         {which === 'delete' && (
           <>
             <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>

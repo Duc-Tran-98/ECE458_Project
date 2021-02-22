@@ -16,7 +16,7 @@ const query = print(GET_MODELS_QUERY);
 const queryName = 'getUniqueVendors';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange,
+  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -30,6 +30,10 @@ export default function ModelForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     onInputChange: PropTypes.func.isRequired, // This what to do when autocomplete value changes
+    diffSubmit: PropTypes.bool, // whether or not to display own submit button
+  };
+  ModelForm.defaultProps = {
+    diffSubmit: false,
   };
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
@@ -137,7 +141,7 @@ export default function ModelForm({
           </Form.Group>
         </div>
       </div>
-      {(typeof viewOnly === 'undefined' || !viewOnly) && (
+      {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
         <div className="d-flex justify-content-center mt-3 mb-3">
           <button type="submit" className="btn btn-dark">
             Add Model
