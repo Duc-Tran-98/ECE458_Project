@@ -67,7 +67,7 @@ function ListModels() {
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
-            {params.value === 0 ? (
+            {(params.value === 0 || params.value === null) ? (
               <MouseOverPopover message="Model not calibratable">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -134,12 +134,15 @@ function ListModels() {
   return (
     <>
       <ServerPaginationGrid
+        rowCount={rowCount}
+        cellHandler={cellHandler}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
           const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) { // If current location != next location, update url
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
             history.push(`/viewModels${searchString}`);
             setInitLimit(limit);
             setInitPage(page);
@@ -147,14 +150,13 @@ function ListModels() {
         }}
         onPageSizeChange={(page, limit) => {
           const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) { // If current location != next location, update url
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
             history.push(`/viewModels${searchString}`);
             setInitLimit(limit);
             setInitPage(page);
           }
         }}
-        rowCount={rowCount}
-        cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}

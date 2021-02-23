@@ -7,9 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import useStateWithCallback from 'use-state-with-callback';
-import {
-  useState, useRef, useEffect,
-} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { CSVLink } from 'react-csv';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -78,17 +76,11 @@ export function ServerPaginationGrid({
     // eslint-disable-next-line react/forbid-prop-types
     headers: PropTypes.array.isRequired, // map db keys to CSV headers
     filename: PropTypes.string.isRequired, // name the csv file
-    initPage: PropTypes.number,
-    initLimit: PropTypes.number,
-    onPageChange: PropTypes.func,
-    onPageSizeChange: PropTypes.func,
-    rowCount: PropTypes.number.isRequired,
-  };
-  ServerPaginationGrid.defaultProps = {
-    initPage: 1,
-    initLimit: 25,
-    onPageChange: null,
-    onPageSizeChange: null,
+    initPage: PropTypes.number.isRequired, // which page we're on from URL
+    initLimit: PropTypes.number.isRequired, // rows/page from URL
+    onPageChange: PropTypes.func.isRequired, // callback fired when page changes
+    onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
+    rowCount: PropTypes.number.isRequired, // number of items from URL
   };
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -201,7 +193,7 @@ export function ServerPaginationGrid({
         onPageChange={handlePageChange}
         loading={loading}
         className=""
-        rowsPerPageOptions={[25, 50, 100, rowCount]}
+        rowsPerPageOptions={[25, 50, 100]}
         locateText={{
           toolbarDensity: 'Size',
           toolbarDensityLabel: 'Size',

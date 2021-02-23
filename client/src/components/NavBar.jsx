@@ -3,6 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
 import { CountAllModels } from '../queries/GetAllModels';
+import { CountInstruments } from '../queries/GetAllInstruments';
 
 function NavBar({ loggedIn, handleSignOut, title }) {
   NavBar.propTypes = {
@@ -12,8 +13,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
   };
   const user = React.useContext(UserContext);
   const [modelCount, setModelCount] = React.useState('');
+  const [instrumentCount, setInstrumentCount] = React.useState('');
   React.useEffect(() => {
     CountAllModels().then((val) => setModelCount(val));
+    CountInstruments().then((val) => setInstrumentCount(val));
   });
 
   const navContent = loggedIn ? (
@@ -39,7 +42,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to={`/viewModels?page=1&limit=25&count=${modelCount}`}>
+        <NavLink
+          className="nav-link"
+          to={`/viewModels?page=1&limit=25&count=${modelCount}`}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -60,7 +66,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="/viewInstruments">
+        <NavLink
+          className="nav-link"
+          to={`/viewInstruments?page=1&limit=25&count=${instrumentCount}`}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
