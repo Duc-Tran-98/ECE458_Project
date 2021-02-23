@@ -279,15 +279,39 @@ module.exports.createStore = async () => {
     },
   );
 
+  const instrumentCategoryRelationships = db.define(
+    'instrumentCategoryRelationships',
+    {
+      id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
   instruments.belongsToMany(instrumentCategories, {
     as: 'instrumentCategories',
-    through: 'instrumentCategoryRelationships',
+    through: {
+      model: 'instrumentCategoryRelationships',
+      unique: false,
+    },
     sourceKey: 'id',
     targetKey: 'id',
   });
   instrumentCategories.belongsToMany(instruments, {
     as: 'instruments',
-    through: 'instrumentCategoryRelationships',
+    through: {
+      model: 'instrumentCategoryRelationships',
+      unique: false,
+    },
     sourceKey: 'id',
     targetKey: 'id',
   });
@@ -375,5 +399,6 @@ module.exports.createStore = async () => {
     modelCategories,
     modelCategoryRelationships,
     instrumentCategories,
+    instrumentCategoryRelationships,
   };
 };
