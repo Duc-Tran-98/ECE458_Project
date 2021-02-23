@@ -1,36 +1,44 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 
-// import chalk from 'chalk';
-// import reader from 'readline-sync';
-// import request from 'sync-request';
-// import jwt_decode from 'jwt-decode';
-
-const chalk = require('chalk');
-const reader = require('readline-sync');
 const request = require('sync-request');
-// eslint-disable-next-line camelcase
-const jwt_decode = require('jwt-decode');
-
-// require('dotenv').config();
 
 export default function OAuth() {
+  const getAuthCodeRequest = () => {
+    const baseURL = process.env.REACT_APP_OAUTH_REQUEST_URL ? process.env.REACT_APP_OAUTH_REQUEST_URL : 'https://oauth.oit.duke.edu/oidc/authorize';
+    const redirectURI = encodeURI(process.env.REACT_APP_OATH_REDIRECT_URI);
+    const requestURL = `${baseURL}?client_id=${process.env.REACT_APP_OAUTH_CLIENT_ID}&redirect_uri=${redirectURI}&response_type=code`;
+    return requestURL;
+  };
+
+  const submitAuthCodeRequest = (authCodeRequest) => {
+    window.location.href = authCodeRequest;
+    const responseURL = window.location.href;
+    return responseURL;
+  };
+
+  const getURLCode = (authCodeResponse) => {
+    const urlParams = new URLSearchParams(authCodeResponse);
+    const code = urlParams.get('code');
+    return code;
+  };
+
   const formatAuthString = () => {
     const authString = `${process.env.REACT_APP_OAUTH_CLIENT_ID}:${process.env.REACT_APP_OAUTH_CLIENT_SECRET}`;
     return Buffer.from(authString).toString('base64');
   };
 
   const getToken = (code) => {
-    const url = process.env.REACT_APP_OAUTH_TOKEN_URL ? process.env.REACT_APP_OAUTH_TOKEN_URL : 'https://oauth.oit.duke.edu/oidc/token';
+    const url = process.env.OAUTH_TOKEN_URL ? process.env.OAUTH_TOKEN_URL : 'https://oauth.oit.duke.edu/oidc/token';
     const auth = formatAuthString();
-    const redireactURI = encodeURI(process.env.REACT_APP_OAUTH_REDIRECT_URI);
+    const redirectURI = encodeURI(process.env.REACT_APP_OATH_REDIRECT_URI);
 
     const options = {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: `Basic ${auth}`,
       },
-      body: `grant_type=authorization_code&redirect_uri=${redireactURI}&code=${code}`,
+      body: `grant_type=authorization_code&redirect_uri=${redirectURI}&code=${code}`,
 
     };
 
@@ -44,51 +52,32 @@ export default function OAuth() {
   };
 
   const parseIdToken = (token) => {
-    let idToken = JSON.parse(token).id_token;
-    idToken = jwt_decode(idToken);
-    console.log(idToken);
-  };
-
-  const printAuthCodeRequest = () => {
-    const baseURL = process.env.REACT_APP_OAUTH_REQUEST_URL ? process.env.REACT_APP_OAUTH_REQUEST_URL : 'https://oauth.oit.duke.edu/oidc/authorize';
-    const redirectURI = encodeURI(process.env.REACT_APP_OAUTH_REDIRECT_URI);
-    const requestURL = `${baseURL}?client_id=${process.env.REACT_APP_OAUTH_CLIENT_ID}&redirect_uri=${redirectURI}&response_type=code`;
-
-    console.log('Copy and paste this url into your web browser.');
-    console.log(chalk.cyan(requestURL));
-    const text = chalk.green('"code"');
-    const code = chalk.green('m781z2');
-
-    console.log(`Once you are redirected, copy the value of the ${text} parameter in the url.`);
-    console.log(`For example: https://www.google.com/?code=${code}`);
-  };
-
-  const main = () => {
-    console.log('\n\n');
-    console.log(chalk.magenta('### STEP 1: Get Auth Code ###'));
-    printAuthCodeRequest();
-    console.log('\n\n');
-
-    console.log(chalk.magenta('### STEP 2: Provide Auth Code ###'));
-    const authCode = reader.question('paste oauth code: ');
-    console.log('\n\n');
-    console.log(authCode);
-
-    console.log(chalk.magenta('### STEP 3: Exchange Auth Code for the Auth Token ###'));
-    const responseToken = getToken(authCode);
-    console.log('\n\n');
-
-    console.log(chalk.magenta('### STEP 4: Parse ID Token(JWT) ###'));
-    parseIdToken(responseToken);
+    const idToken = JSON.parse(token).id_token;
+    // idToken = jwt_decode(idToken);
+    return idToken;
   };
 
   const handleOAuth = () => {
     console.log('Handling OAuth login');
-    // console.log(process.env);
     console.log(process.env.REACT_APP_OAUTH_CLIENT_ID);
     console.log(process.env.REACT_APP_OAUTH_CLIENT_SECRET);
     console.log(process.env.REACT_APP_OATH_REDIRECT_URI);
-    main();
+
+    // Get Auth Code
+    const authCodeRequest = getAuthCodeRequest();
+    console.log(authCodeRequest);
+    const authCodeResponse = submitAuthCodeRequest(authCodeRequest);
+    console.log(authCodeResponse);
+    // const authCode = getURLCode(authCodeResponse);
+    // console.log(authCode);
+
+    // // Exchange Auth Code for Auth Token
+    // const responseToken = getToken(authCode);
+    // console.log(responseToken);
+
+    // // Parse ID TOken (JWT)
+    // const idToken = parseIdToken(responseToken);
+    // console.log(idToken);
   };
 
   return (
