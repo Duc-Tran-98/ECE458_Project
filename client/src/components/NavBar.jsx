@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
+import { CountAllModels } from '../queries/GetAllModels';
 
 function NavBar({ loggedIn, handleSignOut, title }) {
   NavBar.propTypes = {
@@ -10,6 +11,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
     title: PropTypes.string.isRequired,
   };
   const user = React.useContext(UserContext);
+  const [modelCount, setModelCount] = React.useState('');
+  React.useEffect(() => {
+    CountAllModels().then((val) => setModelCount(val));
+  }, [loggedIn]);
 
   const navContent = loggedIn ? (
     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -34,7 +39,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="/viewModels?page=1&limit=25">
+        <NavLink className="nav-link" to={`/viewModels?page=1&limit=25&count=${modelCount}`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

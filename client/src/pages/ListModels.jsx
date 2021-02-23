@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
+import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 
 function ListModels() {
@@ -17,8 +17,19 @@ function ListModels() {
   const [description, setDescription] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
+  const rowCount = parseInt(urlParams.get('count'), 10);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  // history.listen((location, action) => {
+  //   const urlVals = new URLSearchParams(location.search);
+  //   const lim = parseInt(urlVals.get('limit'), 10);
+  //   const pg = parseInt(urlVals.get('page'), 10);
+  //   console.log(action);
+  //   if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') { // if user clicks on models nav link or goes back
+  //     setInitLimit(lim);
+  //     setInitPage(pg);
+  //   }
+  // });
 
   const cellHandler = (e) => {
     if (e.field === 'view') {
@@ -121,8 +132,6 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
-  console.log(initPage, initLimit);
-
   return (
     <>
       <ServerPaginationGrid
@@ -130,16 +139,16 @@ function ListModels() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          history.push(`/viewModels?page=${page}&limit=${limit}`);
+          history.push(`/viewModels?page=${page}&limit=${limit}&count=${rowCount}`);
           setInitLimit(limit);
           setInitPage(page);
         }}
         onPageSizeChange={(page, limit) => {
-          history.push(`/viewModels?page=${page}&limit=${limit}`);
+          history.push(`/viewModels?page=${page}&limit=${limit}&count=${rowCount}`);
           setInitLimit(limit);
           setInitPage(page);
         }}
-        getRowCount={CountAllModels}
+        rowCount={rowCount}
         cellHandler={cellHandler}
         fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
         filterRowForCSV={filterRowForCSV}

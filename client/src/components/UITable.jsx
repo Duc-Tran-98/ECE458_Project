@@ -59,7 +59,6 @@ export function ServerPaginationGrid({
   fetchData,
   cols,
   cellHandler,
-  getRowCount,
   filterRowForCSV,
   headers,
   filename,
@@ -67,6 +66,7 @@ export function ServerPaginationGrid({
   initLimit,
   onPageChange,
   onPageSizeChange,
+  rowCount,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -74,7 +74,6 @@ export function ServerPaginationGrid({
     cols: PropTypes.array.isRequired, // This is for displaying columns
     // eslint-disable-next-line react/require-default-props
     cellHandler: PropTypes.func,
-    getRowCount: PropTypes.func.isRequired,
     filterRowForCSV: PropTypes.func.isRequired, // function to filter rows for export
     // eslint-disable-next-line react/forbid-prop-types
     headers: PropTypes.array.isRequired, // map db keys to CSV headers
@@ -83,6 +82,7 @@ export function ServerPaginationGrid({
     initLimit: PropTypes.number,
     onPageChange: PropTypes.func,
     onPageSizeChange: PropTypes.func,
+    rowCount: PropTypes.number.isRequired,
   };
   ServerPaginationGrid.defaultProps = {
     initPage: 1,
@@ -92,24 +92,22 @@ export function ServerPaginationGrid({
   };
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [rowCount, setRowCount] = React.useState(0);
   const [loadingExport, setLoadingExport] = React.useState(null);
 
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
   };
   const handlePageSizeChange = (e) => {
-    // if (initPage !== 1 && e.pageSize >= rowCount) { // if not on first page and want to view >= row count, go back to first page then display
-    //   onPageSizeChange(1, e.pageSize);
-    // } else {
-    //   onPageSizeChange(initPage, e.pageSize);
-    // }
-    onPageSizeChange(initPage, e.pageSize);
+    let actualPage = initPage;
+    const maxPage = Math.ceil(rowCount / e.pageSize);
+    if (e.page > maxPage) { // if you are on page outside page range
+      actualPage = maxPage; // change page to max page
+    }
+    onPageSizeChange(actualPage, e.pageSize);
   };
 
   React.useEffect(() => {
     let active = true;
-    getRowCount().then((val) => setRowCount(val));
 
     (async () => {
       setLoading(true);
@@ -125,7 +123,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage]);
+  }, [initLimit, initPage, rowCount]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
