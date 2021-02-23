@@ -56,19 +56,48 @@ class InstrumentAPI extends DataSource {
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    let includeData;
-
     // eslint-disable-next-line prefer-const
-    includeData = [
-      {
+    let checkModelCategories;
+    let checkInstrumentCategories;
+    // eslint-disable-next-line prefer-const
+    let includeData = [];
+    if (modelCategories) {
+      includeData.push({
         model: this.store.modelCategories,
         as: 'modelCategories',
         through: 'modelCategoryRelationships',
         where: {
           name: modelCategories,
         },
-      },
-    ];
+      });
+      checkModelCategories = modelCategories;
+    } else {
+      includeData.push({
+        model: this.store.modelCategories,
+        as: 'modelCategories',
+        through: 'modelCategoryRelationships',
+      });
+      checkModelCategories = [];
+    }
+
+    if (instrumentCategories) {
+      includeData.push({
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+        where: {
+          name: instrumentCategories,
+        },
+      });
+      checkInstrumentCategories = instrumentCategories;
+    } else {
+      includeData.push({
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      });
+      checkInstrumentCategories = [];
+    }
 
     // console.log(includeData);
     const instruments = await this.store.instruments.findAll({
@@ -76,7 +105,22 @@ class InstrumentAPI extends DataSource {
       limit,
       offset,
     });
-    // console.log(instruments);
+
+    if (modelCategories || instrumentCategories) {
+      const instrumentsWithCategories = [];
+      const checker = (arr, target) => target.every((v) => arr.includes(v));
+      for (let i = 0; i < instruments.length; i += 1) {
+        const hasModelCategories = instruments[i].dataValues.modelCategories.map((a) => a.name);
+        if (checker(hasModelCategories, checkModelCategories)) {
+          // eslint-disable-next-line max-len
+          const hasInstrumentCategories = instruments[i].dataValues.instrumentCategories.map((a) => a.name);
+          if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
+            instrumentsWithCategories.push(instruments[i]);
+          }
+        }
+      }
+      return instrumentsWithCategories;
+    }
     return instruments;
   }
 
