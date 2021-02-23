@@ -1,5 +1,6 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
+const SQL = require('sequelize');
 
 function validateInstrument({
   modelNumber, vendor, serialNumber, comment,
@@ -99,9 +100,19 @@ class InstrumentAPI extends DataSource {
       checkInstrumentCategories = [];
     }
 
-    // console.log(includeData);
+    // eslint-disable-next-line prefer-const
+    let filters = [];
+    if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+    if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+    if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
+    if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+    // eslint-disable-next-line max-len
+    // if (assetTag) filters.push({ assetTag: SQL.where(SQL.fn('LOWER', SQL.col('assetTag')), 'LIKE', `%${assetTag.toLowerCase()}%`) });
+    // ^^^ uncomment this once asset tag is implemented
+
     const instruments = await this.store.instruments.findAll({
       include: includeData,
+      where: filters,
       limit,
       offset,
     });
