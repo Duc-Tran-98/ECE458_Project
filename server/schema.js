@@ -231,6 +231,22 @@ const typeDefs = gql`
       comment: String
       id: Int!
     ): String!
+
+    # category related mutations
+    addModelCategory(name: String!): String!
+    removeModelCategory(name: String!): String!
+    editModelCategory(currentName: String!, updatedName: String!): String!
+
+    addInstrumentCategory(name: String!): String!
+    removeInstrumentCategory(name: String!): String!
+    editInstrumentCategory(currentName: String!, updatedName: String!): String!
+
+    addCategoryToModel(vendor: String!, modelNumber: String!, category: String!): String!
+    removeCategoryFromModel(vendor: String!, modelNumber: String!, category: String!): String!
+
+    addCategoryToInstrument(vendor: String!, modelNumber: String!, serialNumber: String!, category: String!): String!
+    removeCategoryFromInstrument(vendor: String!, modelNumber: String!, serialNumber: String!, category: String!): String!
+
   }
 `;
 
