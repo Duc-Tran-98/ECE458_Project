@@ -247,6 +247,36 @@ class ModelAPI extends DataSource {
     });
     return JSON.stringify(response);
   }
+
+  async addModelCategory({ name }) {
+    console.log(`add model category ${name}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async removeModelCategory({ name }) {
+    console.log(`remove model category ${name}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async editModelCategory({ currentName, updatedName }) {
+    console.log(`edit model category ${currentName} to ${updatedName}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async addCategoryToModel({ vendor, modelNumber, category }) {
+    console.log(`add ${category} to model ${vendor} ${modelNumber}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async removeCategoryFromModel({ vendor, modelNumber, category }) {
+    console.log(`remove ${category} from model ${vendor} ${modelNumber}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
 }
 
 module.exports = ModelAPI;

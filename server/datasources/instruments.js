@@ -348,6 +348,40 @@ class InstrumentAPI extends DataSource {
       });
     return JSON.stringify(response);
   }
+
+  async addInstrumentCategory({ name }) {
+    console.log(`add instrument category ${name}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async removeInstrumentCategory({ name }) {
+    console.log(`remove instrument category ${name}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async editInstrumentCategory({ currentName, updatedName }) {
+    console.log(`edit instrument category ${currentName} to ${updatedName}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async addCategoryToInstrument({
+    vendor, modelNumber, serialNumber, category,
+  }) {
+    console.log(`add ${category} to instrument ${vendor} ${modelNumber} ${serialNumber}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
+
+  async removeCategoryFromInstrument({
+    vendor, modelNumber, serialNumber, category,
+  }) {
+    console.log(`remove ${category} from instrument ${vendor} ${modelNumber} ${serialNumber}`);
+    const storeModel = await this.store;
+    this.store = storeModel;
+  }
 }
 
 module.exports = InstrumentAPI;
