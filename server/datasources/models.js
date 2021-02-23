@@ -56,6 +56,7 @@ class ModelAPI extends DataSource {
         response.message = 'ERROR: Instrument is dependent on model!';
       } else {
         await this.store.models.destroy({ where: { modelNumber, vendor } });
+        await this.store.modelCategoryRelationships.destroy({ where: { modelId: modelReference } });
         response.message = 'Model deleted!';
         response.success = true;
       }
@@ -249,33 +250,146 @@ class ModelAPI extends DataSource {
   }
 
   async addModelCategory({ name }) {
-    console.log(`add model category ${name}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getModelCategory({ name }).then((value) => {
+      if (value) {
+        response.message = `ERROR: cannot add model category ${name}, it already exists!`;
+      } else {
+        this.store.modelCategories.create({
+          name,
+        });
+        response.message = `Added new model category, ${name}, into the DB!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async removeModelCategory({ name }) {
-    console.log(`remove model category ${name}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getModelCategory({ name }).then((value) => {
+      if (value) {
+        this.store.modelCategories.destroy({
+          where: {
+            name,
+          },
+        });
+        const modelCategoryId = value.dataValues.id;
+        this.store.modelCategoryRelationships.destroy({
+          where: {
+            modelCategoryId,
+          },
+        });
+        response.message = `Model category ${name} successfully deleted!`;
+      } else {
+        response.message = `ERROR: Cannot delete model category ${name}, it does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async editModelCategory({ currentName, updatedName }) {
-    console.log(`edit model category ${currentName} to ${updatedName}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    const name = currentName;
+    await this.getModelCategory({ name }).then((value) => {
+      if (value) {
+        // eslint-disable-next-line prefer-destructuring
+        const id = value.dataValues.id;
+        this.store.modelCategories.update(
+          {
+            name: updatedName,
+          },
+          { where: { id } },
+        );
+        response.message = `Model category ${updatedName} successfully updated!`;
+      } else {
+        response.message = `ERROR: Cannot edit model category ${currentName}, it does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async addCategoryToModel({ vendor, modelNumber, category }) {
-    console.log(`add ${category} to model ${vendor} ${modelNumber}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getModelCategory({ name }).then((result) => {
+          if (result) {
+            const modelId = value.dataValues.id;
+            const modelCategoryId = result.dataValues.id;
+            this.store.modelCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            });
+            response.message = `Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
+          } else {
+            response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot add category beacuse model ${vendor} ${modelNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async removeCategoryFromModel({ vendor, modelNumber, category }) {
-    console.log(`remove ${category} from model ${vendor} ${modelNumber}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getModelCategory({ name }).then(async (result) => {
+          if (result) {
+            const modelId = value.dataValues.id;
+            const modelCategoryId = result.dataValues.id;
+            const attached = await this.store.modelCategoryRelationships.findAll({
+              where: {
+                modelId,
+                modelCategoryId,
+              },
+            });
+            if (attached && attached[0]) {
+              await this.store.modelCategoryRelationships.destroy({
+                where: {
+                  modelId,
+                  modelCategoryId,
+                },
+              });
+              response.message = `Category ${category} successfully removed from model ${vendor} ${modelNumber}!`;
+            } else {
+              response.message = `ERROR: category ${category} was not attached to model ${vendor} ${modelNumber}!`;
+            }
+          } else {
+            response.message = `ERROR: Cannot remove category ${category}, from model because category does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot remove category beacuse model ${vendor} ${modelNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async getModelCategory({ name }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const category = await this.store.modelCategories.findAll({
+      where: { name },
+    });
+    if (category && category[0]) {
+      return category[0];
+    }
+    return null;
   }
 }
 
