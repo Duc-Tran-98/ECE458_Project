@@ -295,18 +295,25 @@ class ModelAPI extends DataSource {
     const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    const name = currentName;
-    await this.getModelCategory({ name }).then((value) => {
+    let name = currentName;
+    await this.getModelCategory({ name }).then(async (value) => {
       if (value) {
+        name = updatedName;
         // eslint-disable-next-line prefer-destructuring
         const id = value.dataValues.id;
-        this.store.modelCategories.update(
-          {
-            name: updatedName,
-          },
-          { where: { id } },
-        );
-        response.message = `Model category ${updatedName} successfully updated!`;
+        await this.getModelCategory({ name }).then((result) => {
+          if (result) {
+            response.message = `ERROR: Cannot change name to ${updatedName}, that category already exists!`;
+          } else {
+            this.store.modelCategories.update(
+              {
+                name: updatedName,
+              },
+              { where: { id } },
+            );
+            response.message = `Model category ${updatedName} successfully updated!`;
+          }
+        });
       } else {
         response.message = `ERROR: Cannot edit model category ${currentName}, it does not exist!`;
       }

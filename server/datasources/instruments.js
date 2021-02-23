@@ -350,37 +350,151 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrumentCategory({ name }) {
-    console.log(`add instrument category ${name}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getInstrumentCategory({ name }).then((value) => {
+      if (value) {
+        response.message = `ERROR: cannot add instrument category ${name}, it already exists!`;
+      } else {
+        this.store.instrumentCategories.create({
+          name,
+        });
+        response.message = `Added new instrument category, ${name}, into the DB!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async removeInstrumentCategory({ name }) {
-    console.log(`remove instrument category ${name}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getInstrumentCategory({ name }).then((value) => {
+      if (value) {
+        this.store.instrumentCategories.destroy({
+          where: {
+            name,
+          },
+        });
+        response.message = `Instrument category ${name} successfully deleted!`;
+      } else {
+        response.message = `ERROR: Cannot delete instrument category ${name}, it does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async editInstrumentCategory({ currentName, updatedName }) {
-    console.log(`edit instrument category ${currentName} to ${updatedName}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    let name = currentName;
+    await this.getInstrumentCategory({ name }).then(async (value) => {
+      if (value) {
+        name = updatedName;
+        // eslint-disable-next-line prefer-destructuring
+        const id = value.dataValues.id;
+        await this.getInstrumentCategory({ name }).then((result) => {
+          if (result) {
+            response.message = `ERROR: Cannot change name to ${updatedName}, that category already exists!`;
+          } else {
+            this.store.instrumentCategories.update(
+              {
+                name: updatedName,
+              },
+              { where: { id } },
+            );
+            response.message = `Instrument category ${updatedName} successfully updated!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: Cannot edit instrument category ${currentName}, it does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async addCategoryToInstrument({
     vendor, modelNumber, serialNumber, category,
   }) {
-    console.log(`add ${category} to instrument ${vendor} ${modelNumber} ${serialNumber}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getInstrumentCategory({ name }).then((result) => {
+          if (result) {
+            const instrumentId = value.dataValues.id;
+            const instrumentCategoryId = result.dataValues.id;
+            this.store.instrumentCategoryRelationships.create({
+              instrumentId,
+              instrumentCategoryId,
+            });
+            response.message = `Category ${category} successfully added to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+          } else {
+            response.message = `ERROR: Cannot add category ${category}, to instrument because it does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot add category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
   }
 
   async removeCategoryFromInstrument({
     vendor, modelNumber, serialNumber, category,
   }) {
-    console.log(`remove ${category} from instrument ${vendor} ${modelNumber} ${serialNumber}`);
+    const response = { message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getInstrumentCategory({ name }).then(async (result) => {
+          if (result) {
+            const instrumentId = value.dataValues.id;
+            const instrumentCategoryId = result.dataValues.id;
+            const attached = await this.store.instrumentCategoryRelationships.findAll({
+              where: {
+                instrumentId,
+                instrumentCategoryId,
+              },
+            });
+            if (attached && attached[0]) {
+              await this.store.instrumentCategoryRelationships.destroy({
+                where: {
+                  instrumentId,
+                  instrumentCategoryId,
+                },
+              });
+              response.message = `Category ${category} successfully removed from instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            } else {
+              response.message = `ERROR: category ${category} was not attached to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            }
+          } else {
+            response.message = `ERROR: Cannot remove category ${category}, from instrument because category does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot remove category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async getInstrumentCategory({ name }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const category = await this.store.instrumentCategories.findAll({
+      where: { name },
+    });
+    if (category && category[0]) {
+      return category[0];
+    }
+    return null;
   }
 }
 
