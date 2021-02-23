@@ -1,9 +1,13 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { Link } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import EditModel from '../components/EditModel';
 import InfinityScroll from '../components/InfiniteScroll';
+import ModalAlert from '../components/ModalAlert';
+import DeleteModel from '../queries/DeleteModel';
 
 export default function DetailedModelView() {
   const queryString = window.location.search;
@@ -11,13 +15,73 @@ export default function DetailedModelView() {
   const modelNumber = urlParams.get('modelNumber');
   const vendor = urlParams.get('vendor');
   const description = urlParams.get('description');
+  const [show, setShow] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [responseMsg, setResponseMsg] = React.useState('');
+  const closeModal = () => {
+    setShow(false);
+  };
+  const handleResponse = (response) => {
+    setLoading(false);
+    setResponseMsg(response.message);
+    if (response.success) {
+      setTimeout(() => {
+        setResponseMsg('');
+        if (show) {
+          setShow(false);
+        }
+        window.location.replace('/'); // This makes it so the user can't navigate back
+        // to this page (they just deleted it) and redirects them to homepage after deletion
+      }, 1000);
+    }
+  };
+  const handleDelete = () => {
+    setLoading(true);
+    DeleteModel({ modelNumber, vendor, handleResponse });
+  };
   return (
     <>
+      <ModalAlert show={show} handleClose={closeModal} title="DELETE MODEL">
+        <>
+          {responseMsg.length === 0 && (
+            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
+          )}
+          <div className="d-flex justify-content-center">
+            {loading ? (
+              <CircularProgress />
+            ) : responseMsg.length > 0 ? (
+              <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            ) : (
+              <>
+                <div className="mx-5 mt-3">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={handleDelete}
+                  >
+                    Yes
+                  </button>
+                </div>
+                <div className="mx-5 mt-3">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={closeModal}
+                  >
+                    No
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      </ModalAlert>
       <div className="col">
         <div className="row">
           <EditModel
             initModelNumber={modelNumber}
             initVendor={vendor}
+            handleDelete={() => setShow(true)}
           />
         </div>
         <div className="row px-3">

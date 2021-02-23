@@ -139,7 +139,7 @@ function ListModels() {
         initLimit={initLimit}
         onPageChange={(page, limit) => {
           const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
+          if (window.location.search !== searchString) { // If current location != next location, update url
             history.push(`/viewModels${searchString}`);
             setInitLimit(limit);
             setInitPage(page);
@@ -147,7 +147,7 @@ function ListModels() {
         }}
         onPageSizeChange={(page, limit) => {
           const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
+          if (window.location.search !== searchString) { // If current location != next location, update url
             history.push(`/viewModels${searchString}`);
             setInitLimit(limit);
             setInitPage(page);
@@ -164,29 +164,3 @@ function ListModels() {
   );
 }
 export default ListModels;
-
-/*
-<>
-            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
-            <div className="d-flex justify-content-center">
-              <div className="mx-5 mt-3">
-                <button
-                  className="btn btn-dark"
-                  type="button"
-                  onClick={delModel}
-                >
-                  Yes
-                </button>
-              </div>
-              <div className="mx-5 mt-3">
-                <button
-                  className="btn btn-dark"
-                  type="button"
-                  onClick={() => closeModal(false)}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          </>
-*/

@@ -53,7 +53,6 @@ export default function ModelForm({
             <Form.Control
               name="modelNumber"
               type="text"
-              placeholder="####"
               required
               value={modelNumber}
               onChange={changeHandler}
@@ -98,7 +97,6 @@ export default function ModelForm({
             </Form.Label>
             <Form.Control
               type="number"
-              placeholder="# Days"
               min={0}
               name="calibrationFrequency"
               value={calibrationFrequency}
@@ -112,7 +110,6 @@ export default function ModelForm({
             <Form.Label className="h4">Description</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Description"
               required
               name="description"
               value={description}
@@ -131,7 +128,6 @@ export default function ModelForm({
             <Form.Label className="h4">Comment</Form.Label>
             <Form.Control
               as="textarea"
-              placeholder="Sample comment"
               rows={3}
               name="comment"
               value={comment}

@@ -5,15 +5,20 @@ import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ModelForm from './ModelForm';
 import Query from './UseQuery';
+import UserContext from './UserContext';
 
-export default function EditModel({
-  initVendor, initModelNumber,
-}) {
+export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
   EditModel.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
+    handleDelete: PropTypes.func,
   };
-  const [model, setModel] = React.useState({ // set model state
+  EditModel.defaultProps = {
+    handleDelete: null,
+  };
+  const user = React.useContext(UserContext);
+  const [model, setModel] = React.useState({
+    // set model state
     modelNumber: initModelNumber,
     vendor: initVendor,
     description: '',
@@ -24,17 +29,17 @@ export default function EditModel({
   const [loading, setLoading] = React.useState(false); // if we are waiting for response
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
 
-  React.useEffect(() => { // This is called when the prop show changes value
+  React.useEffect(() => {
     const FIND_MODEL = gql`
-  query FindModel($modelNumber: String!, $vendor: String!) {
-    getModel(modelNumber: $modelNumber, vendor: $vendor) {
-      id
-      description
-      comment
-      calibrationFrequency
-    }
-  }
-`;
+      query FindModel($modelNumber: String!, $vendor: String!) {
+        getModel(modelNumber: $modelNumber, vendor: $vendor) {
+          id
+          description
+          comment
+          calibrationFrequency
+        }
+      }
+    `;
     const query = print(FIND_MODEL);
     const queryName = 'getModel';
     const getVariables = () => ({
@@ -54,6 +59,7 @@ export default function EditModel({
         modelNumber: initModelNumber,
         vendor: initVendor,
       });
+      console.log(comment.length);
     };
     Query({
       query,
@@ -63,7 +69,8 @@ export default function EditModel({
     });
   }, [initModelNumber, initVendor]);
 
-  const onInputChange = (e, v) => { // handle input change from async suggest
+  const onInputChange = (e, v) => {
+    // handle input change from async suggest
     if (v.inputValue) {
       // If use inputs a new value
       setModel({ ...model, vendor: v.inputValue });
@@ -73,32 +80,34 @@ export default function EditModel({
     }
   };
 
-  const changeHandler = (e) => { // handle other input
+  const changeHandler = (e) => {
+    // handle other input
     setModel({ ...model, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => { // handle submitting the data; no validation ATM
+  const handleSubmit = (e) => {
+    // handle submitting the data; no validation ATM
     e.preventDefault();
     setLoading(true);
     const EDIT_MODEL = gql`
-        mutation EditModel(
-          $modelNumber: String!
-          $vendor: String!
-          $description: String!
-          $comment: String
-          $calibrationFrequency: Int
-          $id: Int!
-        ) {
-          editModel(
-            modelNumber: $modelNumber
-            vendor: $vendor
-            comment: $comment
-            description: $description
-            calibrationFrequency: $calibrationFrequency
-            id: $id
-          )
-        }
-      `;
+      mutation EditModel(
+        $modelNumber: String!
+        $vendor: String!
+        $description: String!
+        $comment: String
+        $calibrationFrequency: Int
+        $id: Int!
+      ) {
+        editModel(
+          modelNumber: $modelNumber
+          vendor: $vendor
+          comment: $comment
+          description: $description
+          calibrationFrequency: $calibrationFrequency
+          id: $id
+        )
+      }
+    `;
     const query = print(EDIT_MODEL);
     const queryName = 'editModel';
     let { id, calibrationFrequency } = model;
@@ -139,16 +148,37 @@ export default function EditModel({
     comment,
     calibrationFrequency,
   } = model;
-  // eslint-disable-next-line no-unused-vars
-  const footElement = responseMsg.length > 0 ? (
-    <button type="button" className="btn btn-dark">
-      {responseMsg}
-    </button>
-  ) : (
-    <button type="button" className="btn btn-dark" onClick={handleSubmit}>
-      Save Changes
-    </button>
-  ); // foot element controls when to display Save Changes buttion or response msg
+  let footElement = null;
+  if (user.isAdmin) {
+    footElement = responseMsg.length > 0 ? (
+      <div className="row">
+        <div className="col">
+          <button type="button" className="btn btn-dark">
+            Delete Model
+          </button>
+        </div>
+        <div className="col">
+          <button type="button" className="btn btn-dark text-nowrap">
+            {responseMsg}
+          </button>
+        </div>
+      </div>
+    ) : (
+      <div className="row">
+        <div className="col">
+          <button type="button" className="btn btn-dark" onClick={handleDelete}>
+            Delete Model
+          </button>
+        </div>
+        <div className="col">
+          <button type="button" className="btn btn-dark text-nowrap" onClick={handleSubmit}>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    ); // foot element controls when to display Save Changes buttion or response msg
+  }
+
   return (
     <>
       <ModelForm
@@ -161,19 +191,12 @@ export default function EditModel({
         changeHandler={changeHandler}
         validated={false}
         diffSubmit
+        viewOnly={!user.isAdmin}
         onInputChange={onInputChange}
       />
       <div className="d-flex justify-content-center my-3">
-        <div className="">{loading ? (<CircularProgress />) : (footElement)}</div>
+        <div className="">{loading ? <CircularProgress /> : footElement}</div>
       </div>
     </>
   );
 }
-
-/*
-loading ? (
-          <CircularProgress /> // If waiting for response, indicate to user via spinner
-        ) : (
-          footElement // else, dispaly foot element
-        )
-*/

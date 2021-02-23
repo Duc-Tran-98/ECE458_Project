@@ -14,7 +14,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
   const [modelCount, setModelCount] = React.useState('');
   React.useEffect(() => {
     CountAllModels().then((val) => setModelCount(val));
-  }, [loggedIn]);
+  });
 
   const navContent = loggedIn ? (
     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
