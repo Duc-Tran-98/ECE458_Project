@@ -35,6 +35,17 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): Instrument
+    getInstrumentsWithFilter(
+      vendor: String, 
+      modelNumber: String, 
+      description: String,
+      serialNumber: String,
+      assetTag: Int, 
+      modelCategories: [String], 
+      instrumentCategories: [String], 
+      limit: Int, 
+      offset: Int
+      ): [InstrumentOutput]
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
@@ -95,6 +106,19 @@ const typeDefs = gql`
     comment: String
     description: String!
     id: Int!
+  }
+
+  type InstrumentOutput {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    modelReference: Int!
+    calibrationFrequency: Int!
+    comment: String
+    description: String!
+    id: Int!
+    modelCategories: [Category]
+    instrumentCategories: [Category]
   }
 
   type InstrumentWithCalibration {

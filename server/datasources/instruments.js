@@ -50,6 +50,36 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
+  async getInstrumentsWithFilter({
+    // eslint-disable-next-line max-len
+    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
+  }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let includeData;
+
+    // eslint-disable-next-line prefer-const
+    includeData = [
+      {
+        model: this.store.modelCategories,
+        as: 'modelCategories',
+        through: 'modelCategoryRelationships',
+        where: {
+          name: modelCategories,
+        },
+      },
+    ];
+
+    // console.log(includeData);
+    const instruments = await this.store.instruments.findAll({
+      include: includeData,
+      limit,
+      offset,
+    });
+    // console.log(instruments);
+    return instruments;
+  }
+
   async getAllInstrumentsWithInfo({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;

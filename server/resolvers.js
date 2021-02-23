@@ -76,6 +76,24 @@ module.exports = {
       vendor,
       serialNumber,
     }),
+    getInstrumentsWithFilter: async (
+      _,
+      {
+        // eslint-disable-next-line max-len
+        vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit, offset,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrumentsWithFilter({
+      vendor,
+      modelNumber,
+      description,
+      serialNumber,
+      assetTag,
+      modelCategories,
+      instrumentCategories,
+      limit,
+      offset,
+    }),
 
     // Calibration Queries
     // eslint-disable-next-line max-len

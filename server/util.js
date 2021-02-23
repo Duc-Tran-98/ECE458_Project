@@ -151,11 +151,54 @@ module.exports.createStore = async () => {
     },
   );
 
+  const modelCategoryRelationships = db.define(
+    'modelCategoryRelationships',
+    {
+      modelId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      modelCategoryId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      taggableType: {
+        type: SQL.STRING,
+      },
+      id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
   models.belongsToMany(modelCategories, {
-    as: 'categories', through: 'modelCategoryRelationships', sourceKey: 'id', targetKey: 'id',
+    as: 'categories',
+    through: {
+      model: 'modelCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelId',
+    constraints: false,
   });
   modelCategories.belongsToMany(models, {
-    as: 'models', through: 'modelCategoryRelationships', sourceKey: 'id', targetKey: 'id',
+    as: 'models',
+    through: {
+      model: 'modelCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelCategoryId',
+    constraints: false,
   });
 
   const instruments = db.define(
@@ -212,6 +255,63 @@ module.exports.createStore = async () => {
       },
     },
   );
+
+  const instrumentCategories = db.define(
+    'instrumentCategories',
+    {
+      id: {
+        type: SQL.INTEGER,
+        autoIncrement: true,
+        unique: true,
+      },
+      name: {
+        type: SQL.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
+  instruments.belongsToMany(instrumentCategories, {
+    as: 'instrumentCategories',
+    through: 'instrumentCategoryRelationships',
+    sourceKey: 'id',
+    targetKey: 'id',
+  });
+  instrumentCategories.belongsToMany(instruments, {
+    as: 'instruments',
+    through: 'instrumentCategoryRelationships',
+    sourceKey: 'id',
+    targetKey: 'id',
+  });
+
+  instruments.belongsToMany(modelCategories, {
+    as: 'modelCategories',
+    through: {
+      model: 'modelCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'modelReference',
+    foreignKey: 'modelId',
+    constraints: false,
+  });
+  modelCategories.belongsToMany(instruments, {
+    as: 'instrumentsOfModels',
+    through: {
+      model: 'modelCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelCategoryId',
+    constraints: false,
+  });
 
   const calibrationEvents = db.define(
     'calibrationEvents',
@@ -273,6 +373,7 @@ module.exports.createStore = async () => {
     instruments,
     calibrationEvents,
     modelCategories,
-    // modelCategoryRelationships,
+    modelCategoryRelationships,
+    instrumentCategories,
   };
 };
