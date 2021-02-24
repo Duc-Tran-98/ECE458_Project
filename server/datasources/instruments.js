@@ -20,6 +20,10 @@ function validateInstrument({
   return [true];
 }
 
+function hasWhiteSpace(s) {
+  return /\s/g.test(s);
+}
+
 class InstrumentAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -357,6 +361,10 @@ class InstrumentAPI extends DataSource {
 
   async addInstrumentCategory({ name }) {
     const response = { message: '' };
+    if (hasWhiteSpace(name)) {
+      response.message = 'ERROR: category cannot have white spaces';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrumentCategory({ name }).then((value) => {
@@ -393,6 +401,10 @@ class InstrumentAPI extends DataSource {
 
   async editInstrumentCategory({ currentName, updatedName }) {
     const response = { message: '' };
+    if (hasWhiteSpace(updatedName)) {
+      response.message = 'ERROR: category cannot have white spaces';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     let name = currentName;

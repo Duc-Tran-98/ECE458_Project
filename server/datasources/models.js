@@ -21,6 +21,10 @@ function validateModel({
   return [true];
 }
 
+function hasWhiteSpace(s) {
+  return /\s/g.test(s);
+}
+
 class ModelAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -251,6 +255,10 @@ class ModelAPI extends DataSource {
 
   async addModelCategory({ name }) {
     const response = { message: '' };
+    if (hasWhiteSpace(name)) {
+      response.message = 'ERROR: category cannot have white spaces';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModelCategory({ name }).then((value) => {
@@ -293,6 +301,10 @@ class ModelAPI extends DataSource {
 
   async editModelCategory({ currentName, updatedName }) {
     const response = { message: '' };
+    if (hasWhiteSpace(updatedName)) {
+      response.message = 'ERROR: category cannot have white spaces';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     let name = currentName;
