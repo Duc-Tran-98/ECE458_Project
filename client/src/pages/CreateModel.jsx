@@ -83,3 +83,6 @@ function CreateModelPage() {
 }
 
 export default CreateModelPage;
+/*
+TODO: clear state instead of reload
+*/

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import { QueryAndThen } from '../components/UseQuery';
@@ -33,6 +33,7 @@ export default function DetailedInstrumentView() {
       }
     }
   `);
+  const history = useHistory();
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -58,7 +59,16 @@ export default function DetailedInstrumentView() {
         if (show) {
           setShow(false);
         }
-        window.location.replace('/'); // This makes it so the user can't navigate back
+        if (history.location.state.previousUrl) {
+          // console.log(history.location.state.previousUrl.split(window.location.host));
+          history.replace(
+            history.location.state.previousUrl.split(window.location.host)[1],
+            null,
+          );
+        } else {
+          history.replace('/', null);
+        }
+        //  window.location.replace('/'); // This makes it so the user can't navigate back
         // to this page (they just deleted it) and redirects them to homepage after deletion
       }, 1000);
     }
@@ -315,3 +325,7 @@ export default function DetailedInstrumentView() {
     </>
   );
 }
+
+/*
+TODO: clear state instead of reload page
+*/

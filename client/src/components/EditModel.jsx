@@ -204,3 +204,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     </>
   );
 }
+/*
+TODO: clear state instead of reload page
+*/

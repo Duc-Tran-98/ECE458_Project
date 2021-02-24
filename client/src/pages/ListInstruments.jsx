@@ -174,11 +174,19 @@ export default function ListInstruments() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Instrument">
-              <Link
-                to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`}
+              <button
+                type="button"
+                className="btn btn-dark"
+                onClick={() => {
+                  const state = { previousUrl: window.location.href };
+                  history.push(
+                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`,
+                    state,
+                  );
+                }}
               >
                 <SearchIcon />
-              </Link>
+              </button>
             </MouseOverPopover>
           </div>
         </div>
@@ -212,6 +220,11 @@ export default function ListInstruments() {
       <ServerPaginationGrid
         rowCount={rowCount}
         cellHandler={cellHandler}
+        headerElement={(
+          <Link className="btn btn-dark m-2" to="/addInstrument">
+            Create Instrument
+          </Link>
+        )}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
@@ -237,7 +250,7 @@ export default function ListInstruments() {
           response.forEach((element) => {
             if (element !== null) {
               GetCalibHistory({
-              // Get calibration history for each instrument
+                // Get calibration history for each instrument
                 id: element.id,
                 mostRecent: true,
               }).then((value) => {

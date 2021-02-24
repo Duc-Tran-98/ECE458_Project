@@ -3,7 +3,6 @@ import * as React from 'react';
 import { DataGrid, GridToolbar, GridOverlay } from '@material-ui/data-grid';
 // import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
 import useStateWithCallback from 'use-state-with-callback';
 import { useState, useRef, useEffect } from 'react';
 import { CSVLink } from 'react-csv';
@@ -106,6 +105,7 @@ export function ServerPaginationGrid({
   onPageChange,
   onPageSizeChange,
   rowCount,
+  headerElement,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -122,6 +122,10 @@ export function ServerPaginationGrid({
     onPageChange: PropTypes.func.isRequired, // callback fired when page changes
     onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
     rowCount: PropTypes.number.isRequired, // number of items from URL
+    headerElement: PropTypes.node, // what to display in header beside filter options
+  };
+  ServerPaginationGrid.defaultProps = {
+    headerElement: null,
   };
   paginationContainer = React.useRef(null);
   const [rows, setRows] = React.useState([]);
@@ -225,24 +229,7 @@ export function ServerPaginationGrid({
           ref={csvLink}
         />
         <div className="sticky-top bg-offset rounded">
-          {handleExport && (
-            <>
-              {loadingExport && <LinearProgress color="secondary" />}
-              {filename.includes('model') && (
-                <ExportModels setLoading={setLoadingExport} />
-              )}
-              {filename.includes('instrument') && (
-                <ExportInstruments setLoading={setLoadingExport} />
-              )}
-            </>
-          )}
-          <Button variant="dark" className="m-2">
-            Create
-            {' '}
-            {window.location.href.includes('viewModels')
-              ? 'Model'
-              : 'Instrument'}
-          </Button>
+          {headerElement}
         </div>
         <DataGrid
           rows={rows}
@@ -284,7 +271,7 @@ export function ServerPaginationGrid({
       <div className="row bg-offset rounded py-2 mx-auto">
         <div className="col" ref={paginationContainer} />
         <div className="col">
-          <div className="btn-group dropend">
+          <div className="btn-group dropup">
             <button
               className="btn btn-dark dropdown-toggle"
               type="button"
@@ -329,8 +316,23 @@ export function ServerPaginationGrid({
               </li>
             </ul>
           </div>
+          {handleExport && (
+            <>
+              {loadingExport && <LinearProgress color="secondary" />}
+              {filename.includes('model') && (
+                <ExportModels setLoading={setLoadingExport} />
+              )}
+              {filename.includes('instrument') && (
+                <ExportInstruments setLoading={setLoadingExport} />
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+/*
+TODO: Move bottom buttons to right hand side
+*/

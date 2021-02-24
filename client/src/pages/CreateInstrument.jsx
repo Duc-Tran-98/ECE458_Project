@@ -86,7 +86,10 @@ function CreateInstrumentPage() {
           });
         }
         // this section deals with resetting the form
-        window.location.href = '/addInstrument';
+        window.location.reload();
+        /*
+TODO: clear state instead of reload page
+*/
       }
     });
   };
@@ -145,3 +148,6 @@ function CreateInstrumentPage() {
 }
 
 export default CreateInstrumentPage;
+/*
+TODO: clear state instead of reloading
+*/

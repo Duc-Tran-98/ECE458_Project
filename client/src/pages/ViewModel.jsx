@@ -2,7 +2,7 @@
 import React from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import EditModel from '../components/EditModel';
 import InfinityScroll from '../components/InfiniteScroll';
@@ -21,6 +21,7 @@ export default function DetailedModelView() {
   const closeModal = () => {
     setShow(false);
   };
+  const history = useHistory();
   const handleResponse = (response) => {
     setLoading(false);
     setResponseMsg(response.message);
@@ -30,8 +31,15 @@ export default function DetailedModelView() {
         if (show) {
           setShow(false);
         }
-        window.location.replace('/'); // This makes it so the user can't navigate back
-        // to this page (they just deleted it) and redirects them to homepage after deletion
+        if (history.location.state.previousUrl) {
+          // console.log(history.location.state.previousUrl.split(window.location.host));
+          history.replace(
+            history.location.state.previousUrl.split(window.location.host)[1],
+            null,
+          );
+        } else {
+          history.replace('/', null);
+        }
       }, 1000);
     }
   };
@@ -126,11 +134,16 @@ export default function DetailedModelView() {
                       {entry.serialNumber}
                     </span>
                     <span className="">
-                      <Link
-                        to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}`}
+                      <button
+                        type="button"
+                        className="btn btn-dark"
+                        onClick={() => {
+                          const state = { previousUrl: window.location.href };
+                          history.push(`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}`, state);
+                        }}
                       >
                         View Instrument
-                      </Link>
+                      </button>
                     </span>
                   </div>
                 </li>
@@ -142,3 +155,6 @@ export default function DetailedModelView() {
     </>
   );
 }
+/*
+TODO: Clear state instead of reload page
+*/

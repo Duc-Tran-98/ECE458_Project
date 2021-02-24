@@ -99,11 +99,19 @@ function ListModels() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Model">
-              <Link
-                to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+              <button
+                type="button"
+                className="btn btn-dark"
+                onClick={() => {
+                  const state = { previousUrl: window.location.href };
+                  history.push(
+                    `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+                    state,
+                  );
+                }}
               >
                 <SearchIcon />
-              </Link>
+              </button>
             </MouseOverPopover>
           </div>
         </div>
@@ -136,6 +144,11 @@ function ListModels() {
       <ServerPaginationGrid
         rowCount={rowCount}
         cellHandler={cellHandler}
+        headerElement={(
+          <Link className="btn btn-dark m-2" to="/addModel">
+            Create Model
+          </Link>
+        )}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
