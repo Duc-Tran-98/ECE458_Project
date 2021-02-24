@@ -60,6 +60,10 @@ textarea:disabled{ /* Styling for disabled textarea*/
   /* Platinum color */
 }
 
+.bg-offset{
+  background: #86A0D8;
+}
+
 .nav-bg-theme {
   background: #404040;
   /* Dark gray/smoke color */
