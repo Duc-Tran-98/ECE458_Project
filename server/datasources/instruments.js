@@ -100,6 +100,13 @@ class InstrumentAPI extends DataSource {
       checkInstrumentCategories = [];
     }
 
+    includeData.push({
+      model: this.store.calibrationEvents,
+      as: 'recentCalibration',
+      limit: 1,
+      order: [['date', 'DESC']],
+    });
+
     // eslint-disable-next-line prefer-const
     let filters = [];
     if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
@@ -116,7 +123,6 @@ class InstrumentAPI extends DataSource {
       limit,
       offset,
     });
-
     if (modelCategories || instrumentCategories) {
       const instrumentsWithCategories = [];
       const checker = (arr, target) => target.every((v) => arr.includes(v));

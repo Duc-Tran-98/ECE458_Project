@@ -374,6 +374,13 @@ module.exports.createStore = async () => {
     },
   );
 
+  instruments.hasMany(calibrationEvents, {
+    as: 'recentCalibration',
+    sourceKey: 'id',
+    foreignKey: 'id',
+    constraints: false,
+  });
+
   db.sync();
   const adminExist = await users.findAll({ where: { userName: adminUsername } });
 

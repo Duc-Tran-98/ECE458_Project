@@ -117,8 +117,15 @@ const typeDefs = gql`
     comment: String
     description: String!
     id: Int!
+    recentCalibration: [Calibration]
     modelCategories: [Category]
     instrumentCategories: [Category]
+  }
+
+  type Calibration {
+    user: String!
+    date: String!
+    comment: String
   }
 
   type InstrumentWithCalibration {
