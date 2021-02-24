@@ -134,6 +134,7 @@ export default function DetailedInstrumentView() {
     const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     if (validEvents.length > 0) {
       // If there are valid entries, add them to DB
+      console.log('added new event(s)');
       AddCalibEvent({
         events: validEvents,
         modelNumber,

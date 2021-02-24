@@ -42,7 +42,7 @@ const ExportInstruments = ({ setLoading }) => {
 
   return (
     <>
-      <Button onClick={getTransactionData} className="m-2 btn-dark">Export All Instruments</Button>
+      <Button onClick={getTransactionData} className="mx-3 btn-dark">Export All Instruments</Button>
       <CSVLink
         data={transactionData}
         headers={headers}

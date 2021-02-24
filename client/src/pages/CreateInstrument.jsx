@@ -107,6 +107,17 @@ function CreateInstrumentPage() {
     calibrationFrequency,
     description,
   } = formState;
+  const footer = calibrationFrequency !== 0 ? (
+    <CalibrationTable
+      rows={calibHistory}
+      deleteRow={deleteRow}
+      onChangeCalibRow={onChangeCalibRow}
+    />
+  ) : (
+    <div className="d-flex justify-content-center my-3">
+      <h4>Item Not calibratable</h4>
+    </div>
+  );
   return (
     <>
       <InstrumentForm
@@ -128,17 +139,7 @@ function CreateInstrumentPage() {
           Add Calibration Event
         </button>
       </div>
-      {calibrationFrequency !== 0 ? (
-        <CalibrationTable
-          rows={calibHistory}
-          deleteRow={deleteRow}
-          onChangeCalibRow={onChangeCalibRow}
-        />
-      ) : (
-        <div className="d-flex justify-content-center my-3">
-          <h4>Item Not calibratable</h4>
-        </div>
-      )}
+      {footer}
     </>
   );
 }
