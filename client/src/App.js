@@ -34,65 +34,83 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <header className="sticky-top">
+        <header className="sticky-top text-light">
           <NavBar
-            title="Hypothetical Power Team"
+            title="HPC IMS"
             loggedIn={loggedIn}
             handleSignOut={handleSignOut}
           />
         </header>
-        <main>
-          <Switch>
-            <Route path="/test">
-              <ComponentTest />
-            </Route>
-            <Route exact path="/">
-              {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
-            </Route>
-            <Route path="/register">
-              {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
-            </Route>
-            <Route path="/addInstrument">
-              {loggedIn ? <CreateInstrument /> : <Login handleLogin={handleLogin} />}
-            </Route>
-            <Route path="/addModel">
-              {loggedIn ? <CreateModel /> : <Login handleLogin={handleLogin} />}
-            </Route>
-            <Route path="/viewModels">
-              {loggedIn ? (
-                <ListModels />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
-            </Route>
-            <Route path="/viewInstruments">
-              {loggedIn ? (
-                <ListInstruments />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
-            </Route>
-            <Route path="/viewInstrument/">
-              {loggedIn ? (
-                <DetailedInstrumentView />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
-            </Route>
-            <Route path="/viewModel/">
-              {loggedIn ? (
-                <DetailedModelView />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
-            </Route>
-            <Route path="/viewCertificate">
-              {loggedIn ? <Certificate /> : <Login handleLogin={handleLogin} />}
-            </Route>
-            <Route path="/import">
-              {loggedIn ? <BulkImport /> : <Login handleLogin={handleLogin} />}
-            </Route>
-          </Switch>
+        <main className="d-flex justify-content-center my-5">
+          <div className="bg-theme rounded">
+            <Switch>
+              <Route path="/test">
+                <ComponentTest />
+              </Route>
+              <Route exact path="/">
+                {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
+              </Route>
+              <Route path="/register">
+                {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
+              </Route>
+              <Route path="/addInstrument">
+                {loggedIn ? (
+                  <CreateInstrument />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/addModel">
+                {loggedIn ? (
+                  <CreateModel />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/viewModels">
+                {loggedIn ? (
+                  <ListModels />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/viewInstruments">
+                {loggedIn ? (
+                  <ListInstruments />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/viewInstrument/">
+                {loggedIn ? (
+                  <DetailedInstrumentView />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/viewModel/">
+                {loggedIn ? (
+                  <DetailedModelView />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/viewCertificate">
+                {loggedIn ? (
+                  <Certificate />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/import">
+                {loggedIn ? (
+                  <BulkImport />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+            </Switch>
+          </div>
         </main>
       </UserProvider>
     </Router>

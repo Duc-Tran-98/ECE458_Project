@@ -71,7 +71,6 @@ class InfinityScroll extends Component {
     return (
       <>
         <h2 className={titleClassName}>{title}</h2>
-        <hr />
         <InfiniteScroll
           scrollableTarget="scrollableDiv"
           dataLength={items.length}
@@ -79,9 +78,7 @@ class InfinityScroll extends Component {
           hasMore={hasMore}
           loader={<LinearProgress />}
           endMessage={(
-            <p style={{ textAlign: 'center' }}>
-              <b>Yay! You have seen it all</b>
-            </p>
+            <div className="my-4" />
           )}
         >
           {this.renderItems === null ? (

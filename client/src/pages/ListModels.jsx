@@ -3,55 +3,39 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-import {
-  useState, useContext,
-} from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ButtonBase from '@material-ui/core/ButtonBase';
+import React, { useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
+import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
-import ModalAlert from '../components/ModalAlert';
-import EditModel from '../components/EditModel';
-import DeleteModel from '../queries/DeleteModel';
-import UserContext from '../components/UserContext';
 
 function ListModels() {
-  const user = useContext(UserContext);
-  const [show, setShow] = useState(false);
-  const [which, setWhich] = useState('');
+  const history = useHistory();
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [description, setDescription] = useState('');
-  const [update, setUpdate] = useState(false);
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const rowCount = parseInt(urlParams.get('count'), 10);
+  const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
+  const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  history.listen((location, action) => {
+    const urlVals = new URLSearchParams(location.search);
+    const lim = parseInt(urlVals.get('limit'), 10);
+    const pg = parseInt(urlVals.get('page'), 10);
+    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') { // if user clicks on models nav link or goes back
+      setInitLimit(lim);
+      setInitPage(pg);
+    }
+  });
+
   const cellHandler = (e) => {
-    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+    if (e.field === 'view') {
+      setDescription(e.row.description);
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
-      setWhich(e.field);
-      setDescription(e.row.description);
-      setShow(true);
     }
-  };
-  // test
-  const closeModal = (bool) => {
-    setShow(false);
-    setWhich('');
-    if (bool) {
-      setUpdate(bool);
-    }
-    setUpdate(false);
-  };
-  const handleRes = (response) => {
-    // eslint-disable-next-line no-alert
-    alert(response.message);
-    closeModal(response.success);
-  };
-  const delModel = () => {
-    DeleteModel({ modelNumber, vendor, handleResponse: handleRes });
   };
   const cols = [
     {
@@ -64,7 +48,7 @@ function ListModels() {
     },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'description', headerName: 'Description', width: 400 },
     {
       field: 'comment',
       headerName: 'Comment',
@@ -79,12 +63,11 @@ function ListModels() {
     {
       field: 'calibrationFrequency',
       headerName: 'Calibration Frequency',
-      width: 200,
-      type: 'number',
+      width: 195,
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
-            {params.value === 0 ? (
+            {(params.value === 0 || params.value === null) ? (
               <MouseOverPopover message="Model not calibratable">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -109,62 +92,32 @@ function ListModels() {
     },
     {
       field: 'view',
-      headerName: ' ',
-      width: 60,
+      headerName: 'View',
+      width: 80,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Model">
-              <Link
-                to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+              <button
+                type="button"
+                className="btn btn-dark"
+                onClick={() => {
+                  const state = { previousUrl: window.location.href };
+                  history.push(
+                    `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+                    state,
+                  );
+                }}
               >
                 <SearchIcon />
-              </Link>
+              </button>
             </MouseOverPopover>
           </div>
         </div>
       ),
     },
   ];
-  if (user.isAdmin) {
-    cols.push(
-      {
-        field: 'edit',
-        headerName: ' ',
-        width: 60,
-        disableColumnMenu: true,
-        renderCell: () => (
-          <div className="row">
-            <div className="col mt-1">
-              <MouseOverPopover message="Edit Model">
-                <ButtonBase>
-                  <EditIcon color="primary" />
-                </ButtonBase>
-              </MouseOverPopover>
-            </div>
-          </div>
-        ),
-      },
-      {
-        field: 'delete',
-        headerName: ' ',
-        width: 60,
-        disableColumnMenu: true,
-        renderCell: () => (
-          <div className="row">
-            <div className="col mt-1">
-              <MouseOverPopover message="Delete Model">
-                <ButtonBase>
-                  <DeleteIcon color="secondary" />
-                </ButtonBase>
-              </MouseOverPopover>
-            </div>
-          </div>
-        ),
-      },
-    );
-  }
 
   // Pass into UITable
   const filterRowForCSV = (exportRows) => {
@@ -187,52 +140,42 @@ function ListModels() {
   ];
 
   return (
-    <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
-        {which === 'edit' && (
-          <EditModel
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-          />
-        )}
-        {which === 'delete' && (
-          <div>
-            <div className="h4 row text-center">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
-            <div className="d-flex justify-content-center">
-              <div className="me-5">
-                <button
-                  className="btn btn-warning"
-                  type="button"
-                  onClick={delModel}
-                >
-                  Yes
-                </button>
-              </div>
-              <div className="ms-5">
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={() => closeModal(false)}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </ModalAlert>
+    <>
       <ServerPaginationGrid
-        cols={cols}
-        shouldUpdate={update}
-        getRowCount={CountAllModels}
+        rowCount={rowCount}
         cellHandler={cellHandler}
+        headerElement={(
+          <Link className="btn btn-dark m-2" to="/addModel">
+            Create Model
+          </Link>
+        )}
+        cols={cols}
+        initPage={initPage}
+        initLimit={initLimit}
+        onPageChange={(page, limit) => {
+          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewModels${searchString}`);
+            setInitLimit(limit);
+            setInitPage(page);
+          }
+        }}
+        onPageSizeChange={(page, limit) => {
+          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewModels${searchString}`);
+            setInitLimit(limit);
+            setInitPage(page);
+          }
+        }}
         fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"
       />
-    </div>
+    </>
   );
 }
 export default ListModels;

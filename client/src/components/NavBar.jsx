@@ -2,6 +2,8 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
+import { CountAllModels } from '../queries/GetAllModels';
+import { CountInstruments } from '../queries/GetAllInstruments';
 
 function NavBar({ loggedIn, handleSignOut, title }) {
   NavBar.propTypes = {
@@ -10,9 +12,15 @@ function NavBar({ loggedIn, handleSignOut, title }) {
     title: PropTypes.string.isRequired,
   };
   const user = React.useContext(UserContext);
+  const [modelCount, setModelCount] = React.useState('');
+  const [instrumentCount, setInstrumentCount] = React.useState('');
+  React.useEffect(() => {
+    CountAllModels().then((val) => setModelCount(val));
+    CountInstruments().then((val) => setInstrumentCount(val));
+  });
 
   const navContent = loggedIn ? (
-    <ul className="navbar-nav mr-auto">
+    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
       <li className="nav-item">
         <NavLink className="nav-link" exact to="/">
           <svg
@@ -34,7 +42,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="/viewModels">
+        <NavLink
+          className="nav-link"
+          to={`/viewModels?page=1&limit=25&count=${modelCount}`}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -55,7 +66,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="/viewInstruments">
+        <NavLink
+          className="nav-link"
+          to={`/viewInstruments?page=1&limit=25&count=${instrumentCount}`}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -77,51 +91,6 @@ function NavBar({ loggedIn, handleSignOut, title }) {
       </li>
       {user.isAdmin && (
         <>
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/addModel">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="bi bi-plus-square "
-                viewBox="0 0 24 24"
-              >
-                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-              </svg>
-              Create Model
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/addInstrument">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                className="bi bi-journal-plus"
-                viewBox="0 0 20 20"
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"
-                />
-                <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />
-                {/* eslint-disable-next-line max-len */}
-                <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z" />
-              </svg>
-              Create Instrument
-            </NavLink>
-          </li>
           <li className="nav-item">
             <NavLink className="nav-link" to="/register">
               <svg
@@ -212,38 +181,26 @@ function NavBar({ loggedIn, handleSignOut, title }) {
     </ul>
   );
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <Link to="/" className="navbar-brand">
-        {title}
-      </Link>
-      {/* This button is displayed when the screen is less than large */}
-      <button
-        className="navbar-toggler border border-light"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <svg
-          width="1em"
-          height="1em"
-          viewBox="0 0 16 16"
-          className="navbar-toggler-icon bi bi-caret-down-square-fill"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
+    <nav className="navbar navbar-expand-lg nav-bg-theme navbar-dark">
+      <div className="container-fluid">
+        <Link to="/" className="navbar-brand">
+          {title}
+        </Link>
+        {/* This button is displayed when the screen is less than large */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
-          <path
-            fillRule="evenodd"
-            d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm4 4a.5.5 0 0 0-.374.832l4 4.5a.5.5 0 0 0 .748 0l4-4.5A.5.5 0 0 0 12 6H4z"
-          />
-        </svg>
-      </button>
-
-      <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        {navContent}
-        {/* <form className="form-inline my-2 my-lg-0">
+          <span className="navbar-toggler-icon" />
+        </button>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          {navContent}
+          {/* <form className="form-inline my-2 my-lg-0">
           <input
             className="form-control mr-sm-2"
             type="search"
@@ -273,6 +230,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
             </svg>
           </button>
         </form> */}
+        </div>
       </div>
     </nav>
   );

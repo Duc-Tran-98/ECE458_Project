@@ -1,15 +1,7 @@
-/*
-This class is a beast; should refactor soon;
-This class deals with creating an instrument as well as creating
-calibration events for that instrument. All of this happens on one page
-no less, so that is also why it's beefy.
-*/
 import React, { useContext, useState } from 'react';
 import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
-import ErrorPage from './ErrorPage';
 import InstrumentForm from '../components/InstrumentForm';
-import VerticalLinearStepper from '../components/VerticalStepper';
 import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEvent from '../queries/AddCalibEvent';
 
@@ -37,14 +29,6 @@ function CreateInstrumentPage() {
     }
     setCalibHistory(newHistory);
   };
-  // const onChangeUser = (e, v, entry) => { // Handler for autocomplete of username on calibrow
-  //   const newHistory = [...calibHistory];
-  //   const index = newHistory.indexOf(entry);
-  //   newHistory[index] = { ...entry };
-  //   newHistory[index].user = `${v.userName}`;
-  //   setCalibHistory(newHistory);
-  // };
-  const [validated, setValidated] = useState(false);
   const [formState, setFormState] = useState({
     // This state is for an instrument
     modelNumber: '',
@@ -68,39 +52,22 @@ function CreateInstrumentPage() {
     setCalibHistory(newHistory);
   };
   const deleteRow = (rowId) => { // This is for deleting an entry from array
-    // if (calibHistory.length > 1) {
-    //   const newHistory = calibHistory.filter((item) => item.id !== rowId);
-    //   setCalibHistory(newHistory);
-    // } else {
-    //   // eslint-disable-next-line no-alert
-    //   alert('Cannot delete the last row');
-    // }
     const newHistory = calibHistory.filter((item) => item.id !== rowId);
     setCalibHistory(newHistory);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     // This is to submit all the data
     const {
       modelNumber, vendor, comment, serialNumber,
     } = formState;
-    setValidated(true);
-    if (modelNumber.length === 0 || vendor.length === 0 || serialNumber.length === 0) {
-      let message = modelNumber.length === 0 ? 'model number, ' : '';
-      message = message.concat('', vendor.length === 0 ? 'vendor, ' : '');
-      message = message.concat(
-        '',
-        serialNumber.length === 0 ? 'serial number' : '',
-      );
-      // eslint-disable-next-line no-alert
-      alert(`Please enter ${message}`);
-    } else {
-      const response = await CreateInstrument({
-        modelNumber,
-        vendor,
-        serialNumber,
-        comment,
-      });
+
+    CreateInstrument({
+      modelNumber,
+      vendor,
+      serialNumber,
+      comment,
+    }).then((response) => {
       // eslint-disable-next-line no-alert
       alert(response.message);
       if (response.success) {
@@ -110,37 +77,21 @@ function CreateInstrumentPage() {
         ); // Collect valid entries
         if (validEvents.length > 0 && formState.calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
-          const handleRes = () => {
-            // console.log(res);
-          };
           AddCalibEvent({
             events: validEvents,
             modelNumber,
             vendor,
             serialNumber,
-            handleResponse: handleRes,
+            handleResponse: () => undefined,
           });
         }
         // this section deals with resetting the form
-        setCalibHistory([
-          {
-            user: user.userName,
-            date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
-            comment: '',
-            id: nextId,
-          },
-        ]);
-        setFormState({
-          // This state is for an instrument
-          modelNumber: '',
-          vendor: '',
-          comment: '',
-          serialNumber: '',
-          calibrationFrequency: 0,
-        });
-        setNextId(nextId + 1);
+        window.location.reload();
+        /*
+TODO: clear state instead of reload page
+*/
       }
-    }
+    });
   };
 
   const changeHandler = (e) => { // This is for updating the instrument's fields from regular inputs
@@ -151,9 +102,6 @@ function CreateInstrumentPage() {
       ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency, description: v.description,
     });
   };
-  if (!user.isAdmin) {
-    return <ErrorPage message="You don't have the right permissions!" />;
-  }
   const {
     modelNumber,
     vendor,
@@ -162,77 +110,44 @@ function CreateInstrumentPage() {
     calibrationFrequency,
     description,
   } = formState;
-  // Caliblist is the list of calibration events where the username is not an empty string
-  const calibList = calibHistory.map((entry) => entry.user.length > 0 && (
-  <li className="list-group-item" key={entry.id}>
-    {`Calibrated by ${entry.user} on ${entry.date}`}
-    <br />
-    {`Comment: ${entry.comment}`}
-  </li>
-  ));
-  const getSteps = () => ['Select Model', 'Input Calibration History', 'Review']; // These are the labels for the vertical stepper
-  const getStepContent = (step) => { // This controls what content to display for each step in the vertical stepper
-    switch (step) {
-      case 0: // Editable instrument form
-        return (
-          <InstrumentForm
-            modelNumber={modelNumber}
-            vendor={vendor}
-            comment={comment}
-            serialNumber={serialNumber}
-            changeHandler={changeHandler}
-            validated={validated}
-            onInputChange={onInputChange}
-            description={description}
-            calibrationFrequency={calibrationFrequency}
-          />
-        );
-      case 1: // check if instrument is calibratable here. If it is, display CalibrationTable
-        if (calibrationFrequency !== 0) {
-          return (
-            <CalibrationTable
-              rows={calibHistory}
-              addRow={addRow}
-              deleteRow={deleteRow}
-              onChangeCalibRow={onChangeCalibRow}
-            />
-          );
-        }
-        return (
-          <div className="my-3">
-            <h3>Item Not calibratable</h3>
-          </div>
-        );
-
-      case 2: // Review state
-        return (
-          <div>
-            <InstrumentForm
-              modelNumber={modelNumber}
-              vendor={vendor}
-              comment={comment}
-              serialNumber={serialNumber}
-              changeHandler={changeHandler}
-              validated={validated}
-              onInputChange={onInputChange}
-              description={description}
-              calibrationFrequency={calibrationFrequency}
-              viewOnly
-            />
-            {calibrationFrequency > 0 && (
-              <ul className="list-group">{calibList}</ul>
-            )}
-          </div>
-        );
-      default:
-        return 'Unknown step';
-    }
-  };
-  return (
-    <div className="d-flex justify-content-center mt-5">
-      <VerticalLinearStepper getSteps={getSteps} getStepContent={getStepContent} onFinish={handleSubmit} />
+  const footer = calibrationFrequency !== 0 ? (
+    <CalibrationTable
+      rows={calibHistory}
+      deleteRow={deleteRow}
+      onChangeCalibRow={onChangeCalibRow}
+    />
+  ) : (
+    <div className="d-flex justify-content-center my-3">
+      <h4>Item Not calibratable</h4>
     </div>
+  );
+  return (
+    <>
+      <InstrumentForm
+        modelNumber={modelNumber}
+        vendor={vendor}
+        comment={comment}
+        serialNumber={serialNumber}
+        changeHandler={changeHandler}
+        validated={false}
+        onInputChange={onInputChange}
+        description={description}
+        calibrationFrequency={calibrationFrequency}
+      />
+      <div className="d-flex justify-content-center my-3">
+        <button type="submit" className="btn btn-dark mx-3" onClick={handleSubmit}>
+          Create Instrument
+        </button>
+        <button type="button" className="btn btn-dark mx-3" onClick={addRow}>
+          Add Calibration Event
+        </button>
+      </div>
+      {footer}
+    </>
   );
 }
 
 export default CreateInstrumentPage;
+/*
+TODO: clear state instead of reloading
+*/
