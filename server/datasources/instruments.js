@@ -1,5 +1,6 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
+const SQL = require('sequelize');
 
 function validateInstrument({
   modelNumber, vendor, serialNumber, comment,
@@ -17,6 +18,10 @@ function validateInstrument({
     return [false, 'Comment input must be under 2000 characters!'];
   }
   return [true];
+}
+
+function hasWhiteSpace(s) {
+  return /\s/g.test(s);
 }
 
 class InstrumentAPI extends DataSource {
@@ -47,6 +52,96 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const instruments = await this.store.instruments.findAll({ limit, offset });
+    return instruments;
+  }
+
+  async getInstrumentsWithFilter({
+    // eslint-disable-next-line max-len
+    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
+  }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    // eslint-disable-next-line prefer-const
+    let checkModelCategories;
+    let checkInstrumentCategories;
+    // eslint-disable-next-line prefer-const
+    let includeData = [];
+    if (modelCategories) {
+      includeData.push({
+        model: this.store.modelCategories,
+        as: 'modelCategories',
+        through: 'modelCategoryRelationships',
+        where: {
+          name: modelCategories,
+        },
+      });
+      checkModelCategories = modelCategories;
+    } else {
+      includeData.push({
+        model: this.store.modelCategories,
+        as: 'modelCategories',
+        through: 'modelCategoryRelationships',
+      });
+      checkModelCategories = [];
+    }
+
+    if (instrumentCategories) {
+      includeData.push({
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+        where: {
+          name: instrumentCategories,
+        },
+      });
+      checkInstrumentCategories = instrumentCategories;
+    } else {
+      includeData.push({
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      });
+      checkInstrumentCategories = [];
+    }
+
+    includeData.push({
+      model: this.store.calibrationEvents,
+      as: 'recentCalibration',
+      limit: 1,
+      order: [['date', 'DESC']],
+    });
+
+    // eslint-disable-next-line prefer-const
+    let filters = [];
+    if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+    if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+    if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
+    if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+    // eslint-disable-next-line max-len
+    // if (assetTag) filters.push({ assetTag: SQL.where(SQL.fn('LOWER', SQL.col('assetTag')), 'LIKE', `%${assetTag.toLowerCase()}%`) });
+    // ^^^ uncomment this once asset tag is implemented
+
+    const instruments = await this.store.instruments.findAll({
+      include: includeData,
+      where: filters,
+      limit,
+      offset,
+    });
+    if (modelCategories || instrumentCategories) {
+      const instrumentsWithCategories = [];
+      const checker = (arr, target) => target.every((v) => arr.includes(v));
+      for (let i = 0; i < instruments.length; i += 1) {
+        const hasModelCategories = instruments[i].dataValues.modelCategories.map((a) => a.name);
+        if (checker(hasModelCategories, checkModelCategories)) {
+          // eslint-disable-next-line max-len
+          const hasInstrumentCategories = instruments[i].dataValues.instrumentCategories.map((a) => a.name);
+          if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
+            instrumentsWithCategories.push(instruments[i]);
+          }
+        }
+      }
+      return instrumentsWithCategories;
+    }
     return instruments;
   }
 
@@ -262,6 +357,162 @@ class InstrumentAPI extends DataSource {
         }
       });
     return JSON.stringify(response);
+  }
+
+  async addInstrumentCategory({ name }) {
+    const response = { message: '' };
+    if (hasWhiteSpace(name)) {
+      response.message = 'ERROR: category cannot have white spaces';
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.getInstrumentCategory({ name }).then((value) => {
+      if (value) {
+        response.message = `ERROR: cannot add instrument category ${name}, it already exists!`;
+      } else {
+        this.store.instrumentCategories.create({
+          name,
+        });
+        response.message = `Added new instrument category, ${name}, into the DB!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async removeInstrumentCategory({ name }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.getInstrumentCategory({ name }).then((value) => {
+      if (value) {
+        this.store.instrumentCategories.destroy({
+          where: {
+            name,
+          },
+        });
+        response.message = `Instrument category ${name} successfully deleted!`;
+      } else {
+        response.message = `ERROR: Cannot delete instrument category ${name}, it does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async editInstrumentCategory({ currentName, updatedName }) {
+    const response = { message: '' };
+    if (hasWhiteSpace(updatedName)) {
+      response.message = 'ERROR: category cannot have white spaces';
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let name = currentName;
+    await this.getInstrumentCategory({ name }).then(async (value) => {
+      if (value) {
+        name = updatedName;
+        // eslint-disable-next-line prefer-destructuring
+        const id = value.dataValues.id;
+        await this.getInstrumentCategory({ name }).then((result) => {
+          if (result) {
+            response.message = `ERROR: Cannot change name to ${updatedName}, that category already exists!`;
+          } else {
+            this.store.instrumentCategories.update(
+              {
+                name: updatedName,
+              },
+              { where: { id } },
+            );
+            response.message = `Instrument category ${updatedName} successfully updated!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: Cannot edit instrument category ${currentName}, it does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async addCategoryToInstrument({
+    vendor, modelNumber, serialNumber, category,
+  }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getInstrumentCategory({ name }).then((result) => {
+          if (result) {
+            const instrumentId = value.dataValues.id;
+            const instrumentCategoryId = result.dataValues.id;
+            this.store.instrumentCategoryRelationships.create({
+              instrumentId,
+              instrumentCategoryId,
+            });
+            response.message = `Category ${category} successfully added to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+          } else {
+            response.message = `ERROR: Cannot add category ${category}, to instrument because it does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot add category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async removeCategoryFromInstrument({
+    vendor, modelNumber, serialNumber, category,
+  }) {
+    const response = { message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getInstrumentCategory({ name }).then(async (result) => {
+          if (result) {
+            const instrumentId = value.dataValues.id;
+            const instrumentCategoryId = result.dataValues.id;
+            const attached = await this.store.instrumentCategoryRelationships.findAll({
+              where: {
+                instrumentId,
+                instrumentCategoryId,
+              },
+            });
+            if (attached && attached[0]) {
+              await this.store.instrumentCategoryRelationships.destroy({
+                where: {
+                  instrumentId,
+                  instrumentCategoryId,
+                },
+              });
+              response.message = `Category ${category} successfully removed from instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            } else {
+              response.message = `ERROR: category ${category} was not attached to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            }
+          } else {
+            response.message = `ERROR: Cannot remove category ${category}, from instrument because category does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot remove category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async getInstrumentCategory({ name }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const category = await this.store.instrumentCategories.findAll({
+      where: { name },
+    });
+    if (category && category[0]) {
+      return category[0];
+    }
+    return null;
   }
 }
 
