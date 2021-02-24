@@ -70,11 +70,10 @@ function CustomPagination(props) {
   return (
     <Portal container={paginationContainer.current}>
       <Pagination
-        color="primary"
         page={state.pagination.page}
         count={state.pagination.pageCount}
         onChange={(event, value) => api.current.setPage(value)}
-        siblingCount={3}
+        siblingCount={2}
       />
     </Portal>
   );
@@ -209,11 +208,11 @@ export function ServerPaginationGrid({
   };
 
   return (
-    <div className="position-relative rounded">
+    <div className="rounded">
       <div
         className="rounded"
         style={{
-          maxHeight: '80vh',
+          maxHeight: '72vh',
           overflowY: 'auto',
           width: '100%',
         }}
@@ -264,7 +263,6 @@ export function ServerPaginationGrid({
             toolbarDensityStandard: 'Medium',
             toolbarDensityComfortable: 'Large',
           }}
-          onPageSizeChange={(e) => handlePageSizeChange(e)}
           onCellClick={(e) => {
             if (cellHandler) {
               cellHandler(e);
@@ -275,6 +273,7 @@ export function ServerPaginationGrid({
             setChecked(newSelection.rowIds);
           }}
           showToolbar
+          hideFooterSelectedRowCount
           components={{
             Toolbar: GridToolbar,
             LoadingOverlay: CustomLoadingOverlay,
@@ -282,10 +281,56 @@ export function ServerPaginationGrid({
           }}
         />
       </div>
-      <div
-        className="bg-offset position-absolute bottom-0 start-50 translate-middle-x w-100 rounded"
-        ref={paginationContainer}
-      />
+      <div className="row bg-offset rounded py-2 mx-auto">
+        <div className="col" ref={paginationContainer} />
+        <div className="col">
+          <div className="btn-group dropend">
+            <button
+              className="btn btn-dark dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Limit
+              {' '}
+              {initLimit}
+            </button>
+            <ul
+              className="dropdown-menu bg-light"
+              aria-labelledby="dropdownMenu2"
+            >
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 25 })}
+                >
+                  25
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 50 })}
+                >
+                  50
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 100 })}
+                >
+                  100
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

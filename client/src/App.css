@@ -64,6 +64,14 @@ textarea:disabled{ /* Styling for disabled textarea*/
   background: #86A0D8;
 }
 
+button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-selected{
+  background: #fca311;
+  font-weight: bold;
+  color: black;
+  /*border-radius: 25px;*/
+  border: 1px solid Black;
+}
+
 .nav-bg-theme {
   background: #404040;
   /* Dark gray/smoke color */
