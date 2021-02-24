@@ -96,7 +96,7 @@ class UserAPI extends DataSource {
     password,
     isAdmin,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const validation = validateUser({
       firstName, lastName, password, email,
     });
@@ -118,6 +118,7 @@ class UserAPI extends DataSource {
           isAdmin,
         });
         response.message = 'Account Created!';
+        response.success = true;
       }
     });
     return JSON.stringify(response);

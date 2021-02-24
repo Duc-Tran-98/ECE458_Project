@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 
 export default function ImportTemplates() {
   return (
-    <>
-      <Link to="/files/import_documentation.pdf" target="_blank" className="btn btn-primary m-2">Import Documentation</Link>
-      <Link to="/files/models.csv" target="_blank" download className="btn btn-primary m-2">Download Models Template</Link>
-      <Link to="/files/instruments.csv" target="_blank" download className="btn btn-primary m-2">Download Instruments Template</Link>
-    </>
+    <div className="row mx-1 my-3">
+      <Link to="/files/import_documentation.pdf" target="_blank" className="btn btn-dark m-2 col">Import Documentation</Link>
+      <Link to="/files/models.csv" target="_blank" download className="btn btn-dark m-2 col">Download Models Template</Link>
+      <Link to="/files/instruments.csv" target="_blank" download className="btn btn-dark m-2 col">Download Instruments Template</Link>
+    </div>
   );
 }
