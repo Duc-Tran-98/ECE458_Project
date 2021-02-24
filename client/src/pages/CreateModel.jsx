@@ -26,6 +26,7 @@ function CreateModelPage() {
       const handleResponse = (response) => {
         // eslint-disable-next-line no-alert
         alert(response.message);
+        window.location.href = '/addModel'; // doing this to update navbar count state
       };
       CreateModel({
         modelNumber,
@@ -65,7 +66,7 @@ function CreateModelPage() {
     modelNumber, vendor, description, comment, calibrationFrequency,
   } = formState;
   return (
-    <div className="d-flex justify-content-center mt-5">
+    <>
       <ModelForm
         modelNumber={modelNumber}
         vendor={vendor}
@@ -77,8 +78,11 @@ function CreateModelPage() {
         validated={validated}
         onInputChange={onInputChange}
       />
-    </div>
+    </>
   );
 }
 
 export default CreateModelPage;
+/*
+TODO: clear state instead of reload
+*/

@@ -9,8 +9,7 @@ const strftime = require('strftime');
 const styles = StyleSheet.create({
   viewer: {
     width: '100%',
-    height: '95%',
-    position: 'absolute',
+    height: '700px',
     border: 'none',
   },
   page: {

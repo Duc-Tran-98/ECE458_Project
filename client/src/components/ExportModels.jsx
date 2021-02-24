@@ -58,7 +58,9 @@ const ExportModels = ({ setLoading }) => {
 
   return (
     <>
-      <Button onClick={getTransactionData} className="m-2">Export All Models</Button>
+      <Button onClick={getTransactionData} variant="dark" className="ms-3">
+        Export All Models
+      </Button>
       <CSVLink
         data={transactionData}
         headers={headers}

@@ -1,19 +1,78 @@
 body {
-  background: #12c2e9; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #f3e8e9,
-    #c471ed,
-    #12c2e9
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #f3e8e9,
-    #c471ed,
-    #12c2e9
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #14213d;
+  /* Navy blue */
 }
 
-.modal-open{
+#root .btn{
+ background: #fca311;
+  font-weight: bold;
+  color: black;
+}
+
+.delete-container {
+  width: 80%;
+  /*border-radius: 25px;*/
+  border: 2px solid Black;
+  padding: 15px 15px 15px 15px;
+  margin: 15px 15px 15px 15px;
+  background: #86A0D8;
+  overflow: visible;
+  box-shadow: 5px 5px 2px #888888;
+  position: relative;
+}
+
+.delete-x {
+    position: absolute;
+    background: red;
+    color: white;
+    top: -10px;
+    right: -10px;
+}
+
+.modal .btn{
+  background: #fca311;
+  font-weight: bold;
+  color: black;
+}
+
+input:disabled{ /* Styling for disabled input*/
+  color: #14213d;
+  font-weight: bold;
+}
+
+textarea:disabled{ /* Styling for disabled textarea*/
+  color: #14213d;
+  font-weight: bold;
+}
+
+.modal-open {
   overflow: inherit;
+}
+
+.modal-100w{
+  padding-right: 1vw;
+  min-width: 100%;
+}
+
+.bg-theme {
+  background: #e5e5e5;
+  width: 85vw;
+  /* Platinum color */
+}
+
+.bg-offset{
+  background: #86A0D8;
+}
+
+button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-selected{
+  background: #fca311;
+  font-weight: bold;
+  color: black;
+  /*border-radius: 25px;*/
+  border: 1px solid Black;
+}
+
+.nav-bg-theme {
+  background: #404040;
+  /* Dark gray/smoke color */
 }
