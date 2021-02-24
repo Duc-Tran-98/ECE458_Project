@@ -85,6 +85,7 @@ export default function DetailedInstrumentView() {
         item.viewOnly = true;
         counter += 1;
       });
+      // console.log(data);
       setCalibHist(data);
       setNextId(counter);
     });
@@ -92,7 +93,6 @@ export default function DetailedInstrumentView() {
   React.useEffect(() => {
     if (!queried) {
       QueryAndThen({ query, queryName, getVariables }).then((data) => {
-        // setComment(data.comment);
         setCalibFrequency(data.calibrationFrequency);
       });
       fetchData();
@@ -134,7 +134,6 @@ export default function DetailedInstrumentView() {
     const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     if (validEvents.length > 0) {
       // If there are valid entries, add them to DB
-      console.log('added new event(s)');
       AddCalibEvent({
         events: validEvents,
         modelNumber,
