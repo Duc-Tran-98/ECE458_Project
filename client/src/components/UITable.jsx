@@ -1,8 +1,6 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import {
-  DataGrid, GridToolbar,
-} from '@material-ui/data-grid';
+import { DataGrid, GridToolbar, GridOverlay } from '@material-ui/data-grid';
 // import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
@@ -50,6 +48,16 @@ export default function DisplayGrid({
         className="bg-light"
       />
     </div>
+  );
+}
+
+function CustomLoadingOverlay() {
+  return (
+    <GridOverlay>
+      <div style={{ position: 'absolute', top: 0, width: '100%' }}>
+        <LinearProgress />
+      </div>
+    </GridOverlay>
   );
 }
 
@@ -109,7 +117,13 @@ export function ServerPaginationGrid({
         return;
       }
       setRows(newRows);
-      setLoading(false);
+      if (window.location.href.includes('/viewInstruments')) {
+        setTimeout(() => { // lots of data/queries from this route, so
+          setLoading(false); // GUI needs more time to update
+        }, initLimit * 10);
+      } else {
+        setLoading(false);
+      }
     })();
 
     return () => {
@@ -214,6 +228,7 @@ export function ServerPaginationGrid({
         showToolbar
         components={{
           Toolbar: GridToolbar,
+          LoadingOverlay: CustomLoadingOverlay,
         }}
       />
     </div>
