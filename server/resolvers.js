@@ -22,6 +22,22 @@ module.exports = {
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
     // eslint-disable-next-line max-len
+    getModelsWithFilter: async (
+      _,
+      {
+        vendor, modelNumber, description, categories, limit, offset,
+      },
+      { dataSources },
+    ) => await dataSources.modelAPI.getModelsWithFilter({
+      vendor,
+      modelNumber,
+      description,
+      categories,
+      limit,
+      offset,
+    }),
+
+    // eslint-disable-next-line max-len
     getUniqueVendors: async (_, __, { dataSources }) => await dataSources.modelAPI.getUniqueVendors(),
     // Instrument Queries
     // eslint-disable-next-line max-len
@@ -59,6 +75,24 @@ module.exports = {
       modelNumber,
       vendor,
       serialNumber,
+    }),
+    getInstrumentsWithFilter: async (
+      _,
+      {
+        // eslint-disable-next-line max-len
+        vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit, offset,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrumentsWithFilter({
+      vendor,
+      modelNumber,
+      description,
+      serialNumber,
+      assetTag,
+      modelCategories,
+      instrumentCategories,
+      limit,
+      offset,
     }),
 
     // Calibration Queries
@@ -241,6 +275,126 @@ module.exports = {
         userName,
         password: hash,
         isAdmin,
+      });
+      return response;
+    },
+    addModelCategory: async (
+      _,
+      {
+        name,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.modelAPI.addModelCategory({
+        name,
+      });
+      return response;
+    },
+    removeModelCategory: async (
+      _,
+      {
+        name,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.modelAPI.removeModelCategory({
+        name,
+      });
+      return response;
+    },
+    editModelCategory: async (
+      _,
+      {
+        currentName, updatedName,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.modelAPI.editModelCategory({
+        currentName, updatedName,
+      });
+      return response;
+    },
+    addInstrumentCategory: async (
+      _,
+      {
+        name,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.addInstrumentCategory({
+        name,
+      });
+      return response;
+    },
+    removeInstrumentCategory: async (
+      _,
+      {
+        name,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.removeInstrumentCategory({
+        name,
+      });
+      return response;
+    },
+    editInstrumentCategory: async (
+      _,
+      {
+        currentName, updatedName,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.editInstrumentCategory({
+        currentName, updatedName,
+      });
+      return response;
+    },
+    addCategoryToModel: async (
+      _,
+      {
+        vendor, modelNumber, category,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.modelAPI.addCategoryToModel({
+        vendor, modelNumber, category,
+      });
+      return response;
+    },
+    removeCategoryFromModel: async (
+      _,
+      {
+        vendor, modelNumber, category,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.modelAPI.removeCategoryFromModel({
+        vendor, modelNumber, category,
+      });
+      return response;
+    },
+    addCategoryToInstrument: async (
+      _,
+      {
+        vendor, modelNumber, serialNumber, category,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.addCategoryToInstrument({
+        vendor, modelNumber, serialNumber, category,
+      });
+      return response;
+    },
+    removeCategoryFromInstrument: async (
+      _,
+      {
+        vendor, modelNumber, serialNumber, category,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.instrumentAPI.removeCategoryFromInstrument({
+        vendor, modelNumber, serialNumber, category,
       });
       return response;
     },

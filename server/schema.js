@@ -16,6 +16,7 @@ const typeDefs = gql`
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
     getUniqueVendors: [Model]
+    getModelsWithFilter(vendor: String, modelNumber: String, description: String, categories: [String], limit: Int, offset: Int): [ModelOutput]
 
     # Instrument Related Queries
     countAllInstruments: Int!
@@ -34,6 +35,17 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): Instrument
+    getInstrumentsWithFilter(
+      vendor: String, 
+      modelNumber: String, 
+      description: String,
+      serialNumber: String,
+      assetTag: Int, 
+      modelCategories: [String], 
+      instrumentCategories: [String], 
+      limit: Int, 
+      offset: Int
+      ): [InstrumentOutput]
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
@@ -71,6 +83,20 @@ const typeDefs = gql`
     calibrationFrequency: Int
   }
 
+  type ModelOutput {
+    id: ID!
+    vendor: String!
+    modelNumber: String!
+    description: String!
+    comment: String
+    calibrationFrequency: Int
+    categories: [Category]
+  }
+
+  type Category {
+    name: String!
+  }
+
   type Instrument {
     vendor: String!
     modelNumber: String!
@@ -80,6 +106,26 @@ const typeDefs = gql`
     comment: String
     description: String!
     id: Int!
+  }
+
+  type InstrumentOutput {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String!
+    modelReference: Int!
+    calibrationFrequency: Int!
+    comment: String
+    description: String!
+    id: Int!
+    recentCalibration: [Calibration]
+    modelCategories: [Category]
+    instrumentCategories: [Category]
+  }
+
+  type Calibration {
+    user: String!
+    date: String!
+    comment: String
   }
 
   type InstrumentWithCalibration {
@@ -192,6 +238,22 @@ const typeDefs = gql`
       comment: String
       id: Int!
     ): String!
+
+    # category related mutations
+    addModelCategory(name: String!): String!
+    removeModelCategory(name: String!): String!
+    editModelCategory(currentName: String!, updatedName: String!): String!
+
+    addInstrumentCategory(name: String!): String!
+    removeInstrumentCategory(name: String!): String!
+    editInstrumentCategory(currentName: String!, updatedName: String!): String!
+
+    addCategoryToModel(vendor: String!, modelNumber: String!, category: String!): String!
+    removeCategoryFromModel(vendor: String!, modelNumber: String!, category: String!): String!
+
+    addCategoryToInstrument(vendor: String!, modelNumber: String!, serialNumber: String!, category: String!): String!
+    removeCategoryFromInstrument(vendor: String!, modelNumber: String!, serialNumber: String!, category: String!): String!
+
   }
 `;
 
