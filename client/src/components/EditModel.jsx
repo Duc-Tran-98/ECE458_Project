@@ -59,7 +59,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         modelNumber: initModelNumber,
         vendor: initVendor,
       });
-      console.log(comment.length);
     };
     Query({
       query,
@@ -127,11 +126,16 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     const handleResponse = (response) => {
       setLoading(false);
       setResponseMsg(response.message);
-      if (response.success) {
-        setTimeout(() => {
-          setResponseMsg('');
-        }, 1000);
-      }
+      setTimeout(() => {
+        setResponseMsg('');
+        if (response.success) {
+          window.location.replace(
+            `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+          ); // reload page because link for view instruments have changed;
+          // can opt not to reload, but will have to add more code; either way,
+          // just be consistent across all pages
+        }
+      }, 1000);
     };
     Query({
       query,

@@ -1,15 +1,19 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { Link } from 'react-router-dom';
-import InstrumentForm from '../components/InstrumentForm';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DeleteInstrument from '../queries/DeleteInstrument';
 import { QueryAndThen } from '../components/UseQuery';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEvent from '../queries/AddCalibEvent';
+import ModalAlert from '../components/ModalAlert';
 import GetUser from '../queries/GetUser';
+import EditInstrument from '../components/EditInstrument';
 
 export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
@@ -38,8 +42,33 @@ export default function DetailedInstrumentView() {
   const description = urlParams.get('description');
   let id = urlParams.get('id');
   id = parseInt(id, 10);
+  const [show, setShow] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [responseMsg, setResponseMsg] = React.useState('');
+  const closeModal = () => {
+    setShow(false);
+  };
+  const handleResponse = (response) => {
+    setLoading(false);
+    setResponseMsg(response.message);
+    if (response.success) {
+      setTimeout(() => {
+        setResponseMsg('');
+        if (show) {
+          setShow(false);
+        }
+        window.location.replace('/'); // This makes it so the user can't navigate back
+        // to this page (they just deleted it) and redirects them to homepage after deletion
+      }, 1000);
+    }
+  };
+  const handleDelete = () => {
+    setLoading(true);
+    DeleteInstrument({ id, handleResponse });
+  };
   // This code  is getting calibration frequency, calibration history and comment of instrument
-  const [comment, setComment] = useState('');
+  // const [comment, setComment] = useState('');
   const [calibFrequency, setCalibFrequency] = useState(0);
   const [queried, setQueried] = useState(false);
   const [calibHist, setCalibHist] = useState([]);
@@ -63,7 +92,7 @@ export default function DetailedInstrumentView() {
   React.useEffect(() => {
     if (!queried) {
       QueryAndThen({ query, queryName, getVariables }).then((data) => {
-        setComment(data.comment);
+        // setComment(data.comment);
         setCalibFrequency(data.calibrationFrequency);
       });
       fetchData();
@@ -133,22 +162,85 @@ export default function DetailedInstrumentView() {
 
   return (
     <>
+      <ModalAlert
+        show={show}
+        handleClose={closeModal}
+        title="DELETE INSTRUMENT"
+      >
+        <>
+          {responseMsg.length === 0 && (
+            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${serialNumber}. Are you sure?`}</div>
+          )}
+          <div className="d-flex justify-content-center">
+            {loading ? (
+              <CircularProgress />
+            ) : responseMsg.length > 0 ? (
+              <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            ) : (
+              <>
+                <div className="mx-5 mt-3">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={handleDelete}
+                  >
+                    Yes
+                  </button>
+                </div>
+                <div className="mx-5 mt-3">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={closeModal}
+                  >
+                    No
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      </ModalAlert>
       <div className="col">
         <div className="row">
-          <InstrumentForm
-            modelNumber={modelNumber}
-            vendor={vendor}
-            comment={comment}
-            serialNumber={serialNumber}
-            changeHandler={() => undefined}
-            validated
-            onInputChange={() => undefined}
-            viewOnly
+          <EditInstrument
+            handleDelete={() => setShow(true)}
+            initModelNumber={modelNumber}
+            initVendor={vendor}
+            initSerialNumber={serialNumber}
+            id={id}
             description={description}
-            calibrationFrequency={calibFrequency}
+            footer={(
+              <>
+                <MouseOverPopover
+                  className="col"
+                  message="Go to model's detail view"
+                >
+                  <Link
+                    className="btn btn-dark text-nowrap"
+                    to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+                  >
+                    View Model
+                  </Link>
+                </MouseOverPopover>
+                {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+                  <MouseOverPopover
+                    className="col"
+                    message="View instrument's calibration certificate"
+                  >
+                    <Link
+                      className="btn btn-dark text-nowrap"
+                      to="/viewCertificate"
+                    >
+                      View Certificate
+                    </Link>
+                  </MouseOverPopover>
+                )}
+              </>
+            )}
           />
         </div>
-        <div className="d-flex justify-content-center mx-3 mt-3">
+        {/* <div className="d-flex justify-content-center mx-3 mt-3">
           <MouseOverPopover className="" message="Go to model's detail view">
             <Link
               className="btn btn-dark mx-3"
@@ -167,7 +259,7 @@ export default function DetailedInstrumentView() {
               </Link>
             </MouseOverPopover>
           )}
-        </div>
+        </div> */}
         <div className="row px-3 mt-3">
           <div
             style={{
