@@ -9,6 +9,26 @@ body {
   color: black;
 }
 
+.delete-container {
+  width: 80%;
+  /*border-radius: 25px;*/
+  border: 2px solid Black;
+  padding: 15px 15px 15px 15px;
+  margin: 15px 15px 15px 15px;
+  background: #86A0D8;
+  overflow: visible;
+  box-shadow: 5px 5px 2px #888888;
+  position: relative;
+}
+
+.delete-x {
+    position: absolute;
+    background: red;
+    color: white;
+    top: -10px;
+    right: -10px;
+}
+
 .modal .btn{
   background: #fca311;
   font-weight: bold;

@@ -105,16 +105,12 @@ export default function DetailedInstrumentView() {
     const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     if (validEvents.length > 0) {
       // If there are valid entries, add them to DB
-      // eslint-disable-next-line no-unused-vars
-      const handleRes = (res) => {
-        fetchData();
-      };
       AddCalibEvent({
         events: validEvents,
         modelNumber,
         vendor,
         serialNumber,
-        handleResponse: handleRes,
+        handleResponse: () => fetchData(),
       });
     }
   };
@@ -136,7 +132,7 @@ export default function DetailedInstrumentView() {
   }
 
   return (
-    <div className="d-flex justify-content-center bg-light">
+    <>
       <div className="col">
         <div className="row">
           <InstrumentForm
@@ -152,7 +148,27 @@ export default function DetailedInstrumentView() {
             calibrationFrequency={calibFrequency}
           />
         </div>
-        <div className="row border-top border-dark">
+        <div className="d-flex justify-content-center mx-3 mt-3">
+          <MouseOverPopover className="" message="Go to model's detail view">
+            <Link
+              className="btn btn-dark mx-3"
+              to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
+            >
+              View Model
+            </Link>
+          </MouseOverPopover>
+          {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+            <MouseOverPopover
+              className=""
+              message="View instrument's calibration certificate"
+            >
+              <Link className="btn btn-dark mx-3" to="/viewCertificate">
+                View Certificate
+              </Link>
+            </MouseOverPopover>
+          )}
+        </div>
+        <div className="row px-3 mt-3">
           <div
             style={{
               maxHeight: '45vh',
@@ -160,55 +176,39 @@ export default function DetailedInstrumentView() {
             }}
           >
             <div className="sticky-top bg-secondary text-light">
-              <div className="row">
-                <div className="col h4">Calibration History:</div>
+              <div className="row px-3">
+                <h2 className="col">Calibration History:</h2>
                 {calibFrequency > 0 && (
-                  <div className="col">
-                    <MouseOverPopover message="Save added calibration events">
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={handleSubmit}
-                      >
-                        Save
-                      </button>
-                    </MouseOverPopover>
-                  </div>
-                )}
-                <div className="col">
-                  <MouseOverPopover
-                    className=""
-                    message="Go to model's detail view"
-                  >
-                    <Link
-                      className="text-light btn btn-primary btn-active"
-                      to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
-                    >
-                      View Model
-                    </Link>
-                  </MouseOverPopover>
-                </div>
-                {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-                  <div className="col">
-                    <MouseOverPopover
-                      className=""
-                      message="View instrument's calibration certificate"
-                    >
-                      <Link
-                        className="text-light btn btn-primary btn-active"
-                        to="/viewCertificate"
-                      >
-                        View Certificate
-                      </Link>
-                    </MouseOverPopover>
-                  </div>
+                  <>
+                    <div className="col mt-1">
+                      <MouseOverPopover message="Add new calibration event">
+                        <button
+                          type="button"
+                          className="btn btn-dark"
+                          onClick={addRow}
+                        >
+                          Add Calibration Event
+                        </button>
+                      </MouseOverPopover>
+                    </div>
+                    <div className="col mt-1">
+                      <MouseOverPopover message="Save added calibration events">
+                        <button
+                          type="button"
+                          className="btn btn-dark"
+                          onClick={handleSubmit}
+                        >
+                          Save
+                        </button>
+                      </MouseOverPopover>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
             {calibFrequency > 0 ? (
               <CalibrationTable
                 rows={calibHist}
-                addRow={addRow}
                 deleteRow={deleteRow}
                 onChangeCalibRow={onChangeCalibRow}
               />
@@ -220,6 +220,6 @@ export default function DetailedInstrumentView() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
