@@ -103,7 +103,8 @@ export default function DetailedInstrumentView() {
   React.useEffect(() => {
     if (!queried) {
       QueryAndThen({ query, queryName, getVariables }).then((data) => {
-        setCalibFrequency(data.calibrationFrequency);
+        console.log(data);
+        if (data !== null) { setCalibFrequency(data.calibrationFrequency); }
       });
       fetchData();
       setQueried(true);

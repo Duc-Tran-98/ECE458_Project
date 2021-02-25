@@ -3,7 +3,9 @@ import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
-export default async function GetAllInstruments({ handleResponse, limit, offset }) {
+export default async function GetAllInstruments({
+  handleResponse, limit, offset,
+}) {
   GetAllInstruments.propTypes = {
     handleResponse: PropTypes.func,
     limit: PropTypes.number,
@@ -11,7 +13,7 @@ export default async function GetAllInstruments({ handleResponse, limit, offset 
   };
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments($limit: Int, $offset: Int) {
-      getAllInstruments(limit: $limit, offset: $offset) {
+      getInstrumentsWithFilter(limit: $limit, offset: $offset) {
         id
         vendor
         modelNumber
@@ -19,11 +21,16 @@ export default async function GetAllInstruments({ handleResponse, limit, offset 
         description
         calibrationFrequency
         comment
+        recentCalibration {
+          user
+          date
+          comment
+        }
       }
     }
   `;
+  const queryName = 'getInstrumentsWithFilter';
   const query = print(GET_INSTRUMENTS_QUERY);
-  const queryName = 'getAllInstruments';
   const getVariables = () => ({ limit, offset });
   if (handleResponse) {
     Query({

@@ -6,7 +6,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
-import GetCalibHistory from '../queries/GetCalibHistory';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -82,26 +81,22 @@ export default function ListInstruments() {
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
-      field: 'date',
+      field: 'recentCalDate',
       headerName: 'Calibration Date',
       width: 175,
       type: 'date',
     },
     {
-      field: 'calibrationComment',
+      field: 'recentCalComment',
       headerName: 'Calibration Comment',
       width: 300,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
@@ -249,6 +244,31 @@ export default function ListInstruments() {
         fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
           response.forEach((element) => {
             if (element !== null) {
+              element.calibrationStatus = (element.calibrationFrequency !== null) ? 'Out of Calibration' : 'N/A';
+              element.recentCalDate = 'N/A';
+              if (element.calibrationFrequency && element.recentCalibration && element.recentCalibration[0]) {
+              // eslint-disable-next-line prefer-destructuring
+                element.calibrationStatus = new Date(element.recentCalibration[0].date)
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+                element.recentCalDate = element.recentCalibration[0].date;
+              }
+            }
+          });
+          return response;
+        })}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="instruments.csv"
+      />
+    </>
+  );
+}
+
+/*
+response.forEach((element) => {
+            if (element !== null) {
               GetCalibHistory({
                 // Get calibration history for each instrument
                 id: element.id,
@@ -273,12 +293,8 @@ export default function ListInstruments() {
               });
             }
           });
-          return response;
-        })}
-        filterRowForCSV={filterRowForCSV}
-        headers={headers}
-        filename="instruments.csv"
-      />
-    </>
-  );
-}
+          new Date(element.recentCalibration.date)
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+*/
