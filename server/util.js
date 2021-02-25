@@ -377,7 +377,7 @@ module.exports.createStore = async () => {
   instruments.hasMany(calibrationEvents, {
     as: 'recentCalibration',
     sourceKey: 'id',
-    foreignKey: 'id',
+    foreignKey: 'calibrationHistoryIdReference',
     constraints: false,
   });
 
