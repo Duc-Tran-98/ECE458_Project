@@ -102,7 +102,7 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    calibrationFrequency: Int!
+    calibrationFrequency: Int
     comment: String
     description: String!
     id: Int!

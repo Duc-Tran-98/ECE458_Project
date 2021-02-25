@@ -60,7 +60,6 @@ export default function DetailedInstrumentView() {
           setShow(false);
         }
         if (history.location.state.previousUrl) {
-          // console.log(history.location.state.previousUrl.split(window.location.host));
           history.replace(
             history.location.state.previousUrl.split(window.location.host)[1],
             null,
@@ -95,7 +94,6 @@ export default function DetailedInstrumentView() {
         item.viewOnly = true;
         counter += 1;
       });
-      // console.log(data);
       setCalibHist(data);
       setNextId(counter);
     });
@@ -104,7 +102,9 @@ export default function DetailedInstrumentView() {
     if (!queried) {
       QueryAndThen({ query, queryName, getVariables }).then((data) => {
         console.log(data);
-        if (data !== null) { setCalibFrequency(data.calibrationFrequency); }
+        if (data.calibrationFrequency !== null) {
+          setCalibFrequency(data.calibrationFrequency);
+        }
       });
       fetchData();
       setQueried(true);

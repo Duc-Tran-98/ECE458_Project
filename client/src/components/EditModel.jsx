@@ -48,8 +48,13 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     });
     const handleResponse = (response) => {
       const { description, comment, id } = response;
+      console.log(response);
       let { calibrationFrequency } = response;
-      calibrationFrequency = calibrationFrequency.toString();
+      if (calibrationFrequency !== null) {
+        calibrationFrequency = calibrationFrequency.toString();
+      } else {
+        calibrationFrequency = 0;
+      }
       setModel({
         ...model,
         description,

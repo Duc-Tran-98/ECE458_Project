@@ -32,7 +32,6 @@ export default function DetailedModelView() {
           setShow(false);
         }
         if (history.location.state.previousUrl) {
-          // console.log(history.location.state.previousUrl.split(window.location.host));
           history.replace(
             history.location.state.previousUrl.split(window.location.host)[1],
             null,
