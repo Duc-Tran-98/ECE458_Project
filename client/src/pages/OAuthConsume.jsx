@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 
+// TODO: Wire route based on dev/production (nginx proxy, see examples)
 export default function OAuthConsume() {
   const getURLCode = () => {
     const urlParams = new URLSearchParams(window.location.search);

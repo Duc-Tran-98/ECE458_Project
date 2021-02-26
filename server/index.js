@@ -68,7 +68,6 @@ app.get('/api/*', (req, res) => {
 });
 
 app.post('/api/oauthConsume', (req, res) => {
-  console.log(req.body);
   const { code } = req.body;
   const authString = Buffer.from(
     `${oauthClientId}:${oauthClientSecret}`,
@@ -76,28 +75,31 @@ app.post('/api/oauthConsume', (req, res) => {
   const url = process.env.OAUTH_TOKEN_URL ? process.env.OAUTH_TOKEN_URL : 'https://oauth.oit.duke.edu/oidc/token';
 
   const options = {
+    url,
     method: 'post',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Authorization: `Basic ${authString}`,
     },
     data: `grant_type=authorization_code&redirect_uri=${encodeURI(
-      oauthClientSecret,
+      oauthRedirectURI,
     )}&code=${code}`,
   };
 
-  axios.options(url, options)
+  console.log(options);
+
+  axios(options)
     .then((response) => {
-      console.log(response);
+      console.log(response.data);
       res.json({
-        response,
         success: true,
+        result: response.data,
       });
     })
     .catch((err) => {
       console.log(err);
       res.json({
-        err,
+        error: err,
         success: false,
       });
     });
