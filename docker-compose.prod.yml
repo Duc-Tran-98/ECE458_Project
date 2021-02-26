@@ -30,6 +30,7 @@ services:
       dockerfile: Dockerfile.prod
     expose:
       - 4000
+      - 4001
     links:
       - mysql
     volumes:

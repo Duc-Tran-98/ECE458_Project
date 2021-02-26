@@ -1,6 +1,10 @@
 // This is the actual backend server;
 const { ApolloServer } = require('apollo-server');
+// const { ApolloServer } = require('apollo-server-express');
 const isEmail = require('isemail');
+const axios = require('axios');
+const express = require('express');
+const cors = require('cors');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
 const ModelAPI = require('./datasources/models');
@@ -9,6 +13,8 @@ const CalibrationEventAPI = require('./datasources/calibrationEvents');
 const { createStore, createDB } = require('./util');
 const resolvers = require('./resolvers');
 const BulkDataAPI = require('./datasources/bulkData');
+
+const { oauthClientId, oauthClientSecret, oauthRedirectURI } = require('./config');
 
 // Connect to db and init tables
 let store;
@@ -49,3 +55,52 @@ server.listen().then(() => {
     Explore at https://studio.apollographql.com/dev
   `);
 });
+
+// Create express server with oauth route
+const app = express();
+app.use(cors());
+app.use(express.json());
+const expressPort = 4001;
+
+// Create route
+app.get('/api/*', (req, res) => {
+  res.send('Hello World!');
+});
+
+app.post('/api/oauthConsume', (req, res) => {
+  console.log(req.body);
+  const { code } = req.body;
+  const authString = Buffer.from(
+    `${oauthClientId}:${oauthClientSecret}`,
+  ).toString('base64');
+  const url = process.env.OAUTH_TOKEN_URL ? process.env.OAUTH_TOKEN_URL : 'https://oauth.oit.duke.edu/oidc/token';
+
+  const options = {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${authString}`,
+    },
+    data: `grant_type=authorization_code&redirect_uri=${encodeURI(
+      oauthClientSecret,
+    )}&code=${code}`,
+  };
+
+  axios.options(url, options)
+    .then((response) => {
+      console.log(response);
+      res.json({
+        response,
+        success: true,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        err,
+        success: false,
+      });
+    });
+});
+
+app.listen({ port: expressPort }, () => console.log(`🚀 Server ready at http://localhost:${expressPort}`));
