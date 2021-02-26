@@ -32,7 +32,6 @@ export default function DetailedModelView() {
           setShow(false);
         }
         if (history.location.state.previousUrl) {
-          // console.log(history.location.state.previousUrl.split(window.location.host));
           history.replace(
             history.location.state.previousUrl.split(window.location.host)[1],
             null,
@@ -52,7 +51,7 @@ export default function DetailedModelView() {
       <ModalAlert show={show} handleClose={closeModal} title="DELETE MODEL">
         <>
           {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
+            <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
           )}
           <div className="d-flex justify-content-center">
             {loading ? (
@@ -61,21 +60,14 @@ export default function DetailedModelView() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn btn-dark"
-                    type="button"
-                    onClick={handleDelete}
-                  >
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleDelete}>
                     Yes
                   </button>
                 </div>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn btn-dark"
-                    type="button"
-                    onClick={closeModal}
-                  >
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={closeModal}>
                     No
                   </button>
                 </div>
@@ -120,6 +112,7 @@ export default function DetailedModelView() {
                     rows {
                       serialNumber
                       id
+                      calibrationFrequency
                     }
                   }
                 }
@@ -136,10 +129,13 @@ export default function DetailedModelView() {
                     <span className="">
                       <button
                         type="button"
-                        className="btn btn-dark"
+                        className="btn "
                         onClick={() => {
                           const state = { previousUrl: window.location.href };
-                          history.push(`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}`, state);
+                          history.push(
+                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}&calibrationFrequency=${entry.calibrationFrequency}`,
+                            state,
+                          );
                         }}
                       >
                         View Instrument

@@ -40,7 +40,7 @@ function ModalAlert({
         <Modal.Body className="border-top border-dark">{children}</Modal.Body>
         <ModalFooter className="my-3">
           {footer}
-          <Button className="btn btn-dark mx-3" onClick={handleClose}>
+          <Button className="btn  mx-3" onClick={handleClose}>
             Close
           </Button>
         </ModalFooter>

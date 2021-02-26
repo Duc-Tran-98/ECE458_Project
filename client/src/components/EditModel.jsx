@@ -30,42 +30,49 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
 
   React.useEffect(() => {
-    const FIND_MODEL = gql`
-      query FindModel($modelNumber: String!, $vendor: String!) {
-        getModel(modelNumber: $modelNumber, vendor: $vendor) {
-          id
-          description
-          comment
-          calibrationFrequency
-        }
+    let active = true;
+    (() => {
+      if (active) {
+        Query({
+          query: print(gql`
+            query FindModel($modelNumber: String!, $vendor: String!) {
+              getModel(modelNumber: $modelNumber, vendor: $vendor) {
+                id
+                description
+                comment
+                calibrationFrequency
+              }
+            }
+          `),
+          queryName: 'getModel',
+          getVariables: () => ({
+            modelNumber: initModelNumber,
+            vendor: initVendor,
+          }),
+          handleResponse: (response) => {
+            const { description, comment, id } = response;
+            let { calibrationFrequency } = response;
+            if (calibrationFrequency !== null) {
+              calibrationFrequency = calibrationFrequency.toString();
+            } else {
+              calibrationFrequency = 0;
+            }
+            setModel({
+              ...model,
+              description,
+              comment,
+              id,
+              calibrationFrequency,
+              modelNumber: initModelNumber,
+              vendor: initVendor,
+            });
+          },
+        });
       }
-    `;
-    const query = print(FIND_MODEL);
-    const queryName = 'getModel';
-    const getVariables = () => ({
-      modelNumber: initModelNumber,
-      vendor: initVendor,
-    });
-    const handleResponse = (response) => {
-      const { description, comment, id } = response;
-      let { calibrationFrequency } = response;
-      calibrationFrequency = calibrationFrequency.toString();
-      setModel({
-        ...model,
-        description,
-        comment,
-        id,
-        calibrationFrequency,
-        modelNumber: initModelNumber,
-        vendor: initVendor,
-      });
+    })();
+    return () => {
+      active = false;
     };
-    Query({
-      query,
-      queryName,
-      getVariables,
-      handleResponse,
-    });
   }, [initModelNumber, initVendor]);
 
   const onInputChange = (e, v) => {
@@ -157,12 +164,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     footElement = responseMsg.length > 0 ? (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark">
+          <button type="button" className="btn ">
             Delete Model
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap">
+          <button type="button" className="btn  text-nowrap">
             {responseMsg}
           </button>
         </div>
@@ -170,12 +177,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     ) : (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark" onClick={handleDelete}>
+          <button type="button" className="btn " onClick={handleDelete}>
             Delete Model
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap" onClick={handleSubmit}>
+          <button type="button" className="btn  text-nowrap" onClick={handleSubmit}>
             Save Changes
           </button>
         </div>

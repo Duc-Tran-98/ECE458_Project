@@ -3,7 +3,6 @@ import './App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
 import Certificate from './pages/Certificate';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
@@ -15,7 +14,13 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
+<<<<<<< HEAD
 import ManageCategories from './pages/ManageCategories';
+=======
+import UsersTable from './pages/UsersTable';
+import SignUp from './pages/SignUp';
+import ViewUser from './pages/ViewUser';
+>>>>>>> cead5ed038d113980394a8adff737a4a1ef24b43
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -51,8 +56,14 @@ function App() {
               <Route exact path="/">
                 {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
               </Route>
-              <Route path="/register">
+              <Route path="/viewUsers">
+                {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
+              </Route>
+              <Route path="/addUser">
                 {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
+              </Route>
+              <Route path="/viewUser">
+                {loggedIn ? <ViewUser /> : <Login handleLogin={handleLogin} />}
               </Route>
               <Route path="/addInstrument">
                 {loggedIn ? (
