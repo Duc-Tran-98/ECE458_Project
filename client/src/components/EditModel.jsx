@@ -136,8 +136,10 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       setLoading(false);
       setResponseMsg(response.message);
       if (response.success) {
+        const { state } = history.location;
         history.replace(
           `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+          state,
         ); // change url because link for view instruments have changed;
       }
       setTimeout(() => {

@@ -40,7 +40,6 @@ export default function DetailedInstrumentView({ onDelete }) {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
-      console.log('deleted instrument');
       onDelete();
       setTimeout(() => {
         setResponseMsg('');
@@ -49,9 +48,10 @@ export default function DetailedInstrumentView({ onDelete }) {
         }
         if (history.location.state?.previousUrl) {
           let path = history.location.state.previousUrl.split(window.location.host)[1];
-          const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
-          path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
-          console.log(count, path);
+          if (path.includes('count')) {
+            const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
+            path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
+          }
           history.replace( // This code updates the url to have the correct count
             path,
             null,
