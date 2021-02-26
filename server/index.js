@@ -86,8 +86,6 @@ app.post('/api/oauthConsume', (req, res) => {
     )}&code=${code}`,
   };
 
-  console.log(options);
-
   axios(options)
     .then((response) => {
       console.log(response.data);
