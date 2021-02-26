@@ -1,11 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DeleteInstrument from '../queries/DeleteInstrument';
-import { QueryAndThen } from '../components/UseQuery';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
@@ -17,22 +14,6 @@ import EditInstrument from '../components/EditInstrument';
 
 export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
-  const query = print(gql`
-    query GetInstrument(
-      $modelNumber: String!
-      $vendor: String!
-      $serialNumber: String!
-    ) {
-      getInstrument(
-        modelNumber: $modelNumber
-        vendor: $vendor
-        serialNumber: $serialNumber
-      ) {
-        comment
-        calibrationFrequency
-      }
-    }
-  `);
   const history = useHistory();
   // This code is getting params from url
   const queryString = window.location.search;
@@ -41,6 +22,7 @@ export default function DetailedInstrumentView() {
   const vendor = urlParams.get('vendor');
   const serialNumber = urlParams.get('serialNumber');
   const description = urlParams.get('description');
+  const calibFrequency = urlParams.get('calibrationFrequency');
   let id = urlParams.get('id');
   id = parseInt(id, 10);
   const [show, setShow] = React.useState(false);
@@ -77,13 +59,8 @@ export default function DetailedInstrumentView() {
     DeleteInstrument({ id, handleResponse });
   };
   // This code  is getting calibration frequency, calibration history and comment of instrument
-  // const [comment, setComment] = useState('');
-  const [calibFrequency, setCalibFrequency] = useState(0);
-  const [queried, setQueried] = useState(false);
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const getVariables = () => ({ modelNumber, serialNumber, vendor });
-  const queryName = 'getInstrument';
   const fetchData = () => { // This will refetch calib history and set it as our state
     GetCalibHistory({ id }).then((data) => {
       let counter = 0;
@@ -98,18 +75,6 @@ export default function DetailedInstrumentView() {
       setNextId(counter);
     });
   };
-  React.useEffect(() => {
-    if (!queried) {
-      QueryAndThen({ query, queryName, getVariables }).then((data) => {
-        console.log(data);
-        if (data.calibrationFrequency !== null) {
-          setCalibFrequency(data.calibrationFrequency);
-        }
-      });
-      fetchData();
-      setQueried(true);
-    }
-  });
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
     const newHistory = calibHist;
@@ -170,6 +135,10 @@ export default function DetailedInstrumentView() {
       }
     });
   }
+
+  React.useEffect(() => {
+    fetchData();
+  }, [calibHist]);
 
   return (
     <>
@@ -251,26 +220,6 @@ export default function DetailedInstrumentView() {
             )}
           />
         </div>
-        {/* <div className="d-flex justify-content-center mx-3 mt-3">
-          <MouseOverPopover className="" message="Go to model's detail view">
-            <Link
-              className="btn btn-dark mx-3"
-              to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
-            >
-              View Model
-            </Link>
-          </MouseOverPopover>
-          {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-            <MouseOverPopover
-              className=""
-              message="View instrument's calibration certificate"
-            >
-              <Link className="btn btn-dark mx-3" to="/viewCertificate">
-                View Certificate
-              </Link>
-            </MouseOverPopover>
-          )}
-        </div> */}
         <div className="row px-3 mt-3">
           <div
             style={{

@@ -76,3 +76,8 @@ button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-sele
   background: #404040;
   /* Dark gray/smoke color */
 }
+
+.text-warning-theme{
+  /* background: rgb(121, 118, 112,1); */
+  color: darkgoldenrod;
+}

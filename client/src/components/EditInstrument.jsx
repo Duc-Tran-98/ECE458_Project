@@ -67,7 +67,13 @@ export default function EditInstrument({
     const { modelNumber, vendor, serialNumber } = formState;
     const getVariables = () => ({ modelNumber, vendor, serialNumber });
     const handleResponse = (response) => {
-      const { comment, calibrationFrequency } = response;
+      let { comment, calibrationFrequency } = response;
+      if (comment === null) {
+        comment = '';
+      }
+      if (calibrationFrequency === null) {
+        calibrationFrequency = 0;
+      }
       setFormState({ ...formState, comment, calibrationFrequency });
     };
     Query({
@@ -81,7 +87,13 @@ export default function EditInstrument({
     e.preventDefault();
     setLoading(true);
     const {
-      comment, modelNumber, vendor, serialNumber, description, id,
+      comment,
+      modelNumber,
+      vendor,
+      serialNumber,
+      description,
+      id,
+      calibrationFrequency,
     } = formState;
     const handleResponse = (response) => {
       setLoading(false);
@@ -91,7 +103,7 @@ export default function EditInstrument({
       }, 1000);
       if (response.success) {
         history.replace(
-          `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`,
+          `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
         ); // editing => old url no longer valid, so replace it
       }
     };

@@ -119,6 +119,7 @@ export default function DetailedModelView() {
                     rows {
                       serialNumber
                       id
+                      calibrationFrequency
                     }
                   }
                 }
@@ -138,7 +139,10 @@ export default function DetailedModelView() {
                         className="btn btn-dark"
                         onClick={() => {
                           const state = { previousUrl: window.location.href };
-                          history.push(`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}`, state);
+                          history.push(
+                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}&calibrationFrequency=${entry.calibrationFrequency}`,
+                            state,
+                          );
                         }}
                       >
                         View Instrument

@@ -19,6 +19,7 @@ export default function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  const [calibrationFrequency, setcalibrationFrequency] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
@@ -40,12 +41,15 @@ export default function ListInstruments() {
     }
   });
   const cellHandler = (e) => {
-    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+    if (e.field === 'view') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setDescription(e.row.description);
+      if (e.row.calibrationFrequency !== null) {
+        setcalibrationFrequency(e.row.calibrationFrequency);
+      }
     }
   };
   const genDaysLeft = (date) => {
@@ -58,7 +62,7 @@ export default function ListInstruments() {
       return 'text-success';
     }
     if (daysLeft > 0 && daysLeft <= 30) {
-      return 'text-warning';
+      return 'text-warning-theme';
     }
     return 'text-danger';
   };
@@ -175,7 +179,7 @@ export default function ListInstruments() {
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
-                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`,
+                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
                     state,
                   );
                 }}
