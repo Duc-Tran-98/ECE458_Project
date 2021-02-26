@@ -15,6 +15,7 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
+import ManageCategories from './pages/ManageCategories';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -105,6 +106,13 @@ function App() {
               <Route path="/import">
                 {loggedIn ? (
                   <BulkImport />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/categories">
+                {loggedIn ? (
+                  <ManageCategories />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
