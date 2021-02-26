@@ -6,6 +6,7 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
+// TODO: Check if user exists, or add them to database on first login
 export default function OAuthConsume() {
   const [netID, setNetID] = useState('');
 
