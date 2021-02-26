@@ -1,13 +1,20 @@
 import React, { useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 import CreateModel from '../queries/CreateModel';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import ModelForm from '../components/ModelForm';
 
-function CreateModelPage() {
-  const [validated, setValidated] = useState(false);
+function CreateModelPage({ onCreation }) {
+  CreateModelPage.propTypes = {
+    onCreation: PropTypes.func.isRequired,
+  };
   const [formState, setFormState] = useState({
-    modelNumber: '', vendor: '', description: '', comment: '', calibrationFrequency: '0',
+    modelNumber: '',
+    vendor: '',
+    description: '',
+    comment: '',
+    calibrationFrequency: '0',
   });
 
   const handleSubmit = (event) => {
@@ -17,7 +24,8 @@ function CreateModelPage() {
       event.stopPropagation();
     } else {
       let { calibrationFrequency } = formState;
-      if (typeof calibrationFrequency === 'string') { // If user increments input, it becomes string so change it back to number
+      if (typeof calibrationFrequency === 'string') {
+        // If user increments input, it becomes string so change it back to number
         calibrationFrequency = parseInt(calibrationFrequency, 10);
       }
       const {
@@ -26,7 +34,16 @@ function CreateModelPage() {
       const handleResponse = (response) => {
         // eslint-disable-next-line no-alert
         alert(response.message);
-        window.location.href = '/addModel'; // doing this to update navbar count state
+        if (response.success) {
+          setFormState({
+            modelNumber: '',
+            vendor: '',
+            description: '',
+            comment: '',
+            calibrationFrequency: '0',
+          });
+          onCreation();
+        }
       };
       CreateModel({
         modelNumber,
@@ -37,8 +54,6 @@ function CreateModelPage() {
         handleResponse,
       });
     }
-
-    setValidated(true);
   };
 
   const changeHandler = (e) => {
@@ -46,12 +61,14 @@ function CreateModelPage() {
   };
   const onInputChange = (e, v) => {
     // This if for model's instrument's fields from autocomplete input
-    if (v.inputValue) { // If use inputs a new value
+    if (v.inputValue) {
+      // If use inputs a new value
       setFormState({
         ...formState,
         vendor: v.inputValue,
       });
-    } else { // Else they picked an existing option
+    } else {
+      // Else they picked an existing option
       setFormState({
         ...formState,
         vendor: v.vendor,
@@ -63,7 +80,11 @@ function CreateModelPage() {
     return <ErrorPage message="You don't have the right permissions!" />;
   }
   const {
-    modelNumber, vendor, description, comment, calibrationFrequency,
+    modelNumber,
+    vendor,
+    description,
+    comment,
+    calibrationFrequency,
   } = formState;
   return (
     <>
@@ -75,7 +96,7 @@ function CreateModelPage() {
         calibrationFrequency={calibrationFrequency}
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
-        validated={validated}
+        validated={false}
         onInputChange={onInputChange}
       />
     </>
@@ -83,6 +104,3 @@ function CreateModelPage() {
 }
 
 export default CreateModelPage;
-/*
-TODO: clear state instead of reload
-*/

@@ -4,17 +4,21 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import PropTypes from 'prop-types';
 import EditModel from '../components/EditModel';
 import InfinityScroll from '../components/InfiniteScroll';
 import ModalAlert from '../components/ModalAlert';
 import DeleteModel from '../queries/DeleteModel';
 
-export default function DetailedModelView() {
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const modelNumber = urlParams.get('modelNumber');
-  const vendor = urlParams.get('vendor');
-  const description = urlParams.get('description');
+export default function DetailedModelView({ onDelete }) {
+  DetailedModelView.propTypes = {
+    onDelete: PropTypes.func.isRequired,
+  };
+  let queryString = window.location.search;
+  let urlParams = new URLSearchParams(queryString);
+  let modelNumber = urlParams.get('modelNumber');
+  let vendor = urlParams.get('vendor');
+  let description = urlParams.get('description');
   const [show, setShow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
@@ -22,18 +26,41 @@ export default function DetailedModelView() {
     setShow(false);
   };
   const history = useHistory();
+  history.listen((location, action) => {
+    let active = true;
+    (() => {
+      queryString = window.location.search;
+      urlParams = new URLSearchParams(queryString);
+      if (active && action === 'REPLACE') {
+        // edit model updates url wit replace action,
+        // so update state
+        modelNumber = urlParams.get('modelNumber');
+        vendor = urlParams.get('vendor');
+        description = urlParams.get('description');
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  });
   const handleResponse = (response) => {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
+      console.log('deleted model');
+      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (show) {
           setShow(false);
         }
-        if (history.location.state.previousUrl) {
-          history.replace(
-            history.location.state.previousUrl.split(window.location.host)[1],
+        if (history.location.state?.previousUrl) {
+          let path = history.location.state.previousUrl.split(window.location.host)[1];
+          const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
+          path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
+          console.log(count, path);
+          history.replace( // This code updates the url to have the correct count
+            path,
             null,
           );
         } else {
@@ -118,7 +145,7 @@ export default function DetailedModelView() {
                 }
               `)}
               queryName="getAllInstrumentsWithModel"
-              variables={{ modelNumber, vendor }}
+              variables={{ modelNumber, vendor, description }}
               renderItems={(items) => items.map((entry) => (
                 <li className="list-group-item" key={entry.id}>
                   <div className="d-flex justify-content-between">
@@ -151,6 +178,3 @@ export default function DetailedModelView() {
     </>
   );
 }
-/*
-TODO: Clear state instead of reload page
-*/

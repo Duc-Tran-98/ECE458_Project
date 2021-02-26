@@ -1,10 +1,14 @@
 import React, { useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import UserForm from '../components/UserForm';
 
-const SignUp = () => {
+const CreateUserPage = ({ onCreation }) => {
+  CreateUserPage.propTypes = {
+    onCreation: PropTypes.func.isRequired,
+  };
   const user = useContext(UserContext);
   const [formState, setFormState] = useState({
     email: '',
@@ -55,10 +59,17 @@ const SignUp = () => {
             userName: '',
             isAdmin: false,
           });
+          onCreation();
         }
       };
       CreateUser({
-        firstName, lastName, email, password, userName, isAdmin, handleResponse,
+        firstName,
+        lastName,
+        email,
+        password,
+        userName,
+        isAdmin,
+        handleResponse,
       });
     }
   };
@@ -76,4 +87,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default CreateUserPage;

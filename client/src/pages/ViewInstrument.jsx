@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import PropTypes from 'prop-types';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
@@ -12,7 +13,10 @@ import ModalAlert from '../components/ModalAlert';
 import GetUser from '../queries/GetUser';
 import EditInstrument from '../components/EditInstrument';
 
-export default function DetailedInstrumentView() {
+export default function DetailedInstrumentView({ onDelete }) {
+  DetailedInstrumentView.propTypes = {
+    onDelete: PropTypes.func.isRequired,
+  };
   const user = React.useContext(UserContext);
   const history = useHistory();
   // This code is getting params from url
@@ -36,21 +40,25 @@ export default function DetailedInstrumentView() {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
+      console.log('deleted instrument');
+      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (show) {
           setShow(false);
         }
-        if (history.location.state.previousUrl) {
-          history.replace(
-            history.location.state.previousUrl.split(window.location.host)[1],
+        if (history.location.state?.previousUrl) {
+          let path = history.location.state.previousUrl.split(window.location.host)[1];
+          const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
+          path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
+          console.log(count, path);
+          history.replace( // This code updates the url to have the correct count
+            path,
             null,
           );
         } else {
           history.replace('/', null);
         }
-        //  window.location.replace('/'); // This makes it so the user can't navigate back
-        // to this page (they just deleted it) and redirects them to homepage after deletion
       }, 1000);
     }
   };
@@ -61,7 +69,8 @@ export default function DetailedInstrumentView() {
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const fetchData = () => { // This will refetch calib history and set it as our state
+  const fetchData = () => {
+    // This will refetch calib history and set it as our state
     GetCalibHistory({ id }).then((data) => {
       let counter = 0;
       data.forEach((item) => {
@@ -126,7 +135,10 @@ export default function DetailedInstrumentView() {
     window.sessionStorage.setItem('modelDescription', description);
     window.sessionStorage.setItem('vendor', vendor);
     window.sessionStorage.setItem('calibrationDate', calibHist[0].date);
-    window.sessionStorage.setItem('expirationDate', new Date(calibHist[0].date).addDays(calibFrequency));
+    window.sessionStorage.setItem(
+      'expirationDate',
+      new Date(calibHist[0].date).addDays(calibFrequency),
+    );
     window.sessionStorage.setItem('calibComment', calibHist[0].comment);
     GetUser({ userName: calibHist[0].user }).then((value) => {
       if (value) {
@@ -274,7 +286,3 @@ export default function DetailedInstrumentView() {
     </>
   );
 }
-
-/*
-TODO: clear state instead of reload page
-*/

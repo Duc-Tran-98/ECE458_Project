@@ -4,11 +4,15 @@ import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import PropTypes from 'prop-types';
 import { EditUserForm } from '../components/UserForm';
 import ModalAlert from '../components/ModalAlert';
 import Query from '../components/UseQuery';
 
-export default function ViewUser() {
+export default function ViewUser({ onDelete }) {
+  ViewUser.propTypes = {
+    onDelete: PropTypes.func.isRequired,
+  };
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const [formState, setFormState] = React.useState({
@@ -32,14 +36,19 @@ export default function ViewUser() {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
+      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (show) {
           setShow(false);
         }
-        if (history.location.state.previousUrl) {
-          history.replace(
-            history.location.state.previousUrl.split(window.location.host)[1],
+        if (history.location.state?.previousUrl) {
+          let path = history.location.state.previousUrl.split(window.location.host)[1];
+          const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
+          path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
+          console.log(count, path);
+          history.replace( // This code updates the url to have the correct count
+            path,
             null,
           );
         } else {
