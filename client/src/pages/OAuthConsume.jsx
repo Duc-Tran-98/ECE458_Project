@@ -1,8 +1,18 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 
+// const jwt_decode = require('jwt-decode');
+// eslint-disable-next-line camelcase
+import jwt_decode from 'jwt-decode';
+
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
 export default function OAuthConsume() {
+  function parseIdToken(token) {
+    console.log(token);
+    const idToken = jwt_decode(token);
+    return idToken;
+  }
+
   const getURLCode = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
@@ -19,6 +29,11 @@ export default function OAuthConsume() {
     })
       .then((res) => {
         console.log(res);
+        const idToken = parseIdToken(res.data.result.id_token);
+        console.log('idToken');
+        console.log(idToken);
+        const netID = idToken.sub;
+        console.log(`netID: ${netID}`);
       })
       .catch((err) => {
         console.error(err);
