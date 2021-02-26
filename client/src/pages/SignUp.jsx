@@ -33,6 +33,11 @@ const SignUp = () => {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
+  const changeUsername = (e) => {
+    if (!e.target.value.includes('@')) {
+      setFormState({ ...formState, [e.target.name]: e.target.value });
+    }
+  };
 
   const resetForm = () => {
     setFormState({
@@ -57,8 +62,6 @@ const SignUp = () => {
     } = formState;
     if (validateState() && true) {
       const handleResponse = (response) => {
-        // eslint-disable-next-line no-alert
-        // alert(response.message);
         if (response.success) {
           toast.success(response.message);
           resetForm();
@@ -130,7 +133,7 @@ const SignUp = () => {
               aria-describedby="inputGroupPrepend"
               name="userName"
               value={formState.userName}
-              onChange={changeHandler}
+              onChange={changeUsername}
               required
             />
             <div className="invalid-feedback">Please choose a username.</div>
