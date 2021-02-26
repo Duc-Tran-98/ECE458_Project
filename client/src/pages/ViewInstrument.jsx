@@ -137,7 +137,20 @@ export default function DetailedInstrumentView() {
   }
 
   React.useEffect(() => {
-    fetchData();
+    let active = true;
+    (() => {
+      const hasEdits = calibHist.filter(() => true).length > 0;
+      if (!active) {
+        return;
+      }
+      if (!hasEdits) {
+        // doesn't look like it should work, but it does
+        fetchData();
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [calibHist]);
 
   return (

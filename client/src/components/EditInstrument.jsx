@@ -46,42 +46,47 @@ export default function EditInstrument({
     calibrationFrequency: 0,
   });
   React.useEffect(() => {
-    const FIND_INST = gql`
-      query FindInst(
-        $modelNumber: String!
-        $vendor: String!
-        $serialNumber: String!
-      ) {
-        getInstrument(
-          modelNumber: $modelNumber
-          vendor: $vendor
-          serialNumber: $serialNumber
-        ) {
-          calibrationFrequency
-          comment
-        }
+    let active = true;
+
+    (() => {
+      if (active) {
+        const { modelNumber, vendor, serialNumber } = formState;
+        Query({
+          query: print(gql`
+            query FindInst(
+              $modelNumber: String!
+              $vendor: String!
+              $serialNumber: String!
+            ) {
+              getInstrument(
+                modelNumber: $modelNumber
+                vendor: $vendor
+                serialNumber: $serialNumber
+              ) {
+                calibrationFrequency
+                comment
+              }
+            }
+          `),
+          queryName: 'getInstrument',
+          getVariables: () => ({ modelNumber, vendor, serialNumber }),
+          handleResponse: (response) => {
+            let { comment, calibrationFrequency } = response;
+            if (comment === null) {
+              comment = '';
+            }
+            if (calibrationFrequency === null) {
+              calibrationFrequency = 0;
+            }
+            setFormState({ ...formState, comment, calibrationFrequency });
+          },
+        });
       }
-    `;
-    const query = print(FIND_INST);
-    const queryName = 'getInstrument';
-    const { modelNumber, vendor, serialNumber } = formState;
-    const getVariables = () => ({ modelNumber, vendor, serialNumber });
-    const handleResponse = (response) => {
-      let { comment, calibrationFrequency } = response;
-      if (comment === null) {
-        comment = '';
-      }
-      if (calibrationFrequency === null) {
-        calibrationFrequency = 0;
-      }
-      setFormState({ ...formState, comment, calibrationFrequency });
+    })();
+
+    return () => {
+      active = false;
     };
-    Query({
-      query,
-      queryName,
-      getVariables,
-      handleResponse,
-    });
   }, [initModelNumber, initVendor, initSerialNumber]);
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -202,143 +207,3 @@ export default function EditInstrument({
     </>
   );
 }
-
-// class X extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       // eslint-disable-next-line react/prop-types
-//       vendor: props.vendor,
-//       // eslint-disable-next-line react/prop-types
-//       modelNumber: props.modelNumber,
-//       // eslint-disable-next-line react/prop-types
-//       serialNumber: props.serialNumber,
-//       description: '',
-//       comment: '',
-//       id: '',
-//       calibrationFrequency: 0,
-//       validated: false,
-//       // eslint-disable-next-line react/prop-types
-//       viewOnly: props.viewOnly, // Is this only for viewing
-//     };
-//     // eslint-disable-next-line react/prop-types
-//     this.handleClose = props.handleClose;
-//     this.changeHandler = this.changeHandler.bind(this);
-//     this.handleSubmit = this.handleSubmit.bind(this);
-//     this.onInputChange = this.onInputChange.bind(this);
-//   }
-
-//   componentDidMount() {
-//     const FIND_INST = gql`
-//       query FindInst(
-//         $modelNumber: String!
-//         $vendor: String!
-//         $serialNumber: String!
-//       ) {
-//         getInstrument(
-//           modelNumber: $modelNumber
-//           vendor: $vendor
-//           serialNumber: $serialNumber
-//         ) {
-//           calibrationFrequency
-//           comment
-//           id
-//           description
-//         }
-//       }
-//     `;
-//     const query = print(FIND_INST);
-//     const queryName = 'getInstrument';
-//     const { modelNumber, vendor, serialNumber } = this.state;
-//     const getVariables = () => ({ modelNumber, vendor, serialNumber });
-//     const handleResponse = (response) => {
-//       const {
-//         comment, id, description, calibrationFrequency,
-//       } = response;
-//       this.setState({
-//         comment,
-//         id,
-//         description,
-//         calibrationFrequency,
-//       });
-//     };
-//     Query({
-//       query,
-//       queryName,
-//       getVariables,
-//       handleResponse,
-//     });
-//   }
-
-//   // eslint-disable-next-line class-methods-use-this
-// handleSubmit(e) {
-//   const { viewOnly } = this.state;
-//   if (typeof viewOnly === 'undefined' || !viewOnly) {
-//     e.preventDefault();
-//     const {
-//       comment, id, modelNumber, vendor, serialNumber,
-//     } = this.state;
-//     this.setState({ validated: true });
-//     const handleResponse = (response) => {
-//       if (response.success) {
-//         this.handleClose(true);
-//       }
-//       // eslint-disable-next-line no-alert
-//       alert(response.message);
-//     };
-//     EditInstrumentQuery({
-//       modelNumber, vendor, serialNumber, id, comment, handleResponse,
-//     });
-//   }
-// }
-
-// onInputChange(e, v) {
-//   // This if for updating instrument's fields from autocomplete input
-//   this.setState({
-//     modelNumber: v.modelNumber,
-//     vendor: v.vendor,
-//   });
-// }
-
-// changeHandler(e) {
-//   const { viewOnly } = this.state;
-//   if (typeof viewOnly === 'undefined' || !viewOnly) {
-//     this.setState({ [e.target.name]: e.target.value });
-//   }
-// }
-
-//   render() {
-// const {
-//   modelNumber,
-//   vendor,
-//   serialNumber,
-//   comment,
-//   validated,
-//   viewOnly,
-//   description,
-//   calibrationFrequency,
-// } = this.state;
-// const value = { modelNumber, vendor };
-// // const value = vendor.concat(' ', modelNumber);
-// return (
-//   <div className="d-flex justify-content-center">
-//     <InstrumentForm
-//       val={value}
-//       modelNumber={modelNumber}
-//       vendor={vendor}
-//       comment={comment}
-//       serialNumber={serialNumber}
-//       handleSubmit={this.handleSubmit}
-//       changeHandler={this.changeHandler}
-//       validated={validated}
-//       onInputChange={this.onInputChange}
-//       viewOnly={viewOnly}
-//       description={description}
-//       calibrationFrequency={calibrationFrequency}
-//     />
-//   </div>
-// );
-//   }
-// }
-
-// export default X;

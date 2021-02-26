@@ -30,47 +30,49 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
 
   React.useEffect(() => {
-    const FIND_MODEL = gql`
-      query FindModel($modelNumber: String!, $vendor: String!) {
-        getModel(modelNumber: $modelNumber, vendor: $vendor) {
-          id
-          description
-          comment
-          calibrationFrequency
-        }
+    let active = true;
+    (() => {
+      if (active) {
+        Query({
+          query: print(gql`
+            query FindModel($modelNumber: String!, $vendor: String!) {
+              getModel(modelNumber: $modelNumber, vendor: $vendor) {
+                id
+                description
+                comment
+                calibrationFrequency
+              }
+            }
+          `),
+          queryName: 'getModel',
+          getVariables: () => ({
+            modelNumber: initModelNumber,
+            vendor: initVendor,
+          }),
+          handleResponse: (response) => {
+            const { description, comment, id } = response;
+            let { calibrationFrequency } = response;
+            if (calibrationFrequency !== null) {
+              calibrationFrequency = calibrationFrequency.toString();
+            } else {
+              calibrationFrequency = 0;
+            }
+            setModel({
+              ...model,
+              description,
+              comment,
+              id,
+              calibrationFrequency,
+              modelNumber: initModelNumber,
+              vendor: initVendor,
+            });
+          },
+        });
       }
-    `;
-    const query = print(FIND_MODEL);
-    const queryName = 'getModel';
-    const getVariables = () => ({
-      modelNumber: initModelNumber,
-      vendor: initVendor,
-    });
-    const handleResponse = (response) => {
-      const { description, comment, id } = response;
-      console.log(response);
-      let { calibrationFrequency } = response;
-      if (calibrationFrequency !== null) {
-        calibrationFrequency = calibrationFrequency.toString();
-      } else {
-        calibrationFrequency = 0;
-      }
-      setModel({
-        ...model,
-        description,
-        comment,
-        id,
-        calibrationFrequency,
-        modelNumber: initModelNumber,
-        vendor: initVendor,
-      });
+    })();
+    return () => {
+      active = false;
     };
-    Query({
-      query,
-      queryName,
-      getVariables,
-      handleResponse,
-    });
   }, [initModelNumber, initVendor]);
 
   const onInputChange = (e, v) => {

@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import Query from '../components/UseQuery';
-import NeedsValidation from '../components/NeedsValidation';
 
 const Login = ({ handleLogin }) => {
   Login.propTypes = {
@@ -15,9 +14,6 @@ const Login = ({ handleLogin }) => {
     password: '',
     userName: '',
     isChecked: false,
-  });
-  useEffect(() => {
-    NeedsValidation();
   });
   // const onChangeCheckbox = (event) => {
   //   setFormState({ ...formState, isChecked: event.target.checked });
