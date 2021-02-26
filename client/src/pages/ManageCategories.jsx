@@ -6,6 +6,7 @@ import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import GetModelCategories from '../queries/GetModelCategories';
+import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
   const history = useHistory();
@@ -26,7 +27,6 @@ function ManageCategories() {
       setInitPage(pg);
     }
   });
-
   const cols = [
     {
       field: 'id',
@@ -38,7 +38,7 @@ function ManageCategories() {
     },
     {
       field: 'name',
-      headerName: 'Category Name',
+      headerName: 'Category',
       width: 200,
     },
     {
@@ -49,15 +49,19 @@ function ManageCategories() {
       renderCell: () => (
         <div className="row">
           <div className="col mt-1">
-            <MouseOverPopover message="Edit Category">
+            <MouseOverPopover message="Edit category">
               <button
                 type="button"
                 className="btn"
                 onClick={() => {
-                  console.log('edit');
+                //   const state = { previousUrl: window.location.href };
+                //   history.push(
+                //     `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
+                //     state,
+                //   );
                 }}
               >
-                View
+                Edit
               </button>
             </MouseOverPopover>
           </div>
@@ -72,15 +76,19 @@ function ManageCategories() {
       renderCell: () => (
         <div className="row">
           <div className="col mt-1">
-            <MouseOverPopover message="Delete Category">
+            <MouseOverPopover message="Delete category">
               <button
                 type="button"
                 className="btn"
                 onClick={() => {
-                  console.log('delete');
+                //   const state = { previousUrl: window.location.href };
+                //   history.push(
+                //     `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
+                //     state,
+                //   );
                 }}
               >
-                View
+                Delete
               </button>
             </MouseOverPopover>
           </div>
@@ -88,22 +96,21 @@ function ManageCategories() {
       ),
     },
   ];
-  const shouldExport = false;
   return (
     <>
       <ServerPaginationGrid
         rowCount={rowCount}
         cellHandler={(e) => {
-          if (e.field === 'view') {
-            setUserName(e.row.userName);
-            setIsAdmin(e.row.isAdmin);
-          }
+          // if (e.field === 'view') {
+          //   setUserName(e.row.userName);
+          //   setIsAdmin(e.row.isAdmin);
+          // }
         }}
-        // headerElement={(
-        //   <Link className="btn  m-2" to="/addUser">
-        //     Create User
-        //   </Link>
-        // )}
+        headerElement={(
+          <Link className="btn  m-2" to="/addUser">
+            Create User
+          </Link>
+        )}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}

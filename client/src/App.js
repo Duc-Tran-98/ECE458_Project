@@ -14,13 +14,10 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
-<<<<<<< HEAD
 import ManageCategories from './pages/ManageCategories';
-=======
 import UsersTable from './pages/UsersTable';
 import SignUp from './pages/SignUp';
 import ViewUser from './pages/ViewUser';
->>>>>>> cead5ed038d113980394a8adff737a4a1ef24b43
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);

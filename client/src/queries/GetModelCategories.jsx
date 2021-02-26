@@ -10,14 +10,16 @@ export default async function GetModelCategories({ limit, offset }) {
   };
   const GET_MODEL_CATEGORIES_QUERY = gql`
     query Models($limit: Int, $offset: Int) {
-        getModelCategories(limit: $limit, offset: $offset) {
+        getAllModelCategories(limit: $limit, offset: $offset) {
+          id
           name
         }
     }
   `;
   const query = print(GET_MODEL_CATEGORIES_QUERY);
-  const queryName = 'getModelCategories';
+  const queryName = 'getAllModelCategories';
   const getVariables = () => ({ limit, offset });
   const response = await QueryAndThen({ query, queryName, getVariables });
+  console.log(response);
   return response;
 }

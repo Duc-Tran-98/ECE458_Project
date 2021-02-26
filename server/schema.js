@@ -100,6 +100,7 @@ const typeDefs = gql`
   }
 
   type Category {
+    id: Int!
     name: String!
   }
 
