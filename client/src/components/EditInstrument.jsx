@@ -142,12 +142,12 @@ export default function EditInstrument({
     footElement = responseMsg.length > 0 ? (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap">
+          <button type="button" className="btn  text-nowrap">
             Delete Instrument
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap">
+          <button type="button" className="btn  text-nowrap">
             {responseMsg}
           </button>
         </div>
@@ -158,7 +158,7 @@ export default function EditInstrument({
         <div className="col">
           <button
             type="button"
-            className="btn btn-dark text-nowrap"
+            className="btn  text-nowrap"
             onClick={handleDelete}
           >
             Delete Instrument
@@ -170,7 +170,7 @@ export default function EditInstrument({
           ) : (
             <button
               type="button"
-              className="btn btn-dark text-nowrap"
+              className="btn  text-nowrap"
               onClick={handleSubmit}
             >
               Save Changes

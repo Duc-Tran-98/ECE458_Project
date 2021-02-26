@@ -3,7 +3,6 @@ import './App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
 import Certificate from './pages/Certificate';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
@@ -15,6 +14,7 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
+import UsersTable from './pages/UsersTable';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -50,8 +50,8 @@ function App() {
               <Route exact path="/">
                 {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
               </Route>
-              <Route path="/register">
-                {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
+              <Route path="/viewUsers">
+                {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
               </Route>
               <Route path="/addInstrument">
                 {loggedIn ? (

@@ -160,7 +160,7 @@ export default function DetailedInstrumentView() {
               <>
                 <div className="mx-5 mt-3">
                   <button
-                    className="btn btn-dark"
+                    className="btn "
                     type="button"
                     onClick={handleDelete}
                   >
@@ -169,7 +169,7 @@ export default function DetailedInstrumentView() {
                 </div>
                 <div className="mx-5 mt-3">
                   <button
-                    className="btn btn-dark"
+                    className="btn "
                     type="button"
                     onClick={closeModal}
                   >
@@ -197,7 +197,7 @@ export default function DetailedInstrumentView() {
                   message="Go to model's detail view"
                 >
                   <Link
-                    className="btn btn-dark text-nowrap"
+                    className="btn  text-nowrap"
                     to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
                   >
                     View Model
@@ -209,7 +209,7 @@ export default function DetailedInstrumentView() {
                     message="View instrument's calibration certificate"
                   >
                     <Link
-                      className="btn btn-dark text-nowrap"
+                      className="btn  text-nowrap"
                       to="/viewCertificate"
                     >
                       View Certificate
@@ -236,7 +236,7 @@ export default function DetailedInstrumentView() {
                       <MouseOverPopover message="Add new calibration event">
                         <button
                           type="button"
-                          className="btn btn-dark"
+                          className="btn "
                           onClick={addRow}
                         >
                           Add Calibration Event
@@ -247,7 +247,7 @@ export default function DetailedInstrumentView() {
                       <MouseOverPopover message="Save added calibration events">
                         <button
                           type="button"
-                          className="btn btn-dark"
+                          className="btn "
                           onClick={handleSubmit}
                         >
                           Save

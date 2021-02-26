@@ -179,7 +179,7 @@ const SignUp = () => {
         </div>
       </div>
       <div className="d-flex justify-content-center my-3">
-        <button className="btn btn-dark" type="submit">
+        <button className="btn " type="submit">
           Register
         </button>
       </div>

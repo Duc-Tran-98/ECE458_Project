@@ -7,6 +7,7 @@ body {
  background: #fca311;
   font-weight: bold;
   color: black;
+  border: 1px solid black;
 }
 
 .delete-container {
@@ -33,6 +34,7 @@ body {
   background: #fca311;
   font-weight: bold;
   color: black;
+  border: 1px solid black;
 }
 
 input:disabled{ /* Styling for disabled input*/
@@ -64,6 +66,7 @@ textarea:disabled{ /* Styling for disabled textarea*/
   background: #86A0D8;
 }
 
+/* Selected page */
 button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-selected{
   background: #fca311;
   font-weight: bold;

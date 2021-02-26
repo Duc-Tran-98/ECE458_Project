@@ -154,7 +154,7 @@ export default function InstrumentForm({
       </div>
       {handleSubmit !== null && !viewOnly && (
         <div className="d-flex justify-content-center my-3">
-          <button type="submit" className="btn btn-dark">
+          <button type="submit" className="btn ">
             Create Instrument
           </button>
         </div>

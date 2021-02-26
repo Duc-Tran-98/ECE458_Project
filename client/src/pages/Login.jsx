@@ -118,7 +118,7 @@ const Login = ({ handleLogin }) => {
           </label>
         </div> */}
       <div className="d-flex justify-content-center mb-3 mt-3">
-        <button className="btn btn-dark" type="submit">
+        <button className="btn " type="submit">
           Log In
         </button>
       </div>

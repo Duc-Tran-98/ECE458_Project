@@ -1,7 +1,6 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
 import { useState } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
@@ -167,7 +166,7 @@ export default function ListInstruments() {
     {
       field: 'view',
       headerName: 'View',
-      width: 80,
+      width: 120,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
@@ -175,7 +174,7 @@ export default function ListInstruments() {
             <MouseOverPopover message="View Instrument">
               <button
                 type="button"
-                className="btn btn-dark"
+                className="btn "
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
@@ -184,7 +183,7 @@ export default function ListInstruments() {
                   );
                 }}
               >
-                <SearchIcon />
+                View
               </button>
             </MouseOverPopover>
           </div>
@@ -220,7 +219,7 @@ export default function ListInstruments() {
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <Link className="btn btn-dark m-2" to="/addInstrument">
+          <Link className="btn  m-2" to="/addInstrument">
             Create Instrument
           </Link>
         )}

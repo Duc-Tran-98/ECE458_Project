@@ -135,10 +135,10 @@ TODO: clear state instead of reload page
         calibrationFrequency={calibrationFrequency}
       />
       <div className="d-flex justify-content-center my-3">
-        <button type="submit" className="btn btn-dark mx-3" onClick={handleSubmit}>
+        <button type="submit" className="btn  mx-3" onClick={handleSubmit}>
           Create Instrument
         </button>
-        <button type="button" className="btn btn-dark mx-3" onClick={addRow}>
+        <button type="button" className="btn  mx-3" onClick={addRow}>
           Add Calibration Event
         </button>
       </div>

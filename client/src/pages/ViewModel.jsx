@@ -62,7 +62,7 @@ export default function DetailedModelView() {
               <>
                 <div className="mx-5 mt-3">
                   <button
-                    className="btn btn-dark"
+                    className="btn "
                     type="button"
                     onClick={handleDelete}
                   >
@@ -71,7 +71,7 @@ export default function DetailedModelView() {
                 </div>
                 <div className="mx-5 mt-3">
                   <button
-                    className="btn btn-dark"
+                    className="btn "
                     type="button"
                     onClick={closeModal}
                   >
@@ -136,7 +136,7 @@ export default function DetailedModelView() {
                     <span className="">
                       <button
                         type="button"
-                        className="btn btn-dark"
+                        className="btn "
                         onClick={() => {
                           const state = { previousUrl: window.location.href };
                           history.push(

@@ -162,12 +162,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     footElement = responseMsg.length > 0 ? (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark">
+          <button type="button" className="btn ">
             Delete Model
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap">
+          <button type="button" className="btn  text-nowrap">
             {responseMsg}
           </button>
         </div>
@@ -175,12 +175,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     ) : (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark" onClick={handleDelete}>
+          <button type="button" className="btn " onClick={handleDelete}>
             Delete Model
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap" onClick={handleSubmit}>
+          <button type="button" className="btn  text-nowrap" onClick={handleSubmit}>
             Save Changes
           </button>
         </div>

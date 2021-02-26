@@ -139,7 +139,7 @@ export default function ModelForm({
       </div>
       {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
         <div className="d-flex justify-content-center mt-3 mb-3">
-          <button type="submit" className="btn btn-dark">
+          <button type="submit" className="btn ">
             Add Model
           </button>
         </div>

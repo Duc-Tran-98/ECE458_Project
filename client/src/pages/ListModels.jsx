@@ -4,7 +4,6 @@ to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
 import React, { useState } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
@@ -93,7 +92,7 @@ function ListModels() {
     {
       field: 'view',
       headerName: 'View',
-      width: 80,
+      width: 120,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
@@ -101,7 +100,7 @@ function ListModels() {
             <MouseOverPopover message="View Model">
               <button
                 type="button"
-                className="btn btn-dark"
+                className="btn "
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
@@ -110,7 +109,7 @@ function ListModels() {
                   );
                 }}
               >
-                <SearchIcon />
+                View
               </button>
             </MouseOverPopover>
           </div>
@@ -145,7 +144,7 @@ function ListModels() {
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <Link className="btn btn-dark m-2" to="/addModel">
+          <Link className="btn  m-2" to="/addModel">
             Create Model
           </Link>
         )}
