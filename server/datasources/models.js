@@ -410,6 +410,12 @@ class ModelAPI extends DataSource {
     }
     return null;
   }
+
+  async getAllModelCategories({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.modelCategories.findAll({ limit, offset });
+  }
 }
 
 module.exports = ModelAPI;

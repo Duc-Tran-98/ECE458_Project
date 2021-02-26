@@ -57,6 +57,11 @@ const typeDefs = gql`
     getCalibrationEventsByReferenceId(
       calibrationHistoryIdReference: Int!
     ): [CalibrationEvent]
+
+    # category related queries
+    getAllModelCategories(limit: Int, offset: Int): [Category]
+    getAllInstrumentCategories(limit: Int, offset: Int): [Category]
+    
   }
 
   type User {

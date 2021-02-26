@@ -514,6 +514,12 @@ class InstrumentAPI extends DataSource {
     }
     return null;
   }
+
+  async getAllInstrumentCategories({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.instrumentCategories.findAll({ limit, offset });
+  }
 }
 
 module.exports = InstrumentAPI;
