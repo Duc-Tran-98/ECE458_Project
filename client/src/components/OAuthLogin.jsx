@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 export default function OAuthLogin() {
   const getAuthCodeRequest = () => {
     const baseURL = process.env.REACT_APP_OAUTH_REQUEST_URL ? process.env.REACT_APP_OAUTH_REQUEST_URL : 'https://oauth.oit.duke.edu/oidc/authorize';
-    const redirectURI = encodeURI(process.env.REACT_APP_OATH_REDIRECT_URI);
+    const redirectURI = encodeURI(process.env.REACT_APP_OAUTH_REDIRECT_URI);
     const requestURL = `${baseURL}?client_id=${process.env.REACT_APP_OAUTH_CLIENT_ID}&redirect_uri=${redirectURI}&response_type=code`;
     return requestURL;
   };
@@ -15,9 +15,6 @@ export default function OAuthLogin() {
 
   const handleOAuth = () => {
     console.log('Handling OAuth login');
-    console.log(process.env.REACT_APP_OAUTH_CLIENT_ID);
-    console.log(process.env.REACT_APP_OAUTH_CLIENT_SECRET);
-    console.log(process.env.REACT_APP_OATH_REDIRECT_URI);
 
     // Get Auth Code
     const authCodeRequest = getAuthCodeRequest();

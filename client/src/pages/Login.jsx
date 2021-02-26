@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import Query from '../components/UseQuery';
 import NeedsValidation from '../components/NeedsValidation';
+import OAuthLogin from '../components/OAuthLogin';
 
 const Login = ({ handleLogin }) => {
   Login.propTypes = {
@@ -119,8 +120,9 @@ const Login = ({ handleLogin }) => {
         </div> */}
       <div className="d-flex justify-content-center mb-3 mt-3">
         <button className="btn btn-dark" type="submit">
-          Log In
+          Login
         </button>
+        <OAuthLogin />
       </div>
       {/* <div className="d-flex justify-content-center">
           <p className="text-muted">

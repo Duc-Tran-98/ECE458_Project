@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 // const jwt_decode = require('jwt-decode');
@@ -7,6 +7,8 @@ import jwt_decode from 'jwt-decode';
 
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
 export default function OAuthConsume() {
+  const [netID, setNetID] = useState('');
+
   function parseIdToken(token) {
     console.log(token);
     const idToken = jwt_decode(token);
@@ -32,8 +34,7 @@ export default function OAuthConsume() {
         const idToken = parseIdToken(res.data.result.id_token);
         console.log('idToken');
         console.log(idToken);
-        const netID = idToken.sub;
-        console.log(`netID: ${netID}`);
+        setNetID(idToken.sub);
       })
       .catch((err) => {
         console.error(err);
@@ -43,6 +44,7 @@ export default function OAuthConsume() {
   return (
     <>
       <h1>OAuth Consume Endpoint</h1>
+      <h3>{`Welcome, ${netID}`}</h3>
     </>
   );
 }
