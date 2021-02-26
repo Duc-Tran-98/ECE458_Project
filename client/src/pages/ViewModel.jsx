@@ -51,7 +51,7 @@ export default function DetailedModelView() {
       <ModalAlert show={show} handleClose={closeModal} title="DELETE MODEL">
         <>
           {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}. Are you sure?`}</div>
+            <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
           )}
           <div className="d-flex justify-content-center">
             {loading ? (
@@ -60,21 +60,14 @@ export default function DetailedModelView() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn "
-                    type="button"
-                    onClick={handleDelete}
-                  >
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleDelete}>
                     Yes
                   </button>
                 </div>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn "
-                    type="button"
-                    onClick={closeModal}
-                  >
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={closeModal}>
                     No
                   </button>
                 </div>

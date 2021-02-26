@@ -15,6 +15,8 @@ import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
 import UsersTable from './pages/UsersTable';
+import SignUp from './pages/SignUp';
+import ViewUser from './pages/ViewUser';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -52,6 +54,12 @@ function App() {
               </Route>
               <Route path="/viewUsers">
                 {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
+              </Route>
+              <Route path="/addUser">
+                {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
+              </Route>
+              <Route path="/viewUser">
+                {loggedIn ? <ViewUser /> : <Login handleLogin={handleLogin} />}
               </Route>
               <Route path="/addInstrument">
                 {loggedIn ? (

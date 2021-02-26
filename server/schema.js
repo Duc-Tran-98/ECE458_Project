@@ -190,6 +190,8 @@ const typeDefs = gql`
       password: String!
       isAdmin: Boolean!
     ): String!
+    editPermissions(userName: String!, isAdmin: Boolean!): String!
+    deleteUser(userName: String!): String!
 
     # Model related Mutations
     addModel(

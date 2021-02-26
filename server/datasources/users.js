@@ -55,6 +55,34 @@ class UserAPI extends DataSource {
     return JSON.stringify(response);
   }
 
+  async editPermissions({ userName, isAdmin }) {
+    const response = { success: false, message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    if (userName !== 'admin') {
+      this.store.users.update({ isAdmin }, { where: { userName } });
+      response.success = true;
+      response.message = `Updated user permissions for user ${userName}`;
+    } else {
+      response.message = 'ERROR: Cannot change local admin permissions';
+    }
+    return JSON.stringify(response);
+  }
+
+  async deleteUser({ userName }) {
+    const response = { success: false, message: '' };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    if (userName !== 'admin') {
+      this.store.users.destroy({ where: { userName } });
+      response.success = true;
+      response.message = `Deleted user ${userName}`;
+    } else {
+      response.message = 'ERROR: Cannot delete local admin';
+    }
+    return JSON.stringify(response);
+  }
+
   async isAdmin({ userName }) {
     let response = false;
     await this.findUser({ userName }).then((value) => {

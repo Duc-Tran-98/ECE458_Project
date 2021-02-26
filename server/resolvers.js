@@ -280,6 +280,8 @@ module.exports = {
       });
       return response;
     },
+    editPermissions: async (_, { userName, isAdmin }, { dataSources }) => await dataSources.userAPI.editPermissions({ userName, isAdmin }),
+    deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (
       _,
       {

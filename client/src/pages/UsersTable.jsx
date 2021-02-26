@@ -12,6 +12,7 @@ export default function UsersTable() {
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [userName, setUserName] = React.useState('');
+  const [isAdmin, setIsAdmin] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
@@ -66,7 +67,7 @@ export default function UsersTable() {
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
-                    `/viewUser/?userName=${userName}`,
+                    `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
                     state,
                   );
                 }}
@@ -86,6 +87,7 @@ export default function UsersTable() {
         cellHandler={(e) => {
           if (e.field === 'view') {
             setUserName(e.row.userName);
+            setIsAdmin(e.row.isAdmin);
           }
         }}
         headerElement={(

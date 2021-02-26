@@ -158,21 +158,14 @@ export default function DetailedInstrumentView() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn "
-                    type="button"
-                    onClick={handleDelete}
-                  >
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleDelete}>
                     Yes
                   </button>
                 </div>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn "
-                    type="button"
-                    onClick={closeModal}
-                  >
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={closeModal}>
                     No
                   </button>
                 </div>
@@ -208,10 +201,7 @@ export default function DetailedInstrumentView() {
                     className="col"
                     message="View instrument's calibration certificate"
                   >
-                    <Link
-                      className="btn  text-nowrap"
-                      to="/viewCertificate"
-                    >
+                    <Link className="btn  text-nowrap" to="/viewCertificate">
                       View Certificate
                     </Link>
                   </MouseOverPopover>
@@ -234,11 +224,7 @@ export default function DetailedInstrumentView() {
                   <>
                     <div className="col mt-1">
                       <MouseOverPopover message="Add new calibration event">
-                        <button
-                          type="button"
-                          className="btn "
-                          onClick={addRow}
-                        >
+                        <button type="button" className="btn " onClick={addRow}>
                           Add Calibration Event
                         </button>
                       </MouseOverPopover>
