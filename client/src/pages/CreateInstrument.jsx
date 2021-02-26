@@ -1,9 +1,13 @@
 import React, { useContext, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import InstrumentForm from '../components/InstrumentForm';
 import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEvent from '../queries/AddCalibEvent';
+
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 function CreateInstrumentPage() {
   const user = useContext(UserContext);
@@ -68,8 +72,7 @@ function CreateInstrumentPage() {
       serialNumber,
       comment,
     }).then((response) => {
-      // eslint-disable-next-line no-alert
-      alert(response.message);
+      toast(response.message);
       if (response.success) {
         // If we successfully added new instrument
         const validEvents = calibHistory.filter(
@@ -123,6 +126,7 @@ TODO: clear state instead of reload page
   );
   return (
     <>
+      <ToastContainer />
       <InstrumentForm
         modelNumber={modelNumber}
         vendor={vendor}

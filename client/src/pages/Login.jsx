@@ -53,8 +53,6 @@ const Login = ({ handleLogin }) => {
     const queryName = 'login';
     const query = print(LOGIN_MUTATION);
     function handleResponse(response) {
-      // eslint-disable-next-line no-alert
-      alert(response.message);
       if (response.success) {
         window.sessionStorage.setItem(
           'token',
