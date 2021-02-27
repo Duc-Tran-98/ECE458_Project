@@ -118,7 +118,14 @@ function App() {
                   <Login handleLogin={handleLogin} />
                 )}
               </Route>
-              <Route path="/categories">
+              <Route path="/modelCategories">
+                {loggedIn ? (
+                  <ManageCategories />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/instrumentCategories">
                 {loggedIn ? (
                   <ManageCategories />
                 ) : (

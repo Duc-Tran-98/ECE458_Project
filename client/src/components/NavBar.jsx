@@ -147,7 +147,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink className="nav-link" to={`/categories?page=1&limit=25&count=${userCount}`}>
+            <NavLink className="nav-link" to={`/modelCategories?page=1&limit=25&count=${userCount}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="32"

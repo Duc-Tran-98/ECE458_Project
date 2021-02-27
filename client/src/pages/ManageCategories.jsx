@@ -2,16 +2,25 @@
 import React, { useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link, useHistory } from 'react-router-dom';
+import { Tabs, Tab } from 'react-bootstrap';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import GetModelCategories from '../queries/GetModelCategories';
+import GetInstrumentCategories from '../queries/GetInstrumentCategories';
 import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
   const history = useHistory();
   const queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
+  let startTab;
+  if (window.location.pathname.startsWith('/model')) {
+    startTab = 'model';
+  } else {
+    startTab = 'instrument';
+  }
+  const [key, setKey] = useState(startTab);
   const rowCount = parseInt(urlParams.get('count'), 10);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
@@ -98,42 +107,99 @@ function ManageCategories() {
   ];
   return (
     <>
-      <ServerPaginationGrid
-        rowCount={rowCount}
-        cellHandler={(e) => {
-          // if (e.field === 'view') {
-          //   setUserName(e.row.userName);
-          //   setIsAdmin(e.row.isAdmin);
+      <Tabs
+        id="controlled-tab-example"
+        activeKey={key}
+        onSelect={(k) => {
+          setKey(k);
+          const searchString = `?page=${1}&limit=${25}&count=${rowCount}`;
+          // if (window.location.search !== searchString) {
+          // If current location != next location, update url
+          history.push(`/${k}Categories${searchString}`);
+          setInitLimit(25);
+          setInitPage(1);
           // }
         }}
-        headerElement={(
-          <Link className="btn  m-2" to="/addUser">
-            Create User
-          </Link>
-        )}
-        cols={cols}
-        initPage={initPage}
-        initLimit={initLimit}
-        onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/categories${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
-        }}
-        onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/categories${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
-        }}
-        fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
-      />
+        unmountOnExit
+      >
+        <Tab eventKey="model" title="Model Categories">
+          <ServerPaginationGrid
+            rowCount={rowCount}
+            cellHandler={(e) => {
+              // if (e.field === 'view') {
+              //   setUserName(e.row.userName);
+              //   setIsAdmin(e.row.isAdmin);
+              // }
+            }}
+            headerElement={(
+              <Link className="btn  m-2" to="/addUser">
+                Create Model Category
+              </Link>
+            )}
+            cols={cols}
+            initPage={initPage}
+            initLimit={initLimit}
+            onPageChange={(page, limit) => {
+              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+              if (window.location.search !== searchString) {
+                // If current location != next location, update url
+                history.push(`/modelCategories${searchString}`);
+                setInitLimit(limit);
+                setInitPage(page);
+              }
+            }}
+            onPageSizeChange={(page, limit) => {
+              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+              if (window.location.search !== searchString) {
+                // If current location != next location, update url
+                history.push(`/modelCategories${searchString}`);
+                setInitLimit(limit);
+                setInitPage(page);
+              }
+            }}
+            fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+          />
+        </Tab>
+        <Tab eventKey="instrument" title="Instrument Categories">
+          <ServerPaginationGrid
+            rowCount={rowCount}
+            cellHandler={(e) => {
+            // if (e.field === 'view') {
+            //   setUserName(e.row.userName);
+            //   setIsAdmin(e.row.isAdmin);
+            // }
+            }}
+            headerElement={(
+              <Link className="btn  m-2" to="/addUser">
+                Create Instrument Category
+              </Link>
+            )}
+            cols={cols}
+            initPage={initPage}
+            initLimit={initLimit}
+            onPageChange={(page, limit) => {
+              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+              if (window.location.search !== searchString) {
+              // If current location != next location, update url
+                history.push(`/instrumentCategories${searchString}`);
+                setInitLimit(limit);
+                setInitPage(page);
+              }
+            }}
+            onPageSizeChange={(page, limit) => {
+              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+              if (window.location.search !== searchString) {
+              // If current location != next location, update url
+                history.push(`/instrumentCategories${searchString}`);
+                setInitLimit(limit);
+                setInitPage(page);
+              }
+            }}
+            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then((response) => response)}
+          />
+        </Tab>
+      </Tabs>
+
     </>
   );
 }
