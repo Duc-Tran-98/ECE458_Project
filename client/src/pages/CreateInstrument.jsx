@@ -45,6 +45,7 @@ function CreateInstrumentPage({ onCreation }) {
     serialNumber: '',
     calibrationFrequency: 0,
     description: '',
+    assestTag: '',
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
