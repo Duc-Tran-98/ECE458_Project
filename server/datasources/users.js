@@ -55,6 +55,26 @@ class UserAPI extends DataSource {
     return JSON.stringify(response);
   }
 
+  /**
+   * This function takes a netId, and logs this user in (optionally creates if they do not exist)
+   */
+  async oauthLogin({ netId }) {
+    const userName = netId;
+    const response = { success: true, message: '' };
+    await this.findUser({ userName }).then((value) => {
+      if (value) {
+        response.message = 'Account already exists';
+      } else {
+        // TODO: Create user (all other fields empty)
+        this.store.users.create({
+          userName,
+        });
+        response.message = 'Created account for user';
+      }
+    });
+    return JSON.stringify(response);
+  }
+
   async editPermissions({ userName, isAdmin }) {
     const response = { success: false, message: '' };
     const storeModel = await this.store;

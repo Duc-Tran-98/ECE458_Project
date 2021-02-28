@@ -182,6 +182,7 @@ const typeDefs = gql`
   type Mutation {
     # User related mutations
     login(userName: String!, password: String!): String!
+    oauthLogin(netId: String!): String!
     signup(
       email: String!
       firstName: String!
