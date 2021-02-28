@@ -1,9 +1,12 @@
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
+import { ToastContainer, toast } from 'react-toastify';
 import CreateModel from '../queries/CreateModel';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import ModelForm from '../components/ModelForm';
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 function CreateModelPage({ onCreation }) {
   CreateModelPage.propTypes = {
@@ -32,16 +35,8 @@ function CreateModelPage({ onCreation }) {
         modelNumber, vendor, description, comment,
       } = formState;
       const handleResponse = (response) => {
-        // eslint-disable-next-line no-alert
-        alert(response.message);
+        toast(response.message);
         if (response.success) {
-          setFormState({
-            modelNumber: '',
-            vendor: '',
-            description: '',
-            comment: '',
-            calibrationFrequency: '0',
-          });
           onCreation();
         }
       };
@@ -88,6 +83,7 @@ function CreateModelPage({ onCreation }) {
   } = formState;
   return (
     <>
+      <ToastContainer />
       <ModelForm
         modelNumber={modelNumber}
         vendor={vendor}

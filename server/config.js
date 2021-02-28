@@ -13,4 +13,7 @@ module.exports = {
   adminLastName: process.env.ADMIN_LASTNAME,
   adminEmail: process.env.ADMIN_EMAIL,
   adminPassword: process.env.ADMIN_PASSWORD,
+  oauthClientId: process.env.OAUTH_CLIENT_ID,
+  oauthClientSecret: process.env.OAUTH_CLIENT_SECRET,
+  oauthRedirectURI: process.env.OAUTH_REDIRECT_URI,
 };

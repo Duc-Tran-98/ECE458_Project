@@ -36,8 +36,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 4000:4000
+      - 4001:4001
     expose:
       - 4000
+      - 4001
     links:
       - mysql
     volumes:

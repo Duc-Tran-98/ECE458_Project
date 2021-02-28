@@ -1,9 +1,13 @@
 /* eslint-disable max-len */
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import OAuth from '../components/OAuthLogin';
+import ToastTest from '../components/ToastTest';
 
 export default function ComponentTest() {
   return (
-    <CircularProgress />
+    <>
+      <ToastTest />
+      <OAuth />
+    </>
   );
 }

@@ -17,6 +17,7 @@ import BulkImport from './pages/BulkImport';
 import UsersTable from './pages/UsersTable';
 import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
+import OAuthConsume from './pages/OAuthConsume';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -134,6 +135,9 @@ function App() {
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
+              </Route>
+              <Route path="/oauth/consume">
+                <OAuthConsume />
               </Route>
             </Switch>
           </div>
