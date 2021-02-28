@@ -23,3 +23,14 @@ export default async function GetInstrumentCategories({ limit, offset }) {
   console.log(response);
   return response;
 }
+
+export async function CountInstrumentCategories() {
+  const query = print(gql`
+        query Count{
+            countInstrumentCategories
+        }
+    `);
+  const queryName = 'countInstrumentCategories';
+  const response = await QueryAndThen({ query, queryName });
+  return response;
+}

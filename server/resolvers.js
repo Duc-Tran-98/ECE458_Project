@@ -13,6 +13,8 @@ module.exports = {
     getAllUsers: async (_, { limit, offset }, { dataSources }) => await dataSources.userAPI.getAllUsers({ limit, offset }),
     countAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.countAllUsers(),
 
+    countModelCategories: async (_, __, { dataSources }) => await dataSources.modelAPI.countModelCategories(),
+    countInstrumentCategories: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countInstrumentCategories(),
     // Model Queries
     countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
     // eslint-disable-next-line max-len

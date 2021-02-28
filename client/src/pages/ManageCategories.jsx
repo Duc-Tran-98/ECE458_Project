@@ -6,8 +6,9 @@ import { Tabs, Tab } from 'react-bootstrap';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
-import GetModelCategories from '../queries/GetModelCategories';
-import GetInstrumentCategories from '../queries/GetInstrumentCategories';
+import GetModelCategories, { CountModelCategories } from '../queries/GetModelCategories';
+import GetInstrumentCategories, { CountInstrumentCategories } from '../queries/GetInstrumentCategories';
+
 import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
@@ -21,7 +22,7 @@ function ManageCategories() {
     startTab = 'instrument';
   }
   const [key, setKey] = useState(startTab);
-  const rowCount = parseInt(urlParams.get('count'), 10);
+  const [rowCount, setRowCount] = React.useState(parseInt(urlParams.get('count'), 10));
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [userName, setUserName] = React.useState('');
@@ -68,6 +69,7 @@ function ManageCategories() {
                 //     `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
                 //     state,
                 //   );
+                  console.log('edit cat');
                 }}
               >
                 Edit
@@ -95,6 +97,7 @@ function ManageCategories() {
                 //     `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
                 //     state,
                 //   );
+                  console.log('delete cat');
                 }}
               >
                 Delete
@@ -108,11 +111,23 @@ function ManageCategories() {
   return (
     <>
       <Tabs
-        id="controlled-tab-example"
+        id="tabs"
         activeKey={key}
-        onSelect={(k) => {
+        onSelect={async (k) => {
+          let rows;
+          if (k === 'model') {
+            await CountModelCategories().then((val) => {
+              setRowCount(val);
+              rows = val;
+            });
+          } else {
+            await CountInstrumentCategories().then((val) => {
+              setRowCount(val);
+              rows = val;
+            });
+          }
           setKey(k);
-          const searchString = `?page=${1}&limit=${25}&count=${rowCount}`;
+          const searchString = `?page=${1}&limit=${25}&count=${rows}`;
           // if (window.location.search !== searchString) {
           // If current location != next location, update url
           history.push(`/${k}Categories${searchString}`);

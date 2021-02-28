@@ -23,3 +23,14 @@ export default async function GetModelCategories({ limit, offset }) {
   console.log(response);
   return response;
 }
+
+export async function CountModelCategories() {
+  const query = print(gql`
+        query Count{
+            countModelCategories
+        }
+    `);
+  const queryName = 'countModelCategories';
+  const response = await QueryAndThen({ query, queryName });
+  return response;
+}

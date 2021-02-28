@@ -62,7 +62,8 @@ const typeDefs = gql`
     # category related queries
     getAllModelCategories(limit: Int, offset: Int): [Category]
     getAllInstrumentCategories(limit: Int, offset: Int): [Category]
-    
+    countModelCategories: Int!
+    countInstrumentCategories: Int!
   }
 
   type User {

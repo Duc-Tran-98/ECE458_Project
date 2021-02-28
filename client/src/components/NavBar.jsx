@@ -5,6 +5,7 @@ import UserContext from './UserContext';
 import { CountAllModels } from '../queries/GetAllModels';
 import { CountInstruments } from '../queries/GetAllInstruments';
 import { CountAllUsers } from '../queries/GetUser';
+import { CountModelCategories } from '../queries/GetModelCategories';
 
 function NavBar({ loggedIn, handleSignOut, title }) {
   NavBar.propTypes = {
@@ -16,10 +17,12 @@ function NavBar({ loggedIn, handleSignOut, title }) {
   const [modelCount, setModelCount] = React.useState('');
   const [instrumentCount, setInstrumentCount] = React.useState('');
   const [userCount, setUserCount] = React.useState('');
+  const [modelCatCount, setModelCatCount] = React.useState('');
   React.useEffect(() => {
     CountAllModels().then((val) => setModelCount(val));
     CountInstruments().then((val) => setInstrumentCount(val));
     CountAllUsers().then((val) => setUserCount(val));
+    CountModelCategories().then((val) => setModelCatCount(val));
   });
 
   const navContent = loggedIn ? (
@@ -147,7 +150,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink className="nav-link" to={`/modelCategories?page=1&limit=25&count=${userCount}`}>
+            <NavLink className="nav-link" to={`/modelCategories?page=1&limit=25&count=${modelCatCount}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="32"
