@@ -59,15 +59,28 @@ class UserAPI extends DataSource {
    * This function takes a netId, and logs this user in (optionally creates if they do not exist)
    */
   async oauthLogin({ netId }) {
+    const email = netId;
+    const firstName = 'netId';
+    const lastName = 'User';
     const userName = netId;
+    const isAdmin = true;
+
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const password = bcrypt.hashSync(netId, salt);
+
     const response = { success: true, message: '' };
     await this.findUser({ userName }).then((value) => {
       if (value) {
         response.message = 'Account already exists';
       } else {
-        // TODO: Create user (all other fields empty)
         this.store.users.create({
+          email,
+          firstName,
+          lastName,
           userName,
+          password,
+          isAdmin,
         });
         response.message = 'Created account for user';
       }

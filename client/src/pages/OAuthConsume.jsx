@@ -4,6 +4,7 @@ import axios from 'axios';
 // const jwt_decode = require('jwt-decode');
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
+import OAuthSignOn from '../queries/OAuthSignOn';
 
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
 // TODO: Check if user exists, or add them to database on first login
@@ -22,6 +23,11 @@ export default function OAuthConsume() {
     return code;
   };
 
+  const handleOAuthSignOn = (response) => {
+    console.log('Handling OAuth Sign On');
+    console.log(response);
+  };
+
   useEffect(() => {
     const authCode = getURLCode();
     console.log(authCode);
@@ -35,7 +41,9 @@ export default function OAuthConsume() {
         const idToken = parseIdToken(res.data.result.id_token);
         console.log('idToken');
         console.log(idToken);
-        setNetID(idToken.sub);
+        const netId = idToken.sub;
+        setNetID(netId);
+        OAuthSignOn({ netId, handleResponse: handleOAuthSignOn });
       })
       .catch((err) => {
         console.error(err);
