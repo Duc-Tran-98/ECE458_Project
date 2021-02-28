@@ -1,14 +1,19 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-nested-ternary */
+
 import React, { useState } from 'react';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link, useHistory } from 'react-router-dom';
 import { Tabs, Tab } from 'react-bootstrap';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
+import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
 import GetModelCategories, { CountModelCategories } from '../queries/GetModelCategories';
 import GetInstrumentCategories, { CountInstrumentCategories } from '../queries/GetInstrumentCategories';
-
+import DeleteModelCategory from '../queries/DeleteModelCategory';
+import DeleteInstrumentCategory from '../queries/DeleteInstrumentCategory';
 import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
@@ -25,6 +30,11 @@ function ManageCategories() {
   const [rowCount, setRowCount] = React.useState(parseInt(urlParams.get('count'), 10));
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [category, setCategory] = React.useState('');
+  const [responseMsg, setResponseMsg] = React.useState('');
+  const [responseStatus, setResponseStatus] = React.useState(true);
+  const [showDelete, setShowDelete] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [userName, setUserName] = React.useState('');
   const [isAdmin, setIsAdmin] = React.useState(false);
   history.listen((location, action) => {
@@ -37,6 +47,9 @@ function ManageCategories() {
       setInitPage(pg);
     }
   });
+  const cellHandler = (e) => {
+    setCategory(e.row.name);
+  };
   const cols = [
     {
       field: 'id',
@@ -64,11 +77,6 @@ function ManageCategories() {
                 type="button"
                 className="btn"
                 onClick={() => {
-                //   const state = { previousUrl: window.location.href };
-                //   history.push(
-                //     `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
-                //     state,
-                //   );
                   console.log('edit cat');
                 }}
               >
@@ -92,12 +100,8 @@ function ManageCategories() {
                 type="button"
                 className="btn"
                 onClick={() => {
-                //   const state = { previousUrl: window.location.href };
-                //   history.push(
-                //     `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
-                //     state,
-                //   );
                   console.log('delete cat');
+                  setShowDelete(true);
                 }}
               >
                 Delete
@@ -108,8 +112,62 @@ function ManageCategories() {
       ),
     },
   ];
+  const closeDeleteModal = () => {
+    setResponseMsg('');
+    setResponseStatus(false);
+    setShowDelete(false);
+    console.log('close');
+  };
+  const handleResponse = (response) => {
+    setResponseMsg(response.message);
+    setResponseStatus(response.success);
+    setLoading(false);
+    console.log(response);
+  };
+  const handleDelete = () => {
+    setLoading(true);
+    console.log('delete');
+    if (key === 'model') {
+      DeleteModelCategory({ name: category, handleResponse });
+    } else {
+      DeleteInstrumentCategory({ name: category, handleResponse });
+    }
+  };
+
   return (
     <>
+      <ModalAlert
+        show={showDelete}
+        handleClose={closeDeleteModal}
+        title="DELETE CATEGORY"
+      >
+        <>
+          {responseMsg.length === 0 && (
+            <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
+          )}
+          <div className="d-flex justify-content-center">
+            {loading ? (
+              <CircularProgress />
+            ) : responseMsg.length > 0 ? (
+              <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            ) : (
+              <>
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleDelete}>
+                    Yes
+                  </button>
+                </div>
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={closeDeleteModal}>
+                    No
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      </ModalAlert>
       <Tabs
         id="tabs"
         activeKey={key}
@@ -140,12 +198,7 @@ function ManageCategories() {
         <Tab eventKey="model" title="Model Categories">
           <ServerPaginationGrid
             rowCount={rowCount}
-            cellHandler={(e) => {
-              // if (e.field === 'view') {
-              //   setUserName(e.row.userName);
-              //   setIsAdmin(e.row.isAdmin);
-              // }
-            }}
+            cellHandler={cellHandler}
             headerElement={(
               <Link className="btn  m-2" to="/addUser">
                 Create Model Category
@@ -178,12 +231,7 @@ function ManageCategories() {
         <Tab eventKey="instrument" title="Instrument Categories">
           <ServerPaginationGrid
             rowCount={rowCount}
-            cellHandler={(e) => {
-            // if (e.field === 'view') {
-            //   setUserName(e.row.userName);
-            //   setIsAdmin(e.row.isAdmin);
-            // }
-            }}
+            cellHandler={cellHandler}
             headerElement={(
               <Link className="btn  m-2" to="/addUser">
                 Create Instrument Category
