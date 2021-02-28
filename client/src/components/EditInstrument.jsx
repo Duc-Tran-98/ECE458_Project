@@ -107,8 +107,10 @@ export default function EditInstrument({
         setResponseMsg('');
       }, 1000);
       if (response.success) {
+        const { state } = history.location;
         history.replace(
           `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
+          state,
         ); // editing => old url no longer valid, so replace it
       }
     };

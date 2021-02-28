@@ -7,11 +7,14 @@ import { CountInstruments } from '../queries/GetAllInstruments';
 import { CountAllUsers } from '../queries/GetUser';
 import { CountModelCategories } from '../queries/GetModelCategories';
 
-function NavBar({ loggedIn, handleSignOut, title }) {
+function NavBar({
+  loggedIn, handleSignOut, title, updateCount,
+}) {
   NavBar.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
     handleSignOut: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
+    updateCount: PropTypes.bool.isRequired,
   };
   const user = React.useContext(UserContext);
   const [modelCount, setModelCount] = React.useState('');
@@ -23,7 +26,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
     CountInstruments().then((val) => setInstrumentCount(val));
     CountAllUsers().then((val) => setUserCount(val));
     CountModelCategories().then((val) => setModelCatCount(val));
-  });
+  }, [updateCount]);
 
   const navContent = loggedIn ? (
     <ul className="navbar-nav me-auto mb-2 mb-lg-0">

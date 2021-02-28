@@ -1,11 +1,18 @@
 import React, { useContext, useState } from 'react';
+import PropTypes from 'prop-types';
+import { ToastContainer, toast } from 'react-toastify';
 import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import InstrumentForm from '../components/InstrumentForm';
 import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEvent from '../queries/AddCalibEvent';
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
-function CreateInstrumentPage() {
+function CreateInstrumentPage({ onCreation }) {
+  CreateInstrumentPage.propTypes = {
+    onCreation: PropTypes.func.isRequired,
+  };
   const user = useContext(UserContext);
   const [calibHistory, setCalibHistory] = useState([
     {
@@ -16,7 +23,8 @@ function CreateInstrumentPage() {
       viewOnly: false,
     },
   ]); // calibhistory is the array of calibration events.
-  const onChangeCalibRow = (e, entry) => { // This method deals with updating a particular calibration event
+  const onChangeCalibRow = (e, entry) => {
+    // This method deals with updating a particular calibration event
     const newHistory = [...calibHistory];
     const index = newHistory.indexOf(entry);
     newHistory[index] = { ...entry };
@@ -39,7 +47,8 @@ function CreateInstrumentPage() {
     description: '',
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
-  const addRow = () => { // This adds an entry to the array(array = calibration history)
+  const addRow = () => {
+    // This adds an entry to the array(array = calibration history)
     const newHistory = calibHistory;
     newHistory.push({
       user: user.userName,
@@ -51,7 +60,8 @@ function CreateInstrumentPage() {
     setNextId(nextId + 1);
     setCalibHistory(newHistory);
   };
-  const deleteRow = (rowId) => { // This is for deleting an entry from array
+  const deleteRow = (rowId) => {
+    // This is for deleting an entry from array
     const newHistory = calibHistory.filter((item) => item.id !== rowId);
     setCalibHistory(newHistory);
   };
@@ -68,8 +78,7 @@ function CreateInstrumentPage() {
       serialNumber,
       comment,
     }).then((response) => {
-      // eslint-disable-next-line no-alert
-      alert(response.message);
+      toast(response.message);
       if (response.success) {
         // If we successfully added new instrument
         const validEvents = calibHistory.filter(
@@ -86,20 +95,31 @@ function CreateInstrumentPage() {
           });
         }
         // this section deals with resetting the form
-        window.location.reload();
-        /*
-TODO: clear state instead of reload page
-*/
+        setFormState({
+          modelNumber: '',
+          vendor: '',
+          comment: '',
+          serialNumber: '',
+          calibrationFrequency: 0,
+          description: '',
+        });
+        onCreation();
       }
     });
   };
 
-  const changeHandler = (e) => { // This is for updating the instrument's fields from regular inputs
+  const changeHandler = (e) => {
+    // This is for updating the instrument's fields from regular inputs
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
-  const onInputChange = (e, v) => { // This if for updating instrument's fields from autocomplete input
+  const onInputChange = (e, v) => {
+    // This if for updating instrument's fields from autocomplete input
     setFormState({
-      ...formState, modelNumber: v.modelNumber, vendor: v.vendor, calibrationFrequency: v.calibrationFrequency, description: v.description,
+      ...formState,
+      modelNumber: v.modelNumber,
+      vendor: v.vendor,
+      calibrationFrequency: v.calibrationFrequency,
+      description: v.description,
     });
   };
   const {
@@ -123,6 +143,7 @@ TODO: clear state instead of reload page
   );
   return (
     <>
+      <ToastContainer />
       <InstrumentForm
         modelNumber={modelNumber}
         vendor={vendor}
@@ -148,6 +169,3 @@ TODO: clear state instead of reload page
 }
 
 export default CreateInstrumentPage;
-/*
-TODO: clear state instead of reloading
-*/

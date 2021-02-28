@@ -4,6 +4,7 @@ import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import Query from '../components/UseQuery';
+import OAuthLogin from '../components/OAuthLogin';
 
 const Login = ({ handleLogin }) => {
   Login.propTypes = {
@@ -48,8 +49,6 @@ const Login = ({ handleLogin }) => {
     const queryName = 'login';
     const query = print(LOGIN_MUTATION);
     function handleResponse(response) {
-      // eslint-disable-next-line no-alert
-      alert(response.message);
       if (response.success) {
         window.sessionStorage.setItem(
           'token',
@@ -113,10 +112,13 @@ const Login = ({ handleLogin }) => {
             Remember me
           </label>
         </div> */}
-      <div className="d-flex justify-content-center mb-3 mt-3">
-        <button className="btn " type="submit">
+      <div className="d-flex flex-column my-3">
+        <button className="btn mx-auto" type="submit">
           Log In
         </button>
+        <div className="mx-auto mt-3">
+          <OAuthLogin />
+        </div>
       </div>
       {/* <div className="d-flex justify-content-center">
           <p className="text-muted">

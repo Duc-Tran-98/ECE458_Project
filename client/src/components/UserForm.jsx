@@ -178,10 +178,11 @@ export function EditUserForm({
         setLoading(false);
         setResponseMsg(response.message);
         if (response.success) {
+          const { state } = history.location;
           history.replace(
             `/viewUser/?userName=${formState.userName}&isAdmin=${
               formState.isAdmin
-            }`,
+            }`, state,
           );
           setTimeout(() => {
             setResponseMsg('Save Changes');

@@ -16,11 +16,17 @@ import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
 import ManageCategories from './pages/ManageCategories';
 import UsersTable from './pages/UsersTable';
-import SignUp from './pages/SignUp';
+import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
+import OAuthConsume from './pages/OAuthConsume';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [updateCount, setUpdateCount] = useState(false);
+  const modifyCount = () => { // anything that modifies count (add/delete) should call this
+    setUpdateCount(true);
+    setUpdateCount(false);
+  };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) { // If previously logged in and refreshed page
       setLoggedIn(true); // loggedIn goes back to false, so we set it back to true
@@ -42,6 +48,7 @@ function App() {
             title="HPC IMS"
             loggedIn={loggedIn}
             handleSignOut={handleSignOut}
+            updateCount={updateCount}
           />
         </header>
         <main className="d-flex justify-content-center my-5">
@@ -54,24 +61,36 @@ function App() {
                 {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
               </Route>
               <Route path="/viewUsers">
-                {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
+                {loggedIn ? (
+                  <UsersTable />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
               </Route>
               <Route path="/addUser">
-                {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
+                {loggedIn ? (
+                  <CreateUser onCreation={modifyCount} />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
               </Route>
               <Route path="/viewUser">
-                {loggedIn ? <ViewUser /> : <Login handleLogin={handleLogin} />}
+                {loggedIn ? (
+                  <ViewUser onDelete={modifyCount} />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
               </Route>
               <Route path="/addInstrument">
                 {loggedIn ? (
-                  <CreateInstrument />
+                  <CreateInstrument onCreation={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
               </Route>
               <Route path="/addModel">
                 {loggedIn ? (
-                  <CreateModel />
+                  <CreateModel onCreation={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
@@ -92,14 +111,14 @@ function App() {
               </Route>
               <Route path="/viewInstrument/">
                 {loggedIn ? (
-                  <DetailedInstrumentView />
+                  <DetailedInstrumentView onDelete={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
               </Route>
               <Route path="/viewModel/">
                 {loggedIn ? (
-                  <DetailedModelView />
+                  <DetailedModelView onDelete={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
@@ -131,6 +150,9 @@ function App() {
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
+              </Route>
+              <Route path="/oauth/consume">
+                <OAuthConsume />
               </Route>
             </Switch>
           </div>

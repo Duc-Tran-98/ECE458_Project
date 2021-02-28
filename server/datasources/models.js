@@ -225,7 +225,7 @@ class ModelAPI extends DataSource {
     comment,
     calibrationFrequency,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     const validation = validateModel({
@@ -248,6 +248,7 @@ class ModelAPI extends DataSource {
           calibrationFrequency,
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
+        response.success = true;
       }
     });
     return JSON.stringify(response);

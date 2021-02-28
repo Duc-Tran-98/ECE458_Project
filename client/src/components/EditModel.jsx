@@ -3,6 +3,7 @@ import { print } from 'graphql';
 import React from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useHistory } from 'react-router-dom';
 import ModelForm from './ModelForm';
 import Query from './UseQuery';
 import UserContext from './UserContext';
@@ -17,6 +18,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     handleDelete: null,
   };
   const user = React.useContext(UserContext);
+  const history = useHistory();
   const [model, setModel] = React.useState({
     // set model state
     modelNumber: initModelNumber,
@@ -133,15 +135,15 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     const handleResponse = (response) => {
       setLoading(false);
       setResponseMsg(response.message);
+      if (response.success) {
+        const { state } = history.location;
+        history.replace(
+          `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+          state,
+        ); // change url because link for view instruments have changed;
+      }
       setTimeout(() => {
         setResponseMsg('');
-        if (response.success) {
-          window.location.replace(
-            `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-          ); // reload page because link for view instruments have changed;
-          // can opt not to reload, but will have to add more code; either way,
-          // just be consistent across all pages
-        }
       }, 1000);
     };
     Query({
@@ -211,6 +213,3 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     </>
   );
 }
-/*
-TODO: clear state instead of reload page
-*/
