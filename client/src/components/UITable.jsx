@@ -112,11 +112,11 @@ export function ServerPaginationGrid({
     // eslint-disable-next-line react/forbid-prop-types
     cols: PropTypes.array.isRequired, // This is for displaying columns
     // eslint-disable-next-line react/require-default-props
-    cellHandler: PropTypes.func,
-    filterRowForCSV: PropTypes.func.isRequired, // function to filter rows for export
+    cellHandler: PropTypes.func, // callback fired when cell is clicked
+    filterRowForCSV: PropTypes.func, // function to filter rows for export
     // eslint-disable-next-line react/forbid-prop-types
-    headers: PropTypes.array.isRequired, // map db keys to CSV headers
-    filename: PropTypes.string.isRequired, // name the csv file
+    headers: PropTypes.array, // map db keys to CSV headers
+    filename: PropTypes.string, // name the csv file
     initPage: PropTypes.number.isRequired, // which page we're on from URL
     initLimit: PropTypes.number.isRequired, // rows/page from URL
     onPageChange: PropTypes.func.isRequired, // callback fired when page changes
@@ -126,6 +126,9 @@ export function ServerPaginationGrid({
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
+    headers: null,
+    filename: null,
+    filterRowForCSV: null,
   };
   paginationContainer = React.useRef(null);
   const [rows, setRows] = React.useState([]);
@@ -206,7 +209,7 @@ export function ServerPaginationGrid({
           }
         });
       });
-      const filteredRows = filterRowForCSV(exportRows);
+      const filteredRows = (filterRowForCSV !== null) ? filterRowForCSV(exportRows) : exportRows;
       setCSVData(filteredRows);
     }
   };
@@ -221,16 +224,16 @@ export function ServerPaginationGrid({
           width: '100%',
         }}
       >
-        <CSVLink
-          data={csvData}
-          headers={headers}
-          filename={filename}
-          className="hidden"
-          ref={csvLink}
-        />
-        <div className="sticky-top bg-offset rounded">
-          {headerElement}
-        </div>
+        {headers && filename && (
+          <CSVLink
+            data={csvData}
+            headers={headers}
+            filename={filename}
+            className="hidden"
+            ref={csvLink}
+          />
+        )}
+        <div className="sticky-top bg-offset rounded">{headerElement}</div>
         <DataGrid
           rows={rows}
           columns={cols}
@@ -273,7 +276,7 @@ export function ServerPaginationGrid({
         <div className="col">
           <div className="btn-group dropup">
             <button
-              className="btn btn-dark dropdown-toggle"
+              className="btn  dropdown-toggle"
               type="button"
               id="dropdownMenu2"
               data-bs-toggle="dropdown"
@@ -319,10 +322,10 @@ export function ServerPaginationGrid({
           {handleExport && (
             <>
               {loadingExport && <LinearProgress color="secondary" />}
-              {filename.includes('model') && (
+              {(filename && filename.includes('model')) && (
                 <ExportModels setLoading={setLoadingExport} />
               )}
-              {filename.includes('instrument') && (
+              {(filename && filename.includes('instrument')) && (
                 <ExportInstruments setLoading={setLoadingExport} />
               )}
             </>

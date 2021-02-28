@@ -3,6 +3,7 @@ import { print } from 'graphql';
 import React from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useHistory } from 'react-router-dom';
 import ModelForm from './ModelForm';
 import Query from './UseQuery';
 import UserContext from './UserContext';
@@ -17,6 +18,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     handleDelete: null,
   };
   const user = React.useContext(UserContext);
+  const history = useHistory();
   const [model, setModel] = React.useState({
     // set model state
     modelNumber: initModelNumber,
@@ -30,42 +32,49 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
 
   React.useEffect(() => {
-    const FIND_MODEL = gql`
-      query FindModel($modelNumber: String!, $vendor: String!) {
-        getModel(modelNumber: $modelNumber, vendor: $vendor) {
-          id
-          description
-          comment
-          calibrationFrequency
-        }
+    let active = true;
+    (() => {
+      if (active) {
+        Query({
+          query: print(gql`
+            query FindModel($modelNumber: String!, $vendor: String!) {
+              getModel(modelNumber: $modelNumber, vendor: $vendor) {
+                id
+                description
+                comment
+                calibrationFrequency
+              }
+            }
+          `),
+          queryName: 'getModel',
+          getVariables: () => ({
+            modelNumber: initModelNumber,
+            vendor: initVendor,
+          }),
+          handleResponse: (response) => {
+            const { description, comment, id } = response;
+            let { calibrationFrequency } = response;
+            if (calibrationFrequency !== null) {
+              calibrationFrequency = calibrationFrequency.toString();
+            } else {
+              calibrationFrequency = 0;
+            }
+            setModel({
+              ...model,
+              description,
+              comment,
+              id,
+              calibrationFrequency,
+              modelNumber: initModelNumber,
+              vendor: initVendor,
+            });
+          },
+        });
       }
-    `;
-    const query = print(FIND_MODEL);
-    const queryName = 'getModel';
-    const getVariables = () => ({
-      modelNumber: initModelNumber,
-      vendor: initVendor,
-    });
-    const handleResponse = (response) => {
-      const { description, comment, id } = response;
-      let { calibrationFrequency } = response;
-      calibrationFrequency = calibrationFrequency.toString();
-      setModel({
-        ...model,
-        description,
-        comment,
-        id,
-        calibrationFrequency,
-        modelNumber: initModelNumber,
-        vendor: initVendor,
-      });
+    })();
+    return () => {
+      active = false;
     };
-    Query({
-      query,
-      queryName,
-      getVariables,
-      handleResponse,
-    });
   }, [initModelNumber, initVendor]);
 
   const onInputChange = (e, v) => {
@@ -126,15 +135,15 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     const handleResponse = (response) => {
       setLoading(false);
       setResponseMsg(response.message);
+      if (response.success) {
+        const { state } = history.location;
+        history.replace(
+          `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+          state,
+        ); // change url because link for view instruments have changed;
+      }
       setTimeout(() => {
         setResponseMsg('');
-        if (response.success) {
-          window.location.replace(
-            `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-          ); // reload page because link for view instruments have changed;
-          // can opt not to reload, but will have to add more code; either way,
-          // just be consistent across all pages
-        }
       }, 1000);
     };
     Query({
@@ -157,12 +166,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     footElement = responseMsg.length > 0 ? (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark">
+          <button type="button" className="btn ">
             Delete Model
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap">
+          <button type="button" className="btn  text-nowrap">
             {responseMsg}
           </button>
         </div>
@@ -170,12 +179,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     ) : (
       <div className="row">
         <div className="col">
-          <button type="button" className="btn btn-dark" onClick={handleDelete}>
+          <button type="button" className="btn " onClick={handleDelete}>
             Delete Model
           </button>
         </div>
         <div className="col">
-          <button type="button" className="btn btn-dark text-nowrap" onClick={handleSubmit}>
+          <button type="button" className="btn  text-nowrap" onClick={handleSubmit}>
             Save Changes
           </button>
         </div>
@@ -204,6 +213,3 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     </>
   );
 }
-/*
-TODO: clear state instead of reload page
-*/

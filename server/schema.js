@@ -7,7 +7,8 @@ const typeDefs = gql`
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllUsers: [User]
+    getAllUsers(limit: Int, offset: Int): [User]
+    countAllUsers: Int!
 
     # Model Related Queries
     countAllModels: Int!
@@ -189,6 +190,8 @@ const typeDefs = gql`
       password: String!
       isAdmin: Boolean!
     ): String!
+    editPermissions(userName: String!, isAdmin: Boolean!): String!
+    deleteUser(userName: String!): String!
 
     # Model related Mutations
     addModel(

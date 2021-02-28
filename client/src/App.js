@@ -3,7 +3,6 @@ import './App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
-import SignUp from './pages/SignUp';
 import Certificate from './pages/Certificate';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
@@ -15,10 +14,18 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
+import UsersTable from './pages/UsersTable';
+import CreateUser from './pages/CreateUser';
+import ViewUser from './pages/ViewUser';
 import OAuthConsume from './pages/OAuthConsume';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [updateCount, setUpdateCount] = useState(false);
+  const modifyCount = () => { // anything that modifies count (add/delete) should call this
+    setUpdateCount(true);
+    setUpdateCount(false);
+  };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) { // If previously logged in and refreshed page
       setLoggedIn(true); // loggedIn goes back to false, so we set it back to true
@@ -40,6 +47,7 @@ function App() {
             title="HPC IMS"
             loggedIn={loggedIn}
             handleSignOut={handleSignOut}
+            updateCount={updateCount}
           />
         </header>
         <main className="d-flex justify-content-center my-5">
@@ -51,19 +59,37 @@ function App() {
               <Route exact path="/">
                 {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
               </Route>
-              <Route path="/register">
-                {loggedIn ? <SignUp /> : <Login handleLogin={handleLogin} />}
+              <Route path="/viewUsers">
+                {loggedIn ? (
+                  <UsersTable />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/addUser">
+                {loggedIn ? (
+                  <CreateUser onCreation={modifyCount} />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/viewUser">
+                {loggedIn ? (
+                  <ViewUser onDelete={modifyCount} />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
               </Route>
               <Route path="/addInstrument">
                 {loggedIn ? (
-                  <CreateInstrument />
+                  <CreateInstrument onCreation={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
               </Route>
               <Route path="/addModel">
                 {loggedIn ? (
-                  <CreateModel />
+                  <CreateModel onCreation={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
@@ -84,14 +110,14 @@ function App() {
               </Route>
               <Route path="/viewInstrument/">
                 {loggedIn ? (
-                  <DetailedInstrumentView />
+                  <DetailedInstrumentView onDelete={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
               </Route>
               <Route path="/viewModel/">
                 {loggedIn ? (
-                  <DetailedModelView />
+                  <DetailedModelView onDelete={modifyCount} />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}

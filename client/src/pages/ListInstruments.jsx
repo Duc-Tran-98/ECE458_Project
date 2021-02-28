@@ -1,12 +1,10 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
 import { useState } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
-import GetCalibHistory from '../queries/GetCalibHistory';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -20,6 +18,7 @@ export default function ListInstruments() {
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  const [calibrationFrequency, setcalibrationFrequency] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
@@ -41,12 +40,15 @@ export default function ListInstruments() {
     }
   });
   const cellHandler = (e) => {
-    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+    if (e.field === 'view') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setDescription(e.row.description);
+      if (e.row.calibrationFrequency !== null) {
+        setcalibrationFrequency(e.row.calibrationFrequency);
+      }
     }
   };
   const genDaysLeft = (date) => {
@@ -59,7 +61,7 @@ export default function ListInstruments() {
       return 'text-success';
     }
     if (daysLeft > 0 && daysLeft <= 30) {
-      return 'text-warning';
+      return 'text-warning-theme';
     }
     return 'text-danger';
   };
@@ -82,26 +84,22 @@ export default function ListInstruments() {
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
-      field: 'date',
+      field: 'recentCalDate',
       headerName: 'Calibration Date',
       width: 175,
       type: 'date',
     },
     {
-      field: 'calibrationComment',
+      field: 'recentCalComment',
       headerName: 'Calibration Comment',
       width: 300,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
@@ -168,7 +166,7 @@ export default function ListInstruments() {
     {
       field: 'view',
       headerName: 'View',
-      width: 80,
+      width: 120,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
@@ -176,16 +174,16 @@ export default function ListInstruments() {
             <MouseOverPopover message="View Instrument">
               <button
                 type="button"
-                className="btn btn-dark"
+                className="btn "
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
-                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`,
+                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
                     state,
                   );
                 }}
               >
-                <SearchIcon />
+                View
               </button>
             </MouseOverPopover>
           </div>
@@ -221,7 +219,7 @@ export default function ListInstruments() {
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <Link className="btn btn-dark m-2" to="/addInstrument">
+          <Link className="btn  m-2" to="/addInstrument">
             Create Instrument
           </Link>
         )}
@@ -249,6 +247,31 @@ export default function ListInstruments() {
         fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
           response.forEach((element) => {
             if (element !== null) {
+              element.calibrationStatus = (element.calibrationFrequency !== null) ? 'Out of Calibration' : 'N/A';
+              element.recentCalDate = 'N/A';
+              if (element.calibrationFrequency && element.recentCalibration && element.recentCalibration[0]) {
+              // eslint-disable-next-line prefer-destructuring
+                element.calibrationStatus = new Date(element.recentCalibration[0].date)
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+                element.recentCalDate = element.recentCalibration[0].date;
+              }
+            }
+          });
+          return response;
+        })}
+        filterRowForCSV={filterRowForCSV}
+        headers={headers}
+        filename="instruments.csv"
+      />
+    </>
+  );
+}
+
+/*
+response.forEach((element) => {
+            if (element !== null) {
               GetCalibHistory({
                 // Get calibration history for each instrument
                 id: element.id,
@@ -273,12 +296,8 @@ export default function ListInstruments() {
               });
             }
           });
-          return response;
-        })}
-        filterRowForCSV={filterRowForCSV}
-        headers={headers}
-        filename="instruments.csv"
-      />
-    </>
-  );
-}
+          new Date(element.recentCalibration.date)
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+*/

@@ -4,20 +4,26 @@ import PropTypes from 'prop-types';
 import UserContext from './UserContext';
 import { CountAllModels } from '../queries/GetAllModels';
 import { CountInstruments } from '../queries/GetAllInstruments';
+import { CountAllUsers } from '../queries/GetUser';
 
-function NavBar({ loggedIn, handleSignOut, title }) {
+function NavBar({
+  loggedIn, handleSignOut, title, updateCount,
+}) {
   NavBar.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
     handleSignOut: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
+    updateCount: PropTypes.bool.isRequired,
   };
   const user = React.useContext(UserContext);
   const [modelCount, setModelCount] = React.useState('');
   const [instrumentCount, setInstrumentCount] = React.useState('');
+  const [userCount, setUserCount] = React.useState('');
   React.useEffect(() => {
     CountAllModels().then((val) => setModelCount(val));
     CountInstruments().then((val) => setInstrumentCount(val));
-  });
+    CountAllUsers().then((val) => setUserCount(val));
+  }, [updateCount]);
 
   const navContent = loggedIn ? (
     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
@@ -92,7 +98,10 @@ function NavBar({ loggedIn, handleSignOut, title }) {
       {user.isAdmin && (
         <>
           <li className="nav-item">
-            <NavLink className="nav-link" to="/register">
+            <NavLink
+              className="nav-link"
+              to={`/viewUsers?page=1&limit=25&count=${userCount}`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -110,7 +119,7 @@ function NavBar({ loggedIn, handleSignOut, title }) {
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-              Create Users
+              Users
             </NavLink>
           </li>
           <li className="nav-item">
