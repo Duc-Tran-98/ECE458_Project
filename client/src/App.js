@@ -18,6 +18,7 @@ import UsersTable from './pages/UsersTable';
 import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
 import OAuthConsume from './pages/OAuthConsume';
+import UserInfo from './pages/UserInfo';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -138,6 +139,13 @@ function App() {
               </Route>
               <Route path="/oauth/consume">
                 <OAuthConsume />
+              </Route>
+              <Route path="/userInfo">
+                {loggedIn ? (
+                  <UserInfo />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
               </Route>
             </Switch>
           </div>
