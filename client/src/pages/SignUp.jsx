@@ -1,7 +1,10 @@
 import React, { useState, useContext } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 import CreateUser from '../queries/CreateUser';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 const SignUp = () => {
   const user = useContext(UserContext);
@@ -30,6 +33,22 @@ const SignUp = () => {
   const changeHandler = (e) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
+  const changeUsername = (e) => {
+    if (!e.target.value.includes('@')) {
+      setFormState({ ...formState, [e.target.name]: e.target.value });
+    }
+  };
+
+  const resetForm = () => {
+    setFormState({
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      userName: '',
+      isAdmin: false,
+    });
+  };
 
   const handleSignup = (e) => {
     e.preventDefault();
@@ -43,17 +62,12 @@ const SignUp = () => {
     } = formState;
     if (validateState() && true) {
       const handleResponse = (response) => {
-        // eslint-disable-next-line no-alert
-        alert(response.message);
         if (response.success) {
-          setFormState({
-            email: '',
-            password: '',
-            firstName: '',
-            lastName: '',
-            userName: '',
-            isAdmin: false,
-          });
+          toast.success(response.message);
+          resetForm();
+        } else {
+          toast.error(response.message);
+          resetForm();
         }
       };
       CreateUser({
@@ -67,6 +81,7 @@ const SignUp = () => {
 
   return (
     <form className="needs-validation" noValidate onSubmit={handleSignup}>
+      <ToastContainer />
       <div className="row mx-3">
         <div className="col mt-3">
           <label htmlFor="validationCustom01" className="h4">
@@ -118,7 +133,7 @@ const SignUp = () => {
               aria-describedby="inputGroupPrepend"
               name="userName"
               value={formState.userName}
-              onChange={changeHandler}
+              onChange={changeUsername}
               required
             />
             <div className="invalid-feedback">Please choose a username.</div>

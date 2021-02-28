@@ -15,6 +15,7 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
+import OAuthConsume from './pages/OAuthConsume';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -108,6 +109,9 @@ function App() {
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
+              </Route>
+              <Route path="/oauth/consume">
+                <OAuthConsume />
               </Route>
             </Switch>
           </div>

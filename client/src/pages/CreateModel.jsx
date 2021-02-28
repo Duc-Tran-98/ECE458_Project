@@ -1,8 +1,12 @@
 import React, { useContext, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 import CreateModel from '../queries/CreateModel';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import ModelForm from '../components/ModelForm';
+
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 function CreateModelPage() {
   const [validated, setValidated] = useState(false);
@@ -24,8 +28,7 @@ function CreateModelPage() {
         modelNumber, vendor, description, comment,
       } = formState;
       const handleResponse = (response) => {
-        // eslint-disable-next-line no-alert
-        alert(response.message);
+        toast(response.message);
         window.location.href = '/addModel'; // doing this to update navbar count state
       };
       CreateModel({
@@ -67,6 +70,7 @@ function CreateModelPage() {
   } = formState;
   return (
     <>
+      <ToastContainer />
       <ModelForm
         modelNumber={modelNumber}
         vendor={vendor}
