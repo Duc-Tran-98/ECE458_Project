@@ -34,6 +34,8 @@ function ManageCategories() {
   const [responseMsg, setResponseMsg] = React.useState('');
   const [responseStatus, setResponseStatus] = React.useState(true);
   const [showDelete, setShowDelete] = React.useState(false);
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [userName, setUserName] = React.useState('');
   const [isAdmin, setIsAdmin] = React.useState(false);
@@ -78,6 +80,7 @@ function ManageCategories() {
                 className="btn"
                 onClick={() => {
                   console.log('edit cat');
+                  setShowEdit(true);
                 }}
               >
                 Edit
@@ -118,6 +121,18 @@ function ManageCategories() {
     setShowDelete(false);
     console.log('close');
   };
+  const closeEditModal = () => {
+    setResponseMsg('');
+    setResponseStatus(false);
+    setShowEdit(false);
+    console.log('close');
+  };
+  const closeCreateModal = () => {
+    setResponseMsg('');
+    setResponseStatus(false);
+    setShowCreate(false);
+    console.log('close');
+  };
   const handleResponse = (response) => {
     setResponseMsg(response.message);
     setResponseStatus(response.success);
@@ -131,6 +146,24 @@ function ManageCategories() {
       DeleteModelCategory({ name: category, handleResponse });
     } else {
       DeleteInstrumentCategory({ name: category, handleResponse });
+    }
+  };
+  const handleEdit = () => {
+    setLoading(true);
+    console.log('edit');
+    if (key === 'model') {
+      console.log('model');
+    } else {
+      console.log('inst');
+    }
+  };
+  const handleCreate = () => {
+    setLoading(true);
+    console.log('edit');
+    if (key === 'model') {
+      console.log('model');
+    } else {
+      console.log('inst');
     }
   };
 
@@ -161,6 +194,62 @@ function ManageCategories() {
                 <div className="mt-3">
                   <button className="btn " type="button" onClick={closeDeleteModal}>
                     No
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      </ModalAlert>
+      <ModalAlert
+        show={showEdit}
+        handleClose={closeEditModal}
+        title="EDIT CATEGORY"
+      >
+        <>
+          {responseMsg.length === 0 && (
+            <div className="h4 text-center my-3">{`Change name of category: ${category}`}</div>
+          )}
+          <div className="d-flex justify-content-center">
+            {loading ? (
+              <CircularProgress />
+            ) : responseMsg.length > 0 ? (
+              <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            ) : (
+              <>
+                <input />
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleEdit}>
+                    Save
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      </ModalAlert>
+      <ModalAlert
+        show={showCreate}
+        handleClose={closeCreateModal}
+        title="ADD CATEGORY"
+      >
+        <>
+          {responseMsg.length === 0 && (
+            <div className="h4 text-center my-3">Create new category</div>
+          )}
+          <div className="d-flex justify-content-center">
+            {loading ? (
+              <CircularProgress />
+            ) : responseMsg.length > 0 ? (
+              <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            ) : (
+              <>
+                <input />
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleCreate}>
+                    Save
                   </button>
                 </div>
               </>
@@ -200,9 +289,11 @@ function ManageCategories() {
             rowCount={rowCount}
             cellHandler={cellHandler}
             headerElement={(
-              <Link className="btn  m-2" to="/addUser">
-                Create Model Category
-              </Link>
+              <div>
+                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                  Create Model Category
+                </button>
+              </div>
             )}
             cols={cols}
             initPage={initPage}
@@ -233,9 +324,11 @@ function ManageCategories() {
             rowCount={rowCount}
             cellHandler={cellHandler}
             headerElement={(
-              <Link className="btn  m-2" to="/addUser">
-                Create Instrument Category
-              </Link>
+              <div>
+                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                  Create Instrument Category
+                </button>
+              </div>
             )}
             cols={cols}
             initPage={initPage}
