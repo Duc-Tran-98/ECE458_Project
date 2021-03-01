@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 // const jwt_decode = require('jwt-decode');
 // eslint-disable-next-line camelcase
@@ -8,7 +9,10 @@ import OAuthSignOn from '../queries/OAuthSignOn';
 
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
 // TODO: Check if user exists, or add them to database on first login
-export default function OAuthConsume() {
+export default function OAuthConsume({ handleLogin }) {
+  OAuthConsume.propTypes = {
+    handleLogin: PropTypes.func.isRequired,
+  };
   const [netID, setNetID] = useState('');
 
   function parseIdToken(token) {
@@ -26,6 +30,12 @@ export default function OAuthConsume() {
   const handleOAuthSignOn = (response) => {
     console.log('Handling OAuth Sign On');
     console.log(response);
+    window.sessionStorage.setItem(
+      'token',
+      Buffer.from(response.netId, 'ascii').toString('base64'),
+    );
+    handleLogin();
+    window.location.href = '/';
   };
 
   useEffect(() => {

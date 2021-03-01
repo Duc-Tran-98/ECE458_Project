@@ -138,7 +138,7 @@ function App() {
                 )}
               </Route>
               <Route path="/oauth/consume">
-                <OAuthConsume />
+                <OAuthConsume handleLogin={handleLogin} />
               </Route>
               <Route path="/userInfo">
                 {loggedIn ? (

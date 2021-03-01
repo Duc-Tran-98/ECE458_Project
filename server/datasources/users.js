@@ -69,7 +69,7 @@ class UserAPI extends DataSource {
     const salt = bcrypt.genSaltSync(saltRounds);
     const password = bcrypt.hashSync(netId, salt);
 
-    const response = { success: true, message: '' };
+    const response = { success: true, message: '', netId };
     await this.findUser({ userName }).then((value) => {
       if (value) {
         response.message = 'Account already exists';
@@ -83,6 +83,29 @@ class UserAPI extends DataSource {
           isAdmin,
         });
         response.message = 'Created account for user';
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  /**
+   * This function takes a userName and password and see if it belongs
+   * to a user in the db
+   */
+  async updatePassword({ userName, oldPassword, newPassword }) {
+    const response = { success: false, message: '' };
+    await this.findUser({ userName }).then((value) => {
+      if (value) {
+        if (bcrypt.compareSync(oldPassword, value.password)) {
+          // TODO: Update password to new password (verify this is correct)
+          this.store.users.update({ password: newPassword }, { where: { userName } });
+          response.success = true;
+          response.message = 'Successfully updated password';
+        } else {
+          response.messgae = 'Incorrect password';
+        }
+      } else {
+        response.message = 'User does not exist';
       }
     });
     return JSON.stringify(response);

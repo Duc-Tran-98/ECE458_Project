@@ -266,6 +266,14 @@ module.exports = {
       });
       return response;
     },
+    changePassword: async (_, { userName, oldPassword, newPassword }, { dataSources }) => {
+      const response = await dataSources.userAPI.login({
+        userName,
+        oldPassword,
+        newPassword,
+      });
+      return response;
+    },
     signup: async (
       _,
       {
