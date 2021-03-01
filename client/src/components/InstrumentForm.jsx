@@ -27,6 +27,7 @@ export default function InstrumentForm({
   onInputChange,
   assetTag,
   serialNumber,
+  categories,
   validated,
   viewOnly,
   modelNumber,
@@ -45,6 +46,8 @@ export default function InstrumentForm({
     handleSubmit: PropTypes.func,
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    categories: PropTypes.array.isRequired,
     onInputChange: PropTypes.func.isRequired,
     assetTag: PropTypes.string.isRequired,
     // eslint-disable-next-line react/require-default-props
@@ -65,6 +68,12 @@ export default function InstrumentForm({
   const selectedTags = (tags) => {
     console.log(tags);
   };
+  let cats;
+  if (categories) {
+    cats = categories;
+  } else {
+    cats = [];
+  }
   return (
     <Form
       className="needs-validation"
@@ -179,7 +188,7 @@ export default function InstrumentForm({
           <Form.Label className="h4">Categories</Form.Label>
           <TagsInput
             selectedTags={selectedTags}
-            tags={[]}
+            tags={cats}
             disable={disabled}
             models={false}
           />

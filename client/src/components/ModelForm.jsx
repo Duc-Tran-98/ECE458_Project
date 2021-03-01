@@ -155,7 +155,7 @@ export default function ModelForm({
           <TagsInput
             selectedTags={selectedTags}
             tags={cats}
-            disable={disabled}
+            dis={disabled}
             models
           />
         </div>

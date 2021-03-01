@@ -113,6 +113,7 @@ const typeDefs = gql`
     modelReference: Int!
     calibrationFrequency: Int
     comment: String
+    instrumentCategories: [Category]
     description: String!
     id: Int!
   }

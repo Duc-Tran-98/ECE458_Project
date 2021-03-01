@@ -235,6 +235,11 @@ class InstrumentAPI extends DataSource {
     this.store = storeModel;
     const instrument = await this.store.instruments.findAll({
       where: { modelNumber, vendor, serialNumber },
+      include: {
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      },
     });
     if (instrument && instrument[0]) {
       return instrument[0];
