@@ -267,7 +267,7 @@ module.exports = {
       return response;
     },
     changePassword: async (_, { userName, oldPassword, newPassword }, { dataSources }) => {
-      const response = await dataSources.userAPI.login({
+      const response = await dataSources.userAPI.updatePassword({
         userName,
         oldPassword,
         newPassword,
