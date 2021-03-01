@@ -24,6 +24,7 @@ export default function InstrumentForm({
   handleSubmit,
   changeHandler,
   onInputChange,
+  assetTag,
   serialNumber,
   validated,
   viewOnly,
@@ -44,6 +45,7 @@ export default function InstrumentForm({
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
     onInputChange: PropTypes.func.isRequired,
+    assetTag: PropTypes.string.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
     description: PropTypes.string,
@@ -93,18 +95,18 @@ export default function InstrumentForm({
         </div>
         <div className="col mt-3">
           <Form.Group controlId="formDescription">
-            <Form.Label className="h4">Serial Number</Form.Label>
+            <Form.Label className="h4">Asset Tag</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Serial Number"
+              type="number"
               required
-              name="serialNumber"
-              value={serialNumber}
+              min={100000}
+              name="assetTag"
+              value={assetTag}
               onChange={changeHandler}
               disabled={disabled}
             />
             <Form.Control.Feedback type="invalid">
-              Please enter a valid serial number.
+              Please enter a valid Asset Tag.
             </Form.Control.Feedback>
           </Form.Group>
         </div>
@@ -136,6 +138,22 @@ export default function InstrumentForm({
             />
           </Form.Group>
         </div>
+        <div className="col mt-3">
+          <Form.Group controlId="formDescription">
+            <Form.Label className="h4">Serial Number</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Serial Number"
+              name="serialNumber"
+              value={serialNumber}
+              onChange={changeHandler}
+              disabled={disabled}
+            />
+            <Form.Control.Feedback type="invalid">
+              Please enter a valid serial number.
+            </Form.Control.Feedback>
+          </Form.Group>
+        </div>
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
@@ -152,7 +170,7 @@ export default function InstrumentForm({
           </Form.Group>
         </div>
       </div>
-      {handleSubmit !== null && !viewOnly && (
+      {handleSubmit && (
         <div className="d-flex justify-content-center my-3">
           <button type="submit" className="btn ">
             Create Instrument

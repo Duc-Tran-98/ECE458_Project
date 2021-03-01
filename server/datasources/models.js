@@ -255,7 +255,7 @@ class ModelAPI extends DataSource {
   }
 
   async addModelCategory({ name }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (hasWhiteSpace(name)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -269,6 +269,7 @@ class ModelAPI extends DataSource {
         this.store.modelCategories.create({
           name,
         });
+        response.success = true;
         response.message = `Added new model category, ${name}, into the DB!`;
       }
     });
@@ -276,7 +277,7 @@ class ModelAPI extends DataSource {
   }
 
   async removeModelCategory({ name }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModelCategory({ name }).then((value) => {
@@ -292,6 +293,7 @@ class ModelAPI extends DataSource {
             modelCategoryId,
           },
         });
+        response.success = true;
         response.message = `Model category ${name} successfully deleted!`;
       } else {
         response.message = `ERROR: Cannot delete model category ${name}, it does not exist!`;
@@ -301,7 +303,7 @@ class ModelAPI extends DataSource {
   }
 
   async editModelCategory({ currentName, updatedName }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -324,6 +326,7 @@ class ModelAPI extends DataSource {
               },
               { where: { id } },
             );
+            response.success = true;
             response.message = `Model category ${updatedName} successfully updated!`;
           }
         });
@@ -335,7 +338,7 @@ class ModelAPI extends DataSource {
   }
 
   async addCategoryToModel({ vendor, modelNumber, category }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
@@ -349,6 +352,7 @@ class ModelAPI extends DataSource {
               modelId,
               modelCategoryId,
             });
+            response.success = true;
             response.message = `Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
           } else {
             response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
@@ -362,7 +366,7 @@ class ModelAPI extends DataSource {
   }
 
   async removeCategoryFromModel({ vendor, modelNumber, category }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
@@ -385,6 +389,7 @@ class ModelAPI extends DataSource {
                   modelCategoryId,
                 },
               });
+              response.success = true;
               response.message = `Category ${category} successfully removed from model ${vendor} ${modelNumber}!`;
             } else {
               response.message = `ERROR: category ${category} was not attached to model ${vendor} ${modelNumber}!`;
@@ -410,6 +415,18 @@ class ModelAPI extends DataSource {
       return category[0];
     }
     return null;
+  }
+
+  async getAllModelCategories({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.modelCategories.findAll({ limit, offset });
+  }
+
+  async countModelCategories() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.modelCategories.count();
   }
 }
 

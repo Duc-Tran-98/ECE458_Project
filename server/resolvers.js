@@ -13,6 +13,8 @@ module.exports = {
     getAllUsers: async (_, { limit, offset }, { dataSources }) => await dataSources.userAPI.getAllUsers({ limit, offset }),
     countAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.countAllUsers(),
 
+    countModelCategories: async (_, __, { dataSources }) => await dataSources.modelAPI.countModelCategories(),
+    countInstrumentCategories: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countInstrumentCategories(),
     // Model Queries
     countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
     // eslint-disable-next-line max-len
@@ -118,6 +120,20 @@ module.exports = {
       { dataSources },
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
       calibrationHistoryIdReference,
+    }),
+    getAllModelCategories: async (
+      _,
+      { limit, offset },
+      { dataSources },
+    ) => await dataSources.modelAPI.getAllModelCategories({
+      limit, offset,
+    }),
+    getAllInstrumentCategories: async (
+      _,
+      { limit, offset },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentCategories({
+      limit, offset,
     }),
   },
   Mutation: {
