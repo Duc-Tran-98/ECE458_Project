@@ -211,6 +211,11 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
+      include: {
+        model: this.store.modelCategories,
+        as: 'categories',
+        through: 'modelCategoryRelationships',
+      },
     });
     if (model && model[0]) {
       return model[0];

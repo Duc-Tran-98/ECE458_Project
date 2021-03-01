@@ -17,7 +17,7 @@ const query = print(GET_MODELS_QUERY);
 const queryName = 'getUniqueVendors';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -25,6 +25,8 @@ export default function ModelForm({
     calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    categories: PropTypes.array.isRequired,
     changeHandler: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     validated: PropTypes.bool.isRequired,
@@ -43,6 +45,7 @@ export default function ModelForm({
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
   const val = { vendor };
+  const cats = categories;
   return (
     <Form
       className="needs-validation"
@@ -146,7 +149,7 @@ export default function ModelForm({
           <Form.Label className="h4">Categories</Form.Label>
           <TagsInput
             selectedTags={selectedTags}
-            tags={[]}
+            tags={cats}
             disable={disabled}
             models
           />

@@ -88,6 +88,7 @@ const typeDefs = gql`
     description: String!
     comment: String
     calibrationFrequency: Int
+    categories: [Category]
   }
 
   type ModelOutput {

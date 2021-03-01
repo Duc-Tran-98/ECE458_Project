@@ -27,6 +27,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     id: '',
     comment: '',
     calibrationFrequency: '',
+    categories: [],
   });
   const [loading, setLoading] = React.useState(false); // if we are waiting for response
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
@@ -43,6 +44,9 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
                 description
                 comment
                 calibrationFrequency
+                categories {
+                  name
+                }
               }
             }
           `),
@@ -52,6 +56,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             vendor: initVendor,
           }),
           handleResponse: (response) => {
+            const categories = response.categories.map((item) => item.name);
             const { description, comment, id } = response;
             let { calibrationFrequency } = response;
             if (calibrationFrequency !== null) {
@@ -64,6 +69,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
               description,
               comment,
               id,
+              categories,
               calibrationFrequency,
               modelNumber: initModelNumber,
               vendor: initVendor,
@@ -160,6 +166,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     description,
     comment,
     calibrationFrequency,
+    categories,
   } = model;
   let footElement = null;
   if (user.isAdmin) {
@@ -199,6 +206,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         vendor={vendor}
         description={description}
         comment={comment}
+        categories={categories}
         calibrationFrequency={calibrationFrequency}
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}

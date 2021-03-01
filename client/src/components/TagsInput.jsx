@@ -9,6 +9,7 @@ import { gql } from '@apollo/client';
 import AsyncSuggest from './AsyncSuggest';
 
 const TagsInput = (props) => {
+  const startTags = props.tags;
   const [tags, setTags] = React.useState(props.tags);
   const models = React.useState(props.models);
   let query;
@@ -34,7 +35,6 @@ const TagsInput = (props) => {
     query = print(GET_INST_CAT);
     queryName = 'getAllInstrumentCategories';
   }
-
   const [dis, setDis] = React.useState(props.disable);
   const removeTags = (indexToRemove) => {
     if (!dis) setTags([...tags.filter((_, index) => index !== indexToRemove)]);
@@ -52,7 +52,7 @@ const TagsInput = (props) => {
   const onInputChange = (e, v) => {
     addTags(v.name);
   };
-
+  startTags.forEach((element) => addTags(element));
   return (
     <div className="tags-input">
       <ul id="tags">
@@ -73,7 +73,7 @@ const TagsInput = (props) => {
         <input
           type="text"
           // onKeyUp={(event) => (event.key === 'Enter' ? addTags(event) : null)}
-          placeholder="Press enter to add categories"
+          placeholder="Select Categories"
           className="form-control"
           disabled={dis}
         />
@@ -82,7 +82,7 @@ const TagsInput = (props) => {
           query={query}
           queryName={queryName}
           onInputChange={onInputChange}
-          label="Press enter to add categories"
+          label="Select Categories"
           getOptionSelected={formatSelected}
           getOptionLabel={formatOption}
           allowAdditions={false}
