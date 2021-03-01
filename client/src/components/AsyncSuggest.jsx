@@ -4,12 +4,13 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import LinearProgress from '@material-ui/core/LinearProgress';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
+import TextField from '@material-ui/core/TextField';
 import { QueryAndThen } from './UseQuery';
 
 const filter = createFilterOptions();
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions,
+  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, multiple,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -21,10 +22,12 @@ export default function AsyncSuggest({
     // eslint-disable-next-line react/forbid-prop-types
     value: PropTypes.object,
     allowAdditions: PropTypes.bool, // Whether or not user should be able to create new input
+    multiple: PropTypes.bool, // whether or not user should be able to select mutliple
   };
   AsyncSuggest.defaultProps = {
     value: null,
     allowAdditions: false,
+    multiple: false,
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
@@ -113,6 +116,36 @@ export default function AsyncSuggest({
               Looks good!
             </Form.Control.Feedback>
           </div>
+        )}
+      />
+    );
+  }
+  if (multiple) {
+    return (
+      <Autocomplete
+        style={{ width: '100%' }}
+        open={open}
+        onOpen={() => {
+          setOpen(true);
+        }}
+        onClose={() => {
+          setOpen(false);
+        }}
+        getOptionLabel={getOptionLabel}
+        options={availableOptions}
+        loading={loading}
+        multiple={multiple}
+        autoComplete
+        autoHighlight
+        disableClearable
+        onChange={onInputChange}
+        renderInput={(params) => (
+          <TextField
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...params}
+            variant="standard"
+            label={label}
+          />
         )}
       />
     );
