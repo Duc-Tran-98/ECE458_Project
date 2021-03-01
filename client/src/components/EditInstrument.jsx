@@ -15,6 +15,7 @@ export default function EditInstrument({
   initModelNumber,
   initSerialNumber,
   id,
+  initAssetTag,
   description,
   handleDelete,
   footer,
@@ -27,6 +28,7 @@ export default function EditInstrument({
     description: PropTypes.string.isRequired,
     handleDelete: PropTypes.func,
     footer: PropTypes.node,
+    initAssetTag: PropTypes.string.isRequired,
   };
   EditInstrument.defaultProps = {
     handleDelete: null,
@@ -44,6 +46,7 @@ export default function EditInstrument({
     comment: '',
     id,
     calibrationFrequency: 0,
+    assetTag: initAssetTag,
   });
   React.useEffect(() => {
     let active = true;
@@ -51,6 +54,7 @@ export default function EditInstrument({
     (() => {
       if (active) {
         const { modelNumber, vendor, serialNumber } = formState;
+        // TODO: add api to get assetTag
         Query({
           query: print(gql`
             query FindInst(
@@ -114,6 +118,7 @@ export default function EditInstrument({
         ); // editing => old url no longer valid, so replace it
       }
     };
+    // TODO: update api to include assetTag for edit instrument
     EditInstrumentQuery({
       modelNumber,
       vendor,
@@ -142,6 +147,7 @@ export default function EditInstrument({
     serialNumber,
     comment,
     calibrationFrequency,
+    assetTag,
   } = formState;
   const value = { modelNumber, vendor };
   let footElement = null;
@@ -202,6 +208,7 @@ export default function EditInstrument({
         viewOnly={!user.isAdmin}
         description={description}
         calibrationFrequency={calibrationFrequency}
+        assetTag={assetTag}
       />
       <div className="d-flex justify-content-center my-3">
         <div className="">{loading ? <CircularProgress /> : footElement}</div>

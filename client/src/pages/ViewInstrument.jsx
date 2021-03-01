@@ -19,6 +19,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   };
   const user = React.useContext(UserContext);
   const history = useHistory();
+  // TODO: put asset tag in url or make api call to get it
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -208,6 +209,7 @@ export default function DetailedInstrumentView({ onDelete }) {
             initSerialNumber={serialNumber}
             id={id}
             description={description}
+            initAssetTag="100000"
             footer={(
               <>
                 <MouseOverPopover

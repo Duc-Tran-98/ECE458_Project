@@ -6,8 +6,6 @@ import UserContext from '../components/UserContext';
 import InstrumentForm from '../components/InstrumentForm';
 import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEvent from '../queries/AddCalibEvent';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 function CreateInstrumentPage({ onCreation }) {
   CreateInstrumentPage.propTypes = {
@@ -45,21 +43,23 @@ function CreateInstrumentPage({ onCreation }) {
     serialNumber: '',
     calibrationFrequency: 0,
     description: '',
-    assestTag: '',
+    assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
-    const newHistory = calibHistory;
-    newHistory.push({
-      user: user.userName,
-      date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
-      comment: '',
-      id: nextId,
-      viewOnly: false,
-    });
-    setNextId(nextId + 1);
-    setCalibHistory(newHistory);
+    if (formState.calibrationFrequency > 0) {
+      const newHistory = calibHistory;
+      newHistory.push({
+        user: user.userName,
+        date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
+        comment: '',
+        id: nextId,
+        viewOnly: false,
+      });
+      setNextId(nextId + 1);
+      setCalibHistory(newHistory);
+    }
   };
   const deleteRow = (rowId) => {
     // This is for deleting an entry from array
@@ -103,6 +103,7 @@ function CreateInstrumentPage({ onCreation }) {
           serialNumber: '',
           calibrationFrequency: 0,
           description: '',
+          assetTag: '',
         });
         onCreation();
       }
@@ -130,6 +131,7 @@ function CreateInstrumentPage({ onCreation }) {
     comment,
     calibrationFrequency,
     description,
+    assetTag,
   } = formState;
   const footer = calibrationFrequency !== 0 ? (
     <CalibrationTable
@@ -155,6 +157,7 @@ function CreateInstrumentPage({ onCreation }) {
         onInputChange={onInputChange}
         description={description}
         calibrationFrequency={calibrationFrequency}
+        assetTag={assetTag}
       />
       <div className="d-flex justify-content-center my-3">
         <button type="submit" className="btn  mx-3" onClick={handleSubmit}>
