@@ -1,13 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
-
 import React, { useState } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Tabs, Tab } from 'react-bootstrap';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllModels from '../queries/GetAllModels';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
 import GetModelCategories, { CountModelCategories } from '../queries/GetModelCategories';
@@ -18,7 +15,6 @@ import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
 import CreateModelCategory from '../queries/CreateModelCategory';
 import EditModelCategory from '../queries/EditModelCategory';
 import EditInstrumentCategory from '../queries/EditInstrumentCategory';
-import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
   const history = useHistory();
@@ -41,8 +37,7 @@ function ManageCategories() {
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [userName, setUserName] = React.useState('');
-  const [isAdmin, setIsAdmin] = React.useState(false);
+
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
@@ -119,23 +114,47 @@ function ManageCategories() {
       ),
     },
   ];
-  const closeDeleteModal = () => {
+
+  async function updateRow(k) {
+    console.log('update');
+    let searchString;
+    setRowCount(0);
+    if (k === 'model') {
+      await CountModelCategories().then((val) => {
+        setRowCount(val);
+        console.log(val);
+        searchString = `?page=${1}&limit=${25}&count=${val}`;
+      });
+    } else {
+      await CountInstrumentCategories().then((val) => {
+        setRowCount(val);
+        console.log(val);
+        searchString = `?page=${1}&limit=${25}&count=${val}`;
+      });
+    }
+    history.push(`/${key}Categories${searchString}`);
+  }
+
+  const closeDeleteModal = async () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowDelete(false);
     console.log('close');
+    await updateRow(key);
   };
-  const closeEditModal = () => {
+  const closeEditModal = async () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowEdit(false);
     console.log('close');
+    await updateRow(key);
   };
-  const closeCreateModal = () => {
+  const closeCreateModal = async () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowCreate(false);
     console.log('close');
+    await updateRow(key);
   };
   const handleResponse = (response) => {
     setResponseMsg(response.message);
@@ -276,26 +295,10 @@ function ManageCategories() {
         id="tabs"
         activeKey={key}
         onSelect={async (k) => {
-          let rows;
-          if (k === 'model') {
-            await CountModelCategories().then((val) => {
-              setRowCount(val);
-              rows = val;
-            });
-          } else {
-            await CountInstrumentCategories().then((val) => {
-              setRowCount(val);
-              rows = val;
-            });
-          }
+          await updateRow(k);
           setKey(k);
-          const searchString = `?page=${1}&limit=${25}&count=${rows}`;
-          // if (window.location.search !== searchString) {
-          // If current location != next location, update url
-          history.push(`/${k}Categories${searchString}`);
           setInitLimit(25);
           setInitPage(1);
-          // }
         }}
         unmountOnExit
       >
@@ -316,7 +319,6 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                // If current location != next location, update url
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -325,7 +327,6 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                // If current location != next location, update url
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -351,7 +352,6 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-              // If current location != next location, update url
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -360,7 +360,6 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-              // If current location != next location, update url
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
