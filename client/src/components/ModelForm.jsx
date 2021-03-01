@@ -144,7 +144,12 @@ export default function ModelForm({
       <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Label className="h4">Categories</Form.Label>
-          <TagsInput selectedTags={selectedTags} tags={['Nodejs', 'MongoDB']} />
+          <TagsInput
+            selectedTags={selectedTags}
+            tags={[]}
+            disable={disabled}
+            models
+          />
         </div>
       </div>
       {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
