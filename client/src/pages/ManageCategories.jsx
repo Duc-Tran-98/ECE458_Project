@@ -14,6 +14,8 @@ import GetModelCategories, { CountModelCategories } from '../queries/GetModelCat
 import GetInstrumentCategories, { CountInstrumentCategories } from '../queries/GetInstrumentCategories';
 import DeleteModelCategory from '../queries/DeleteModelCategory';
 import DeleteInstrumentCategory from '../queries/DeleteInstrumentCategory';
+import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
+import CreateModelCategory from '../queries/CreateModelCategory';
 import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
@@ -157,13 +159,12 @@ function ManageCategories() {
       console.log('inst');
     }
   };
-  const handleCreate = () => {
+  const handleCreate = (catName) => {
     setLoading(true);
-    console.log('edit');
     if (key === 'model') {
-      console.log('model');
+      CreateModelCategory({ name: catName, handleResponse });
     } else {
-      console.log('inst');
+      CreateInstrumentCategory({ name: catName, handleResponse });
     }
   };
 
@@ -245,10 +246,16 @@ function ManageCategories() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input />
+                <input id="cat" />
                 <span className="mx-3" />
                 <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleCreate}>
+                  <button
+                    className="btn "
+                    type="button"
+                    onClick={() => {
+                      handleCreate((document.getElementById('cat').value));
+                    }}
+                  >
                     Save
                   </button>
                 </div>
