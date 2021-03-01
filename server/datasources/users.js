@@ -98,7 +98,10 @@ class UserAPI extends DataSource {
       if (value) {
         if (bcrypt.compareSync(oldPassword, value.password)) {
           // TODO: Update password to new password (verify this is correct)
-          this.store.users.update({ password: newPassword }, { where: { userName } });
+          const saltRounds = 10;
+          const salt = bcrypt.genSaltSync(saltRounds);
+          const password = bcrypt.hashSync(newPassword, salt);
+          this.store.users.update({ password }, { where: { userName } });
           response.success = true;
           response.message = 'Successfully updated password';
         } else {
