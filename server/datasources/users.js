@@ -58,10 +58,8 @@ class UserAPI extends DataSource {
   /**
    * This function takes a netId, and logs this user in (optionally creates if they do not exist)
    */
-  async oauthLogin({ netId }) {
+  async oauthLogin({ netId, firstName, lastName }) {
     const email = netId;
-    const firstName = 'netId';
-    const lastName = 'User';
     const userName = netId;
     const isAdmin = true;
 

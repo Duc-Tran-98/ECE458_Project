@@ -260,9 +260,11 @@ module.exports = {
       });
       return response;
     },
-    oauthLogin: async (_, { netId }, { dataSources }) => {
+    oauthLogin: async (_, { netId, firstName, lastName }, { dataSources }) => {
       const response = await dataSources.userAPI.oauthLogin({
         netId,
+        firstName,
+        lastName,
       });
       return response;
     },

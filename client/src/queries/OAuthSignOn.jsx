@@ -4,20 +4,22 @@ import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
 export default function OAuthSignOn({
-  netId, handleResponse,
+  netId, firstName, lastName, handleResponse,
 }) {
   OAuthSignOn.propTypes = {
     netId: PropTypes.string.isRequired,
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
   };
   const OAUTH_SIGNON = gql`
-    mutation OAuthSignOn($netId: String!) {
-        oauthLogin(netId: $netId)
+    mutation OAuthSignOn($netId: String!, $firstName: String!, $lastName: String!) {
+        oauthLogin(netId: $netId, firstName: $firstName, lastName: $lastName)
     }
   `;
   const query = print(OAUTH_SIGNON);
   const queryName = 'oauthLogin';
-  const getVariables = () => ({ netId });
+  const getVariables = () => ({ netId, firstName, lastName });
   Query({
     query,
     queryName,
