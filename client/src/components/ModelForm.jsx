@@ -45,7 +45,12 @@ export default function ModelForm({
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
   const val = { vendor };
-  const cats = categories;
+  let cats;
+  if (categories) {
+    cats = categories;
+  } else {
+    cats = [];
+  }
   return (
     <Form
       className="needs-validation"

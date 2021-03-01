@@ -52,7 +52,7 @@ const TagsInput = (props) => {
   const onInputChange = (e, v) => {
     addTags(v.name);
   };
-  startTags.forEach((element) => addTags(element));
+  if (startTags) startTags.forEach((element) => addTags(element));
   return (
     <div className="tags-input">
       <ul id="tags">
