@@ -58,6 +58,12 @@ const typeDefs = gql`
     getCalibrationEventsByReferenceId(
       calibrationHistoryIdReference: Int!
     ): [CalibrationEvent]
+
+    # category related queries
+    getAllModelCategories(limit: Int, offset: Int): [Category]
+    getAllInstrumentCategories(limit: Int, offset: Int): [Category]
+    countModelCategories: Int!
+    countInstrumentCategories: Int!
   }
 
   type User {
@@ -95,6 +101,7 @@ const typeDefs = gql`
   }
 
   type Category {
+    id: Int!
     name: String!
   }
 
@@ -114,7 +121,7 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    calibrationFrequency: Int!
+    calibrationFrequency: Int
     comment: String
     description: String!
     id: Int!
@@ -134,7 +141,7 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    calibrationFrequency: Int!
+    calibrationFrequency: Int
     comment: String
     description: String!
     id: Int!

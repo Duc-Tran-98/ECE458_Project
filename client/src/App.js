@@ -14,6 +14,7 @@ import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
+import ManageCategories from './pages/ManageCategories';
 import UsersTable from './pages/UsersTable';
 import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
@@ -132,6 +133,20 @@ function App() {
               <Route path="/import">
                 {loggedIn ? (
                   <BulkImport />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/modelCategories">
+                {loggedIn ? (
+                  <ManageCategories />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
+              </Route>
+              <Route path="/instrumentCategories">
+                {loggedIn ? (
+                  <ManageCategories />
                 ) : (
                   <Login handleLogin={handleLogin} />
                 )}
