@@ -67,7 +67,7 @@ class UserAPI extends DataSource {
     const salt = bcrypt.genSaltSync(saltRounds);
     const password = bcrypt.hashSync(netId, salt);
 
-    const response = { success: true, message: '', netId };
+    const response = { success: true, message: '', userName };
     await this.findUser({ userName }).then((value) => {
       if (value) {
         response.message = 'Account already exists';

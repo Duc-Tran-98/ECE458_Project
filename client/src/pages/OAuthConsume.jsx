@@ -34,7 +34,7 @@ export default function OAuthConsume({ handleLogin }) {
     console.log(response);
     window.sessionStorage.setItem(
       'token',
-      Buffer.from(response.netId, 'ascii').toString('base64'),
+      Buffer.from(response.userName, 'ascii').toString('base64'),
     );
     handleLogin();
     window.location.href = '/';
