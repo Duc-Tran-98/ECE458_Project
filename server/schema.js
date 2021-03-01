@@ -215,7 +215,7 @@ const typeDefs = gql`
     addInstrument(
       modelNumber: String!
       vendor: String!
-      serialNumber: String!
+      serialNumber: String
       comment: String
     ): String!
     editInstrument(

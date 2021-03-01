@@ -18,6 +18,8 @@ import UsersTable from './pages/UsersTable';
 import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
 import OAuthConsume from './pages/OAuthConsume';
+import 'react-toastify/dist/ReactToastify.css';
+import './css/customToast.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);

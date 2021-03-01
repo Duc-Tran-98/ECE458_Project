@@ -188,7 +188,7 @@ export default function ListInstruments() {
             </MouseOverPopover>
           </div>
         </div>
-      ),
+      ), // TODO: put asset tag in url?
     },
   ];
 

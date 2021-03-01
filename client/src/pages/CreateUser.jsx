@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
+import { ToastContainer, toast } from 'react-toastify';
 import CreateUser from '../queries/CreateUser';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
@@ -49,7 +50,7 @@ const CreateUserPage = ({ onCreation }) => {
     if (validateState() && true) {
       const handleResponse = (response) => {
         // eslint-disable-next-line no-alert
-        alert(response.message);
+        toast(response.message);
         if (response.success) {
           setFormState({
             email: '',
@@ -78,12 +79,15 @@ const CreateUserPage = ({ onCreation }) => {
   }
 
   return (
-    <UserForm
-      onSubmit={onSubmit}
-      formState={formState}
-      onChangeCheckbox={onChangeCheckbox}
-      changeHandler={changeHandler}
-    />
+    <>
+      <ToastContainer />
+      <UserForm
+        onSubmit={onSubmit}
+        formState={formState}
+        onChangeCheckbox={onChangeCheckbox}
+        changeHandler={changeHandler}
+      />
+    </>
   );
 };
 

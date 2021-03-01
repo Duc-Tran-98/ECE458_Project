@@ -73,6 +73,7 @@ export default function DetailedModelView({ onDelete }) {
     setLoading(true);
     DeleteModel({ modelNumber, vendor, handleResponse });
   };
+  // TODO: put asset tag in url? display asset tag and serial number under instances
   return (
     <>
       <ModalAlert show={show} handleClose={closeModal} title="DELETE MODEL">
