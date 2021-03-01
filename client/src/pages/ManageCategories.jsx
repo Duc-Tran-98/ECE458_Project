@@ -16,6 +16,8 @@ import DeleteModelCategory from '../queries/DeleteModelCategory';
 import DeleteInstrumentCategory from '../queries/DeleteInstrumentCategory';
 import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
 import CreateModelCategory from '../queries/CreateModelCategory';
+import EditModelCategory from '../queries/EditModelCategory';
+import EditInstrumentCategory from '../queries/EditInstrumentCategory';
 import { GetAllUsers } from '../queries/GetUser';
 
 function ManageCategories() {
@@ -150,13 +152,13 @@ function ManageCategories() {
       DeleteInstrumentCategory({ name: category, handleResponse });
     }
   };
-  const handleEdit = () => {
+  const handleEdit = (catName) => {
     setLoading(true);
     console.log('edit');
     if (key === 'model') {
-      console.log('model');
+      EditModelCategory({ currentName: category, updatedName: catName, handleResponse });
     } else {
-      console.log('inst');
+      EditInstrumentCategory({ currentName: category, updatedName: catName, handleResponse });
     }
   };
   const handleCreate = (catName) => {
@@ -218,10 +220,16 @@ function ManageCategories() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input />
+                <input id="editCat" />
                 <span className="mx-3" />
                 <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleEdit}>
+                  <button
+                    className="btn "
+                    type="button"
+                    onClick={() => {
+                      handleEdit((document.getElementById('editCat').value));
+                    }}
+                  >
                     Save
                   </button>
                 </div>
