@@ -1,6 +1,5 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -17,7 +16,7 @@ const query = print(GET_MODELS_QUERY);
 const queryName = 'getUniqueVendors';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange,
+  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -31,6 +30,10 @@ export default function ModelForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     onInputChange: PropTypes.func.isRequired, // This what to do when autocomplete value changes
+    diffSubmit: PropTypes.bool, // whether or not to display own submit button
+  };
+  ModelForm.defaultProps = {
+    diffSubmit: false,
   };
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
@@ -38,19 +41,18 @@ export default function ModelForm({
   const val = { vendor };
   return (
     <Form
-      className="needs-validation bg-light rounded"
+      className="needs-validation"
       noValidate
       validated={validated}
       onSubmit={handleSubmit}
     >
       <div className="row mx-3">
-        <div className="col mt-2">
+        <div className="col mt-3">
           <Form.Group controlId="formModelNumber">
             <Form.Label className="h4">Model Number</Form.Label>
             <Form.Control
               name="modelNumber"
               type="text"
-              placeholder="####"
               required
               value={modelNumber}
               onChange={changeHandler}
@@ -61,7 +63,7 @@ export default function ModelForm({
             </Form.Control.Feedback>
           </Form.Group>
         </div>
-        <div className="col mt-2">
+        <div className="col mt-3">
           <Form.Group>
             <Form.Label className="h4">Vendor</Form.Label>
             {viewOnly ? (
@@ -86,14 +88,15 @@ export default function ModelForm({
             )}
           </Form.Group>
         </div>
-        <div className="col mt-2">
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
+        <div className="col mt-3">
           <Form.Group controlId="formCalibrationFrequency">
             <Form.Label className="h4 text-nowrap ">
               Calibration Frequency
             </Form.Label>
             <Form.Control
               type="number"
-              placeholder="# Days"
               min={0}
               name="calibrationFrequency"
               value={calibrationFrequency}
@@ -102,14 +105,11 @@ export default function ModelForm({
             />
           </Form.Group>
         </div>
-      </div>
-      <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Group controlId="formDescription">
             <Form.Label className="h4">Description</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Description"
               required
               name="description"
               value={description}
@@ -121,12 +121,13 @@ export default function ModelForm({
             </Form.Control.Feedback>
           </Form.Group>
         </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Group controlId="formComment">
             <Form.Label className="h4">Comment</Form.Label>
             <Form.Control
               as="textarea"
-              placeholder="Sample comment"
               rows={3}
               name="comment"
               value={comment}
@@ -136,11 +137,11 @@ export default function ModelForm({
           </Form.Group>
         </div>
       </div>
-      {(typeof viewOnly === 'undefined' || !viewOnly) && (
+      {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
         <div className="d-flex justify-content-center mt-3 mb-3">
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
+          <button type="submit" className="btn ">
+            Add Model
+          </button>
         </div>
       )}
     </Form>

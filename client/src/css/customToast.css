@@ -1,0 +1,8 @@
+.Toastify__progress-bar--default {
+    background: linear-gradient(to right, #000000, #14213D, #FCA311, #E5E5E5, #FFFFFF);
+  }
+
+  .Toastify__toast--default {
+    background: #14213D;
+    color: #FCA311;
+  }

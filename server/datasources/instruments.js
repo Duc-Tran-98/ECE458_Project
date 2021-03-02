@@ -360,7 +360,7 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrumentCategory({ name }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (hasWhiteSpace(name)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -374,6 +374,7 @@ class InstrumentAPI extends DataSource {
         this.store.instrumentCategories.create({
           name,
         });
+        response.success = true;
         response.message = `Added new instrument category, ${name}, into the DB!`;
       }
     });
@@ -381,7 +382,7 @@ class InstrumentAPI extends DataSource {
   }
 
   async removeInstrumentCategory({ name }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrumentCategory({ name }).then((value) => {
@@ -391,6 +392,7 @@ class InstrumentAPI extends DataSource {
             name,
           },
         });
+        response.success = true;
         response.message = `Instrument category ${name} successfully deleted!`;
       } else {
         response.message = `ERROR: Cannot delete instrument category ${name}, it does not exist!`;
@@ -400,7 +402,7 @@ class InstrumentAPI extends DataSource {
   }
 
   async editInstrumentCategory({ currentName, updatedName }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -423,6 +425,7 @@ class InstrumentAPI extends DataSource {
               },
               { where: { id } },
             );
+            response.success = true;
             response.message = `Instrument category ${updatedName} successfully updated!`;
           }
         });
@@ -436,7 +439,7 @@ class InstrumentAPI extends DataSource {
   async addCategoryToInstrument({
     vendor, modelNumber, serialNumber, category,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
@@ -450,6 +453,7 @@ class InstrumentAPI extends DataSource {
               instrumentId,
               instrumentCategoryId,
             });
+            response.success = true;
             response.message = `Category ${category} successfully added to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
           } else {
             response.message = `ERROR: Cannot add category ${category}, to instrument because it does not exist!`;
@@ -465,7 +469,7 @@ class InstrumentAPI extends DataSource {
   async removeCategoryFromInstrument({
     vendor, modelNumber, serialNumber, category,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
@@ -488,6 +492,7 @@ class InstrumentAPI extends DataSource {
                   instrumentCategoryId,
                 },
               });
+              response.success = true;
               response.message = `Category ${category} successfully removed from instrument ${vendor} ${modelNumber} ${serialNumber}!`;
             } else {
               response.message = `ERROR: category ${category} was not attached to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
@@ -513,6 +518,18 @@ class InstrumentAPI extends DataSource {
       return category[0];
     }
     return null;
+  }
+
+  async getAllInstrumentCategories({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.instrumentCategories.findAll({ limit, offset });
+  }
+
+  async countInstrumentCategories() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.instrumentCategories.count();
   }
 }
 

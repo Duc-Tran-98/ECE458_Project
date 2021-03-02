@@ -46,14 +46,22 @@ export default function AsyncSuggest({
   }, [loading]);
 
   React.useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
+    let active = true;
+    (() => {
+      if (active) {
+        if (!open) {
+          setOptions([]);
+        }
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [open]);
-  if (allowAdditions) {
+  if (allowAdditions) { // If we want use to add new suggestions
     return (
       <Autocomplete
-        style={{ width: '20vw' }}
+        style={{ width: '100%' }}
         open={open}
         onOpen={() => {
           setOpen(true);
@@ -111,7 +119,7 @@ export default function AsyncSuggest({
   }
   return (
     <Autocomplete
-      style={{ width: '20vw' }}
+      style={{ width: '100%' }}
       open={open}
       onOpen={() => {
         setOpen(true);

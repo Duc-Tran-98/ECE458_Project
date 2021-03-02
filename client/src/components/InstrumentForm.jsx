@@ -1,6 +1,5 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -25,6 +24,7 @@ export default function InstrumentForm({
   handleSubmit,
   changeHandler,
   onInputChange,
+  assetTag,
   serialNumber,
   validated,
   viewOnly,
@@ -45,6 +45,7 @@ export default function InstrumentForm({
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
     onInputChange: PropTypes.func.isRequired,
+    assetTag: PropTypes.string.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
     description: PropTypes.string,
@@ -62,12 +63,12 @@ export default function InstrumentForm({
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   return (
     <Form
-      className="needs-validation bg-light rounded"
+      className="needs-validation"
       noValidate
       validated={validated}
       onSubmit={handleSubmit}
     >
-      <div className="row mx-3 mt-3">
+      <div className="row mx-3">
         <div className="col mt-3">
           <Form.Group>
             <Form.Label className="h4 text-center">Model Selection</Form.Label>
@@ -93,18 +94,24 @@ export default function InstrumentForm({
           </Form.Group>
         </div>
         <div className="col mt-3">
-          <Form.Group>
-            <Form.Label className="h4 text-center">
-              Model Description
-            </Form.Label>
+          <Form.Group controlId="formDescription">
+            <Form.Label className="h4">Asset Tag</Form.Label>
             <Form.Control
-              type="text"
-              name="modelDescription"
-              value={description}
-              disabled
+              type="number"
+              required
+              min={100000}
+              name="assetTag"
+              value={assetTag}
+              onChange={changeHandler}
+              disabled={disabled}
             />
+            <Form.Control.Feedback type="invalid">
+              Please enter a valid Asset Tag.
+            </Form.Control.Feedback>
           </Form.Group>
         </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Group>
             <Form.Label className="h4 text-center text-nowrap ">
@@ -118,15 +125,25 @@ export default function InstrumentForm({
             />
           </Form.Group>
         </div>
-      </div>
-      <div className="row mx-3 border-top border-dark mt-3">
+        <div className="col mt-3">
+          <Form.Group>
+            <Form.Label className="h4 text-center">
+              Model Description
+            </Form.Label>
+            <Form.Control
+              type="text"
+              name="modelDescription"
+              value={description}
+              disabled
+            />
+          </Form.Group>
+        </div>
         <div className="col mt-3">
           <Form.Group controlId="formDescription">
             <Form.Label className="h4">Serial Number</Form.Label>
             <Form.Control
               type="text"
-              placeholder="serialNumber"
-              required
+              placeholder="Serial Number"
               name="serialNumber"
               value={serialNumber}
               onChange={changeHandler}
@@ -137,27 +154,27 @@ export default function InstrumentForm({
             </Form.Control.Feedback>
           </Form.Group>
         </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
           <Form.Group controlId="formComment">
             <Form.Label className="h4">Comment</Form.Label>
             <Form.Control
               as="textarea"
-              placeholder="Sample comment"
               rows={3}
               name="comment"
               value={comment}
               onChange={changeHandler}
               disabled={disabled}
-              style={{ resize: 'none' }}
             />
           </Form.Group>
         </div>
       </div>
-      {handleSubmit !== null && !viewOnly && (
-        <div className="d-flex justify-content-center mt-3 mb-3">
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
+      {handleSubmit && (
+        <div className="d-flex justify-content-center my-3">
+          <button type="submit" className="btn ">
+            Create Instrument
+          </button>
         </div>
       )}
     </Form>

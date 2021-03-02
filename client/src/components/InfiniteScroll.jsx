@@ -1,118 +1,88 @@
-import React, { Component } from 'react';
+/* eslint-disable no-param-reassign */
+import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { QueryAndThen } from './UseQuery';
 
-const style = {
-  height: 30,
-  border: '1px solid green',
-  margin: 6,
-  padding: 8,
-};
+export default function InfinityScroll({
+  query, queryName, title, variables, renderItems, titleClassName,
+}) {
+  InfinityScroll.propTypes = {
+    query: PropTypes.string.isRequired,
+    queryName: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    variables: PropTypes.object.isRequired,
+    renderItems: PropTypes.func, // How you want items to be displayed; optional
+    titleClassName: PropTypes.string, // Title classname; for styling
+  };
 
-class InfinityScroll extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: [],
-      hasMore: true,
-      total: null,
-      title: props.title,
-      query: props.query,
-      queryName: props.queryName,
-      variables: props.variables,
-      titleClassName: props.titleClassName,
-    };
-    this.renderItems = props.renderItems;
-    this.fetchMoreData = this.fetchMoreData.bind(this);
-    this.getVariables = this.getVariables.bind(this);
-  }
-
-  componentDidMount() {
-    this.fetchMoreData();
-  }
-
-  getVariables() {
-    const { variables, items } = this.state;
+  InfinityScroll.defaultProps = {
+    renderItems: null,
+    titleClassName: '',
+  };
+  const [items, setItems] = React.useState([]);
+  const [hasMore, setHasMore] = React.useState(false);
+  const [total, setTotal] = React.useState(null);
+  const getVariables = () => {
     variables.limit = 10;
     variables.offset = items.length;
     return variables;
-  }
-
-  fetchMoreData() {
-    const { query, queryName } = this.state;
-    const { total } = this.state;
-    let { items } = this.state;
+  };
+  const fetchMoreData = () => {
     if (total && items.length >= total) { // If total not null and length exceeds/equal to total, stop scroll
-      this.setState({ hasMore: false });
+      setHasMore(false);
     } else { // else, set total and update state
-      QueryAndThen({ query, queryName, getVariables: this.getVariables }).then(
+      QueryAndThen({ query, queryName, getVariables }).then(
         (data) => {
-          items = items.concat(data.rows);
+          const newItems = items.concat(data.rows);
           if (data.total < 10) {
-            this.setState({ hasMore: false });
+            setHasMore(false);
           }
-          this.setState({ total: data.total, items });
+          setItems(newItems);
+          setTotal(data.total);
         },
       );
-      // eslint-disable-next-line react/destructuring-assignment
-      // total = this.state.total;
-      // if (total <= 10) {
-      //   this.setState({ hasMore: false });
-      // }
     }
-  }
+  };
+  React.useEffect(() => {
+    let active = true;
+    (() => {
+      if (active) {
+        fetchMoreData();
+      }
+    })();
 
-  render() {
-    const {
-      title, items, hasMore, titleClassName,
-    } = this.state;
-    return (
-      <>
-        <h2 className={titleClassName}>{title}</h2>
-        <hr />
-        <InfiniteScroll
-          scrollableTarget="scrollableDiv"
-          dataLength={items.length}
-          next={this.fetchMoreData}
-          hasMore={hasMore}
-          loader={<LinearProgress />}
-          endMessage={(
-            <p style={{ textAlign: 'center' }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          )}
-        >
-          {this.renderItems === null ? (
-            items.map((entry) => (
-              <div style={style} key={entry.id}>
-                ID
-                {entry.id}
-              </div>
-            ))
-          ) : (
-            <ul className="list-group">{this.renderItems(items)}</ul>
-          )}
-        </InfiniteScroll>
-      </>
-    );
-  }
+    return () => {
+      active = false;
+    }; // if variables prop changes, re-render
+  }, [items, variables]);
+  return (
+    <>
+      <h2 className={titleClassName}>{title}</h2>
+      <InfiniteScroll
+        scrollableTarget="scrollableDiv"
+        dataLength={items.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<LinearProgress />}
+        endMessage={<div className="my-4" />}
+      >
+        {items.length === 0 && (
+          <div className="my-3 bg-light text-center h4">No Instances</div>
+        )}
+        {renderItems === null ? (
+          items.map((entry) => (
+            <div key={entry.id}>
+              ID
+              {entry.id}
+            </div>
+          ))
+        ) : (
+          <ul className="list-group">{renderItems(items)}</ul>
+        )}
+      </InfiniteScroll>
+    </>
+  );
 }
-
-InfinityScroll.propTypes = {
-  query: PropTypes.string.isRequired,
-  queryName: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  variables: PropTypes.object.isRequired,
-  renderItems: PropTypes.func, // How you want items to be displayed; optional
-  titleClassName: PropTypes.string, // Title classname; for styling
-};
-
-InfinityScroll.defaultProps = {
-  renderItems: null,
-  titleClassName: '',
-};
-
-export default InfinityScroll;

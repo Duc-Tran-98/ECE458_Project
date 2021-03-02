@@ -1,18 +1,14 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import {
-  DataGrid, GridToolbar,
-} from '@material-ui/data-grid';
+import { DataGrid, GridToolbar, GridOverlay } from '@material-ui/data-grid';
 // import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
 import useStateWithCallback from 'use-state-with-callback';
-import {
-  useState, useRef, useEffect,
-} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { CSVLink } from 'react-csv';
-
+import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
 
@@ -55,84 +51,126 @@ export default function DisplayGrid({
   );
 }
 
+let paginationContainer;
+
+function CustomLoadingOverlay() {
+  return (
+    <GridOverlay>
+      <div style={{ position: 'absolute', top: 0, width: '100%' }}>
+        <LinearProgress />
+      </div>
+    </GridOverlay>
+  );
+}
+
+function CustomPagination(props) {
+  const { state, api } = props;
+
+  return (
+    <Portal container={paginationContainer.current}>
+      <Pagination
+        page={state.pagination.page}
+        count={state.pagination.pageCount}
+        onChange={(event, value) => api.current.setPage(value)}
+        siblingCount={2}
+      />
+    </Portal>
+  );
+}
+
+CustomPagination.propTypes = {
+  /**
+   * ApiRef that let you manipulate the grid.
+   */
+  api: PropTypes.shape({
+    // eslint-disable-next-line react/forbid-prop-types
+    current: PropTypes.object.isRequired,
+  }).isRequired,
+  /**
+   * The GridState object containing the current grid state.
+   */
+  // eslint-disable-next-line react/forbid-prop-types
+  state: PropTypes.object.isRequired,
+};
+
 export function ServerPaginationGrid({
   fetchData,
   cols,
   cellHandler,
-  getRowCount,
-  shouldUpdate,
   filterRowForCSV,
   headers,
   filename,
+  initPage,
+  initLimit,
+  onPageChange,
+  onPageSizeChange,
+  rowCount,
+  headerElement,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
     // eslint-disable-next-line react/forbid-prop-types
     cols: PropTypes.array.isRequired, // This is for displaying columns
     // eslint-disable-next-line react/require-default-props
-    cellHandler: PropTypes.func,
-    getRowCount: PropTypes.func.isRequired,
-    shouldUpdate: PropTypes.bool,
-    filterRowForCSV: PropTypes.func.isRequired, // function to filter rows for export
+    cellHandler: PropTypes.func, // callback fired when cell is clicked
+    filterRowForCSV: PropTypes.func, // function to filter rows for export
     // eslint-disable-next-line react/forbid-prop-types
-    headers: PropTypes.array.isRequired, // map db keys to CSV headers
-    filename: PropTypes.string.isRequired, // name the csv file
+    headers: PropTypes.array, // map db keys to CSV headers
+    filename: PropTypes.string, // name the csv file
+    initPage: PropTypes.number.isRequired, // which page we're on from URL
+    initLimit: PropTypes.number.isRequired, // rows/page from URL
+    onPageChange: PropTypes.func.isRequired, // callback fired when page changes
+    onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
+    rowCount: PropTypes.number.isRequired, // number of items from URL
+    headerElement: PropTypes.node, // what to display in header beside filter options
   };
   ServerPaginationGrid.defaultProps = {
-    shouldUpdate: false,
+    headerElement: null,
+    headers: null,
+    filename: null,
+    filterRowForCSV: null,
   };
-  const [limit, setLimit] = React.useState(25); // Can make this bigger if you want; configs how many rows to display/page
-  const [page, setPage] = React.useState(1);
+  paginationContainer = React.useRef(null);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [rowCount, setRowCount] = React.useState(null);
   const [loadingExport, setLoadingExport] = React.useState(null);
 
   const handlePageChange = (params) => {
-    setPage(params.page);
+    onPageChange(params.page, initLimit);
   };
   const handlePageSizeChange = (e) => {
-    setLimit(e.pageSize);
-  };
-  React.useEffect(() => {
-    let active = true;
-    getRowCount().then((val) => setRowCount(val));
-    (async () => {
-      setLoading(true);
-      const offset = (page - 1) * limit;
-      const newRows = await fetchData(limit, offset);
-      if (!active) {
-        return;
-      }
-      setRows(newRows);
-      setLoading(false);
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [shouldUpdate]);
-  React.useEffect(() => {
-    let active = true;
-    if (rowCount === null) {
-      getRowCount().then((val) => (setRowCount(val)));
+    let actualPage = initPage;
+    const maxPage = Math.ceil(rowCount / e.pageSize);
+    if (e.page > maxPage) { // if you are on page outside page range
+      actualPage = maxPage; // change page to max page
     }
+    onPageSizeChange(actualPage, e.pageSize);
+  };
+
+  React.useEffect(() => {
+    let active = true;
 
     (async () => {
       setLoading(true);
-      const offset = (page - 1) * limit;
-      const newRows = await fetchData(limit, offset);
+      const offset = (initPage - 1) * initLimit;
+      const newRows = await fetchData(initLimit, offset);
       if (!active) {
         return;
       }
       setRows(newRows);
-      setLoading(false);
+      if (window.location.href.includes('/viewInstruments')) {
+        setTimeout(() => { // lots of data/queries from this route, so
+          setLoading(false); // GUI needs more time to update
+        }, initLimit * 10);
+      } else {
+        setLoading(false);
+      }
     })();
 
     return () => {
       active = false;
     };
-  }, [page, limit]);
+  }, [initLimit, initPage, rowCount]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
@@ -156,7 +194,7 @@ export function ServerPaginationGrid({
       setCSVData([]);
       setDownloadReady(false);
     }
-  });
+  }, [downloadReady]);
 
   // Function for exporting data
   const handleExport = () => {
@@ -171,62 +209,133 @@ export function ServerPaginationGrid({
           }
         });
       });
-      const filteredRows = filterRowForCSV(exportRows);
+      const filteredRows = (filterRowForCSV !== null) ? filterRowForCSV(exportRows) : exportRows;
       setCSVData(filteredRows);
     }
   };
 
   return (
-    <div style={{ width: '100%', height: '400' }}>
-      <CSVLink
-        data={csvData}
-        headers={headers}
-        filename={filename}
-        className="hidden"
-        ref={csvLink}
-      />
-      {handleExport && (
-      <span>
-        {loadingExport && <LinearProgress color="secondary" />}
-        {filename.includes('model') && <ExportModels setLoading={setLoadingExport} />}
-        {filename.includes('instrument') && <ExportInstruments setLoading={setLoadingExport} />}
-        <Button onClick={handleExport} className="m-2">Export Selected Rows</Button>
-      </span>
-      )}
-      <DataGrid
-        rows={rows}
-        columns={cols}
-        checkboxSelection
-        pagination
-        pageSize={limit}
-        rowCount={rowCount}
-        paginationMode="server"
-        onPageChange={handlePageChange}
-        loading={loading}
-        className="bg-light"
-        rowsPerPageOptions={[25, 50, 100]}
-        locateText={{
-          toolbarDensity: 'Size',
-          toolbarDensityLabel: 'Size',
-          toolbarDensityCompact: 'Small',
-          toolbarDensityStandard: 'Medium',
-          toolbarDensityComfortable: 'Large',
+    <div className="rounded">
+      <div
+        className="rounded"
+        style={{
+          maxHeight: '72vh',
+          overflowY: 'auto',
+          width: '100%',
         }}
-        onPageSizeChange={(e) => handlePageSizeChange(e)}
-        onCellClick={(e) => {
-          if (cellHandler) {
-            cellHandler(e);
-          }
-        }}
-        autoHeight
-        onSelectionChange={(newSelection) => {
-          setChecked(newSelection.rowIds);
-        }}
-        showToolbar
-        components={{
-          Toolbar: GridToolbar,
-        }}
-      />
+      >
+        {headers && filename && (
+          <CSVLink
+            data={csvData}
+            headers={headers}
+            filename={filename}
+            className="hidden"
+            ref={csvLink}
+          />
+        )}
+        <div className="sticky-top bg-offset rounded">{headerElement}</div>
+        <DataGrid
+          rows={rows}
+          columns={cols}
+          pagination
+          page={initPage}
+          pageSize={initLimit}
+          rowCount={rowCount}
+          paginationMode="server"
+          onPageChange={handlePageChange}
+          loading={loading}
+          className=""
+          rowsPerPageOptions={[25, 50, 100]}
+          locateText={{
+            toolbarDensity: 'Size',
+            toolbarDensityLabel: 'Size',
+            toolbarDensityCompact: 'Small',
+            toolbarDensityStandard: 'Medium',
+            toolbarDensityComfortable: 'Large',
+          }}
+          onCellClick={(e) => {
+            if (cellHandler) {
+              cellHandler(e);
+            }
+          }}
+          autoHeight
+          onSelectionChange={(newSelection) => {
+            setChecked(newSelection.rowIds);
+          }}
+          showToolbar
+          hideFooterSelectedRowCount
+          components={{
+            Toolbar: GridToolbar,
+            LoadingOverlay: CustomLoadingOverlay,
+            Pagination: CustomPagination,
+          }}
+        />
+      </div>
+      <div className="row bg-offset rounded py-2 mx-auto">
+        <div className="col" ref={paginationContainer} />
+        <div className="col">
+          <div className="btn-group dropup">
+            <button
+              className="btn  dropdown-toggle"
+              type="button"
+              id="dropdownMenu2"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Limit
+              {' '}
+              {initLimit}
+            </button>
+            <ul
+              className="dropdown-menu bg-light"
+              aria-labelledby="dropdownMenu2"
+            >
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 25 })}
+                >
+                  25
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 50 })}
+                >
+                  50
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 100 })}
+                >
+                  100
+                </button>
+              </li>
+            </ul>
+          </div>
+          {handleExport && (
+            <>
+              {loadingExport && <LinearProgress color="secondary" />}
+              {(filename && filename.includes('model')) && (
+                <ExportModels setLoading={setLoadingExport} />
+              )}
+              {(filename && filename.includes('instrument')) && (
+                <ExportInstruments setLoading={setLoadingExport} />
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
+
+/*
+TODO: Move bottom buttons to right hand side
+*/

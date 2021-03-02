@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // Resolvers define the technique for fetching the types defined in the
 // schema.
 const bcrypt = require('bcryptjs');
@@ -9,8 +10,11 @@ module.exports = {
     // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
-    getAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.getAllUsers(),
+    getAllUsers: async (_, { limit, offset }, { dataSources }) => await dataSources.userAPI.getAllUsers({ limit, offset }),
+    countAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.countAllUsers(),
 
+    countModelCategories: async (_, __, { dataSources }) => await dataSources.modelAPI.countModelCategories(),
+    countInstrumentCategories: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countInstrumentCategories(),
     // Model Queries
     countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
     // eslint-disable-next-line max-len
@@ -116,6 +120,20 @@ module.exports = {
       { dataSources },
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
       calibrationHistoryIdReference,
+    }),
+    getAllModelCategories: async (
+      _,
+      { limit, offset },
+      { dataSources },
+    ) => await dataSources.modelAPI.getAllModelCategories({
+      limit, offset,
+    }),
+    getAllInstrumentCategories: async (
+      _,
+      { limit, offset },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentCategories({
+      limit, offset,
     }),
   },
   Mutation: {
@@ -258,6 +276,22 @@ module.exports = {
       });
       return response;
     },
+    oauthLogin: async (_, { netId, firstName, lastName }, { dataSources }) => {
+      const response = await dataSources.userAPI.oauthLogin({
+        netId,
+        firstName,
+        lastName,
+      });
+      return response;
+    },
+    changePassword: async (_, { userName, oldPassword, newPassword }, { dataSources }) => {
+      const response = await dataSources.userAPI.updatePassword({
+        userName,
+        oldPassword,
+        newPassword,
+      });
+      return response;
+    },
     signup: async (
       _,
       {
@@ -278,6 +312,8 @@ module.exports = {
       });
       return response;
     },
+    editPermissions: async (_, { userName, isAdmin }, { dataSources }) => await dataSources.userAPI.editPermissions({ userName, isAdmin }),
+    deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (
       _,
       {

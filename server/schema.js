@@ -7,7 +7,8 @@ const typeDefs = gql`
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllUsers: [User]
+    getAllUsers(limit: Int, offset: Int): [User]
+    countAllUsers: Int!
 
     # Model Related Queries
     countAllModels: Int!
@@ -57,6 +58,12 @@ const typeDefs = gql`
     getCalibrationEventsByReferenceId(
       calibrationHistoryIdReference: Int!
     ): [CalibrationEvent]
+
+    # category related queries
+    getAllModelCategories(limit: Int, offset: Int): [Category]
+    getAllInstrumentCategories(limit: Int, offset: Int): [Category]
+    countModelCategories: Int!
+    countInstrumentCategories: Int!
   }
 
   type User {
@@ -94,6 +101,7 @@ const typeDefs = gql`
   }
 
   type Category {
+    id: Int!
     name: String!
   }
 
@@ -102,7 +110,7 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    calibrationFrequency: Int!
+    calibrationFrequency: Int
     comment: String
     description: String!
     id: Int!
@@ -113,7 +121,7 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    calibrationFrequency: Int!
+    calibrationFrequency: Int
     comment: String
     description: String!
     id: Int!
@@ -133,7 +141,7 @@ const typeDefs = gql`
     modelNumber: String!
     serialNumber: String!
     modelReference: Int!
-    calibrationFrequency: Int!
+    calibrationFrequency: Int
     comment: String
     description: String!
     id: Int!
@@ -181,6 +189,8 @@ const typeDefs = gql`
   type Mutation {
     # User related mutations
     login(userName: String!, password: String!): String!
+    oauthLogin(netId: String!, firstName: String!, lastName: String!): String!
+    changePassword(userName: String!, oldPassword: String!, newPassword: String!): String!
     signup(
       email: String!
       firstName: String!
@@ -189,6 +199,8 @@ const typeDefs = gql`
       password: String!
       isAdmin: Boolean!
     ): String!
+    editPermissions(userName: String!, isAdmin: Boolean!): String!
+    deleteUser(userName: String!): String!
 
     # Model related Mutations
     addModel(
@@ -212,7 +224,7 @@ const typeDefs = gql`
     addInstrument(
       modelNumber: String!
       vendor: String!
-      serialNumber: String!
+      serialNumber: String
       comment: String
     ): String!
     editInstrument(

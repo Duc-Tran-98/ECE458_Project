@@ -1,22 +1,10 @@
-/* eslint-disable no-param-reassign */
 /* eslint-disable func-names */
-/* eslint-disable max-len */
-import {
-  useState, useContext,
-} from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ButtonBase from '@material-ui/core/ButtonBase';
-import SearchIcon from '@material-ui/icons/Search';
-import { Link } from 'react-router-dom';
+/* eslint-disable no-param-reassign */
+import { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
+import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
-import ModalAlert from '../components/ModalAlert';
-import UserContext from '../components/UserContext';
-import DeleteInstrument from '../queries/DeleteInstrument';
-import EditInstrument from '../components/EditInstrument';
-import GetCalibHistory from '../queries/GetCalibHistory';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -26,25 +14,41 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
 };
 
 export default function ListInstruments() {
-  const user = useContext(UserContext);
-  const [show, setShow] = useState(false);
-  const [which, setWhich] = useState('');
+  const history = useHistory();
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  const [calibrationFrequency, setcalibrationFrequency] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
-  const [update, setUpdate] = useState(false);
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const rowCount = parseInt(urlParams.get('count'), 10);
+  const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
+  const [initLimit, setInitLimit] = useState(
+    parseInt(urlParams.get('limit'), 10),
+  );
+  history.listen((location, action) => {
+    const urlVals = new URLSearchParams(location.search);
+    const lim = parseInt(urlVals.get('limit'), 10);
+    const pg = parseInt(urlVals.get('page'), 10);
+    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
+      // if user clicks on models nav link or goes back
+      setInitLimit(lim);
+      setInitPage(pg);
+    }
+  });
   const cellHandler = (e) => {
-    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+    if (e.field === 'view') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
-      setWhich(e.field);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setDescription(e.row.description);
-      setShow(true);
+      if (e.row.calibrationFrequency !== null) {
+        setcalibrationFrequency(e.row.calibrationFrequency);
+      }
     }
   };
   const genDaysLeft = (date) => {
@@ -57,25 +61,9 @@ export default function ListInstruments() {
       return 'text-success';
     }
     if (daysLeft > 0 && daysLeft <= 30) {
-      return 'text-warning';
+      return 'text-warning-theme';
     }
     return 'text-danger';
-  };
-  const closeModal = (bool) => {
-    setShow(false);
-    setWhich('');
-    if (bool) {
-      setUpdate(bool);
-    }
-    setUpdate(false);
-  };
-  const handleRes = (response) => {
-    // eslint-disable-next-line no-alert
-    alert(response.message);
-    closeModal(response.success);
-  };
-  const delInstrument = () => {
-    DeleteInstrument({ id, handleResponse: handleRes });
   };
   const cols = [
     {
@@ -96,26 +84,22 @@ export default function ListInstruments() {
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
-      field: 'date',
-      headerName: 'Most Recent Calibration',
-      width: 250,
+      field: 'recentCalDate',
+      headerName: 'Calibration Date',
+      width: 175,
       type: 'date',
     },
     {
-      field: 'calibrationComment',
+      field: 'recentCalComment',
       headerName: 'Calibration Comment',
       width: 300,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
@@ -139,6 +123,7 @@ export default function ListInstruments() {
                   className="bi bi-emoji-angry-fill"
                   viewBox="0 0 16 16"
                 >
+                  {/* eslint-disable-next-line max-len */}
                   <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM4.053 4.276a.5.5 0 0 1 .67-.223l2 1a.5.5 0 0 1 .166.76c.071.206.111.44.111.687C7 7.328 6.552 8 6 8s-1-.672-1-1.5c0-.408.109-.778.285-1.049l-1.009-.504a.5.5 0 0 1-.223-.67zm.232 8.157a.5.5 0 0 1-.183-.683A4.498 4.498 0 0 1 8 9.5a4.5 4.5 0 0 1 3.898 2.25.5.5 0 1 1-.866.5A3.498 3.498 0 0 0 8 10.5a3.498 3.498 0 0 0-3.032 1.75.5.5 0 0 1-.683.183zM10 8c-.552 0-1-.672-1-1.5 0-.247.04-.48.11-.686a.502.502 0 0 1 .166-.761l2-1a.5.5 0 1 1 .448.894l-1.009.504c.176.27.285.64.285 1.049 0 .828-.448 1.5-1 1.5z" />
                 </svg>
               </MouseOverPopover>
@@ -180,62 +165,32 @@ export default function ListInstruments() {
     },
     {
       field: 'view',
-      headerName: ' ',
-      width: 60,
+      headerName: 'View',
+      width: 120,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View Instrument">
-              <Link
-                to={`/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`}
+              <button
+                type="button"
+                className="btn "
+                onClick={() => {
+                  const state = { previousUrl: window.location.href };
+                  history.push(
+                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
+                    state,
+                  );
+                }}
               >
-                <SearchIcon />
-              </Link>
+                View
+              </button>
             </MouseOverPopover>
           </div>
         </div>
-      ),
+      ), // TODO: put asset tag in url?
     },
   ];
-  if (user.isAdmin) {
-    cols.push(
-      {
-        field: 'edit',
-        headerName: ' ',
-        width: 60,
-        disableColumnMenu: true,
-        renderCell: () => (
-          <div className="row">
-            <div className="col mt-1">
-              <MouseOverPopover message="Edit Instrument">
-                <ButtonBase>
-                  <EditIcon color="primary" />
-                </ButtonBase>
-              </MouseOverPopover>
-            </div>
-          </div>
-        ),
-      },
-      {
-        field: 'delete',
-        headerName: ' ',
-        width: 60,
-        disableColumnMenu: true,
-        renderCell: () => (
-          <div className="row">
-            <div className="col mt-1">
-              <MouseOverPopover message="Delete Instrument">
-                <ButtonBase>
-                  <DeleteIcon color="secondary" />
-                </ButtonBase>
-              </MouseOverPopover>
-            </div>
-          </div>
-        ),
-      },
-    );
-  }
 
   const filterRowForCSV = (exportRows) => {
     const filteredRows = exportRows.map((element) => ({
@@ -259,69 +214,50 @@ export default function ListInstruments() {
   ];
 
   return (
-    <div style={{ height: '90vh' }}>
-      <ModalAlert handleClose={() => closeModal(false)} show={show} title={which}>
-        {which === 'edit' && (
-          <EditInstrument
-            modelNumber={modelNumber}
-            vendor={vendor}
-            handleClose={closeModal}
-            serialNumber={serialNumber}
-          />
-        )}
-        {which === 'delete' && (
-          <div>
-            <div className="h4 row text-center">{`You are about to delete ${vendor}-${modelNumber}-${serialNumber}. Are you sure?`}</div>
-            <div className="d-flex justify-content-center">
-              <div className="me-5">
-                <button
-                  className="btn btn-warning"
-                  type="button"
-                  onClick={delInstrument}
-                >
-                  Yes
-                </button>
-              </div>
-              <div className="ms-5">
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={() => closeModal(false)}
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </ModalAlert>
+    <>
       <ServerPaginationGrid
-        cols={cols}
-        shouldUpdate={update}
-        getRowCount={CountInstruments}
+        rowCount={rowCount}
         cellHandler={cellHandler}
+        headerElement={(
+          <Link className="btn  m-2" to="/addInstrument">
+            Create Instrument
+          </Link>
+        )}
+        cols={cols}
+        initPage={initPage}
+        initLimit={initLimit}
+        onPageChange={(page, limit) => {
+          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewInstruments${searchString}`);
+            setInitLimit(limit);
+            setInitPage(page);
+          }
+        }}
+        onPageSizeChange={(page, limit) => {
+          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewInstruments${searchString}`);
+            setInitLimit(limit);
+            setInitPage(page);
+          }
+        }}
         fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
           response.forEach((element) => {
-            GetCalibHistory({
-              // Get calibration history for each instrument
-              id: element.id,
-              mostRecent: true,
-            }).then((value) => {
-              element.date = element.calibrationFrequency === 0
-                ? 'Item not calibratable'
-                : 'Not calibrated';
-              element.calibrationComment = value.comment;
-              element.calibrationStatus = element.calibrationFrequency === 0 ? 'N/A' : 'Out of Calibration';
-              if (value) {
-                element.date = value.date;
-                const nextCalibDate = new Date(value.date)
+            if (element !== null) {
+              element.calibrationStatus = (element.calibrationFrequency !== null) ? 'Out of Calibration' : 'N/A';
+              element.recentCalDate = 'N/A';
+              if (element.calibrationFrequency && element.recentCalibration && element.recentCalibration[0]) {
+              // eslint-disable-next-line prefer-destructuring
+                element.calibrationStatus = new Date(element.recentCalibration[0].date)
                   .addDays(element.calibrationFrequency)
                   .toISOString()
                   .split('T')[0];
-                element.calibrationStatus = nextCalibDate;
+                element.recentCalDate = element.recentCalibration[0].date;
               }
-              delete element.calibrationFrequency;
-            });
+            }
           });
           return response;
         })}
@@ -329,6 +265,39 @@ export default function ListInstruments() {
         headers={headers}
         filename="instruments.csv"
       />
-    </div>
+    </>
   );
 }
+
+/*
+response.forEach((element) => {
+            if (element !== null) {
+              GetCalibHistory({
+                // Get calibration history for each instrument
+                id: element.id,
+                mostRecent: true,
+              }).then((value) => {
+                element.date = element.calibrationFrequency === 0
+                  ? 'Item not calibratable'
+                  : 'Not calibrated';
+                element.calibrationComment = value.comment;
+                element.calibrationStatus = element.calibrationFrequency === 0
+                  ? 'N/A'
+                  : 'Out of Calibration';
+                if (value) {
+                  element.date = value.date;
+                  const nextCalibDate = new Date(value.date)
+                    .addDays(element.calibrationFrequency)
+                    .toISOString()
+                    .split('T')[0];
+                  element.calibrationStatus = nextCalibDate;
+                }
+                delete element.calibrationFrequency;
+              });
+            }
+          });
+          new Date(element.recentCalibration.date)
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+*/

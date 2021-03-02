@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
+import Form from 'react-bootstrap/Form';
 import Query from '../components/UseQuery';
-import NeedsValidation from '../components/NeedsValidation';
+import OAuthLogin from '../components/OAuthLogin';
 
 const Login = ({ handleLogin }) => {
   Login.propTypes = {
@@ -14,9 +15,6 @@ const Login = ({ handleLogin }) => {
     password: '',
     userName: '',
     isChecked: false,
-  });
-  useEffect(() => {
-    NeedsValidation();
   });
   // const onChangeCheckbox = (event) => {
   //   setFormState({ ...formState, isChecked: event.target.checked });
@@ -51,8 +49,6 @@ const Login = ({ handleLogin }) => {
     const queryName = 'login';
     const query = print(LOGIN_MUTATION);
     function handleResponse(response) {
-      // eslint-disable-next-line no-alert
-      alert(response.message);
       if (response.success) {
         window.sessionStorage.setItem(
           'token',
@@ -72,58 +68,38 @@ const Login = ({ handleLogin }) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   return (
-    <div className="d-flex justify-content-center align-items-center mt-5 ">
-      <form
-        className="needs-validation bg-light rounded"
-        noValidate
-        onSubmit={submitForm}
-      >
-        <div className="form-row mx-3">
-          <div className="col pl-3 pr-3">
-            <label htmlFor="validationCustomUsername" className="h4">
-              Username
-            </label>
-            <div className="input-group">
-              <div className="input-group-prepend">
-                <span className="input-group-text" id="inputGroupPrepend">
-                  @
-                </span>
-              </div>
-              <input
-                type="text"
-                className="form-control"
-                id="validationCustomUsername"
-                placeholder="Username"
-                aria-describedby="inputGroupPrepend"
-                name="userName"
-                value={formState.userName}
-                onChange={changeHandler}
-                required
-              />
-              <div className="invalid-feedback">Please enter a username.</div>
-            </div>
-          </div>
+    <Form className="needs-validation" noValidate onSubmit={submitForm}>
+      <div className="row mx-3 d-flex justify-content-center">
+        <div className="col-6 mt-3">
+          <Form.Group controlId="formUsername">
+            <Form.Label className="h4">Username</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Username"
+              aria-describedby="inputGroupPrepend"
+              name="userName"
+              value={formState.userName}
+              onChange={changeHandler}
+              required
+            />
+          </Form.Group>
         </div>
-        <div className="form-row mx-3">
-          <div className="col pl-3 pr-3">
-            <label htmlFor="validationCustom04" className="h4">
-              Password
-            </label>
-            <input
+      </div>
+      <div className="row mx-3 mt-3 d-flex justify-content-center">
+        <div className="col-6">
+          <Form.Group>
+            <Form.Label className="h4">Password</Form.Label>
+            <Form.Control
               type="password"
-              className="form-control"
-              id="validationCustom04"
               name="password"
               value={formState.password}
               onChange={changeHandler}
               required
             />
-            <div className="invalid-feedback">
-              Please provide a valid password.
-            </div>
-          </div>
+          </Form.Group>
         </div>
-        {/* <div className="form-check form-switch d-flex align-items-center ms-3">
+      </div>
+      {/* <div className="form-check form-switch d-flex align-items-center ms-3">
           <input
             type="checkbox"
             value=""
@@ -136,20 +112,22 @@ const Login = ({ handleLogin }) => {
             Remember me
           </label>
         </div> */}
-        <div className="d-flex justify-content-center mb-3 mt-3">
-          <button className="btn btn-primary" type="submit">
-            Log In
-          </button>
+      <div className="d-flex flex-column my-3">
+        <button className="btn mx-auto" type="submit">
+          Log In
+        </button>
+        <div className="mx-auto mt-3">
+          <OAuthLogin />
         </div>
-        {/* <div className="d-flex justify-content-center">
+      </div>
+      {/* <div className="d-flex justify-content-center">
           <p className="text-muted">
             Forgot
             {' '}
             <a href="/">password?</a>
           </p>
         </div> */}
-      </form>
-    </div>
+    </Form>
   );
 };
 

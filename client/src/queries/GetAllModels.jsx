@@ -10,7 +10,7 @@ export default async function GetAllModels({ limit, offset }) {
   };
   const GET_MODELS_QUERY = gql`
     query Models($limit: Int, $offset: Int) {
-      getAllModels(limit: $limit, offset: $offset) {
+      getModelsWithFilter(limit: $limit, offset: $offset) {
         id
         vendor
         modelNumber
@@ -21,7 +21,7 @@ export default async function GetAllModels({ limit, offset }) {
     }
   `;
   const query = print(GET_MODELS_QUERY);
-  const queryName = 'getAllModels';
+  const queryName = 'getModelsWithFilter';
   const getVariables = () => ({ limit, offset });
   const response = await QueryAndThen({ query, queryName, getVariables });
   return response;
