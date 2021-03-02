@@ -80,14 +80,21 @@ export default function ComponentTest() {
     vendors: [],
     modelNumbers: [],
     descriptions: [],
-    categories: [],
+    categories: null,
   });
   const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+    let actualCategories = [];
+    categories.forEach((element) => {
+      actualCategories.push(element.name);
+    });
+    if (actualCategories.length === 0) { // if there's no elements in actualCategories, make it null
+      actualCategories = null;// this is because an empty array will make fetch data return nothing
+    }
     setFilterOptions({
       vendors,
       modelNumbers,
       descriptions,
-      categories,
+      categories: actualCategories,
     });
   };
   const onClearFilters = () => {
@@ -95,12 +102,16 @@ export default function ComponentTest() {
       vendors: [],
       modelNumbers: [],
       descriptions: [],
-      categories: [],
+      categories: null,
     });
   };
-  const { vendors } = filterOptions;
+  const {
+    vendors, modelNumbers, descriptions, categories,
+  } = filterOptions;
+  const description = descriptions[0]?.description;
+  const modelNumber = modelNumbers[0]?.modelNumber;
   const vendor = vendors[0]?.vendor;
-  console.log(vendor);
+  console.log(vendor, modelNumber, description);
   return (
     <>
       <ServerPaginationGrid
@@ -127,7 +138,14 @@ export default function ComponentTest() {
         onPageChange={(page, limit) => undefined}
         // eslint-disable-next-line no-unused-vars
         onPageSizeChange={(page, limit) => undefined}
-        fetchData={(limit, offset) => GetAllModels({ limit, offset, vendor }).then((response) => response)}
+        fetchData={(limit, offset) => GetAllModels({
+          limit,
+          offset,
+          vendor,
+          modelNumber,
+          description,
+          categories,
+        }).then((response) => response)}
       />
     </>
   );
