@@ -5,9 +5,13 @@ minor feature that would be cool is spinners while the modal alert loads;
 */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
+import SearchBar from '../components/SearchBar';
+import Query from '../components/UseQuery';
 
 function ListModels() {
   const history = useHistory();
@@ -16,7 +20,9 @@ function ListModels() {
   const [description, setDescription] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const rowCount = parseInt(urlParams.get('count'), 10);
+  const initRowCount = parseInt(urlParams.get('count'), 10);
+  // eslint-disable-next-line no-unused-vars
+  const [rowCount, setRowCount] = useState(initRowCount);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
   history.listen((location, action) => {
@@ -138,15 +144,118 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
+  const [filterOptions, setFilterOptions] = React.useState({
+    vendors: [],
+    modelNumbers: [],
+    descriptions: [],
+    categories: null,
+  });
+  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+    let actualCategories = [];
+    categories.forEach((element) => {
+      actualCategories.push(element.name);
+    });
+    if (actualCategories.length === 0) {
+      // if there's no elements in actualCategories, make it null
+      actualCategories = null; // this is because an empty array will make fetch data return nothing
+    }
+    Query({
+      query: print(gql`
+        query CountWithFilter(
+          $vendor: String
+          $modelNumber: String
+          $description: String
+          $categories: [String]
+        ) {
+          countModelsWithFilter(
+            vendor: $vendor
+            modelNumber: $modelNumber
+            description: $description
+            categories: $categories
+          )
+        }
+      `),
+      queryName: 'countModelsWithFilter',
+      getVariables: () => ({
+        vendor: vendors[0]?.vendor,
+        modelNumber: modelNumbers[0]?.modelNumber,
+        description: descriptions[0]?.description,
+        categories: actualCategories,
+      }),
+      handleResponse: (response) => {
+        setRowCount(response);
+        history.push(`/viewModels?page=1&limit=${initLimit}&count=${response}`);
+      },
+    });
+    setFilterOptions({
+      vendors,
+      modelNumbers,
+      descriptions,
+      categories: actualCategories,
+    });
+  };
+  const onClearFilters = () => {
+    setFilterOptions({
+      vendors: [],
+      modelNumbers: [],
+      descriptions: [],
+      categories: null,
+    });
+    Query({
+      query: print(gql`
+        query CountWithFilter(
+          $vendor: String
+          $modelNumber: String
+          $description: String
+          $categories: [String]
+        ) {
+          countModelsWithFilter(
+            vendor: $vendor
+            modelNumber: $modelNumber
+            description: $description
+            categories: $categories
+          )
+        }
+      `),
+      queryName: 'countModelsWithFilter',
+      getVariables: () => ({
+        vendor: null,
+        modelNumber: null,
+        description: null,
+        categories: null,
+      }),
+      handleResponse: (response) => {
+        setRowCount(response);
+        // console.log(response);
+        history.push(`/viewModels?page=${initPage}&limit=${initLimit}&count=${response}`);
+      },
+    });
+  };
+  const {
+    vendors, modelNumbers, descriptions, categories,
+  } = filterOptions;
+  const filterDescription = descriptions[0]?.description;
+  const filterModelNumber = modelNumbers[0]?.modelNumber;
+  const filterVendor = vendors[0]?.vendor;
+
   return (
     <>
       <ServerPaginationGrid
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <Link className="btn  m-2" to="/addModel">
-            Create Model
-          </Link>
+          <div className="d-flex justify-content-between">
+            <div className="p-2">
+              <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
+                Create Model
+              </Link>
+            </div>
+            <SearchBar
+              forModelSearch
+              onSearch={onSearch}
+              onClearFilters={onClearFilters}
+            />
+          </div>
         )}
         cols={cols}
         initPage={initPage}
@@ -169,7 +278,14 @@ function ListModels() {
             setInitPage(page);
           }
         }}
-        fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
+        fetchData={(limit, offset) => GetAllModels({
+          limit,
+          offset,
+          vendor: filterVendor,
+          modelNumber: filterModelNumber,
+          description: filterDescription,
+          categories,
+        }).then((response) => response)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"
