@@ -291,6 +291,22 @@ module.exports = {
       });
       return response;
     },
+    oauthLogin: async (_, { netId, firstName, lastName }, { dataSources }) => {
+      const response = await dataSources.userAPI.oauthLogin({
+        netId,
+        firstName,
+        lastName,
+      });
+      return response;
+    },
+    changePassword: async (_, { userName, oldPassword, newPassword }, { dataSources }) => {
+      const response = await dataSources.userAPI.updatePassword({
+        userName,
+        oldPassword,
+        newPassword,
+      });
+      return response;
+    },
     signup: async (
       _,
       {

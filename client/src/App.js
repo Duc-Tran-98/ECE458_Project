@@ -19,6 +19,7 @@ import UsersTable from './pages/UsersTable';
 import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
 import OAuthConsume from './pages/OAuthConsume';
+import UserInfo from './pages/UserInfo';
 import 'react-toastify/dist/ReactToastify.css';
 import './css/customToast.css';
 
@@ -154,7 +155,14 @@ function App() {
                 )}
               </Route>
               <Route path="/oauth/consume">
-                <OAuthConsume />
+                <OAuthConsume handleLogin={handleLogin} />
+              </Route>
+              <Route path="/userInfo">
+                {loggedIn ? (
+                  <UserInfo />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )}
               </Route>
             </Switch>
           </div>
