@@ -159,6 +159,14 @@ function ListModels() {
       // if there's no elements in actualCategories, make it null
       actualCategories = null; // this is because an empty array will make fetch data return nothing
     }
+    const filters = Buffer.from(JSON.stringify(
+      {
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories,
+      },
+    ), 'ascii').toString('base64');
     Query({
       query: print(gql`
         query CountWithFilter(
@@ -184,7 +192,15 @@ function ListModels() {
       }),
       handleResponse: (response) => {
         setRowCount(response);
-        history.push(`/viewModels?page=1&limit=${initLimit}&count=${response}`);
+        if (vendors.length === 0 && categories.length === 0 && modelNumbers.length === 0 && descriptions.length === 0) {
+          history.push(
+            `/viewModels?page=1&limit=${initLimit}&count=${response}`,
+          );
+        } else {
+          history.push(
+            `/viewModels?page=1&limit=${initLimit}&count=${response}&filters=${filters}`,
+          );
+        }
       },
     });
     setFilterOptions({
@@ -223,7 +239,20 @@ function ListModels() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          console.log('page change called');
+          const filters = Buffer.from(
+            JSON.stringify({
+              vendors,
+              modelNumbers,
+              descriptions,
+              categories,
+            }),
+            'ascii',
+          ).toString('base64');
+          let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          if (window.location.search.includes('filters')) {
+            searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
+          }
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewModels${searchString}`);
@@ -232,7 +261,20 @@ function ListModels() {
           }
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          console.log('page size change called');
+          const filters = Buffer.from(
+            JSON.stringify({
+              vendors,
+              modelNumbers,
+              descriptions,
+              categories,
+            }),
+            'ascii',
+          ).toString('base64');
+          let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          if (window.location.search.includes('filters')) {
+            searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
+          }
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewModels${searchString}`);
