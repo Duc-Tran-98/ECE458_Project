@@ -41,16 +41,20 @@ export default function ModelForm({
   const selectedTags = (tags) => {
     console.log(tags);
   };
+  let cats = [];
+  if (categories) {
+    // cats = categories;
+    categories.forEach((el) => cats.push(el));
+  } else {
+    cats = [];
+  }
+  console.log(cats);
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
   const val = { vendor };
-  let cats;
-  if (categories) {
-    cats = categories;
-  } else {
-    cats = [];
-  }
+
+  // cats = ['louis', 'ejnsen'];
   return (
     <Form
       className="needs-validation"
@@ -154,7 +158,7 @@ export default function ModelForm({
           <Form.Label className="h4">Categories</Form.Label>
           <TagsInput
             selectedTags={selectedTags}
-            tags={cats}
+            tags={categories}
             dis={disabled}
             models
           />

@@ -68,12 +68,6 @@ export default function InstrumentForm({
   const selectedTags = (tags) => {
     console.log(tags);
   };
-  let cats;
-  if (categories) {
-    cats = categories;
-  } else {
-    cats = [];
-  }
   return (
     <Form
       className="needs-validation"
@@ -188,7 +182,7 @@ export default function InstrumentForm({
           <Form.Label className="h4">Categories</Form.Label>
           <TagsInput
             selectedTags={selectedTags}
-            tags={cats}
+            tags={categories}
             disable={disabled}
             models={false}
           />

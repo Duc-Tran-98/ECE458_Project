@@ -10,14 +10,10 @@ import AsyncSuggest from './AsyncSuggest';
 
 const TagsInput = (props) => {
   const startTags = props.tags;
-  const [tags, setTags] = React.useState([]);
-  React.useEffect(() => {
-    console.log(props);
-    setTags(props.tags);
-    console.log(props.tags);
-    console.log(startTags);
-    console.log('NOW');
-  }, []);
+  // eslint-disable-next-line prefer-const
+  let [tags, setTags] = React.useState(props.tags);
+  const [removed, setRemoved] = React.useState(['']);
+  const [update, setUpdate] = React.useState(false);
   const models = React.useState(props.models);
   let query;
   let queryName;
@@ -45,6 +41,7 @@ const TagsInput = (props) => {
   const [dis, setDis] = React.useState(props.disable);
   const removeTags = (indexToRemove) => {
     if (!dis) {
+      setRemoved([...removed, tags[indexToRemove]]);
       setTags([...tags.filter((_, index) => index !== indexToRemove)]);
       props.selectedTags([...tags.filter((_, index) => index !== indexToRemove)]);
     }
@@ -60,10 +57,12 @@ const TagsInput = (props) => {
   const onInputChange = (e, v) => {
     addTags(v.name);
   };
+
   if (startTags) {
-    startTags.forEach((element) => addTags(element));
+    startTags.forEach((element) => {
+      if (!removed.includes(element)) addTags(element);
+    });
   }
-  console.log('adding');
 
   return (
     <div className="tags-input">
