@@ -183,7 +183,7 @@ export default function InstrumentForm({
           <TagsInput
             selectedTags={selectedTags}
             tags={categories}
-            disable={disabled}
+            dis={disabled}
             models={false}
           />
         </div>

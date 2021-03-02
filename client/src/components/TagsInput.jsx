@@ -15,6 +15,9 @@ const TagsInput = (props) => {
   const [removed, setRemoved] = React.useState(['']);
   const [update, setUpdate] = React.useState(false);
   const models = React.useState(props.models);
+  console.log(props);
+  // eslint-disable-next-line prefer-destructuring
+  const dis = props.dis;
   let query;
   let queryName;
   const GET_MODELS_CAT = gql`
@@ -38,7 +41,7 @@ const TagsInput = (props) => {
     query = print(GET_INST_CAT);
     queryName = 'getAllInstrumentCategories';
   }
-  const [dis, setDis] = React.useState(props.disable);
+
   const removeTags = (indexToRemove) => {
     if (!dis) {
       setRemoved([...removed, tags[indexToRemove]]);
@@ -47,6 +50,9 @@ const TagsInput = (props) => {
     }
   };
   const addTags = (tag) => {
+    if (typeof tags === 'undefined') {
+      setTags([]);
+    }
     if (tag !== '' && !tags.includes(tag)) {
       setTags([...tags, tag]);
       props.selectedTags([...tags, tag]);
@@ -67,7 +73,7 @@ const TagsInput = (props) => {
   return (
     <div className="tags-input">
       <ul id="tags">
-        {tags.map((tag, index) => (
+        {tags && tags.length > 0 ? (tags.map((tag, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <li key={index} className="tag">
             <span className="tag-title">{tag}</span>
@@ -78,7 +84,7 @@ const TagsInput = (props) => {
               X
             </span>
           </li>
-        ))}
+        ))) : (<p>No categories attached</p>)}
       </ul>
       {dis ? (
         <input
