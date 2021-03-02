@@ -86,7 +86,6 @@ class ModelAPI extends DataSource {
     calibrationFrequency,
     categories,
   }) {
-    console.log(id, vendor, modelNumber, description, comment, calibrationFrequency, categories);
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { message: '', success: false };
@@ -112,6 +111,14 @@ class ModelAPI extends DataSource {
           },
           { where: { id } },
         );
+        this.store.modelCategoryRelationships.destroy({
+          where: {
+            modelId: id,
+          },
+        });
+        categories.forEach(async (category) => {
+          await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
         const modelReference = id;
         const instrumentList = await this.store.instruments.findAll({
           where: { modelReference },
@@ -242,11 +249,6 @@ class ModelAPI extends DataSource {
     calibrationFrequency,
     categories,
   }) {
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAA');
-    categories.forEach((item) => {
-      console.log(`${item}`);
-    });
-    console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
@@ -262,17 +264,15 @@ class ModelAPI extends DataSource {
       if (value) {
         response.message = `Model ${vendor} ${modelNumber} already exists!`;
       } else {
-        const created = await this.store.models.create({
+        await this.store.models.create({
           modelNumber,
           vendor,
           description,
           comment,
           calibrationFrequency,
         });
-        console.log(created);
-        const createdID = created.dataValues.id;
-        categories.forEach((item) => {
-          console.log(`${createdID} ${item}`);
+        categories.forEach(async (category) => {
+          await this.addCategoryToModel({ vendor, modelNumber, category });
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;
