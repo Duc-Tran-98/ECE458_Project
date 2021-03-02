@@ -46,7 +46,6 @@ export default function ModelForm({
       },
     };
     changeHandler(event);
-    console.log(tags);
   };
   let cats = [];
   if (categories) {

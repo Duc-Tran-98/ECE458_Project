@@ -248,8 +248,9 @@ class InstrumentAPI extends DataSource {
   }
 
   async editInstrument({
-    modelNumber, vendor, serialNumber, comment, id,
+    modelNumber, vendor, serialNumber, comment, id, categories,
   }) {
+    console.log(categories);
     const response = { message: '', success: true };
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment,
@@ -316,8 +317,9 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrument({
-    modelNumber, vendor, serialNumber, comment,
+    modelNumber, vendor, serialNumber, comment, categories,
   }) {
+    console.log(categories);
     const response = { message: '', success: false };
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment,

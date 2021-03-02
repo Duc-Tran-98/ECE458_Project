@@ -66,7 +66,13 @@ export default function InstrumentForm({
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const selectedTags = (tags) => {
-    console.log(tags);
+    const event = {
+      target: {
+        name: 'categories',
+        value: tags,
+      },
+    };
+    changeHandler(event);
   };
   return (
     <Form

@@ -108,6 +108,7 @@ export default function EditInstrument({
       vendor,
       serialNumber,
       description,
+      categories,
       id,
       calibrationFrequency,
     } = formState;
@@ -132,6 +133,7 @@ export default function EditInstrument({
       serialNumber,
       id,
       comment,
+      categories,
       handleResponse,
     });
   };
