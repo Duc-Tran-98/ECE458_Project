@@ -158,7 +158,7 @@ export default function ModelForm({
           <Form.Label className="h4">Categories</Form.Label>
           <TagsInput
             selectedTags={selectedTags}
-            tags={categories || []}
+            tags={categories}
             dis={disabled}
             models
           />

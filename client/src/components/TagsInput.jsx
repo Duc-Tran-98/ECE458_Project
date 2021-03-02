@@ -15,7 +15,6 @@ const TagsInput = (props) => {
   const [removed, setRemoved] = React.useState(['']);
   const [update, setUpdate] = React.useState(false);
   const models = React.useState(props.models);
-  console.log(props);
   // eslint-disable-next-line prefer-destructuring
   const dis = props.dis;
   let query;

@@ -22,33 +22,36 @@ function CreateModelPage({ onCreation }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    } else {
-      let { calibrationFrequency } = formState;
-      if (typeof calibrationFrequency === 'string') {
-        // If user increments input, it becomes string so change it back to number
-        calibrationFrequency = parseInt(calibrationFrequency, 10);
-      }
-      const {
-        modelNumber, vendor, description, comment,
-      } = formState;
-      const handleResponse = (response) => {
-        toast(response.message);
-        if (response.success) {
-          onCreation();
-        }
-      };
-      CreateModel({
-        modelNumber,
-        vendor,
-        description,
-        comment,
-        calibrationFrequency,
-        handleResponse,
-      });
+    // const form = event.currentTarget;
+    // if (form.checkValidity() === false) {
+    //   console.log(form.validationMessage);
+    //   console.log(form);
+    //   event.stopPropagation();
+    // } else {
+    let { calibrationFrequency } = formState;
+    if (typeof calibrationFrequency === 'string') {
+      // If user increments input, it becomes string so change it back to number
+      calibrationFrequency = parseInt(calibrationFrequency, 10);
     }
+    const {
+      modelNumber, vendor, description, comment,
+    } = formState;
+    const handleResponse = (response) => {
+      console.log(response);
+      toast(response.message);
+      if (response.success) {
+        onCreation();
+      }
+    };
+    CreateModel({
+      modelNumber,
+      vendor,
+      description,
+      comment,
+      calibrationFrequency,
+      handleResponse,
+    });
+  //  }
   };
 
   const changeHandler = (e) => {

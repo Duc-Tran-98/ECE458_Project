@@ -15,6 +15,15 @@ function validateModel({
   if (description.length > 100) {
     return [false, 'Description input must be under 100 characters!'];
   }
+  if (vendor.length < 1) {
+    return [false, 'Vendor input must be included!'];
+  }
+  if (modelNumber.length < 1) {
+    return [false, 'Model number must be included!'];
+  }
+  if (description.length < 1) {
+    return [false, 'Description input must be included!'];
+  }
   if (comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
