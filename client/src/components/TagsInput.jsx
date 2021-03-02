@@ -50,9 +50,8 @@ const TagsInput = (props) => {
   };
   const addTags = (tag) => {
     if (typeof tags === 'undefined') {
-      setTags([]);
-    }
-    if (tag !== '' && !tags.includes(tag)) {
+      setTags([tag]);
+    } else if (tag !== '' && !tags.includes(tag)) {
       setTags([...tags, tag]);
       props.selectedTags([...tags, tag]);
     }
