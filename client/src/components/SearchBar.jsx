@@ -5,9 +5,11 @@ import { print } from 'graphql';
 import SearchIcon from '@material-ui/icons/Search';
 import AsyncSuggest from './AsyncSuggest';
 
-export default function SearchBar({ forModelSearch }) {
+export default function SearchBar({ forModelSearch, onSearch, onClearFilters }) {
   SearchBar.propTypes = {
     forModelSearch: PropTypes.bool.isRequired,
+    onSearch: PropTypes.func.isRequired,
+    onClearFilters: PropTypes.func.isRequired,
   };
   const [which, setWhich] = React.useState('vendor');
   // eslint-disable-next-line no-unused-vars
@@ -73,6 +75,7 @@ export default function SearchBar({ forModelSearch }) {
               setDescriptions([]);
               setModelNumbers([]);
               setVendors([]);
+              onClearFilters();
             }}
           >
             Clear Filters
@@ -88,7 +91,7 @@ export default function SearchBar({ forModelSearch }) {
         {which === 'vendor' && (
           <div className="m-2 w-100 my-auto pt-1">
             <AsyncSuggest
-              query={print(gql` 
+              query={print(gql`
                 query Models {
                   getUniqueVendors {
                     vendor
@@ -166,7 +169,7 @@ export default function SearchBar({ forModelSearch }) {
           </div>
         )}
         {dropdownMenu}
-        <button className="btn my-auto mx-2" type="button">
+        <button className="btn my-auto mx-2" type="button" onClick={() => onSearch(vendors, modelNumbers, descriptions, categories)}>
           <SearchIcon />
         </button>
       </>
@@ -177,12 +180,12 @@ export default function SearchBar({ forModelSearch }) {
       <div className="m-2 w-25">
         <AsyncSuggest
           query={print(gql`
-              query Models {
-                getUniqueVendors {
-                  vendor
-                }
+            query Models {
+              getUniqueVendors {
+                vendor
               }
-            `)}
+            }
+          `)}
           queryName="getUniqueVendors"
           onInputChange={(_e, v) => console.log(v)}
           label="Filter by Vendor"
@@ -194,12 +197,12 @@ export default function SearchBar({ forModelSearch }) {
       <div className="m-2 w-25">
         <AsyncSuggest
           query={print(gql`
-              query GetModelNumbers {
-                getAllModels {
-                  modelNumber
-                }
+            query GetModelNumbers {
+              getAllModels {
+                modelNumber
               }
-            `)}
+            }
+          `)}
           queryName="getAllModels"
           onInputChange={(_e, v) => console.log(v)}
           label="Filter by Model Number"
@@ -211,12 +214,12 @@ export default function SearchBar({ forModelSearch }) {
       <div className="m-2 w-25">
         <AsyncSuggest
           query={print(gql`
-              query GetCategories {
-                getAllModelCategories {
-                  name
-                }
+            query GetCategories {
+              getAllModelCategories {
+                name
               }
-            `)}
+            }
+          `)}
           queryName="getAllModelCategories"
           onInputChange={(_e, v) => console.log(v)}
           label="Filter by Category"
@@ -228,12 +231,12 @@ export default function SearchBar({ forModelSearch }) {
       <div className="m-2 w-25">
         <AsyncSuggest
           query={print(gql`
-              query GetModelNumbers {
-                getAllModels {
-                  description
-                }
+            query GetModelNumbers {
+              getAllModels {
+                description
               }
-            `)}
+            }
+          `)}
           queryName="getAllModels"
           onInputChange={(_e, v) => console.log(v)}
           label="Filter by Description"

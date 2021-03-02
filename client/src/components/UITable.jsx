@@ -170,7 +170,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, rowCount]);
+  }, [initLimit, initPage, rowCount, fetchData]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
@@ -335,7 +335,3 @@ export function ServerPaginationGrid({
     </div>
   );
 }
-
-/*
-TODO: Move bottom buttons to right hand side
-*/

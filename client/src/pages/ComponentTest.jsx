@@ -76,6 +76,31 @@ export default function ComponentTest() {
       ),
     },
   ];
+  const [filterOptions, setFilterOptions] = React.useState({
+    vendors: [],
+    modelNumbers: [],
+    descriptions: [],
+    categories: [],
+  });
+  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+    setFilterOptions({
+      vendors,
+      modelNumbers,
+      descriptions,
+      categories,
+    });
+  };
+  const onClearFilters = () => {
+    setFilterOptions({
+      vendors: [],
+      modelNumbers: [],
+      descriptions: [],
+      categories: [],
+    });
+  };
+  const { vendors } = filterOptions;
+  const vendor = vendors[0]?.vendor;
+  console.log(vendor);
   return (
     <>
       <ServerPaginationGrid
@@ -88,7 +113,11 @@ export default function ComponentTest() {
                 Create Model
               </Link>
             </div>
-            <SearchBar forModelSearch />
+            <SearchBar
+              forModelSearch
+              onSearch={onSearch}
+              onClearFilters={onClearFilters}
+            />
           </div>
         )}
         cols={cols}
@@ -98,7 +127,7 @@ export default function ComponentTest() {
         onPageChange={(page, limit) => undefined}
         // eslint-disable-next-line no-unused-vars
         onPageSizeChange={(page, limit) => undefined}
-        fetchData={(limit, offset) => GetAllModels({ limit, offset }).then((response) => response)}
+        fetchData={(limit, offset) => GetAllModels({ limit, offset, vendor }).then((response) => response)}
       />
     </>
   );
