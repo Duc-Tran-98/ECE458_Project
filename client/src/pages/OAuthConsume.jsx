@@ -1,13 +1,20 @@
+/* eslint-disable camelcase */
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 // const jwt_decode = require('jwt-decode');
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
+import OAuthSignOn from '../queries/OAuthSignOn';
+import ExpressQuery from '../queries/ExpressQuery';
 
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
-// TODO: Check if user exists, or add them to database on first login
-export default function OAuthConsume() {
+export default function OAuthConsume({ handleLogin }) {
+  OAuthConsume.propTypes = {
+    handleLogin: PropTypes.func.isRequired,
+  };
+
   const [netID, setNetID] = useState('');
 
   function parseIdToken(token) {
@@ -22,20 +29,44 @@ export default function OAuthConsume() {
     return code;
   };
 
+  const handleOAuthSignOn = (response) => {
+    console.log('Handling OAuth Sign On');
+    console.log(response);
+    window.sessionStorage.setItem(
+      'token',
+      Buffer.from(response.userName, 'ascii').toString('base64'),
+    );
+    handleLogin();
+    window.location.href = '/';
+  };
+
+  const handleUserInfoResponse = (response) => {
+    const {
+      dukeNetID, given_name, family_name, sub,
+    } = response.data.result;
+    console.log(`dukeID: ${dukeNetID}, given_name: ${given_name}, family_name: ${family_name}, sub: ${sub}`);
+
+    OAuthSignOn({
+      netId: dukeNetID, firstName: given_name, lastName: family_name, handleResponse: handleOAuthSignOn,
+    });
+  };
+
   useEffect(() => {
     const authCode = getURLCode();
-    console.log(authCode);
 
     // Axios request to express server to handle token
     axios.post('http://localhost:4001/api/oauthConsume', {
       code: authCode,
     })
       .then((res) => {
-        console.log(res);
+        const accessToken = res.data.result.access_token;
         const idToken = parseIdToken(res.data.result.id_token);
-        console.log('idToken');
-        console.log(idToken);
-        setNetID(idToken.sub);
+        ExpressQuery({
+          route: `/api/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
+        });
+
+        const netId = idToken.sub;
+        setNetID(netId);
       })
       .catch((err) => {
         console.error(err);
