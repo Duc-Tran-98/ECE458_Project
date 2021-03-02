@@ -54,7 +54,6 @@ export default function ModelForm({
   } else {
     cats = [];
   }
-  console.log(cats);
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
