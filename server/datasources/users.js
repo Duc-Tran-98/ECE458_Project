@@ -55,6 +55,63 @@ class UserAPI extends DataSource {
     return JSON.stringify(response);
   }
 
+  /**
+   * This function takes a netId, and logs this user in (optionally creates if they do not exist)
+   */
+  async oauthLogin({ netId, firstName, lastName }) {
+    const email = `${netId}@duke.edu`;
+    const userName = `${netId}@duke.edu`;
+    const isAdmin = true;
+
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const password = bcrypt.hashSync(netId, salt);
+
+    const response = { success: true, message: '', userName };
+    await this.findUser({ userName }).then((value) => {
+      if (value) {
+        response.message = 'Account already exists';
+      } else {
+        this.store.users.create({
+          email,
+          firstName,
+          lastName,
+          userName,
+          password,
+          isAdmin,
+        });
+        response.message = 'Created account for user';
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  /**
+   * This function takes a userName and password and see if it belongs
+   * to a user in the db
+   */
+  async updatePassword({ userName, oldPassword, newPassword }) {
+    const response = { success: false, message: '' };
+    await this.findUser({ userName }).then((value) => {
+      if (value) {
+        if (bcrypt.compareSync(oldPassword, value.password)) {
+          // TODO: Update password to new password (verify this is correct)
+          const saltRounds = 10;
+          const salt = bcrypt.genSaltSync(saltRounds);
+          const password = bcrypt.hashSync(newPassword, salt);
+          this.store.users.update({ password }, { where: { userName } });
+          response.success = true;
+          response.message = 'Successfully updated password';
+        } else {
+          response.messgae = 'Incorrect password';
+        }
+      } else {
+        response.message = 'User does not exist';
+      }
+    });
+    return JSON.stringify(response);
+  }
+
   async editPermissions({ userName, isAdmin }) {
     const response = { success: false, message: '' };
     const storeModel = await this.store;

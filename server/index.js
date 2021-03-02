@@ -5,6 +5,7 @@ const isEmail = require('isemail');
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
+// const bodyParser = require('body-parser');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
 const ModelAPI = require('./datasources/models');
@@ -60,12 +61,8 @@ server.listen().then(() => {
 const app = express();
 app.use(cors());
 app.use(express.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 const expressPort = 4001;
-
-// Create route
-app.get('/api/*', (req, res) => {
-  res.send('Hello World!');
-});
 
 app.post('/api/oauthConsume', (req, res) => {
   const { code } = req.body;
@@ -88,7 +85,37 @@ app.post('/api/oauthConsume', (req, res) => {
 
   axios(options)
     .then((response) => {
-      console.log(response.data);
+      res.json({
+        success: true,
+        result: response.data,
+      });
+    })
+    .catch((err) => {
+      res.json({
+        error: err,
+        success: false,
+      });
+    });
+});
+
+app.get('/api/userinfo', (req, res) => {
+  const url = 'https://oauth.oit.duke.edu/oidc/userinfo';
+  const { accessToken } = req.query;
+
+  const options = {
+    url,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+
+  console.log('calling userInfo API with options: ');
+  console.log(options);
+
+  axios(options)
+    .then((response) => {
+      console.log(response);
       res.json({
         success: true,
         result: response.data,

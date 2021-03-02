@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import { EditUserForm } from '../components/UserForm';
 import ModalAlert from '../components/ModalAlert';
 import Query from '../components/UseQuery';
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 export default function ViewUser({ onDelete }) {
   ViewUser.propTypes = {
@@ -19,6 +21,7 @@ export default function ViewUser({ onDelete }) {
     userName: urlParams.get('userName'),
     isAdmin: urlParams.get('isAdmin') === 'true',
   });
+
   const onChangeCheckbox = (event) => {
     if (formState.userName !== 'admin') {
       setFormState({ ...formState, isAdmin: event.target.checked });
