@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
 export default function CreateModel({
-  modelNumber, vendor, description, comment, calibrationFrequency, handleResponse,
+  modelNumber, vendor, description, comment, calibrationFrequency, handleResponse, categories,
 }) {
   CreateModel.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -13,6 +13,8 @@ export default function CreateModel({
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    categories: PropTypes.array.isRequired,
   };
   const ADD_MODEL = gql`
       mutation AddModel(
@@ -21,6 +23,7 @@ export default function CreateModel({
         $description: String!
         $comment: String
         $calibrationFrequency: Int
+        $categories: [String]
       ) {
         addModel(
           modelNumber: $modelNumber
@@ -28,6 +31,7 @@ export default function CreateModel({
           comment: $comment
           description: $description
           calibrationFrequency: $calibrationFrequency
+          categories: $categories
         )
       }
     `;
@@ -39,6 +43,7 @@ export default function CreateModel({
     description,
     comment,
     calibrationFrequency,
+    categories,
   });
   Query({
     query, queryName, getVariables, handleResponse,

@@ -18,6 +18,7 @@ function CreateModelPage({ onCreation }) {
     description: '',
     comment: '',
     calibrationFrequency: '0',
+    categories: [],
   });
 
   const handleSubmit = (event) => {
@@ -34,7 +35,7 @@ function CreateModelPage({ onCreation }) {
       calibrationFrequency = parseInt(calibrationFrequency, 10);
     }
     const {
-      modelNumber, vendor, description, comment,
+      modelNumber, vendor, description, comment, categories,
     } = formState;
     const handleResponse = (response) => {
       console.log(response);
@@ -49,6 +50,7 @@ function CreateModelPage({ onCreation }) {
       description,
       comment,
       calibrationFrequency,
+      categories,
       handleResponse,
     });
   //  }
@@ -83,6 +85,7 @@ function CreateModelPage({ onCreation }) {
     description,
     comment,
     calibrationFrequency,
+    categories,
   } = formState;
   return (
     <>
@@ -93,6 +96,7 @@ function CreateModelPage({ onCreation }) {
         description={description}
         comment={comment}
         calibrationFrequency={calibrationFrequency}
+        categories={categories}
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={false}

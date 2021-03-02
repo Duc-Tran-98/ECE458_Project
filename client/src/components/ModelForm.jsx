@@ -39,6 +39,13 @@ export default function ModelForm({
     diffSubmit: false,
   };
   const selectedTags = (tags) => {
+    const event = {
+      target: {
+        name: 'categories',
+        value: tags,
+      },
+    };
+    changeHandler(event);
     console.log(tags);
   };
   let cats = [];

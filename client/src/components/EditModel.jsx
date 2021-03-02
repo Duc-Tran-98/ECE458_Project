@@ -110,6 +110,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         $description: String!
         $comment: String
         $calibrationFrequency: Int
+        $categories: [String]
         $id: Int!
       ) {
         editModel(
@@ -118,6 +119,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
           comment: $comment
           description: $description
           calibrationFrequency: $calibrationFrequency
+          categories: $categories
           id: $id
         )
       }
@@ -128,7 +130,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     id = parseInt(id, 10);
     calibrationFrequency = parseInt(calibrationFrequency, 10);
     const {
-      description, comment, modelNumber, vendor,
+      description, comment, modelNumber, vendor, categories,
     } = model;
     const getVariables = () => ({
       description,
@@ -137,6 +139,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       id,
       modelNumber,
       vendor,
+      categories,
     });
     const handleResponse = (response) => {
       setLoading(false);

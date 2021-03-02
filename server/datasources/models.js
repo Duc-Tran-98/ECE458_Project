@@ -24,7 +24,7 @@ function validateModel({
   if (description.length < 1) {
     return [false, 'Description input must be included!'];
   }
-  if (comment.length > 2000) {
+  if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
   return [true];
@@ -84,7 +84,9 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    categories,
   }) {
+    console.log(id, vendor, modelNumber, description, comment, calibrationFrequency, categories);
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { message: '', success: false };
@@ -238,7 +240,13 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    categories,
   }) {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAA');
+    categories.forEach((item) => {
+      console.log(`${item}`);
+    });
+    console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
@@ -250,16 +258,21 @@ class ModelAPI extends DataSource {
       response.message = validation[1];
       return JSON.stringify(response);
     }
-    await this.getModel({ modelNumber, vendor }).then((value) => {
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         response.message = `Model ${vendor} ${modelNumber} already exists!`;
       } else {
-        this.store.models.create({
+        const created = await this.store.models.create({
           modelNumber,
           vendor,
           description,
           comment,
           calibrationFrequency,
+        });
+        console.log(created);
+        const createdID = created.dataValues.id;
+        categories.forEach((item) => {
+          console.log(`${createdID} ${item}`);
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;
