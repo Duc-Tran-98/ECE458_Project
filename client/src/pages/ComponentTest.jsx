@@ -1,27 +1,10 @@
 /* eslint-disable max-len */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Form from 'react-bootstrap/Form';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
-import OAuth from '../components/OAuthLogin';
-import ToastTest from '../components/ToastTest';
+// import Form from 'react-bootstrap/Form';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
-import AsyncSuggest from '../components/AsyncSuggest';
-
-const GET_MODELS_QUERY = gql`
-  query Models {
-    getAllModels {
-      modelNumber
-      vendor
-      calibrationFrequency
-      description
-    }
-  }
-`;
-const query = print(GET_MODELS_QUERY);
-const queryName = 'getAllModels';
+import SearchBar from '../components/SearchBar';
 
 export default function ComponentTest() {
   const cols = [
@@ -93,34 +76,19 @@ export default function ComponentTest() {
       ),
     },
   ];
-  const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
-  const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   return (
     <>
-      <ToastTest />
-      <OAuth />
       <ServerPaginationGrid
         rowCount={64}
         cellHandler={() => undefined}
         headerElement={(
-          <div className="d-flex flex-row">
-            <Link className="btn  m-2" to="/addModel">
-              Create Model
-            </Link>
-            <div className="mx-2 my-2">
-              <Form.Group>
-                <Form.Label className="h4 ">Vendors</Form.Label>
-                <AsyncSuggest
-                  query={query}
-                  queryName={queryName}
-                  onInputChange={(_e, v) => console.log(v)}
-                  label="Filter by Vendors"
-                  getOptionSelected={formatSelected}
-                  getOptionLabel={formatOption}
-                  multiple
-                />
-              </Form.Group>
+          <div className="d-flex justify-content-between">
+            <div className="p-2">
+              <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
+                Create Model
+              </Link>
             </div>
+            <SearchBar forModelSearch />
           </div>
         )}
         cols={cols}

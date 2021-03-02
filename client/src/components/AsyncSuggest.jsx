@@ -10,7 +10,7 @@ import { QueryAndThen } from './UseQuery';
 const filter = createFilterOptions();
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, multiple,
+  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, multiple, multipleValues,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -21,6 +21,8 @@ export default function AsyncSuggest({
     getOptionSelected: PropTypes.func.isRequired, // which fields of selected option to assign to value
     // eslint-disable-next-line react/forbid-prop-types
     value: PropTypes.object,
+    // eslint-disable-next-line react/forbid-prop-types
+    multipleValues: PropTypes.array,
     allowAdditions: PropTypes.bool, // Whether or not user should be able to create new input
     multiple: PropTypes.bool, // whether or not user should be able to select mutliple
   };
@@ -28,6 +30,7 @@ export default function AsyncSuggest({
     value: null,
     allowAdditions: false,
     multiple: false,
+    multipleValues: null,
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
@@ -137,13 +140,14 @@ export default function AsyncSuggest({
         multiple={multiple}
         autoComplete
         autoHighlight
-        disableClearable
         onChange={onInputChange}
+        value={multipleValues}
         renderInput={(params) => (
           <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
-            variant="standard"
+            variant="outlined"
+            size="small"
             label={label}
           />
         )}

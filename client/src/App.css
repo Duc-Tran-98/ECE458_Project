@@ -58,7 +58,7 @@ textarea:disabled{ /* Styling for disabled textarea*/
 
 .bg-theme {
   background: #e5e5e5;
-  width: 85vw;
+  width: 92vw;
   /* Platinum color */
 }
 
@@ -83,4 +83,14 @@ button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-sele
 .text-warning-theme{
   /* background: rgb(121, 118, 112,1); */
   color: darkgoldenrod;
+}
+
+
+label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-marginDense.MuiInputLabel-outlined{
+  font-weight: bold;
+  color: black;
+}
+
+label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-shrink.MuiInputLabel-marginDense.MuiInputLabel-outlined{
+  padding-top: 3px;
 }
