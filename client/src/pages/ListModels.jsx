@@ -25,6 +25,12 @@ function ListModels() {
   const [rowCount, setRowCount] = useState(initRowCount);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  const [filterOptions, setFilterOptions] = React.useState({
+    vendors: [],
+    modelNumbers: [],
+    descriptions: [],
+    categories: null,
+  });
   history.listen((location, action) => {
     const urlVals = new URLSearchParams(location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
@@ -144,12 +150,6 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
-  const [filterOptions, setFilterOptions] = React.useState({
-    vendors: [],
-    modelNumbers: [],
-    descriptions: [],
-    categories: null,
-  });
   const onSearch = (vendors, modelNumbers, descriptions, categories) => {
     let actualCategories = [];
     categories.forEach((element) => {
@@ -194,43 +194,6 @@ function ListModels() {
       categories: actualCategories,
     });
   };
-  const onClearFilters = () => {
-    setFilterOptions({
-      vendors: [],
-      modelNumbers: [],
-      descriptions: [],
-      categories: null,
-    });
-    Query({
-      query: print(gql`
-        query CountWithFilter(
-          $vendor: String
-          $modelNumber: String
-          $description: String
-          $categories: [String]
-        ) {
-          countModelsWithFilter(
-            vendor: $vendor
-            modelNumber: $modelNumber
-            description: $description
-            categories: $categories
-          )
-        }
-      `),
-      queryName: 'countModelsWithFilter',
-      getVariables: () => ({
-        vendor: null,
-        modelNumber: null,
-        description: null,
-        categories: null,
-      }),
-      handleResponse: (response) => {
-        setRowCount(response);
-        // console.log(response);
-        history.push(`/viewModels?page=${initPage}&limit=${initLimit}&count=${response}`);
-      },
-    });
-  };
   const {
     vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
@@ -253,7 +216,6 @@ function ListModels() {
             <SearchBar
               forModelSearch
               onSearch={onSearch}
-              onClearFilters={onClearFilters}
             />
           </div>
         )}
