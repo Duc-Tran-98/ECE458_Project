@@ -25,11 +25,17 @@ function ListModels() {
   const [rowCount, setRowCount] = useState(initRowCount);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  const urlFilter = urlParams.get('filters');
+  let selectedFilters = null;
+  if (urlFilter) {
+    selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
+    // console.log(selectedFilters);
+  }
   const [filterOptions, setFilterOptions] = React.useState({
-    vendors: [],
-    modelNumbers: [],
-    descriptions: [],
-    categories: null,
+    vendors: selectedFilters ? selectedFilters.vendors : [],
+    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : [],
+    descriptions: selectedFilters ? selectedFilters.descriptions : [],
+    categories: selectedFilters ? selectedFilters.categories : null,
   });
   history.listen((location, action) => {
     const urlVals = new URLSearchParams(location.search);
@@ -164,7 +170,7 @@ function ListModels() {
         vendors,
         modelNumbers,
         descriptions,
-        categories,
+        categories: actualCategories,
       },
     ), 'ascii').toString('base64');
     Query({
@@ -232,6 +238,10 @@ function ListModels() {
             <SearchBar
               forModelSearch
               onSearch={onSearch}
+              initCategories={filterOptions.categories}
+              initDescriptions={filterOptions.descriptions}
+              initModelNumbers={filterOptions.modelNumbers}
+              initVendors={filterOptions.vendors}
             />
           </div>
         )}

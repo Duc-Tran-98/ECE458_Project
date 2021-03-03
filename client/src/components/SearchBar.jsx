@@ -6,17 +6,34 @@ import SearchIcon from '@material-ui/icons/Search';
 import AsyncSuggest from './AsyncSuggest';
 
 // eslint-disable-next-line no-unused-vars
-export default function SearchBar({ forModelSearch, onSearch }) {
+export default function SearchBar({
+  forModelSearch, onSearch, initVendors, initModelNumbers, initDescriptions, initCategories,
+}) {
   SearchBar.propTypes = {
     forModelSearch: PropTypes.bool.isRequired,
     onSearch: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    initVendors: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
+    initModelNumbers: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
+    initDescriptions: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
+    initCategories: PropTypes.array,
   };
+  SearchBar.defaultProps = {
+    initVendors: [],
+    initModelNumbers: [],
+    initDescriptions: [],
+    initCategories: [],
+  };
+  const actualCategories = initCategories === null ? [] : initCategories;
   // const [which, setWhich] = React.useState('vendor');
   // eslint-disable-next-line no-unused-vars
-  const [vendors, setVendors] = React.useState([]);
-  const [modelNumbers, setModelNumbers] = React.useState([]);
-  const [descriptions, setDescriptions] = React.useState([]);
-  const [categories, setCategories] = React.useState([]);
+  const [vendors, setVendors] = React.useState(initVendors);
+  const [modelNumbers, setModelNumbers] = React.useState(initModelNumbers);
+  const [descriptions, setDescriptions] = React.useState(initDescriptions);
+  const [categories, setCategories] = React.useState(actualCategories);
   // const dropdownMenu = (
   //   <div className="btn-group dropdown mx-2 my-auto">
   //     <button
