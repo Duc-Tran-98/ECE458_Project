@@ -227,7 +227,7 @@ const typeDefs = gql`
     addInstrument(
       modelNumber: String!
       vendor: String!
-      assetTag: Int!
+      assetTag: Int
       serialNumber: String
       comment: String
     ): String!
@@ -235,7 +235,7 @@ const typeDefs = gql`
       modelNumber: String!
       vendor: String!
       comment: String
-      serialNumber: String!
+      serialNumber: String
       assetTag: Int!
       id: Int!
     ): String!

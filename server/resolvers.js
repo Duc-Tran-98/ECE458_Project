@@ -198,13 +198,14 @@ module.exports = {
     addInstrument: async (
       _,
       {
-        modelNumber, vendor, serialNumber, comment,
+        modelNumber, vendor, assetTag, serialNumber, comment,
       },
       { dataSources },
     ) => {
       const response = await dataSources.instrumentAPI.addInstrument({
         modelNumber,
         vendor,
+        assetTag,
         serialNumber,
         comment,
       });

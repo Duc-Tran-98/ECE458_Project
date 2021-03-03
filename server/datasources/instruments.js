@@ -3,7 +3,7 @@ const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
 
 function validateInstrument({
-  modelNumber, vendor, serialNumber, comment,
+  modelNumber, vendor, serialNumber, comment, assetTag,
 }) {
   if (vendor.length > 30) {
     return [false, 'Vendor input must be under 30 characters!'];
@@ -16,6 +16,9 @@ function validateInstrument({
   }
   if (comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
+  }
+  if (Math.floor(assetTag / 100000) < 0 || Math.floor(assetTag / 100000) > 10) {
+    return [false, 'Asset Tag not within 100000 - 999999'];
   }
   return [true];
 }
@@ -181,6 +184,7 @@ class InstrumentAPI extends DataSource {
         comment: instruments[i].dataValues.comment,
         description: instruments[i].dataValues.description,
         id: instruments[i].dataValues.id,
+        assetTag: instruments[i].dataValues.assetTag,
         recentCalDate: calDate,
         recentCalUser: calUser,
         recentCalComment: calComment,
@@ -260,7 +264,7 @@ class InstrumentAPI extends DataSource {
       where: { modelNumber, vendor },
     });
     if (model[0] == null) {
-      response.message = 'ERROR: The model that is being changed to is not valid!';
+      response.message = 'ERROR: New model is not valid!';
       response.success = false;
       return JSON.stringify(response);
     }
@@ -276,6 +280,10 @@ class InstrumentAPI extends DataSource {
         } // check that there are no unique conflicts, but exclude ourselves
       });
     }
+    // const assetTagInstrument = await this.store.instruments.findOne({where: {assetTag}});
+    // if (assetTagInstrument){
+    //   if (assetTagInstrument.assetTag == )
+    // }
     if (response.success) {
       // eslint-disable-next-line prefer-destructuring
       const calibrationFrequency = model[0].dataValues.calibrationFrequency;
@@ -311,37 +319,58 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrument({
-    modelNumber, vendor, serialNumber, comment,
+    modelNumber, vendor, assetTag = null, serialNumber, comment,
   }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: true };
     const validation = validateInstrument({
-      modelNumber, vendor, serialNumber, comment,
+      modelNumber, vendor, serialNumber, comment, assetTag,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
+      response.success = false;
       return JSON.stringify(response);
     }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.models
-      .findAll({ where: { modelNumber, vendor } })
+      .findOne({ where: { modelNumber, vendor } })
       .then(async (model) => {
-        if (model && model[0]) {
+        if (model) {
           await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
             (instrument) => {
               if (instrument) {
                 response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
-              } else {
-                const modelReference = model[0].dataValues.id;
+                response.success = false;
+              }
+            },
+          );
+          if (assetTag) {
+            await this.store.instruments.findOne({ where: { assetTag } }).then(
+              (instrument) => {
+                if (instrument) {
+                  response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists`;
+                  response.success = false;
+                }
+              },
+            );
+          }
+          if (response.success) {
+            this.store.instruments.findAll({ limit: 1, order: [['createdAt', 'DESC']] }).then(
+              (instrument) => {
+                const modelReference = model.dataValues.id;
                 const {
                   description,
                   calibrationFrequency,
-                } = model[0].dataValues;
+                } = model.dataValues;
+                if (assetTag == null) {
+                  assetTag = (instrument.dataValues.id + 100001);
+                }
                 this.store.instruments.create({
                   modelReference,
                   vendor,
                   modelNumber,
+                  assetTag,
                   serialNumber,
                   comment,
                   calibrationFrequency,
@@ -349,11 +378,12 @@ class InstrumentAPI extends DataSource {
                 });
                 response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
                 response.success = true;
-              }
-            },
-          );
+              },
+            );
+          }
         } else {
           response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
+          response.success = false;
         }
       });
     return JSON.stringify(response);
