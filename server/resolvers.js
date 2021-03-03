@@ -153,7 +153,7 @@ module.exports = {
     editModel: async (
       _,
       {
-        id, modelNumber, vendor, description, comment, calibrationFrequency,
+        id, modelNumber, vendor, description, comment, calibrationFrequency, categories,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
@@ -163,11 +163,12 @@ module.exports = {
       description,
       comment,
       calibrationFrequency,
+      categories,
     }),
     addModel: async (
       _,
       {
-        modelNumber, vendor, description, comment, calibrationFrequency,
+        modelNumber, vendor, description, comment, calibrationFrequency, categories,
       },
       { dataSources },
     ) => {
@@ -177,6 +178,7 @@ module.exports = {
         description,
         comment,
         calibrationFrequency,
+        categories,
       });
       return response;
     },
@@ -185,7 +187,7 @@ module.exports = {
     editInstrument: async (
       _,
       {
-        modelNumber, vendor, serialNumber, comment, id,
+        modelNumber, vendor, serialNumber, comment, id, categories,
       },
       { dataSources },
     ) => await dataSources.instrumentAPI.editInstrument({
@@ -194,11 +196,12 @@ module.exports = {
       serialNumber,
       comment,
       id,
+      categories,
     }),
     addInstrument: async (
       _,
       {
-        modelNumber, vendor, assetTag, serialNumber, comment,
+        modelNumber, vendor, assetTag, serialNumber, comment, categories,
       },
       { dataSources },
     ) => {
@@ -208,6 +211,7 @@ module.exports = {
         assetTag,
         serialNumber,
         comment,
+        categories,
       });
       return response;
     },

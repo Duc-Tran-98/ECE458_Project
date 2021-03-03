@@ -27,6 +27,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     id: '',
     comment: '',
     calibrationFrequency: '',
+    categories: [],
   });
   const [loading, setLoading] = React.useState(false); // if we are waiting for response
   const [responseMsg, setResponseMsg] = React.useState(''); // msg response
@@ -43,6 +44,9 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
                 description
                 comment
                 calibrationFrequency
+                categories {
+                  name
+                }
               }
             }
           `),
@@ -52,6 +56,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             vendor: initVendor,
           }),
           handleResponse: (response) => {
+            const categories = response.categories.map((item) => item.name);
             const { description, comment, id } = response;
             let { calibrationFrequency } = response;
             if (calibrationFrequency !== null) {
@@ -64,6 +69,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
               description,
               comment,
               id,
+              categories,
               calibrationFrequency,
               modelNumber: initModelNumber,
               vendor: initVendor,
@@ -104,6 +110,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         $description: String!
         $comment: String
         $calibrationFrequency: Int
+        $categories: [String]
         $id: Int!
       ) {
         editModel(
@@ -112,6 +119,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
           comment: $comment
           description: $description
           calibrationFrequency: $calibrationFrequency
+          categories: $categories
           id: $id
         )
       }
@@ -122,7 +130,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     id = parseInt(id, 10);
     calibrationFrequency = parseInt(calibrationFrequency, 10);
     const {
-      description, comment, modelNumber, vendor,
+      description, comment, modelNumber, vendor, categories,
     } = model;
     const getVariables = () => ({
       description,
@@ -131,6 +139,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       id,
       modelNumber,
       vendor,
+      categories,
     });
     const handleResponse = (response) => {
       setLoading(false);
@@ -160,6 +169,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     description,
     comment,
     calibrationFrequency,
+    categories,
   } = model;
   let footElement = null;
   if (user.isAdmin) {
@@ -199,6 +209,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         vendor={vendor}
         description={description}
         comment={comment}
+        categories={categories}
         calibrationFrequency={calibrationFrequency}
         handleSubmit={handleSubmit}
         changeHandler={changeHandler}
