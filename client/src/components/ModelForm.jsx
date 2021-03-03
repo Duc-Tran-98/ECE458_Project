@@ -16,7 +16,7 @@ const query = print(GET_MODELS_QUERY);
 const queryName = 'getUniqueVendors';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, validated, changeHandler, viewOnly, onInputChange, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -54,12 +54,12 @@ export default function ModelForm({
               name="modelNumber"
               type="text"
               required
-              value={modelNumber}
+              value={modelNumber.value}
               onChange={changeHandler}
               disabled={disabled}
             />
             <Form.Control.Feedback type="invalid">
-              Please enter a valid model number.
+              Please enter a Model Number.
             </Form.Control.Feedback>
           </Form.Group>
         </div>
@@ -99,7 +99,7 @@ export default function ModelForm({
               type="number"
               min={0}
               name="calibrationFrequency"
-              value={calibrationFrequency}
+              value={calibrationFrequency.value}
               onChange={changeHandler}
               disabled={disabled}
             />
@@ -112,7 +112,7 @@ export default function ModelForm({
               type="text"
               required
               name="description"
-              value={description}
+              value={description.value}
               onChange={changeHandler}
               disabled={disabled}
             />
@@ -130,7 +130,7 @@ export default function ModelForm({
               as="textarea"
               rows={3}
               name="comment"
-              value={comment}
+              value={comment.value}
               onChange={changeHandler}
               disabled={disabled}
             />
