@@ -9,6 +9,7 @@ import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import Query from '../components/UseQuery';
+import UserContext from '../components/UserContext';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -19,6 +20,7 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
 
 export default function ListInstruments() {
   const history = useHistory();
+  const user = React.useContext(UserContext);
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
@@ -332,12 +334,12 @@ export default function ListInstruments() {
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <div className="d-flex justify-content-between">
-            <div className="">
+          <div className="d-flex justify-content-between py-2">
+            {user.isAdmin && (
               <Link className="btn m-2 text-nowrap" to="/addInstrument">
                 Create Instrument
               </Link>
-            </div>
+            )}
             <SearchBar
               onSearch={onSearch}
               forModelSearch={false}

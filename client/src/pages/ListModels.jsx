@@ -12,9 +12,11 @@ import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import Query from '../components/UseQuery';
+import UserContext from '../components/UserContext';
 
 function ListModels() {
   const history = useHistory();
+  const user = React.useContext(UserContext);
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [description, setDescription] = useState('');
@@ -251,12 +253,12 @@ function ListModels() {
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <div className="d-flex justify-content-between">
-            <div className="p-2">
+          <div className="d-flex justify-content-between py-2">
+            {user.isAdmin && (
               <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
                 Create Model
               </Link>
-            </div>
+            )}
             <SearchBar
               forModelSearch
               onSearch={onSearch}
