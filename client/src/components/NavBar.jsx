@@ -80,6 +80,7 @@ function NavBar({
           <NavLink
             className="nav-link"
             to={`/viewInstruments?page=1&limit=25&count=${instrumentCount}`}
+            id="instrumentNavLink"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

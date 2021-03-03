@@ -49,14 +49,38 @@ export default function ListInstruments() {
     descriptions: selectedFilters ? selectedFilters.descriptions : [],
     categories: selectedFilters ? selectedFilters.categories : null,
   });
-  history.listen((location, action) => {
-    const urlVals = new URLSearchParams(location.search);
+  const navLink = document.getElementById('instrumentNavLink');
+  const getAndSetUrlVals = () => {
+    const urlVals = new URLSearchParams(window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
-    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
+    setInitLimit(lim);
+    setInitPage(pg);
+  };
+  if (navLink !== null) {
+    navLink.onclick = () => {
+      console.log('clicked');
+      if (
+        filterOptions.vendors.length !== 0
+        || filterOptions.modelNumbers.length !== 0
+        || filterOptions.descriptions.length !== 0
+        || filterOptions.categories !== null
+      ) {
+        setFilterOptions({
+          vendors: [],
+          modelNumbers: [],
+          descriptions: [],
+          categories: null,
+        });
+      }
+      getAndSetUrlVals();
+    };
+  }
+  console.log(navLink);
+  history.listen((location, action) => {
+    if (action === 'POP') {
       // if user clicks on models nav link or goes back
-      setInitLimit(lim);
-      setInitPage(pg);
+      getAndSetUrlVals();
     }
   });
   const cellHandler = (e) => {
