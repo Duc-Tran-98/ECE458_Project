@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import AsyncSuggest from './AsyncSuggest';
+import TagsInput from './TagsInput';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -16,7 +17,7 @@ const query = print(GET_MODELS_QUERY);
 const queryName = 'getUniqueVendors';
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleSubmit, changeHandler, validated, viewOnly, onInputChange, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -24,6 +25,8 @@ export default function ModelForm({
     calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    categories: PropTypes.array.isRequired,
     changeHandler: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     validated: PropTypes.bool.isRequired,
@@ -35,10 +38,28 @@ export default function ModelForm({
   ModelForm.defaultProps = {
     diffSubmit: false,
   };
+  const selectedTags = (tags) => {
+    const event = {
+      target: {
+        name: 'categories',
+        value: tags,
+      },
+    };
+    changeHandler(event);
+  };
+  let cats = [];
+  if (categories) {
+    // cats = categories;
+    categories.forEach((el) => cats.push(el));
+  } else {
+    cats = [];
+  }
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
   const val = { vendor };
+
+  // cats = ['louis', 'ejnsen'];
   return (
     <Form
       className="needs-validation"
@@ -135,6 +156,17 @@ export default function ModelForm({
               disabled={disabled}
             />
           </Form.Group>
+        </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
+        <div className="col mt-3">
+          <Form.Label className="h4">Categories</Form.Label>
+          <TagsInput
+            selectedTags={selectedTags}
+            tags={categories}
+            dis={disabled}
+            models
+          />
         </div>
       </div>
       {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (

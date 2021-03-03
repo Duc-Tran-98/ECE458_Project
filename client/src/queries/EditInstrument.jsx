@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
 export default async function EditInstrumentQuery({
-  modelNumber, vendor, serialNumber, id, comment, handleResponse,
+  modelNumber, vendor, serialNumber, id, comment, categories, handleResponse,
 }) {
   EditInstrumentQuery.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -12,14 +12,16 @@ export default async function EditInstrumentQuery({
     serialNumber: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     comment: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    categories: PropTypes.array.isRequired,
     handleResponse: PropTypes.func,
   };
   EditInstrumentQuery.defaultProps = {
     handleResponse: null,
   };
   const EDIT_INST = gql`
-    mutation EditInst($modelNumber: String!, $vendor: String!, $serialNumber: String!, $comment: String, $id: Int!) {
-      editInstrument(modelNumber: $modelNumber, vendor: $vendor, serialNumber: $serialNumber, comment: $comment, id: $id)
+    mutation EditInst($modelNumber: String!, $vendor: String!, $serialNumber: String!, $comment: String, $categories: [String], $id: Int!) {
+      editInstrument(modelNumber: $modelNumber, vendor: $vendor, serialNumber: $serialNumber, comment: $comment, categories: $categories, id: $id)
     }
   `;
   const query = print(EDIT_INST);
@@ -30,6 +32,7 @@ export default async function EditInstrumentQuery({
     serialNumber,
     id,
     comment,
+    categories,
   });
   if (handleResponse) {
     Query({

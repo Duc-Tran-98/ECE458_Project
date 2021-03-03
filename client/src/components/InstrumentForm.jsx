@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import AsyncSuggest from './AsyncSuggest';
+import TagsInput from './TagsInput';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -26,6 +27,7 @@ export default function InstrumentForm({
   onInputChange,
   assetTag,
   serialNumber,
+  categories,
   validated,
   viewOnly,
   modelNumber,
@@ -44,6 +46,8 @@ export default function InstrumentForm({
     handleSubmit: PropTypes.func,
     validated: PropTypes.bool.isRequired,
     serialNumber: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    categories: PropTypes.array.isRequired,
     onInputChange: PropTypes.func.isRequired,
     assetTag: PropTypes.string.isRequired,
     // eslint-disable-next-line react/require-default-props
@@ -61,6 +65,15 @@ export default function InstrumentForm({
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
+  const selectedTags = (tags) => {
+    const event = {
+      target: {
+        name: 'categories',
+        value: tags,
+      },
+    };
+    changeHandler(event);
+  };
   return (
     <Form
       className="needs-validation"
@@ -168,6 +181,17 @@ export default function InstrumentForm({
               disabled={disabled}
             />
           </Form.Group>
+        </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
+        <div className="col mt-3">
+          <Form.Label className="h4">Categories</Form.Label>
+          <TagsInput
+            selectedTags={selectedTags}
+            tags={categories}
+            dis={disabled}
+            models={false}
+          />
         </div>
       </div>
       {handleSubmit && (
