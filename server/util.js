@@ -100,17 +100,17 @@ module.exports.createStore = async () => {
         unique: true,
       },
       vendor: {
-        type: SQL.STRING,
+        type: SQL.STRING(30),
         primaryKey: true,
         allowNull: false,
       },
       modelNumber: {
-        type: SQL.STRING,
+        type: SQL.STRING(40),
         primaryKey: true,
         allowNull: false,
       },
       description: {
-        type: SQL.STRING,
+        type: SQL.STRING(100),
         allowNull: false,
       },
       comment: {
@@ -215,17 +215,17 @@ module.exports.createStore = async () => {
         onDelete: 'RESTRICT',
       },
       vendor: {
-        type: SQL.STRING,
+        type: SQL.STRING(30),
         primaryKey: true,
         allowNull: false,
       },
       modelNumber: {
-        type: SQL.STRING,
+        type: SQL.STRING(40),
         primaryKey: true,
         allowNull: false,
       },
       serialNumber: {
-        type: SQL.STRING,
+        type: SQL.STRING(40),
         primaryKey: true,
         allowNull: false,
       },
@@ -238,12 +238,16 @@ module.exports.createStore = async () => {
         allowNull: true,
       },
       description: {
-        type: SQL.STRING,
+        type: SQL.STRING(100),
         allowNull: false,
       },
       id: {
         type: SQL.INTEGER,
         autoIncrement: true,
+        unique: true,
+      },
+      assetTag: {
+        type: SQL.INTEGER,
         unique: true,
       },
     },
