@@ -244,12 +244,12 @@ export default function SearchBar({
         <AsyncSuggest
           query={print(gql`
             query GetModelNumbers {
-              getAllInstruments {
+              getAllModels {
                 description
               }
             }
           `)}
-          queryName="getAllInstruments"
+          queryName="getAllModels"
           onInputChange={(_e, v) => setDescriptions(v)}
           label="Filter by Description"
           getOptionLabel={(option) => `${option.description}`}

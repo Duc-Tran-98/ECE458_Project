@@ -28,7 +28,7 @@ export default function ListInstruments() {
   const [id, setId] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  let rowCount = parseInt(urlParams.get('count'), 10);
+  const [rowCount, setRowCount] = useState(parseInt(urlParams.get('count'), 10));
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(
     parseInt(urlParams.get('limit'), 10),
@@ -249,31 +249,32 @@ export default function ListInstruments() {
       }),
       'ascii',
     ).toString('base64');
+    // TODO: Maybe remove this query as it takes too long sometimes;
     Query({
       query: print(gql`
         query CountWithFilter(
           $vendor: String
           $modelNumber: String
           $description: String
-          $categories: [String]
+          $instrumentCategories: [String]
         ) {
-          countModelsWithFilter(
+          countInstrumentsWithFilter(
             vendor: $vendor
             modelNumber: $modelNumber
             description: $description
-            categories: $categories
+            instrumentCategories: $instrumentCategories
           )
         }
       `),
-      queryName: 'countModelsWithFilter',
+      queryName: 'countInstrumentsWithFilter',
       getVariables: () => ({
         vendor: vendors[0]?.vendor,
         modelNumber: modelNumbers[0]?.modelNumber,
         description: descriptions[0]?.description,
-        categories: actualCategories,
+        instrumentCategories: actualCategories,
       }),
       handleResponse: (response) => {
-        rowCount = response;
+        setRowCount(response);
         if (
           vendors.length === 0
           && categories.length === 0
@@ -298,11 +299,32 @@ export default function ListInstruments() {
     });
   };
   const {
-    vendors, modelNumbers, descriptions,
+    vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
   const filterDescription = descriptions[0]?.description;
   const filterModelNumber = modelNumbers[0]?.modelNumber;
   const filterVendor = vendors[0]?.vendor;
+  const updateUrl = (page, limit) => {
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories,
+      }),
+      'ascii',
+    ).toString('base64');
+    let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+    if (window.location.search.includes('filters')) {
+      searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
+    }
+    if (window.location.search !== searchString) {
+      // If current location != next location, update url
+      history.push(`/viewInstruments${searchString}`);
+      setInitLimit(limit);
+      setInitPage(page);
+    }
+  };
 
   return (
     <>
@@ -330,22 +352,10 @@ export default function ListInstruments() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/viewInstruments${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
+          updateUrl(page, limit);
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/viewInstruments${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
+          updateUrl(page, limit);
         }}
         fetchData={(limit, offset) => GetAllInstruments({
           limit,
