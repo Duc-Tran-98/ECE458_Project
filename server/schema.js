@@ -100,6 +100,7 @@ const typeDefs = gql`
     description: String!
     comment: String
     calibrationFrequency: Int
+    categories: [Category]
   }
 
   type ModelOutput {
@@ -124,6 +125,7 @@ const typeDefs = gql`
     modelReference: Int!
     calibrationFrequency: Int
     comment: String
+    instrumentCategories: [Category]
     description: String!
     id: Int!
   }
@@ -221,6 +223,7 @@ const typeDefs = gql`
       description: String!
       comment: String
       calibrationFrequency: Int
+      categories: [String]
     ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
@@ -230,6 +233,7 @@ const typeDefs = gql`
       description: String!
       comment: String
       calibrationFrequency: Int
+      categories: [String]
     ): String!
 
     # Instrument related mutations
@@ -238,6 +242,7 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String
       comment: String
+      categories: [String]
     ): String!
     editInstrument(
       modelNumber: String!
@@ -245,6 +250,7 @@ const typeDefs = gql`
       comment: String
       serialNumber: String!
       id: Int!
+      categories: [String]
     ): String!
     deleteInstrument(id: Int!): String!
 

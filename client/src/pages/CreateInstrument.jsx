@@ -43,6 +43,7 @@ function CreateInstrumentPage({ onCreation }) {
     serialNumber: '',
     calibrationFrequency: 0,
     description: '',
+    categories: [],
     assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
   });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
@@ -70,13 +71,14 @@ function CreateInstrumentPage({ onCreation }) {
   const handleSubmit = () => {
     // This is to submit all the data
     const {
-      modelNumber, vendor, comment, serialNumber,
+      modelNumber, vendor, comment, serialNumber, categories,
     } = formState;
     // check validation here in backend?
     CreateInstrument({
       modelNumber,
       vendor,
       serialNumber,
+      categories,
       comment,
     }).then((response) => {
       toast(response.message);
@@ -92,6 +94,7 @@ function CreateInstrumentPage({ onCreation }) {
             modelNumber,
             vendor,
             serialNumber,
+            categories,
             handleResponse: () => undefined,
           });
         }
@@ -102,6 +105,7 @@ function CreateInstrumentPage({ onCreation }) {
           comment: '',
           serialNumber: '',
           calibrationFrequency: 0,
+          categories: [],
           description: '',
           assetTag: '',
         });
@@ -130,6 +134,7 @@ function CreateInstrumentPage({ onCreation }) {
     serialNumber,
     comment,
     calibrationFrequency,
+    categories,
     description,
     assetTag,
   } = formState;
@@ -155,6 +160,7 @@ function CreateInstrumentPage({ onCreation }) {
         changeHandler={changeHandler}
         validated={false}
         onInputChange={onInputChange}
+        categories={categories}
         description={description}
         calibrationFrequency={calibrationFrequency}
         assetTag={assetTag}

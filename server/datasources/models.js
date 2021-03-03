@@ -15,7 +15,16 @@ function validateModel({
   if (description.length > 100) {
     return [false, 'Description input must be under 100 characters!'];
   }
-  if (comment.length > 2000) {
+  if (vendor.length < 1) {
+    return [false, 'Vendor input must be included!'];
+  }
+  if (modelNumber.length < 1) {
+    return [false, 'Model number must be included!'];
+  }
+  if (description.length < 1) {
+    return [false, 'Description input must be included!'];
+  }
+  if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
   return [true];
@@ -75,6 +84,7 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    categories,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -101,6 +111,14 @@ class ModelAPI extends DataSource {
           },
           { where: { id } },
         );
+        this.store.modelCategoryRelationships.destroy({
+          where: {
+            modelId: id,
+          },
+        });
+        categories.forEach(async (category) => {
+          await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
         const modelReference = id;
         const instrumentList = await this.store.instruments.findAll({
           where: { modelReference },
@@ -290,6 +308,11 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
+      include: {
+        model: this.store.modelCategories,
+        as: 'categories',
+        through: 'modelCategoryRelationships',
+      },
     });
     if (model && model[0]) {
       return model[0];
@@ -303,6 +326,7 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    categories,
   }) {
     const response = { message: '', success: false };
     const storeModel = await this.store;
@@ -315,16 +339,19 @@ class ModelAPI extends DataSource {
       response.message = validation[1];
       return JSON.stringify(response);
     }
-    await this.getModel({ modelNumber, vendor }).then((value) => {
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         response.message = `Model ${vendor} ${modelNumber} already exists!`;
       } else {
-        this.store.models.create({
+        await this.store.models.create({
           modelNumber,
           vendor,
           description,
           comment,
           calibrationFrequency,
+        });
+        categories.forEach(async (category) => {
+          await this.addCategoryToModel({ vendor, modelNumber, category });
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;

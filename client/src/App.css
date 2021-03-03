@@ -94,3 +94,51 @@ label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLab
 label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-shrink.MuiInputLabel-marginDense.MuiInputLabel-outlined{
   padding-top: 3px;
 }
+.tags-input {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  min-height: 48px;
+  border-radius: 6px;
+
+}
+
+#tags {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 8px 0 0 0;
+}
+
+.tag {
+  width: auto;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  padding: 0 8px;
+  font-size: 14px;
+  list-style: none;
+  border-radius: 6px;
+  margin: 0 8px 8px 0;
+  background: #fca311;
+}
+  .tag-title {
+    margin-top: 3px;
+  }
+  .tag-close-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+    font-size: 12px;
+    margin-left: 8px;
+    position: relative;
+    color: #000;
+    border-radius: 50%;
+    background: #e5e5e5;
+    cursor: pointer;
+  }

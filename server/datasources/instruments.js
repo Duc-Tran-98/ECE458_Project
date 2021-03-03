@@ -14,7 +14,7 @@ function validateInstrument({
   if (serialNumber.length > 40) {
     return [false, 'Serial number input must be under 40 characters!'];
   }
-  if (comment.length > 2000) {
+  if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
   return [true];
@@ -369,6 +369,11 @@ class InstrumentAPI extends DataSource {
     this.store = storeModel;
     const instrument = await this.store.instruments.findAll({
       where: { modelNumber, vendor, serialNumber },
+      include: {
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      },
     });
     if (instrument && instrument[0]) {
       return instrument[0];
@@ -377,7 +382,7 @@ class InstrumentAPI extends DataSource {
   }
 
   async editInstrument({
-    modelNumber, vendor, serialNumber, comment, id,
+    modelNumber, vendor, serialNumber, comment, id, categories,
   }) {
     const response = { message: '', success: true };
     const validation = validateInstrument({
@@ -426,6 +431,22 @@ class InstrumentAPI extends DataSource {
         },
         { where: { id } },
       );
+      this.store.instrumentCategoryRelationships.destroy({
+        where: {
+          instrumentId: id,
+        },
+      });
+      categories.forEach(async (category) => {
+        await this.getInstrumentCategory({ name: category }).then((result) => {
+          if (result) {
+            const instrumentCategoryId = result.dataValues.id;
+            this.store.instrumentCategoryRelationships.create({
+              instrumentId: id,
+              instrumentCategoryId,
+            });
+          }
+        });
+      });
       response.message = 'Successfully editted instrument!';
     }
     return JSON.stringify(response);
@@ -445,7 +466,7 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrument({
-    modelNumber, vendor, serialNumber, comment,
+    modelNumber, vendor, serialNumber, comment, categories,
   }) {
     const response = { message: '', success: false };
     const validation = validateInstrument({
@@ -463,7 +484,7 @@ class InstrumentAPI extends DataSource {
       .then(async (model) => {
         if (model && model[0]) {
           await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
-            (instrument) => {
+            async (instrument) => {
               if (instrument) {
                 response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
               } else {
@@ -472,7 +493,7 @@ class InstrumentAPI extends DataSource {
                   description,
                   calibrationFrequency,
                 } = model[0].dataValues;
-                this.store.instruments.create({
+                const created = await this.store.instruments.create({
                   modelReference,
                   vendor,
                   modelNumber,
@@ -480,6 +501,18 @@ class InstrumentAPI extends DataSource {
                   comment,
                   calibrationFrequency,
                   description,
+                });
+                const instrumentId = created.dataValues.id;
+                categories.forEach(async (category) => {
+                  await this.getInstrumentCategory({ name: category }).then((result) => {
+                    if (result) {
+                      const instrumentCategoryId = result.dataValues.id;
+                      this.store.instrumentCategoryRelationships.create({
+                        instrumentId,
+                        instrumentCategoryId,
+                      });
+                    }
+                  });
                 });
                 response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
                 response.success = true;
