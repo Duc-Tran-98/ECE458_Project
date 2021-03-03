@@ -44,6 +44,7 @@ function ListModels() {
     if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') { // if user clicks on models nav link or goes back
       setInitLimit(lim);
       setInitPage(pg);
+      // TODO: clear filters when user clicks on nav link
     }
   });
 
@@ -222,6 +223,27 @@ function ListModels() {
   const filterDescription = descriptions[0]?.description;
   const filterModelNumber = modelNumbers[0]?.modelNumber;
   const filterVendor = vendors[0]?.vendor;
+  const updateUrl = (page, limit) => {
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories,
+      }),
+      'ascii',
+    ).toString('base64');
+    let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+    if (window.location.search.includes('filters')) {
+      searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
+    }
+    if (window.location.search !== searchString) {
+      // If current location != next location, update url
+      history.push(`/viewModels${searchString}`);
+      setInitLimit(limit);
+      setInitPage(page);
+    }
+  };
 
   return (
     <>
@@ -249,48 +271,10 @@ function ListModels() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          console.log('page change called');
-          const filters = Buffer.from(
-            JSON.stringify({
-              vendors,
-              modelNumbers,
-              descriptions,
-              categories,
-            }),
-            'ascii',
-          ).toString('base64');
-          let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search.includes('filters')) {
-            searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
-          }
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/viewModels${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
+          updateUrl(page, limit);
         }}
         onPageSizeChange={(page, limit) => {
-          console.log('page size change called');
-          const filters = Buffer.from(
-            JSON.stringify({
-              vendors,
-              modelNumbers,
-              descriptions,
-              categories,
-            }),
-            'ascii',
-          ).toString('base64');
-          let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search.includes('filters')) {
-            searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
-          }
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/viewModels${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
+          updateUrl(page, limit);
         }}
         fetchData={(limit, offset) => GetAllModels({
           limit,

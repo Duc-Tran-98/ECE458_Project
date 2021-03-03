@@ -55,6 +55,140 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
+  async countInstrumentsWithFilter({
+    // eslint-disable-next-line max-len
+    vendor,
+    modelNumber,
+    description,
+    serialNumber,
+    assetTag,
+    modelCategories,
+    instrumentCategories,
+    limit,
+    offset,
+  }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    // eslint-disable-next-line prefer-const
+    let checkModelCategories;
+    let checkInstrumentCategories;
+    // eslint-disable-next-line prefer-const
+    let includeData = [];
+    if (modelCategories) {
+      includeData.push({
+        model: this.store.modelCategories,
+        as: 'modelCategories',
+        through: 'modelCategoryRelationships',
+        where: {
+          name: modelCategories,
+        },
+      });
+      checkModelCategories = modelCategories;
+    } else {
+      includeData.push({
+        model: this.store.modelCategories,
+        as: 'modelCategories',
+        through: 'modelCategoryRelationships',
+      });
+      checkModelCategories = [];
+    }
+
+    if (instrumentCategories) {
+      includeData.push({
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+        where: {
+          name: instrumentCategories,
+        },
+      });
+      checkInstrumentCategories = instrumentCategories;
+    } else {
+      includeData.push({
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      });
+      checkInstrumentCategories = [];
+    }
+
+    includeData.push({
+      model: this.store.calibrationEvents,
+      as: 'recentCalibration',
+      limit: 1,
+      order: [['date', 'DESC']],
+    });
+
+    // eslint-disable-next-line prefer-const
+    let filters = [];
+    if (vendor) {
+      filters.push({
+        vendor: SQL.where(
+          SQL.fn('LOWER', SQL.col('vendor')),
+          'LIKE',
+          `%${vendor.toLowerCase()}%`,
+        ),
+      });
+    }
+    if (modelNumber) {
+      filters.push({
+        modelNumber: SQL.where(
+          SQL.fn('LOWER', SQL.col('modelNumber')),
+          'LIKE',
+          `%${modelNumber.toLowerCase()}%`,
+        ),
+      });
+    }
+    if (description) {
+      filters.push({
+        description: SQL.where(
+          SQL.fn('LOWER', SQL.col('description')),
+          'LIKE',
+          `%${description.toLowerCase()}%`,
+        ),
+      });
+    }
+    if (serialNumber) {
+      filters.push({
+        serialNumber: SQL.where(
+          SQL.fn('LOWER', SQL.col('serialNumber')),
+          'LIKE',
+          `%${serialNumber.toLowerCase()}%`,
+        ),
+      });
+    }
+    // eslint-disable-next-line max-len
+    // if (assetTag) filters.push({ assetTag: SQL.where(SQL.fn('LOWER', SQL.col('assetTag')), 'LIKE', `%${assetTag.toLowerCase()}%`) });
+    // ^^^ uncomment this once asset tag is implemented
+
+    const instruments = await this.store.instruments.findAndCountAll({
+      include: includeData,
+      where: filters,
+      limit,
+      offset,
+    });
+    if (modelCategories || instrumentCategories) {
+      const instrumentsWithCategories = [];
+      const checker = (arr, target) => target.every((v) => arr.includes(v));
+      for (let i = 0; i < instruments.length; i += 1) {
+        const hasModelCategories = instruments[
+          i
+        ].dataValues.modelCategories.map((a) => a.name);
+        if (checker(hasModelCategories, checkModelCategories)) {
+          // eslint-disable-next-line max-len
+          const hasInstrumentCategories = instruments[
+            i
+          ].dataValues.instrumentCategories.map((a) => a.name);
+          if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
+            instrumentsWithCategories.push(instruments[i]);
+          }
+        }
+      }
+      return instrumentsWithCategories.length;
+    }
+    return instruments.count;
+  }
+
   async getInstrumentsWithFilter({
     // eslint-disable-next-line max-len
     vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,

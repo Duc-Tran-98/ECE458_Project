@@ -58,6 +58,33 @@ module.exports = {
     // Instrument Queries
     // eslint-disable-next-line max-len
     countAllInstruments: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countAllInstruments(),
+    countInstrumentsWithFilter: async (
+      _,
+      {
+        // eslint-disable-next-line max-len
+        vendor,
+        modelNumber,
+        description,
+        serialNumber,
+        assetTag,
+        modelCategories,
+        instrumentCategories,
+        limit,
+        offset,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.countInstrumentsWithFilter({
+      // eslint-disable-next-line max-len
+      vendor,
+      modelNumber,
+      description,
+      serialNumber,
+      assetTag,
+      modelCategories,
+      instrumentCategories,
+      limit,
+      offset,
+    }),
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     // eslint-disable-next-line max-len
@@ -299,7 +326,11 @@ module.exports = {
       });
       return response;
     },
-    changePassword: async (_, { userName, oldPassword, newPassword }, { dataSources }) => {
+    changePassword: async (
+      _,
+      { userName, oldPassword, newPassword },
+      { dataSources },
+    ) => {
       const response = await dataSources.userAPI.updatePassword({
         userName,
         oldPassword,

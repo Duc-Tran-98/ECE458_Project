@@ -1,10 +1,14 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
+import SearchBar from '../components/SearchBar';
+import Query from '../components/UseQuery';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -24,11 +28,25 @@ export default function ListInstruments() {
   const [id, setId] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const rowCount = parseInt(urlParams.get('count'), 10);
+  let rowCount = parseInt(urlParams.get('count'), 10);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(
     parseInt(urlParams.get('limit'), 10),
   );
+  const urlFilter = urlParams.get('filters');
+  let selectedFilters = null;
+  if (urlFilter) {
+    selectedFilters = JSON.parse(
+      Buffer.from(urlFilter, 'base64').toString('ascii'),
+    );
+    // console.log(selectedFilters);
+  }
+  const [filterOptions, setFilterOptions] = React.useState({
+    vendors: selectedFilters ? selectedFilters.vendors : [],
+    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : [],
+    descriptions: selectedFilters ? selectedFilters.descriptions : [],
+    categories: selectedFilters ? selectedFilters.categories : null,
+  });
   history.listen((location, action) => {
     const urlVals = new URLSearchParams(location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
@@ -213,15 +231,100 @@ export default function ListInstruments() {
     { label: 'Calibration-Comment', key: 'calibrationComment' },
   ];
 
+  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+    let actualCategories = [];
+    categories?.forEach((element) => {
+      actualCategories.push(element.name);
+    });
+    if (actualCategories.length === 0) {
+      // if there's no elements in actualCategories, make it null
+      actualCategories = null; // this is because an empty array will make fetch data return nothing
+    }
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories: actualCategories,
+      }),
+      'ascii',
+    ).toString('base64');
+    Query({
+      query: print(gql`
+        query CountWithFilter(
+          $vendor: String
+          $modelNumber: String
+          $description: String
+          $categories: [String]
+        ) {
+          countModelsWithFilter(
+            vendor: $vendor
+            modelNumber: $modelNumber
+            description: $description
+            categories: $categories
+          )
+        }
+      `),
+      queryName: 'countModelsWithFilter',
+      getVariables: () => ({
+        vendor: vendors[0]?.vendor,
+        modelNumber: modelNumbers[0]?.modelNumber,
+        description: descriptions[0]?.description,
+        categories: actualCategories,
+      }),
+      handleResponse: (response) => {
+        rowCount = response;
+        if (
+          vendors.length === 0
+          && categories.length === 0
+          && modelNumbers.length === 0
+          && descriptions.length === 0
+        ) {
+          history.push(
+            `/viewInstruments?page=1&limit=${initLimit}&count=${response}`,
+          );
+        } else {
+          history.push(
+            `/viewInstruments?page=1&limit=${initLimit}&count=${response}&filters=${filters}`,
+          );
+        }
+      },
+    });
+    setFilterOptions({
+      vendors,
+      modelNumbers,
+      descriptions,
+      categories: actualCategories,
+    });
+  };
+  const {
+    vendors, modelNumbers, descriptions,
+  } = filterOptions;
+  const filterDescription = descriptions[0]?.description;
+  const filterModelNumber = modelNumbers[0]?.modelNumber;
+  const filterVendor = vendors[0]?.vendor;
+
   return (
     <>
       <ServerPaginationGrid
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <Link className="btn  m-2" to="/addInstrument">
-            Create Instrument
-          </Link>
+          <div className="d-flex justify-content-between">
+            <div className="">
+              <Link className="btn m-2 text-nowrap" to="/addInstrument">
+                Create Instrument
+              </Link>
+            </div>
+            <SearchBar
+              onSearch={onSearch}
+              forModelSearch={false}
+              initDescriptions={filterOptions.descriptions}
+              initModelNumbers={filterOptions.modelNumbers}
+              initVendors={filterOptions.vendors}
+              initCategories={filterOptions.categories}
+            />
+          </div>
         )}
         cols={cols}
         initPage={initPage}
@@ -244,14 +347,32 @@ export default function ListInstruments() {
             setInitPage(page);
           }
         }}
-        fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
+        fetchData={(limit, offset) => GetAllInstruments({
+          limit,
+          offset,
+          vendor: filterVendor,
+          modelNumber: filterModelNumber,
+          description: filterDescription,
+          modelCategories: null,
+          instrumentCategories: null,
+          serialNumber: null,
+          assetTag: null,
+        }).then((response) => {
           response.forEach((element) => {
             if (element !== null) {
-              element.calibrationStatus = (element.calibrationFrequency !== null) ? 'Out of Calibration' : 'N/A';
+              element.calibrationStatus = element.calibrationFrequency !== null
+                ? 'Out of Calibration'
+                : 'N/A';
               element.recentCalDate = 'N/A';
-              if (element.calibrationFrequency && element.recentCalibration && element.recentCalibration[0]) {
-              // eslint-disable-next-line prefer-destructuring
-                element.calibrationStatus = new Date(element.recentCalibration[0].date)
+              if (
+                element.calibrationFrequency
+                  && element.recentCalibration
+                  && element.recentCalibration[0]
+              ) {
+                // eslint-disable-next-line prefer-destructuring
+                element.calibrationStatus = new Date(
+                  element.recentCalibration[0].date,
+                )
                   .addDays(element.calibrationFrequency)
                   .toISOString()
                   .split('T')[0];

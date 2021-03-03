@@ -48,6 +48,17 @@ const typeDefs = gql`
       limit: Int, 
       offset: Int
       ): [InstrumentOutput]
+      countInstrumentsWithFilter(
+      vendor: String, 
+      modelNumber: String, 
+      description: String,
+      serialNumber: String,
+      assetTag: Int, 
+      modelCategories: [String], 
+      instrumentCategories: [String], 
+      limit: Int, 
+      offset: Int
+      ): Int
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
