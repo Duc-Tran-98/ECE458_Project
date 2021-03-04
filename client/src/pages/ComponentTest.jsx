@@ -1,10 +1,10 @@
 import React from 'react';
-import BootstrapFormik from '../components/BootstrapFormik';
+import FormTest from '../components/FormTest';
 
 export default function ComponentTest() {
   return (
     <>
-      <BootstrapFormik />
+      <FormTest />
     </>
   );
 }

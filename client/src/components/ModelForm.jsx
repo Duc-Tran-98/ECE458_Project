@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import * as yup from 'yup';
+import * as Yup from 'yup';
 import { Formik } from 'formik';
 import AsyncSuggest from './AsyncSuggest';
 
@@ -17,16 +17,37 @@ const GET_MODELS_QUERY = gql`
 const query = print(GET_MODELS_QUERY);
 const queryName = 'getUniqueVendors';
 
-const schema = yup.object().shape({
-  modelNumber: yup.string().required(),
-  vendor: yup.string().required(),
-  calibrationFrequency: yup.int(),
-  comment: yup.string(),
-  description: yup.string(),
+const charLimits = {
+  modelNumber: {
+    max: 40,
+  },
+  vendor: {
+    max: 30,
+  },
+  comment: {
+    max: 2000,
+  },
+  description: {
+    max: 100,
+  },
+};
+
+const schema = Yup.object({
+  modelNumber: Yup.string()
+    .max(charLimits.modelNumber.max, `Must be less than ${charLimits.modelNumber.max} characters`)
+    .required('Model Number is required'),
+  vendor: Yup.string()
+    .max(charLimits.vendor.max, `Must be less than ${charLimits.vendor.max} characters`)
+    .required('Vendor is required'),
+  calibrationFrequency: Yup.number().integer(),
+  comment: Yup.string()
+    .max(charLimits.comment.max, `Must be less than ${charLimits.comment.max} characters`),
+  description: Yup.string()
+    .max(charLimits.description.max, `Must be less than ${charLimits.description.max} characters`),
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, validated, changeHandler, viewOnly, onInputChange, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, handleSubmit, changeHandler, viewOnly, onInputChange, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -36,7 +57,6 @@ export default function ModelForm({
     description: PropTypes.string.isRequired,
     changeHandler: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
-    validated: PropTypes.bool.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     onInputChange: PropTypes.func.isRequired, // This what to do when autocomplete value changes
@@ -70,11 +90,12 @@ export default function ModelForm({
         isValid,
         errors,
       } */}
-      {() => (
+      {({
+        errors,
+        touched,
+      }) => (
         <Form
-          className="needs-validation"
           noValidate
-          validated={validated}
           onSubmit={handleSubmit}
         >
           <div className="row mx-3">
@@ -88,9 +109,10 @@ export default function ModelForm({
                   value={modelNumber}
                   onChange={changeHandler}
                   disabled={disabled}
+                  isValid={touched.modelNumber}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please enter a Model Number.
+                  {errors.modelNumber}
                 </Form.Control.Feedback>
               </Form.Group>
             </div>
