@@ -27,13 +27,66 @@ export default function SearchBar({
     initDescriptions: [],
     initCategories: [],
   };
-  const actualCategories = initCategories === null ? [] : initCategories;
+  let actualCategories = initCategories === null ? [] : initCategories;
   // const [which, setWhich] = React.useState('vendor');
   // eslint-disable-next-line no-unused-vars
   const [vendors, setVendors] = React.useState(initVendors);
   const [modelNumbers, setModelNumbers] = React.useState(initModelNumbers);
   const [descriptions, setDescriptions] = React.useState(initDescriptions);
   const [categories, setCategories] = React.useState(actualCategories);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        actualCategories = initCategories === null ? [] : initCategories;
+        setCategories(actualCategories);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initCategories]);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        setVendors(initVendors);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initVendors]);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        setDescriptions(initDescriptions);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initDescriptions]);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        setModelNumbers(initModelNumbers);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initModelNumbers]);
   // const dropdownMenu = (
   //   <div className="btn-group dropdown mx-2 my-auto">
   //     <button

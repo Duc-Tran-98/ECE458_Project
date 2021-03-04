@@ -16,14 +16,31 @@ export default async function GetAllModels({
     categories: PropTypes.array,
   };
   const GET_MODELS_QUERY = gql`
-    query Models($limit: Int, $offset: Int, $vendor: String, $modelNumber: String, $description: String, $categories: [String]) {
-      getModelsWithFilter(limit: $limit, offset: $offset, vendor: $vendor, modelNumber: $modelNumber, description: $description, categories: $categories) {
-        id
-        vendor
-        modelNumber
-        description
-        calibrationFrequency
-        comment
+    query Models(
+      $limit: Int
+      $offset: Int
+      $vendor: String
+      $modelNumber: String
+      $description: String
+      $categories: [String]
+    ) {
+      getModelsWithFilter(
+        limit: $limit
+        offset: $offset
+        vendor: $vendor
+        modelNumber: $modelNumber
+        description: $description
+        categories: $categories
+      ) {
+        models {
+          id
+          vendor
+          modelNumber
+          description
+          calibrationFrequency
+          comment
+        }
+        total
       }
     }
   `;

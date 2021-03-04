@@ -170,7 +170,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, rowCount, fetchData]);
+  }, [initLimit, initPage, fetchData]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();

@@ -5,13 +5,10 @@ minor feature that would be cool is spinners while the modal alert loads;
 */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
-import Query from '../components/UseQuery';
 import UserContext from '../components/UserContext';
 
 function ListModels() {
@@ -39,14 +36,44 @@ function ListModels() {
     descriptions: selectedFilters ? selectedFilters.descriptions : [],
     categories: selectedFilters ? selectedFilters.categories : null,
   });
-  history.listen((location, action) => {
-    const urlVals = new URLSearchParams(location.search);
+  const navLink = document.getElementById('modelNavLink');
+  const getAndSetUrlVals = () => {
+    const urlVals = new URLSearchParams(window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
-    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') { // if user clicks on models nav link or goes back
-      setInitLimit(lim);
-      setInitPage(pg);
-      // TODO: clear filters when user clicks on nav link
+    const total = parseInt(urlVals.get('count'), 10);
+    setInitLimit(lim);
+    setInitPage(pg);
+    console.log(`total = ${total}`);
+    setRowCount(total);
+  };
+  if (navLink !== null) {
+    navLink.onclick = () => {
+      console.log('clicked');
+      if (
+        filterOptions.vendors.length !== 0
+        || filterOptions.modelNumbers.length !== 0
+        || filterOptions.descriptions.length !== 0
+        || filterOptions.categories !== null
+      ) {
+        console.log('clearing filters');
+        setFilterOptions({
+          vendors: [],
+          modelNumbers: [],
+          descriptions: [],
+          categories: null,
+        });
+      }
+      setTimeout(() => {
+        getAndSetUrlVals();
+      }, 50);
+    };
+  }
+  history.listen((location, action) => {
+    if (action === 'POP') {
+      // if user clicks on models nav link or goes back
+      getAndSetUrlVals();
+      console.log('popped!');
     }
   });
 
@@ -58,14 +85,6 @@ function ListModels() {
     }
   };
   const cols = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 60,
-      hide: true,
-      disableColumnMenu: true,
-      type: 'number',
-    },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 400 },
@@ -159,58 +178,55 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
-  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
-    let actualCategories = [];
-    categories.forEach((element) => {
-      actualCategories.push(element.name);
-    });
-    if (actualCategories.length === 0) {
-      // if there's no elements in actualCategories, make it null
-      actualCategories = null; // this is because an empty array will make fetch data return nothing
-    }
-    const filters = Buffer.from(JSON.stringify(
-      {
+  const updateUrlWithFilter = ({
+    vendors,
+    modelNumbers,
+    descriptions,
+    categories,
+    total,
+  }) => {
+    const actualCategories = categories !== null ? categories : null;
+    const filters = Buffer.from(
+      JSON.stringify({
         vendors,
         modelNumbers,
         descriptions,
         categories: actualCategories,
-      },
-    ), 'ascii').toString('base64');
-    Query({
-      query: print(gql`
-        query CountWithFilter(
-          $vendor: String
-          $modelNumber: String
-          $description: String
-          $categories: [String]
-        ) {
-          countModelsWithFilter(
-            vendor: $vendor
-            modelNumber: $modelNumber
-            description: $description
-            categories: $categories
-          )
-        }
-      `),
-      queryName: 'countModelsWithFilter',
-      getVariables: () => ({
-        vendor: vendors[0]?.vendor,
-        modelNumber: modelNumbers[0]?.modelNumber,
-        description: descriptions[0]?.description,
-        categories: actualCategories,
       }),
-      handleResponse: (response) => {
-        setRowCount(response);
-        if (vendors.length === 0 && categories.length === 0 && modelNumbers.length === 0 && descriptions.length === 0) {
-          history.push(
-            `/viewModels?page=1&limit=${initLimit}&count=${response}`,
-          );
-        } else {
-          history.push(
-            `/viewModels?page=1&limit=${initLimit}&count=${response}&filters=${filters}`,
-          );
-        }
-      },
+      'ascii',
+    ).toString('base64');
+    if (
+      vendors.length === 0
+      && categories.length === 0
+      && modelNumbers.length === 0
+      && descriptions.length === 0
+    ) {
+      history.push(`/viewModels?page=1&limit=${initLimit}&count=${total}`);
+    } else {
+      history.push(
+        `/viewModels?page=1&limit=${initLimit}&count=${total}&filters=${filters}`,
+      );
+    }
+  };
+
+  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+    const actualCategories = categories !== null ? categories : null;
+    GetAllModels({
+      limit: 1,
+      offset: 0,
+      modelNumber: modelNumbers[0]?.modelNumber,
+      description: descriptions[0]?.description,
+      vendor: vendors[0]?.vendor,
+    }).then((response) => {
+      setRowCount(response.total);
+      setInitPage(1);
+      updateUrlWithFilter({
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories: actualCategories,
+        total: response.total,
+      });
     });
     setFilterOptions({
       vendors,
@@ -284,8 +300,8 @@ function ListModels() {
           vendor: filterVendor,
           modelNumber: filterModelNumber,
           description: filterDescription,
-          categories,
-        }).then((response) => response)}
+          categories: null,
+        }).then((response) => response.models)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"

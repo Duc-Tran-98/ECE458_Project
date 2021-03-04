@@ -2,13 +2,10 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
-import Query from '../components/UseQuery';
 import UserContext from '../components/UserContext';
 
 // eslint-disable-next-line no-extend-native
@@ -54,8 +51,11 @@ export default function ListInstruments() {
     const urlVals = new URLSearchParams(window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
+    const total = parseInt(urlVals.get('count'), 10);
     setInitLimit(lim);
     setInitPage(pg);
+    console.log(`total = ${total}`);
+    setRowCount(total);
   };
   if (navLink !== null) {
     navLink.onclick = () => {
@@ -66,6 +66,7 @@ export default function ListInstruments() {
         || filterOptions.descriptions.length !== 0
         || filterOptions.categories !== null
       ) {
+        console.log('clearing filters');
         setFilterOptions({
           vendors: [],
           modelNumbers: [],
@@ -73,7 +74,9 @@ export default function ListInstruments() {
           categories: null,
         });
       }
-      getAndSetUrlVals();
+      setTimeout(() => {
+        getAndSetUrlVals();
+      }, 50);
     };
   }
   console.log(navLink);
@@ -81,6 +84,7 @@ export default function ListInstruments() {
     if (action === 'POP') {
       // if user clicks on models nav link or goes back
       getAndSetUrlVals();
+      console.log('popped!');
     }
   });
   const cellHandler = (e) => {
@@ -110,14 +114,6 @@ export default function ListInstruments() {
     return 'text-danger';
   };
   const cols = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 60,
-      hide: true,
-      disableColumnMenu: true,
-      type: 'number',
-    },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
@@ -257,15 +253,10 @@ export default function ListInstruments() {
     { label: 'Calibration-Comment', key: 'calibrationComment' },
   ];
 
-  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
-    let actualCategories = [];
-    categories?.forEach((element) => {
-      actualCategories.push(element.name);
-    });
-    if (actualCategories.length === 0) {
-      // if there's no elements in actualCategories, make it null
-      actualCategories = null; // this is because an empty array will make fetch data return nothing
-    }
+  const updateUrlWithFilter = ({
+    vendors, modelNumbers, descriptions, categories, total,
+  }) => {
+    const actualCategories = categories !== null ? categories : null;
     const filters = Buffer.from(
       JSON.stringify({
         vendors,
@@ -275,47 +266,37 @@ export default function ListInstruments() {
       }),
       'ascii',
     ).toString('base64');
-    // TODO: Maybe remove this query as it takes too long sometimes;
-    Query({
-      query: print(gql`
-        query CountWithFilter(
-          $vendor: String
-          $modelNumber: String
-          $description: String
-          $instrumentCategories: [String]
-        ) {
-          countInstrumentsWithFilter(
-            vendor: $vendor
-            modelNumber: $modelNumber
-            description: $description
-            instrumentCategories: $instrumentCategories
-          )
-        }
-      `),
-      queryName: 'countInstrumentsWithFilter',
-      getVariables: () => ({
-        vendor: vendors[0]?.vendor,
-        modelNumber: modelNumbers[0]?.modelNumber,
-        description: descriptions[0]?.description,
-        instrumentCategories: actualCategories,
-      }),
-      handleResponse: (response) => {
-        setRowCount(response);
-        if (
-          vendors.length === 0
+    if (
+      vendors.length === 0
           && categories.length === 0
           && modelNumbers.length === 0
           && descriptions.length === 0
-        ) {
-          history.push(
-            `/viewInstruments?page=1&limit=${initLimit}&count=${response}`,
-          );
-        } else {
-          history.push(
-            `/viewInstruments?page=1&limit=${initLimit}&count=${response}&filters=${filters}`,
-          );
-        }
-      },
+    ) {
+      history.push(
+        `/viewInstruments?page=1&limit=${initLimit}&count=${total}`,
+      );
+    } else {
+      history.push(
+        `/viewInstruments?page=1&limit=${initLimit}&count=${total}&filters=${filters}`,
+      );
+    }
+  };
+
+  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+    const actualCategories = categories !== null ? categories : null;
+    console.log('searching...');
+    GetAllInstruments({
+      limit: 1, offset: 0, modelNumber: modelNumbers[0]?.modelNumber, description: descriptions[0]?.description, vendor: vendors[0]?.vendor,
+    }).then((response) => {
+      setRowCount(response.total);
+      setInitPage(1);
+      updateUrlWithFilter({
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories,
+        total: response.total,
+      });
     });
     setFilterOptions({
       vendors,
@@ -360,7 +341,7 @@ export default function ListInstruments() {
         headerElement={(
           <div className="d-flex justify-content-between py-2">
             {user.isAdmin && (
-              <Link className="btn m-2 text-nowrap" to="/addInstrument">
+              <Link className="btn m-2 my-auto text-nowrap" to="/addInstrument">
                 Create Instrument
               </Link>
             )}
@@ -394,7 +375,8 @@ export default function ListInstruments() {
           serialNumber: null,
           assetTag: null,
         }).then((response) => {
-          response.forEach((element) => {
+          console.log('fetched data');
+          response.instruments.forEach((element) => {
             if (element !== null) {
               element.calibrationStatus = element.calibrationFrequency !== null
                 ? 'Out of Calibration'
@@ -416,7 +398,7 @@ export default function ListInstruments() {
               }
             }
           });
-          return response;
+          return response.instruments;
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
@@ -425,36 +407,3 @@ export default function ListInstruments() {
     </>
   );
 }
-
-/*
-response.forEach((element) => {
-            if (element !== null) {
-              GetCalibHistory({
-                // Get calibration history for each instrument
-                id: element.id,
-                mostRecent: true,
-              }).then((value) => {
-                element.date = element.calibrationFrequency === 0
-                  ? 'Item not calibratable'
-                  : 'Not calibrated';
-                element.calibrationComment = value.comment;
-                element.calibrationStatus = element.calibrationFrequency === 0
-                  ? 'N/A'
-                  : 'Out of Calibration';
-                if (value) {
-                  element.date = value.date;
-                  const nextCalibDate = new Date(value.date)
-                    .addDays(element.calibrationFrequency)
-                    .toISOString()
-                    .split('T')[0];
-                  element.calibrationStatus = nextCalibDate;
-                }
-                delete element.calibrationFrequency;
-              });
-            }
-          });
-          new Date(element.recentCalibration.date)
-                  .addDays(element.calibrationFrequency)
-                  .toISOString()
-                  .split('T')[0];
-*/

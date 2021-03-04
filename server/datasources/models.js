@@ -149,90 +149,12 @@ class ModelAPI extends DataSource {
     return models;
   }
 
-  async countModelsWithFilter({
-    vendor, modelNumber, description, categories, limit = null, offset = null,
-  }) {
-    const storeModel = await this.store;
-    this.store = storeModel;
-    let includeData;
-    if (categories) {
-      includeData = [
-        {
-          model: this.store.modelCategories,
-          as: 'categories',
-          through: 'modelCategoryRelationships',
-          where: {
-            name: categories,
-          },
-        },
-      ];
-    } else {
-      includeData = [
-        {
-          model: this.store.modelCategories,
-          as: 'categories',
-          through: 'modelCategoryRelationships',
-        },
-      ];
-    }
-
-    // eslint-disable-next-line prefer-const
-    let filters = [];
-    if (vendor) {
-      filters.push({
-        vendor: SQL.where(
-          SQL.fn('LOWER', SQL.col('vendor')),
-          'LIKE',
-          `%${vendor.toLowerCase()}%`,
-        ),
-      });
-    }
-    if (modelNumber) {
-      filters.push({
-        modelNumber: SQL.where(
-          SQL.fn('LOWER', SQL.col('modelNumber')),
-          'LIKE',
-          `%${modelNumber.toLowerCase()}%`,
-        ),
-      });
-    }
-    if (description) {
-      filters.push({
-        description: SQL.where(
-          SQL.fn('LOWER', SQL.col('description')),
-          'LIKE',
-          `%${description.toLowerCase()}%`,
-        ),
-      });
-    }
-
-    let models = await this.store.models.findAndCountAll({
-      include: includeData,
-      where: filters,
-      limit,
-      offset,
-    });
-    models = models.count;
-    if (categories) {
-      // eslint-disable-next-line prefer-const
-      let modelsWithCategories = [];
-      const checker = (arr, target) => target.every((v) => arr.includes(v));
-      for (let i = 0; i < models.length; i += 1) {
-        const hasCategories = models[i].dataValues.categories.map((a) => a.name);
-        if (checker(hasCategories, categories)) {
-          modelsWithCategories.push(models[i]);
-        }
-      }
-      return modelsWithCategories.length;
-    }
-    return models;
-  }
-
   async getModelsWithFilter({
     vendor, modelNumber, description, categories, limit = null, offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    const response = { models: [], total: 0 };
     let includeData;
     if (categories) {
       includeData = [
@@ -261,12 +183,14 @@ class ModelAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
 
-    const models = await this.store.models.findAll({
+    const models = await this.store.models.findAndCountAll({
       include: includeData,
       where: filters,
       limit,
       offset,
     });
+    response.models = models.rows;
+    response.total = models.count;
     if (categories) {
       // eslint-disable-next-line prefer-const
       let modelsWithCategories = [];
@@ -277,9 +201,10 @@ class ModelAPI extends DataSource {
           modelsWithCategories.push(models[i]);
         }
       }
-      return modelsWithCategories;
+      response.models = modelsWithCategories;
+      response.total = modelsWithCategories.length;
     }
-    return models;
+    return response;
   }
 
   async getAllModelsWithModelNum({ modelNumber }) {

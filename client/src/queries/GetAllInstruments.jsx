@@ -29,20 +29,43 @@ export default async function GetAllInstruments({
     assetTag: PropTypes.number,
   };
   const GET_INSTRUMENTS_QUERY = gql`
-    query Instruments($limit: Int, $offset: Int, $vendor: String, $modelNumber: String, $description: String, $serialNumber: String, $assetTag: Int, $modelCategories: [String], $instrumentCategories: [String] ) {
-      getInstrumentsWithFilter(limit: $limit, offset: $offset, vendor: $vendor, modelNumber: $modelNumber, description: $description, serialNumber: $serialNumber, assetTag: $assetTag, modelCategories: $modelCategories, instrumentCategories: $instrumentCategories ) {
-        id
-        vendor
-        modelNumber
-        serialNumber
-        description
-        calibrationFrequency
-        comment
-        recentCalibration {
-          user
-          date
+    query Instruments(
+      $limit: Int
+      $offset: Int
+      $vendor: String
+      $modelNumber: String
+      $description: String
+      $serialNumber: String
+      $assetTag: Int
+      $modelCategories: [String]
+      $instrumentCategories: [String]
+    ) {
+      getInstrumentsWithFilter(
+        limit: $limit
+        offset: $offset
+        vendor: $vendor
+        modelNumber: $modelNumber
+        description: $description
+        serialNumber: $serialNumber
+        assetTag: $assetTag
+        modelCategories: $modelCategories
+        instrumentCategories: $instrumentCategories
+      ) {
+        instruments {
+          id
+          vendor
+          modelNumber
+          serialNumber
+          description
+          calibrationFrequency
           comment
+          recentCalibration {
+            user
+            date
+            comment
+          }
         }
+        total
       }
     }
   `;

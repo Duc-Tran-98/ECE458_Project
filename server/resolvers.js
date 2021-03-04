@@ -25,18 +25,6 @@ module.exports = {
     getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
-    countModelsWithFilter: async (
-      _,
-      {
-        vendor, modelNumber, description, categories,
-      },
-      { dataSources },
-    ) => await dataSources.modelAPI.countModelsWithFilter({
-      vendor,
-      modelNumber,
-      description,
-      categories,
-    }),
     // eslint-disable-next-line max-len
     getModelsWithFilter: async (
       _,
@@ -58,33 +46,6 @@ module.exports = {
     // Instrument Queries
     // eslint-disable-next-line max-len
     countAllInstruments: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countAllInstruments(),
-    countInstrumentsWithFilter: async (
-      _,
-      {
-        // eslint-disable-next-line max-len
-        vendor,
-        modelNumber,
-        description,
-        serialNumber,
-        assetTag,
-        modelCategories,
-        instrumentCategories,
-        limit,
-        offset,
-      },
-      { dataSources },
-    ) => await dataSources.instrumentAPI.countInstrumentsWithFilter({
-      // eslint-disable-next-line max-len
-      vendor,
-      modelNumber,
-      description,
-      serialNumber,
-      assetTag,
-      modelCategories,
-      instrumentCategories,
-      limit,
-      offset,
-    }),
     // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
     // eslint-disable-next-line max-len
