@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import AsyncSuggest from './AsyncSuggest';
+import TagsInput from './TagsInput';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -36,6 +37,15 @@ export default function ModelForm({
   };
   ModelForm.defaultProps = {
     diffSubmit: false,
+  };
+  const selectedTags = (tags) => {
+    const event = {
+      target: {
+        name: 'categories',
+        value: tags,
+      },
+    };
+    changeHandler(event);
   };
   let cats = [];
   if (categories) {
@@ -146,6 +156,17 @@ export default function ModelForm({
               disabled={disabled}
             />
           </Form.Group>
+        </div>
+      </div>
+      <div className="row mx-3 border-top border-dark mt-3">
+        <div className="col mt-3">
+          <Form.Label className="h4">Categories</Form.Label>
+          <TagsInput
+            selectedTags={selectedTags}
+            tags={categories}
+            dis={disabled}
+            models
+          />
         </div>
       </div>
       {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (

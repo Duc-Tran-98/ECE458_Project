@@ -43,6 +43,7 @@ export default function EditInstrument({
     vendor: initVendor,
     serialNumber: initSerialNumber,
     description,
+    categories: [],
     comment: '',
     id,
     calibrationFrequency: 0,
@@ -69,12 +70,16 @@ export default function EditInstrument({
               ) {
                 calibrationFrequency
                 comment
+                instrumentCategories{
+                  name
+                }
               }
             }
           `),
           queryName: 'getInstrument',
           getVariables: () => ({ modelNumber, vendor, serialNumber }),
           handleResponse: (response) => {
+            const categories = response.instrumentCategories.map((item) => item.name);
             let { comment, calibrationFrequency } = response;
             if (comment === null) {
               comment = '';
@@ -82,7 +87,9 @@ export default function EditInstrument({
             if (calibrationFrequency === null) {
               calibrationFrequency = 0;
             }
-            setFormState({ ...formState, comment, calibrationFrequency });
+            setFormState({
+              ...formState, comment, calibrationFrequency, categories,
+            });
           },
         });
       }
@@ -101,6 +108,7 @@ export default function EditInstrument({
       vendor,
       serialNumber,
       description,
+      categories,
       id,
       calibrationFrequency,
     } = formState;
@@ -125,6 +133,7 @@ export default function EditInstrument({
       serialNumber,
       id,
       comment,
+      categories,
       handleResponse,
     });
   };
@@ -146,6 +155,7 @@ export default function EditInstrument({
     vendor,
     serialNumber,
     comment,
+    categories,
     calibrationFrequency,
     assetTag,
   } = formState;
@@ -202,6 +212,7 @@ export default function EditInstrument({
         vendor={vendor}
         comment={comment}
         serialNumber={serialNumber}
+        categories={categories}
         changeHandler={changeHandler}
         validated={false}
         onInputChange={onInputChange}
