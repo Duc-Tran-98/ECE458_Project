@@ -27,7 +27,7 @@ export default function SearchBar({
     initDescriptions: [],
     initCategories: [],
   };
-  let actualCategories = initCategories === null ? [] : initCategories;
+  const actualCategories = initCategories === null ? [] : initCategories;
   // const [which, setWhich] = React.useState('vendor');
   // eslint-disable-next-line no-unused-vars
   const [vendors, setVendors] = React.useState(initVendors);
@@ -39,8 +39,11 @@ export default function SearchBar({
 
     (() => {
       if (active) {
-        actualCategories = initCategories === null ? [] : initCategories;
-        setCategories(actualCategories);
+        const formattedCategories = [];
+        initCategories?.forEach((element) => {
+          formattedCategories.push({ name: element });
+        });
+        setCategories(formattedCategories);
       }
     })();
 

@@ -210,13 +210,18 @@ function ListModels() {
   };
 
   const onSearch = (vendors, modelNumbers, descriptions, categories) => {
-    const actualCategories = categories !== null ? categories : null;
+    let actualCategories = [];
+    categories?.forEach((element) => {
+      actualCategories.push(element.name);
+    });
+    actualCategories = actualCategories.length > 0 ? actualCategories : null;
     GetAllModels({
       limit: 1,
       offset: 0,
       modelNumber: modelNumbers[0]?.modelNumber,
       description: descriptions[0]?.description,
       vendor: vendors[0]?.vendor,
+      categories: actualCategories,
     }).then((response) => {
       setRowCount(response.total);
       setInitPage(1);
@@ -300,7 +305,7 @@ function ListModels() {
           vendor: filterVendor,
           modelNumber: filterModelNumber,
           description: filterDescription,
-          categories: null,
+          categories,
         }).then((response) => response.models)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}

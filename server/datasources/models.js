@@ -183,7 +183,7 @@ class ModelAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
 
-    const models = await this.store.models.findAndCountAll({
+    let models = await this.store.models.findAndCountAll({
       include: includeData,
       where: filters,
       limit,
@@ -191,6 +191,7 @@ class ModelAPI extends DataSource {
     });
     response.models = models.rows;
     response.total = models.count;
+    models = models.rows;
     if (categories) {
       // eslint-disable-next-line prefer-const
       let modelsWithCategories = [];
