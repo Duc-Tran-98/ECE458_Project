@@ -5,6 +5,7 @@ const isEmail = require('isemail');
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
 // const bodyParser = require('body-parser');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
@@ -128,6 +129,34 @@ app.get('/api/userinfo', (req, res) => {
         success: false,
       });
     });
+});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '/usr/src/app/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const filter = function (req, file, cb) {
+  // accept image only
+  if (1 === 2) {
+  // if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    return cb(new Error('Only image files are allowed!'), false);
+  }
+  return cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter: filter });
+
+app.post('/upload', upload.any(), (req, res, next) => {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  console.log(req.file);
+  console.log(req.body);
+  res.send('hello louis');
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Server ready at http://localhost:${expressPort}`));
