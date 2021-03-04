@@ -7,7 +7,7 @@ import AsyncSuggest from './AsyncSuggest';
 
 // eslint-disable-next-line no-unused-vars
 export default function SearchBar({
-  forModelSearch, onSearch, initVendors, initModelNumbers, initDescriptions, initCategories,
+  forModelSearch, onSearch, initVendors, initModelNumbers, initDescriptions, initModelCategories,
 }) {
   SearchBar.propTypes = {
     forModelSearch: PropTypes.bool.isRequired,
@@ -19,38 +19,41 @@ export default function SearchBar({
     // eslint-disable-next-line react/forbid-prop-types
     initDescriptions: PropTypes.array,
     // eslint-disable-next-line react/forbid-prop-types
-    initCategories: PropTypes.array,
+    initModelCategories: PropTypes.array,
   };
   SearchBar.defaultProps = {
     initVendors: [],
     initModelNumbers: [],
     initDescriptions: [],
-    initCategories: [],
+    initModelCategories: [],
   };
-  const actualCategories = initCategories === null ? [] : initCategories;
+  const actualCategories = initModelCategories === null ? [] : initModelCategories;
   // const [which, setWhich] = React.useState('vendor');
   // eslint-disable-next-line no-unused-vars
   const [vendors, setVendors] = React.useState(initVendors);
   const [modelNumbers, setModelNumbers] = React.useState(initModelNumbers);
   const [descriptions, setDescriptions] = React.useState(initDescriptions);
-  const [categories, setCategories] = React.useState(actualCategories);
+  const [modelCategories, setModelCategories] = React.useState(actualCategories);
+  // eslint-disable-next-line no-unused-vars
+  const [instrumentCategories, setInstrumentCategories] = React.useState([]);
+  const [serialNumbs, setSerialNumbs] = React.useState([]);
   React.useEffect(() => {
     let active = true;
 
     (() => {
       if (active) {
         const formattedCategories = [];
-        initCategories?.forEach((element) => {
+        initModelCategories?.forEach((element) => {
           formattedCategories.push({ name: element });
         });
-        setCategories(formattedCategories);
+        setModelCategories(formattedCategories);
       }
     })();
 
     return () => {
       active = false;
     };
-  }, [initCategories]);
+  }, [initModelCategories]);
   React.useEffect(() => {
     let active = true;
 
@@ -164,12 +167,12 @@ export default function SearchBar({
         <div className="m-2 w-25 my-auto pt-1">
           <AsyncSuggest
             query={print(gql`
-                query Models {
-                  getUniqueVendors {
-                    vendor
-                  }
+              query Models {
+                getUniqueVendors {
+                  vendor
                 }
-              `)}
+              }
+            `)}
             queryName="getUniqueVendors"
             onInputChange={(_e, v) => setVendors(v)}
             label="Filter by Vendor"
@@ -182,12 +185,12 @@ export default function SearchBar({
         <div className="m-2 w-25 my-auto pt-1">
           <AsyncSuggest
             query={print(gql`
-                query GetModelNumbers {
-                  getAllModels {
-                    modelNumber
-                  }
+              query GetModelNumbers {
+                getAllModels {
+                  modelNumber
                 }
-              `)}
+              }
+            `)}
             queryName="getAllModels"
             onInputChange={(_e, v) => setModelNumbers(v)}
             label="Filter by Model Number"
@@ -200,30 +203,30 @@ export default function SearchBar({
         <div className="m-2 w-25 my-auto pt-1">
           <AsyncSuggest
             query={print(gql`
-                query GetCategories {
-                  getAllModelCategories {
-                    name
-                  }
+              query GetCategories {
+                getAllModelCategories {
+                  name
                 }
-              `)}
+              }
+            `)}
             queryName="getAllModelCategories"
-            onInputChange={(_e, v) => setCategories(v)}
+            onInputChange={(_e, v) => setModelCategories(v)}
             label="Filter by Category"
             getOptionLabel={(option) => `${option.name}`}
             getOptionSelected={() => undefined}
             multiple
-            multipleValues={categories}
+            multipleValues={modelCategories}
           />
         </div>
         <div className="m-2 w-25 my-auto pt-1">
           <AsyncSuggest
             query={print(gql`
-                query GetModelNumbers {
-                  getAllModels {
-                    description
-                  }
+              query GetModelNumbers {
+                getAllModels {
+                  description
                 }
-              `)}
+              }
+            `)}
             queryName="getAllModels"
             onInputChange={(_e, v) => setDescriptions(v)}
             label="Filter by Description"
@@ -234,7 +237,13 @@ export default function SearchBar({
           />
         </div>
         {/* {dropdownMenu} */}
-        <button className="btn my-auto mx-2" type="button" onClick={() => onSearch(vendors, modelNumbers, descriptions, categories)}>
+        <button
+          className="btn my-auto mx-2"
+          type="button"
+          onClick={() => onSearch({
+            vendors, modelNumbers, descriptions, modelCategories,
+          })}
+        >
           <SearchIcon />
         </button>
       </>
@@ -242,85 +251,114 @@ export default function SearchBar({
   }
   return (
     <>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query Models {
-              getUniqueVendors {
-                vendor
-              }
-            }
-          `)}
-          queryName="getUniqueVendors"
-          onInputChange={(_e, v) => setVendors(v)}
-          label="Filter by Vendor"
-          getOptionLabel={(option) => `${option.vendor}`}
-          getOptionSelected={() => undefined}
-          multiple
-          multipleValues={vendors}
-        />
+      <div className="d-flex flex-column w-100">
+        <div className="d-flex flex-row w-100">
+          <div className="m-2 w-25 my-auto pt-1">
+            <AsyncSuggest
+              query={print(gql`
+                query Models {
+                  getUniqueVendors {
+                    vendor
+                  }
+                }
+              `)}
+              queryName="getUniqueVendors"
+              onInputChange={(_e, v) => setVendors(v)}
+              label="Filter by Vendor"
+              getOptionLabel={(option) => `${option.vendor}`}
+              getOptionSelected={() => undefined}
+              multiple
+              multipleValues={vendors}
+            />
+          </div>
+          <div className="m-2 w-25 my-auto pt-1">
+            <AsyncSuggest
+              query={print(gql`
+                query GetModelNumbers {
+                  getAllModels {
+                    modelNumber
+                  }
+                }
+              `)}
+              queryName="getAllModels"
+              onInputChange={(_e, v) => setModelNumbers(v)}
+              label="Filter by Model Number"
+              getOptionLabel={(option) => `${option.modelNumber}`}
+              getOptionSelected={() => undefined}
+              multiple
+              multipleValues={modelNumbers}
+            />
+          </div>
+          <div className="m-2 w-25 my-auto pt-1">
+            <AsyncSuggest
+              query={print(gql`
+                query GetCategories {
+                  getAllModelCategories {
+                    name
+                  }
+                }
+              `)}
+              queryName="getAllModelCategories"
+              onInputChange={(_e, v) => setModelCategories(v)}
+              label="Filter by Model Category"
+              getOptionLabel={(option) => `${option.name}`}
+              getOptionSelected={() => undefined}
+              multiple
+              multipleValues={modelCategories}
+            />
+          </div>
+          <div className="m-2 w-25 my-auto pt-1">
+            <AsyncSuggest
+              query={print(gql`
+                query GetModelNumbers {
+                  getAllModels {
+                    description
+                  }
+                }
+              `)}
+              queryName="getAllModels"
+              onInputChange={(_e, v) => setDescriptions(v)}
+              label="Filter by Description"
+              getOptionLabel={(option) => `${option.description}`}
+              getOptionSelected={() => undefined}
+              multiple
+              multipleValues={descriptions}
+            />
+          </div>
+          <button
+            className="btn my-auto mx-2"
+            type="button"
+            onClick={() => onSearch({
+              vendors,
+              modelNumbers,
+              descriptions,
+              modelCategories,
+            })}
+          >
+            <SearchIcon />
+          </button>
+        </div>
+        <div className="d-flex flex-row w-100">
+          <div className="m-2 w-25 my-auto pt-1">
+            <AsyncSuggest
+              query={print(gql`
+                query getSerialNumbs {
+                  getAllInstruments {
+                    serialNumber
+                  }
+                }
+              `)}
+              queryName="getAllInstruments"
+              onInputChange={(_e, v) => setSerialNumbs(v)}
+              label="Filter by Serial Number"
+              getOptionLabel={(option) => `${option.serialNumber}`}
+              getOptionSelected={() => undefined}
+              multiple
+              multipleValues={serialNumbs}
+            />
+          </div>
+        </div>
       </div>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query GetModelNumbers {
-              getAllModels {
-                modelNumber
-              }
-            }
-          `)}
-          queryName="getAllModels"
-          onInputChange={(_e, v) => setModelNumbers(v)}
-          label="Filter by Model Number"
-          getOptionLabel={(option) => `${option.modelNumber}`}
-          getOptionSelected={() => undefined}
-          multiple
-          multipleValues={modelNumbers}
-        />
-      </div>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query GetCategories {
-              getAllInstrumentCategories {
-                name
-              }
-            }
-          `)}
-          queryName="getAllInstrumentCategories"
-          onInputChange={(_e, v) => setCategories(v)}
-          label="Filter by Category"
-          getOptionLabel={(option) => `${option.name}`}
-          getOptionSelected={() => undefined}
-          multiple
-          multipleValues={categories}
-        />
-      </div>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query GetModelNumbers {
-              getAllModels {
-                description
-              }
-            }
-          `)}
-          queryName="getAllModels"
-          onInputChange={(_e, v) => setDescriptions(v)}
-          label="Filter by Description"
-          getOptionLabel={(option) => `${option.description}`}
-          getOptionSelected={() => undefined}
-          multiple
-          multipleValues={descriptions}
-        />
-      </div>
-      <button
-        className="btn my-auto mx-2"
-        type="button"
-        onClick={() => onSearch(vendors, modelNumbers, descriptions, categories)}
-      >
-        <SearchIcon />
-      </button>
     </>
   );
 }

@@ -145,7 +145,7 @@ class InstrumentAPI extends DataSource {
         }
       }
       response.instruments = instrumentsWithCategories;
-      response.total = instrumentCategories.length;
+      response.total = instrumentsWithCategories.length;
     }
     return response;
   }

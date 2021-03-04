@@ -217,9 +217,11 @@ function ListModels() {
     }
   };
 
-  const onSearch = (vendors, modelNumbers, descriptions, categories) => {
+  const onSearch = ({
+    vendors, modelNumbers, descriptions, modelCategories,
+  }) => {
     let actualCategories = [];
-    categories?.forEach((element) => {
+    modelCategories?.forEach((element) => {
       actualCategories.push(element.name);
     });
     actualCategories = actualCategories.length > 0 ? actualCategories : null;
@@ -291,7 +293,7 @@ function ListModels() {
             <SearchBar
               forModelSearch
               onSearch={onSearch}
-              initCategories={filterOptions.categories}
+              initModelCategories={filterOptions.categories}
               initDescriptions={filterOptions.descriptions}
               initModelNumbers={filterOptions.modelNumbers}
               initVendors={filterOptions.vendors}
