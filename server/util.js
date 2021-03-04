@@ -246,12 +246,11 @@ module.exports.createStore = async () => {
         autoIncrement: true,
         unique: true,
       },
-      assetTag: {
-        type: SQL.INTEGER,
-        unique: true,
-      },
     },
-    { freezeTableName: true },
+    {
+      freezeTableName: true,
+      initialAutoIncrement: 100000,
+    },
     {
       define: {
         charset: 'utf8mb4',

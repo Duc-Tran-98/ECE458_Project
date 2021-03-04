@@ -201,14 +201,14 @@ module.exports = {
     addInstrument: async (
       _,
       {
-        modelNumber, vendor, assetTag, serialNumber, comment, categories,
+        modelNumber, vendor, id, serialNumber, comment, categories,
       },
       { dataSources },
     ) => {
       const response = await dataSources.instrumentAPI.addInstrument({
         modelNumber,
         vendor,
-        assetTag,
+        id,
         serialNumber,
         comment,
         categories,

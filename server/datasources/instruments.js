@@ -60,7 +60,7 @@ class InstrumentAPI extends DataSource {
 
   async getInstrumentsWithFilter({
     // eslint-disable-next-line max-len
-    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
+    vendor, modelNumber, description, serialNumber, id, modelCategories, instrumentCategories, limit = null, offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -184,7 +184,6 @@ class InstrumentAPI extends DataSource {
         comment: instruments[i].dataValues.comment,
         description: instruments[i].dataValues.description,
         id: instruments[i].dataValues.id,
-        assetTag: instruments[i].dataValues.assetTag,
         recentCalDate: calDate,
         recentCalUser: calUser,
         recentCalComment: calComment,
@@ -285,10 +284,6 @@ class InstrumentAPI extends DataSource {
         } // check that there are no unique conflicts, but exclude ourselves
       });
     }
-    // const assetTagInstrument = await this.store.instruments.findOne({where: {assetTag}});
-    // if (assetTagInstrument){
-    //   if (assetTagInstrument.assetTag == )
-    // }
     if (response.success) {
       // eslint-disable-next-line prefer-destructuring
       const calibrationFrequency = model[0].dataValues.calibrationFrequency;
@@ -340,11 +335,11 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrument({
-    modelNumber, vendor, assetTag = null, serialNumber, comment, categories,
+    modelNumber, vendor, id = null, serialNumber, comment, categories = [],
   }) {
     const response = { message: '', success: true };
     const validation = validateInstrument({
-      modelNumber, vendor, serialNumber, comment, assetTag,
+      modelNumber, vendor, serialNumber, comment, id,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -366,53 +361,60 @@ class InstrumentAPI extends DataSource {
               }
             },
           );
-          if (assetTag) {
-            await this.store.instruments.findOne({ where: { assetTag } }).then(
+          if (id) {
+            await this.store.instruments.findOne({ where: { id } }).then(
               (instrument) => {
                 if (instrument) {
-                  response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists`;
+                  response.message = `ERROR: Instrument with Asset Tag ${id} already exists`;
                   response.success = false;
                 }
               },
             );
           }
           if (response.success) {
-            this.store.instruments.findAll({ limit: 1, order: [['createdAt', 'DESC']] }).then(
-              (instrument) => {
-                const modelReference = model.dataValues.id;
-                const {
-                  description,
-                  calibrationFrequency,
-                } = model.dataValues;
-                if (assetTag == null) {
-                  assetTag = (instrument.dataValues.id + 100001);
-                }
-                const created = this.store.instruments.create({
-                  modelReference,
-                  vendor,
-                  modelNumber,
-                  assetTag,
-                  serialNumber,
-                  comment,
-                  calibrationFrequency,
-                  description,
-                });
-                const instrumentId = created.dataValues.id;
-                categories.forEach(async (category) => {
-                  await this.getInstrumentCategory({ name: category }).then((result) => {
-                    if (result) {
-                      const instrumentCategoryId = result.dataValues.id;
-                      this.store.instrumentCategoryRelationships.create({
-                        instrumentId,
-                        instrumentCategoryId,
-                      });
-                    }
+            const modelReference = model.dataValues.id;
+            const {
+              description,
+              calibrationFrequency,
+            } = model.dataValues;
+            let newInstrumentData;
+            if (id) {
+              newInstrumentData = {
+                modelReference,
+                vendor,
+                modelNumber,
+                serialNumber,
+                comment,
+                calibrationFrequency,
+                description,
+                id,
+              };
+            } else {
+              newInstrumentData = {
+                modelReference,
+                vendor,
+                modelNumber,
+                serialNumber,
+                comment,
+                calibrationFrequency,
+                description,
+              };
+            }
+            const created = await this.store.instruments.create(newInstrumentData);
+            const instrumentId = created.dataValues.id;
+            categories.forEach(async (category) => {
+              await this.getInstrumentCategory({ name: category }).then((result) => {
+                if (result) {
+                  const instrumentCategoryId = result.dataValues.id;
+                  this.store.instrumentCategoryRelationships.create({
+                    instrumentId,
+                    instrumentCategoryId,
                   });
-                });
-                response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
-                response.success = true;
-              },
-            );
+                }
+              });
+            });
+            response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            response.success = true;
           }
         } else {
           response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
