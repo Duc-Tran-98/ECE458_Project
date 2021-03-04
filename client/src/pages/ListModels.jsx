@@ -44,19 +44,26 @@ function ListModels() {
     const total = parseInt(urlVals.get('count'), 10);
     setInitLimit(lim);
     setInitPage(pg);
-    console.log(`total = ${total}`);
+    // console.log(`total = ${total}`);
     setRowCount(total);
   };
   if (navLink !== null) {
     navLink.onclick = () => {
-      console.log('clicked');
+      // console.log('clicked');
       if (
         filterOptions.vendors.length !== 0
         || filterOptions.modelNumbers.length !== 0
         || filterOptions.descriptions.length !== 0
         || filterOptions.categories !== null
       ) {
-        console.log('clearing filters');
+        // console.log('clearing filters');
+        // console.log(
+        //   `vendors: ${filterOptions.vendors.length !== 0} descriptions: ${
+        //     filterOptions.descriptions.length !== 0
+        //   } modelNumbers: ${
+        //     filterOptions.modelNumbers.length !== 0
+        //   } categories: ${filterOptions.categories !== null}`,
+        // );
         setFilterOptions({
           vendors: [],
           modelNumbers: [],
@@ -73,7 +80,7 @@ function ListModels() {
     if (action === 'POP') {
       // if user clicks on models nav link or goes back
       getAndSetUrlVals();
-      console.log('popped!');
+      // console.log('popped!');
     }
   });
 
@@ -197,7 +204,7 @@ function ListModels() {
     ).toString('base64');
     if (
       vendors.length === 0
-      && categories.length === 0
+      && (categories === null || categories?.length === 0)
       && modelNumbers.length === 0
       && descriptions.length === 0
     ) {
@@ -206,6 +213,7 @@ function ListModels() {
       history.push(
         `/viewModels?page=1&limit=${initLimit}&count=${total}&filters=${filters}`,
       );
+      // console.log(JSON.parse(Buffer.from(filters, 'base64').toString('ascii')));
     }
   };
 

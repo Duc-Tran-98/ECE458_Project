@@ -122,7 +122,7 @@ class InstrumentAPI extends DataSource {
     // if (assetTag) filters.push({ assetTag: SQL.where(SQL.fn('LOWER', SQL.col('assetTag')), 'LIKE', `%${assetTag.toLowerCase()}%`) });
     // ^^^ uncomment this once asset tag is implemented
 
-    const instruments = await this.store.instruments.findAndCountAll({
+    let instruments = await this.store.instruments.findAndCountAll({
       include: includeData,
       where: filters,
       limit,
@@ -130,6 +130,7 @@ class InstrumentAPI extends DataSource {
     });
     response.instruments = instruments.rows;
     response.total = instruments.count;
+    instruments = instruments.rows;
     if (modelCategories || instrumentCategories) {
       const instrumentsWithCategories = [];
       const checker = (arr, target) => target.every((v) => arr.includes(v));
