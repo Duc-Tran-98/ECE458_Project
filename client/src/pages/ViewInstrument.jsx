@@ -37,7 +37,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const closeModal = () => {
     setShow(false);
   };
-  const handleResponse = (response) => {
+  const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
@@ -70,10 +70,10 @@ export default function DetailedInstrumentView({ onDelete }) {
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const fetchData = () => {
+  const fetchData = (excludeEntry) => {
     // This will refetch calib history and set it as our state
     GetCalibHistory({ id }).then((data) => {
-      let counter = 0;
+      let counter = nextId;
       data.forEach((item) => {
         // eslint-disable-next-line no-param-reassign
         item.id = counter;
@@ -81,7 +81,9 @@ export default function DetailedInstrumentView({ onDelete }) {
         item.viewOnly = true;
         counter += 1;
       });
-      setCalibHist(data);
+      const openEdits = calibHist.filter((element) => !element.viewOnly && (!excludeEntry || excludeEntry?.id !== element.id));
+      console.log(openEdits);
+      setCalibHist(openEdits.concat(data));
       setNextId(counter);
     });
   };
@@ -116,18 +118,20 @@ export default function DetailedInstrumentView({ onDelete }) {
     }
     setCalibHist(newHistory);
   };
-  const handleSubmit = () => {
-    const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
-    if (validEvents.length > 0) {
-      // If there are valid entries, add them to DB
-      AddCalibEvent({
-        events: validEvents,
-        modelNumber,
-        vendor,
-        serialNumber,
-        handleResponse: () => fetchData(),
-      });
-    }
+  const handleSubmit = (entry) => {
+    // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
+    const newHistory = [entry];
+    console.log(entry.id);
+    // If there are valid entries, add them to DB
+    AddCalibEvent({
+      events: newHistory,
+      modelNumber,
+      vendor,
+      serialNumber,
+      handleResponse: () => {
+        fetchData(entry);
+      },
+    });
   };
   // This code is for setting window variables for certificate
   if (calibFrequency > 0 && calibHist.length > 0) {
@@ -152,19 +156,15 @@ export default function DetailedInstrumentView({ onDelete }) {
   React.useEffect(() => {
     let active = true;
     (() => {
-      const hasEdits = calibHist.filter(() => true).length > 0;
       if (!active) {
         return;
       }
-      if (!hasEdits) {
-        // doesn't look like it should work, but it does
-        fetchData();
-      }
+      fetchData();
     })();
     return () => {
       active = false;
     };
-  }, [calibHist]);
+  }, []);
 
   return (
     <>
@@ -246,24 +246,13 @@ export default function DetailedInstrumentView({ onDelete }) {
           >
             <div className="sticky-top bg-secondary text-light">
               <div className="row px-3">
-                <h2 className="col">Calibration History:</h2>
+                <h2 className="col-auto me-auto">Calibration History:</h2>
                 {calibFrequency > 0 && (
                   <>
-                    <div className="col mt-1">
+                    <div className="col-auto mt-1">
                       <MouseOverPopover message="Add new calibration event">
                         <button type="button" className="btn " onClick={addRow}>
                           Add Calibration Event
-                        </button>
-                      </MouseOverPopover>
-                    </div>
-                    <div className="col mt-1">
-                      <MouseOverPopover message="Save added calibration events">
-                        <button
-                          type="button"
-                          className="btn "
-                          onClick={handleSubmit}
-                        >
-                          Save
                         </button>
                       </MouseOverPopover>
                     </div>
@@ -276,6 +265,8 @@ export default function DetailedInstrumentView({ onDelete }) {
                 rows={calibHist}
                 deleteRow={deleteRow}
                 onChangeCalibRow={onChangeCalibRow}
+                showSaveButton
+                onSaveClick={handleSubmit}
               />
             ) : (
               <div className="row mt-3">
