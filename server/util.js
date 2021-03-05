@@ -55,11 +55,11 @@ module.exports.createStore = async () => {
         autoIncrement: true,
       },
       firstName: {
-        type: SQL.STRING,
+        type: SQL.STRING(500),
         allowNull: false,
       },
       lastName: {
-        type: SQL.STRING,
+        type: SQL.STRING(128),
         allowNull: false,
       },
       userName: {
@@ -68,13 +68,13 @@ module.exports.createStore = async () => {
         allowNull: false,
       },
       password: {
-        type: SQL.STRING,
+        type: SQL.STRING(256),
         allowNull: false,
       },
       createdAt: SQL.DATE,
       updatedAt: SQL.DATE,
       email: {
-        type: SQL.STRING,
+        type: SQL.STRING(320),
         allowNull: false,
       },
       isAdmin: {
@@ -100,17 +100,17 @@ module.exports.createStore = async () => {
         unique: true,
       },
       vendor: {
-        type: SQL.STRING,
+        type: SQL.STRING(30),
         primaryKey: true,
         allowNull: false,
       },
       modelNumber: {
-        type: SQL.STRING,
+        type: SQL.STRING(40),
         primaryKey: true,
         allowNull: false,
       },
       description: {
-        type: SQL.STRING,
+        type: SQL.STRING(100),
         allowNull: false,
       },
       comment: {
@@ -215,17 +215,17 @@ module.exports.createStore = async () => {
         onDelete: 'RESTRICT',
       },
       vendor: {
-        type: SQL.STRING,
+        type: SQL.STRING(30),
         primaryKey: true,
         allowNull: false,
       },
       modelNumber: {
-        type: SQL.STRING,
+        type: SQL.STRING(40),
         primaryKey: true,
         allowNull: false,
       },
       serialNumber: {
-        type: SQL.STRING,
+        type: SQL.STRING(40),
         primaryKey: true,
         allowNull: false,
       },
@@ -238,7 +238,7 @@ module.exports.createStore = async () => {
         allowNull: true,
       },
       description: {
-        type: SQL.STRING,
+        type: SQL.STRING(100),
         allowNull: false,
       },
       id: {
@@ -246,8 +246,14 @@ module.exports.createStore = async () => {
         autoIncrement: true,
         unique: true,
       },
+      assetTag: {
+        type: SQL.INTEGER,
+        unique: true,
+      },
     },
-    { freezeTableName: true },
+    {
+      freezeTableName: true,
+    },
     {
       define: {
         charset: 'utf8mb4',
