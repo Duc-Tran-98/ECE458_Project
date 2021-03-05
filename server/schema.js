@@ -115,6 +115,7 @@ const typeDefs = gql`
     instrumentCategories: [Category]
     description: String!
     id: Int!
+    assetTag: Int!
   }
 
   type InstrumentOutput {
@@ -145,6 +146,7 @@ const typeDefs = gql`
     calibrationFrequency: Int
     comment: String
     description: String!
+    assetTag: Int!
     id: Int!
     recentCalDate: String
     recentCalUser: String
@@ -227,7 +229,7 @@ const typeDefs = gql`
     addInstrument(
       modelNumber: String!
       vendor: String!
-      id: Int
+      assetTag: Int
       serialNumber: String
       comment: String
       categories: [String]
@@ -237,6 +239,7 @@ const typeDefs = gql`
       vendor: String!
       comment: String
       serialNumber: String
+      assetTag: Int
       id: Int!
       categories: [String]
     ): String!
