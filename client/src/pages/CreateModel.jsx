@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
 import CreateModel from '../queries/CreateModel';
@@ -12,14 +12,6 @@ function CreateModelPage({ onCreation }) {
   CreateModelPage.propTypes = {
     onCreation: PropTypes.func.isRequired,
   };
-  const [formState, setFormState] = useState({
-    modelNumber: '',
-    vendor: '',
-    description: '',
-    comment: '',
-    calibrationFrequency: '0',
-    categories: [],
-  });
   const user = useContext(UserContext);
 
   const handleResponse = (response) => {
@@ -30,16 +22,17 @@ function CreateModelPage({ onCreation }) {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    let { calibrationFrequency } = formState;
+  const handleSubmit = (values) => {
+    console.log('Inside CreateModel with values: ');
+    console.log(JSON.stringify(values));
+    let { calibrationFrequency } = values;
     if (typeof calibrationFrequency === 'string') {
       // If user increments input, it becomes string so change it back to number
       calibrationFrequency = parseInt(calibrationFrequency, 10);
     }
     const {
       modelNumber, vendor, description, comment, categories,
-    } = formState;
+    } = values;
     CreateModel({
       modelNumber,
       vendor,
@@ -49,29 +42,7 @@ function CreateModelPage({ onCreation }) {
       categories,
       handleResponse,
     });
-  //  }
   };
-
-  const changeHandler = (e) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  };
-  const onInputChange = (e, v) => {
-    // This is for model's instrument's fields from autocomplete input
-    const vendorValue = v.inputValue ? v.inputValue : v.vendor;
-    setFormState({
-      ...formState,
-      vendor: vendorValue,
-    });
-  };
-
-  const {
-    modelNumber,
-    vendor,
-    description,
-    comment,
-    calibrationFrequency,
-    categories,
-  } = formState;
   return (
 
     <>
@@ -79,15 +50,7 @@ function CreateModelPage({ onCreation }) {
         <>
           <ToastContainer />
           <ModelForm
-            modelNumber={modelNumber}
-            vendor={vendor}
-            description={description}
-            comment={comment}
-            calibrationFrequency={calibrationFrequency}
-            categories={categories}
             handleFormSubmit={handleSubmit}
-            changeHandler={changeHandler}
-            onInputChange={onInputChange}
           />
         </>
       ) : <ErrorPage message="You don't have the right permissions!" />}

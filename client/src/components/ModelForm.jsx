@@ -6,6 +6,7 @@ import { print } from 'graphql';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 
@@ -43,9 +44,9 @@ const schema = Yup.object({
   modelNumber: Yup.string()
     .max(charLimits.modelNumber.max, `Must be less than ${charLimits.modelNumber.max} characters`)
     .required('Model Number is required'),
-  // vendor: Yup.string()
-  //   .max(charLimits.vendor.max, `Must be less than ${charLimits.vendor.max} characters`)
-  //   .required('Vendor is required'),
+  vendor: Yup.string()
+    .max(charLimits.vendor.max, `Must be less than ${charLimits.vendor.max} characters`)
+    .required('Vendor is required'),
   calibrationFrequency: Yup.number().integer()
     .min(charLimits.calibrationFrequency.min, `Must be greater than ${charLimits.calibrationFrequency.min} days`)
     .max(charLimits.calibrationFrequency.max, `Must be less than ${charLimits.calibrationFrequency.max} days`),
@@ -79,41 +80,44 @@ const CustomInput = ({
 );
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, changeHandler, viewOnly, onInputChange, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit,
 }) {
   ModelForm.propTypes = {
-    modelNumber: PropTypes.string.isRequired,
-    vendor: PropTypes.string.isRequired,
-    calibrationFrequency: PropTypes.string.isRequired,
-    comment: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    modelNumber: PropTypes.string,
+    vendor: PropTypes.string,
+    calibrationFrequency: PropTypes.string,
+    comment: PropTypes.string,
+    description: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
-    categories: PropTypes.array.isRequired,
-    changeHandler: PropTypes.func.isRequired,
+    categories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
-    onInputChange: PropTypes.func.isRequired, // This what to do when autocomplete value changes
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
   };
   ModelForm.defaultProps = {
+    modelNumber: '',
+    vendor: '',
+    calibrationFrequency: '0',
+    comment: '',
+    description: '',
+    categories: [],
     diffSubmit: false,
   };
-  const selectedTags = (tags) => {
-    const event = {
-      target: {
-        name: 'categories',
-        value: tags,
-      },
-    };
-    changeHandler(event);
-  };
+  // const selectedTags = (tags) => {
+  //   const event = {
+  //     target: {
+  //       name: 'categories',
+  //       value: tags,
+  //     },
+  //   };
+  //   changeHandler(event);
+  // };
   const cats = [];
   if (categories) categories.forEach((el) => cats.push(el));
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
-  const val = { vendor };
 
   return (
     <Formik
@@ -123,7 +127,7 @@ export default function ModelForm({
         calibrationFrequency,
         comment,
         description,
-        // categories,
+        categories,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -132,14 +136,14 @@ export default function ModelForm({
           alert(JSON.stringify(values, null, 2));
           resetForm();
           setSubmitting(false);
-          // TODO: Send state to parent component
-          handleFormSubmit();
-        }, 3000);
+          handleFormSubmit(values);
+        }, 1000);
       }}
     >
       {({
         handleSubmit,
         handleChange,
+        setFieldValue,
         isSubmitting,
         values,
         errors,
@@ -165,7 +169,6 @@ export default function ModelForm({
                 error={errors.modelNumber}
               />
             </div>
-            {/* TODO: Implement Formik validation on AsyncSuggest */}
             <div className="col mt-3">
               <Form.Group>
                 <Form.Label className="h4">Vendor</Form.Label>
@@ -173,7 +176,7 @@ export default function ModelForm({
                   <Form.Control
                     type="text"
                     name="modelSelection"
-                    value={vendor}
+                    value={values.vendor}
                     onChange={handleChange}
                     disabled={disabled}
                   />
@@ -181,11 +184,15 @@ export default function ModelForm({
                   <AsyncSuggest
                     query={query}
                     queryName={queryName}
-                    onInputChange={onInputChange}
+                    onInputChange={(e, v) => {
+                      const newVendor = v.inputValue ? v.inputValue : v.vendor;
+                      setFieldValue('vendor', newVendor);
+                      console.log(`Set vendor to: ${newVendor}`);
+                    }}
                     label="Choose a vendor"
                     getOptionSelected={formatSelected}
                     getOptionLabel={formatOption}
-                    value={val}
+                    value={{ vendor: values.vendor }}
                     allowAdditions
                   />
                 )}
@@ -246,8 +253,12 @@ export default function ModelForm({
             <div className="col mt-3">
               <Form.Label className="h4">Categories</Form.Label>
               <TagsInput
-                selectedTags={selectedTags}
-                tags={categories}
+                selectedTags={(tags) => {
+                  console.log('setting categories to: ');
+                  console.log(tags);
+                  setFieldValue('categories', tags);
+                }}
+                tags={values.categories}
                 dis={disabled}
                 models
               />
@@ -255,7 +266,10 @@ export default function ModelForm({
           </div>
           {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
             <div className="d-flex justify-content-center mt-3 mb-3">
-              <Button type="submit" onClick={handleSubmit}>{isSubmitting ? 'Loading...' : 'Add Model'}</Button>
+              {/* TODO: Circular progress replace button on submit */}
+              {isSubmitting
+                ? <CircularProgress />
+                : <Button type="submit" onClick={handleSubmit}>Add Model</Button>}
             </div>
           )}
         </Form>
