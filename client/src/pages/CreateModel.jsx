@@ -14,7 +14,7 @@ function CreateModelPage({ onCreation }) {
   };
   const user = useContext(UserContext);
   // const [shouldResetForm, setResetForm] = useState(false);
-  const [resetForm, setResetForm] = useState('');
+  const [resetForm, setResetForm] = useState(() => {});
 
   const handleResponse = (response) => {
     console.log(response);
@@ -27,7 +27,8 @@ function CreateModelPage({ onCreation }) {
     }
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values, formReset) => {
+    setResetForm(formReset);
     console.log('Inside CreateModel with values: ');
     console.log(JSON.stringify(values));
     let { calibrationFrequency } = values;
@@ -57,7 +58,7 @@ function CreateModelPage({ onCreation }) {
           <ModelForm
             handleFormSubmit={handleSubmit}
             // shouldResetForm={shouldResetForm}
-            setResetForm={setResetForm}
+            // setResetForm={setResetForm}
           />
         </>
       ) : <ErrorPage message="You don't have the right permissions!" />}

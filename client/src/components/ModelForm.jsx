@@ -81,7 +81,7 @@ const CustomInput = ({
 );
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit, setResetForm,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -96,7 +96,6 @@ export default function ModelForm({
     viewOnly: PropTypes.bool,
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
     // shouldResetForm: PropTypes.bool.isRequired,
-    setResetForm: PropTypes.func.isRequired,
   };
   ModelForm.defaultProps = {
     modelNumber: '',
@@ -125,10 +124,8 @@ export default function ModelForm({
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        setResetForm(resetForm);
         handleFormSubmit(values, resetForm);
         setSubmitting(false);
-        // resetForm();
       }}
     >
       {({
@@ -192,6 +189,7 @@ export default function ModelForm({
               />
             </div>
           </div>
+          {/* TODO: Calibration frequency ONLY accept numeric values */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <CustomInput
@@ -241,6 +239,7 @@ export default function ModelForm({
               </Form.Group>
             </div>
           </div>
+          {/* TODO: Ensure tags are added into the db  */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Label className="h4">Categories</Form.Label>

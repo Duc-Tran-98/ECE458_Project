@@ -1,12 +1,12 @@
+import React, { useState, useContext, useEffect } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import React from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from 'react-router-dom';
 import ModelForm from './ModelForm';
-import Query from './UseQuery';
 import UserContext from './UserContext';
+import FindModel from '../queries/FindModel';
 
 export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
   EditModel.propTypes = {
@@ -17,9 +17,9 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   EditModel.defaultProps = {
     handleDelete: null,
   };
-  const user = React.useContext(UserContext);
+  const user = useContext(UserContext);
   const history = useHistory();
-  const [model, setModel] = React.useState({
+  const [model, setModel] = useState({
     // set model state
     modelNumber: initModelNumber,
     vendor: initVendor,
@@ -29,70 +29,35 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     calibrationFrequency: '',
     categories: [],
   });
-  const [loading, setLoading] = React.useState(false); // if we are waiting for response
-  const [responseMsg, setResponseMsg] = React.useState(''); // msg response
+  const [loading, setLoading] = useState(false); // if we are waiting for response
+  const [responseMsg, setResponseMsg] = useState(''); // msg response
 
-  React.useEffect(() => {
-    let active = true;
-    (() => {
-      if (active) {
-        Query({
-          query: print(gql`
-            query FindModel($modelNumber: String!, $vendor: String!) {
-              getModel(modelNumber: $modelNumber, vendor: $vendor) {
-                id
-                description
-                comment
-                calibrationFrequency
-                categories {
-                  name
-                }
-              }
-            }
-          `),
-          queryName: 'getModel',
-          getVariables: () => ({
-            modelNumber: initModelNumber,
-            vendor: initVendor,
-          }),
-          handleResponse: (response) => {
-            const categories = response.categories.map((item) => item.name);
-            const { description, comment, id } = response;
-            let { calibrationFrequency } = response;
-            if (calibrationFrequency !== null) {
-              calibrationFrequency = calibrationFrequency.toString();
-            } else {
-              calibrationFrequency = 0;
-            }
-            setModel({
-              ...model,
-              description,
-              comment,
-              id,
-              categories,
-              calibrationFrequency,
-              modelNumber: initModelNumber,
-              vendor: initVendor,
-            });
-          },
-        });
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [initModelNumber, initVendor]);
-
-  const onInputChange = (e, v) => {
-    // handle input change from async suggest
-    if (v.inputValue) {
-      // If use inputs a new value
-      setModel({ ...model, vendor: v.inputValue });
+  const handleFindModel = (response) => {
+    console.log('EditModel with response: ');
+    console.log(response);
+    const categories = response.categories.map((item) => item.name);
+    const { description, comment, id } = response;
+    let { calibrationFrequency } = response;
+    if (calibrationFrequency !== null) {
+      calibrationFrequency = calibrationFrequency.toString();
     } else {
-      // Else they picked an existing option
-      setModel({ ...model, vendor: v.vendor });
+      calibrationFrequency = 0;
     }
+    setModel({
+      ...model,
+      description,
+      comment,
+      id,
+      categories,
+      calibrationFrequency,
+      modelNumber: initModelNumber,
+      vendor: initVendor,
+    });
   };
+
+  useEffect(() => {
+    FindModel({ modelNumber: initModelNumber, vendor: initVendor, handleResponse: handleFindModel });
+  }, []); // empty dependency array, only run once on mount
 
   const changeHandler = (e) => {
     // handle other input
@@ -216,7 +181,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         validated={false}
         diffSubmit
         viewOnly={!user.isAdmin}
-        onInputChange={onInputChange}
       />
       <div className="d-flex justify-content-center my-3">
         <div className="">{loading ? <CircularProgress /> : footElement}</div>
