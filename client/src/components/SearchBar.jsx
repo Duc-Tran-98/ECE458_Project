@@ -7,37 +7,46 @@ import AsyncSuggest from './AsyncSuggest';
 
 // eslint-disable-next-line no-unused-vars
 export default function SearchBar({
-  forModelSearch, onSearch, initVendors, initModelNumbers, initDescriptions, initModelCategories,
+  forModelSearch,
+  onSearch,
+  initVendors,
+  initModelNumbers,
+  initDescriptions,
+  initModelCategories,
+  initInstrumentCategories,
+  initSerialNumber,
 }) {
   SearchBar.propTypes = {
-    forModelSearch: PropTypes.bool.isRequired,
-    onSearch: PropTypes.func.isRequired,
-    // eslint-disable-next-line react/forbid-prop-types
-    initVendors: PropTypes.array,
-    // eslint-disable-next-line react/forbid-prop-types
-    initModelNumbers: PropTypes.array,
-    // eslint-disable-next-line react/forbid-prop-types
-    initDescriptions: PropTypes.array,
+    forModelSearch: PropTypes.bool.isRequired, // what kind of search bar
+    onSearch: PropTypes.func.isRequired, // what to do with all data
+    initVendors: PropTypes.string, // initial vendors
+    initModelNumbers: PropTypes.string, // initial modelnumber
+    initDescriptions: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
     initModelCategories: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
+    initInstrumentCategories: PropTypes.array,
+    initSerialNumber: PropTypes.string,
   };
   SearchBar.defaultProps = {
     initVendors: null,
     initModelNumbers: null,
     initDescriptions: null,
     initModelCategories: [],
+    initInstrumentCategories: [],
+    initSerialNumber: null,
   };
   const actualCategories = initModelCategories === null ? [] : initModelCategories;
-  // const [which, setWhich] = React.useState('vendor');
-  // eslint-disable-next-line no-unused-vars
+  const formatInsCats = initInstrumentCategories === null ? [] : initInstrumentCategories;
   const [vendors, setVendors] = React.useState(initVendors);
   const [modelNumbers, setModelNumbers] = React.useState(initModelNumbers);
   const [descriptions, setDescriptions] = React.useState(initDescriptions);
-  const [modelCategories, setModelCategories] = React.useState(actualCategories);
-  // eslint-disable-next-line no-unused-vars
-  const [instrumentCategories, setInstrumentCategories] = React.useState([]);
-  const [serialNumbs, setSerialNumbs] = React.useState(null);
-  const [assetTag, setAssetTag] = React.useState(null);
+  const [modelCategories, setModelCategories] = React.useState(
+    actualCategories,
+  );
+  const [instrumentCategories, setInstrumentCategories] = React.useState(formatInsCats);
+  const [serialNumber, setSerialNumber] = React.useState(initSerialNumber);
+  const [assetTag, setAssetTag] = React.useState(null); // TODO: make asset tags work for filtering
   React.useEffect(() => {
     let active = true;
 
@@ -97,18 +106,50 @@ export default function SearchBar({
       active = false;
     };
   }, [initModelNumbers]);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        const formattedCategories = [];
+        initInstrumentCategories?.forEach((element) => {
+          formattedCategories.push({ name: element });
+        });
+        setInstrumentCategories(formattedCategories);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initInstrumentCategories]);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        console.log(`new serial number = ${initSerialNumber}`);
+        const formattedSerialNumber = initSerialNumber !== null ? { serialNumber: initSerialNumber } : null;
+        setSerialNumber(formattedSerialNumber);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initSerialNumber]);
 
   const baseSearchRow = () => (
     <>
       <div className="m-2 w-25 my-auto pt-1">
         <AsyncSuggest
           query={print(gql`
-              query Models {
-                getUniqueVendors {
-                  vendor
-                }
+            query Models {
+              getUniqueVendors {
+                vendor
               }
-            `)}
+            }
+          `)}
           queryName="getUniqueVendors"
           onInputChange={(_e, v) => setVendors(v)}
           label="Filter by Vendor"
@@ -121,12 +162,12 @@ export default function SearchBar({
       <div className="m-2 w-25 my-auto pt-1">
         <AsyncSuggest
           query={print(gql`
-              query GetModelNumbers {
-                getAllModels {
-                  modelNumber
-                }
+            query GetModelNumbers {
+              getAllModels {
+                modelNumber
               }
-            `)}
+            }
+          `)}
           queryName="getAllModels"
           onInputChange={(_e, v) => setModelNumbers(v)}
           label="Filter by Model Number"
@@ -139,15 +180,17 @@ export default function SearchBar({
       <div className="m-2 w-25 my-auto pt-1">
         <AsyncSuggest
           query={print(gql`
-              query GetCategories {
-                getAllModelCategories {
-                  name
-                }
+            query GetCategories {
+              getAllModelCategories {
+                name
               }
-            `)}
+            }
+          `)}
           queryName="getAllModelCategories"
           onInputChange={(_e, v) => setModelCategories(v)}
-          label={forModelSearch ? 'Filter by Category' : 'Filter by Model Category'}
+          label={
+            forModelSearch ? 'Filter by Category' : 'Filter by Model Category'
+          }
           getOptionLabel={(option) => `${option.name}`}
           getOptionSelected={() => undefined}
           multiple
@@ -157,12 +200,12 @@ export default function SearchBar({
       <div className="m-2 w-25 my-auto pt-1">
         <AsyncSuggest
           query={print(gql`
-              query GetModelNumbers {
-                getAllModels {
-                  description
-                }
+            query GetModelNumbers {
+              getAllModels {
+                description
               }
-            `)}
+            }
+          `)}
           queryName="getAllModels"
           onInputChange={(_e, v) => setDescriptions(v)}
           label="Filter by Description"
@@ -181,6 +224,8 @@ export default function SearchBar({
           modelNumbers: modelNumbers?.modelNumber,
           descriptions: descriptions?.description,
           modelCategories,
+          instrumentCategories,
+          filterSerialNumber: serialNumber?.serialNumber,
         })}
       >
         <SearchIcon />
@@ -206,12 +251,12 @@ export default function SearchBar({
                 }
               `)}
               queryName="getAllInstruments"
-              onInputChange={(_e, v) => setSerialNumbs(v)}
+              onInputChange={(_e, v) => setSerialNumber(v)}
               label="Filter by Serial Number"
               getOptionLabel={(option) => `${option.serialNumber}`}
               getOptionSelected={(option, value) => option.serialNumber === value.serialNumber}
               isComboBox
-              value={serialNumbs}
+              value={serialNumber}
             />
           </div>
           <div className="m-2 w-25 my-auto pt-1">
@@ -252,10 +297,7 @@ export default function SearchBar({
           </div>
           {/* This is for matching the spacing of the above row */}
           <div className="m-2 w-25 my-auto pt-1" />
-          <button
-            className="btn my-auto mx-2 invisible"
-            type="button"
-          >
+          <button className="btn my-auto mx-2 invisible" type="button">
             <SearchIcon />
           </button>
         </div>
