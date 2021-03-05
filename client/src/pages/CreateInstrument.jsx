@@ -73,7 +73,7 @@ function CreateInstrumentPage({ onCreation }) {
     const {
       modelNumber, vendor, comment, serialNumber, categories,
     } = formState;
-
+    // check validation here in backend?
     CreateInstrument({
       modelNumber,
       vendor,

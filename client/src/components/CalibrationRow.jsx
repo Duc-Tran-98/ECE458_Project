@@ -9,7 +9,14 @@ import MouseOverPopover from './PopOver';
 import UserContext from './UserContext';
 
 export default function CalibrationRow({
-  handleDelete, id, onChangeCalibRow, comment, date, entry,
+  handleDelete,
+  id,
+  onChangeCalibRow,
+  comment,
+  date,
+  entry,
+  showSaveButton,
+  onSaveClick,
 }) {
   CalibrationRow.propTypes = {
     handleDelete: PropTypes.func,
@@ -19,9 +26,13 @@ export default function CalibrationRow({
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
+    showSaveButton: PropTypes.bool, // whether or not to show save button on rows
+    onSaveClick: PropTypes.func, // what to call when save button clicked
   };
   CalibrationRow.defaultProps = {
     handleDelete: null,
+    showSaveButton: false,
+    onSaveClick: () => undefined,
   };
   const user = React.useContext(UserContext);
   const { viewOnly } = entry;
@@ -91,6 +102,37 @@ export default function CalibrationRow({
                 disabled={viewOnly}
               />
             </Form.Group>
+          </div>
+        </div>
+        <div className="row mx-3">
+          <div className="col-4">
+            {!viewOnly && (
+              <MouseOverPopover message="Upload a JPG, PNG, GIF, PDF, or XLSX file">
+                {/* add file validation/display selected files with the onInput handler */}
+                <label className="btn position-relative text-center w-100">
+                  <input
+                    type="file"
+                    className="invisible position-absolute top-0 start-0"
+                    id={`inputFile-${id}`}
+                    onInput={(e) => console.log(e)}
+                  />
+                  Upload File
+                </label>
+              </MouseOverPopover>
+            )}
+          </div>
+          <div className="col-4">
+            {showSaveButton && !viewOnly && (
+              <MouseOverPopover message="Save this calibration event">
+                <button
+                  type="button"
+                  className="btn w-100"
+                  onClick={() => onSaveClick(entry)}
+                >
+                  Save
+                </button>
+              </MouseOverPopover>
+            )}
           </div>
         </div>
         {!viewOnly && (
