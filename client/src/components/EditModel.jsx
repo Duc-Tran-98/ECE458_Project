@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from 'react-router-dom';
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
@@ -28,8 +27,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     calibrationFrequency: '',
     categories: [],
   });
-  const [loading, setLoading] = useState(false); // if we are waiting for response
-  const [responseMsg, setResponseMsg] = useState(''); // msg response
+  const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
 
   const handleFindModel = (response) => {
     console.log('EditModel with response: ');
@@ -52,6 +50,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       modelNumber: initModelNumber,
       vendor: initVendor,
     });
+    setCompleteFetch(true);
   };
 
   useEffect(() => {
@@ -66,18 +65,18 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     ); // change url because link for view instruments have changed;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (values) => {
+    console.log('Handling EditModel submit with values: ');
+    console.log(values);
     // handle submitting the data; no validation ATM
-    e.preventDefault();
-    setLoading(true);
 
-    // Parse information from model information (TODO: Refactor to from formik values)
-    let { id, calibrationFrequency } = model;
+    // Parse information from model information (TODO: refactor to from form values)
+    let { id, calibrationFrequency } = values;
     id = parseInt(id, 10);
     calibrationFrequency = parseInt(calibrationFrequency, 10);
     const {
       description, comment, modelNumber, vendor, categories,
-    } = model;
+    } = values;
 
     // Send actual query to edit model
     EditModelQuery({
@@ -89,14 +88,11 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       calibrationFrequency,
       categories,
       handleResponse: (response) => {
-        setLoading(false);
-        setResponseMsg(response.message);
+        console.log('Completed edit model query with response: ');
+        console.log(response);
         if (response.success) {
           updateHistory(modelNumber, vendor, description);
         }
-        setTimeout(() => {
-          setResponseMsg('');
-        }, 1000);
       },
     });
   };
@@ -109,39 +105,11 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     calibrationFrequency,
     categories,
   } = model;
-  let footElement = null;
-  if (user.isAdmin) {
-    footElement = responseMsg.length > 0 ? (
-      <div className="row">
-        <div className="col">
-          <button type="button" className="btn ">
-            Delete Model
-          </button>
-        </div>
-        <div className="col">
-          <button type="button" className="btn  text-nowrap">
-            {responseMsg}
-          </button>
-        </div>
-      </div>
-    ) : (
-      <div className="row">
-        <div className="col">
-          <button type="button" className="btn " onClick={handleDelete}>
-            Delete Model
-          </button>
-        </div>
-        <div className="col">
-          <button type="button" className="btn  text-nowrap" onClick={handleSubmit}>
-            Save Changes
-          </button>
-        </div>
-      </div>
-    ); // foot element controls when to display Save Changes buttion or response msg
-  }
 
   return (
     <>
+      {completeFetch
+      && (
       <ModelForm
         modelNumber={modelNumber}
         vendor={vendor}
@@ -153,10 +121,10 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         validated={false}
         diffSubmit
         viewOnly={!user.isAdmin}
+        handleDelete={handleDelete}
+        type="edit"
       />
-      <div className="d-flex justify-content-center my-3">
-        <div className="">{loading ? <CircularProgress /> : footElement}</div>
-      </div>
+      )}
     </>
   );
 }

@@ -102,6 +102,7 @@ const TagsInput = (props) => {
           getOptionSelected={formatSelected}
           getOptionLabel={formatOption}
           allowAdditions={false}
+          isInvalid={props.isInvalid}
         />
       )}
     </div>

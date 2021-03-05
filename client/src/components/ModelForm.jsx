@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import * as Yup from 'yup';
-import { Formik, useFormikContext } from 'formik';
+import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
+import UserContext from './UserContext';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -80,8 +81,19 @@ const CustomInput = ({
   </>
 );
 
+const CustomButton = ({
+  // eslint-disable-next-line react/prop-types
+  onClick, divClass, buttonClass, buttonLabel,
+}) => (
+  <div className={divClass}>
+    <button type="button" className={buttonClass} onClick={onClick}>
+      {buttonLabel}
+    </button>
+  </div>
+);
+
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -95,7 +107,8 @@ export default function ModelForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
-    // shouldResetForm: PropTypes.bool.isRequired,
+    handleDelete: PropTypes.func,
+    type: PropTypes.string,
   };
   ModelForm.defaultProps = {
     modelNumber: '',
@@ -105,7 +118,12 @@ export default function ModelForm({
     description: '',
     categories: [],
     diffSubmit: false,
+    handleDelete: () => {},
+    type: 'create',
   };
+
+  const user = useContext(UserContext);
+  const showFooter = type === 'edit' && user.isAdmin;
   const cats = [];
   if (categories) categories.forEach((el) => cats.push(el));
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
@@ -124,6 +142,8 @@ export default function ModelForm({
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
+        console.log('Submitting ModelForm with values: ');
+        console.log(values);
         handleFormSubmit(values, resetForm);
         setSubmitting(false);
       }}
@@ -252,14 +272,24 @@ export default function ModelForm({
                 tags={values.categories}
                 dis={disabled}
                 models
+                isInvalid={false}
+                // TODO: Make invalid tags with spaces
               />
             </div>
           </div>
-          {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
+          {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit && type === 'create') && (
             <div className="d-flex justify-content-center mt-3 mb-3">
               {isSubmitting
                 ? <CircularProgress />
                 : <Button type="submit" onClick={handleSubmit}>Add Model</Button>}
+            </div>
+          )}
+          {showFooter && (
+            <div className="d-flex justify-content-center my-3">
+              <div className="row">
+                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Model" />
+                <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />
+              </div>
             </div>
           )}
         </Form>
