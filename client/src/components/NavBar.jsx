@@ -56,6 +56,7 @@ function NavBar({
           <NavLink
             className="nav-link"
             to={`/viewModels?page=1&limit=25&count=${modelCount}`}
+            id="modelNavLink"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -80,6 +81,7 @@ function NavBar({
           <NavLink
             className="nav-link"
             to={`/viewInstruments?page=1&limit=25&count=${instrumentCount}`}
+            id="instrumentNavLink"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +145,7 @@ function NavBar({
                 >
                   <path
                     fillRule="evenodd"
-                  // eslint-disable-next-line max-len
+                    // eslint-disable-next-line max-len
                     d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383z"
                   />
                   <path
@@ -155,7 +157,10 @@ function NavBar({
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to={`/modelCategories?page=1&limit=25&count=${modelCatCount}`}>
+              <NavLink
+                className="nav-link"
+                to={`/modelCategories?page=1&limit=25&count=${modelCatCount}`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
@@ -170,7 +175,7 @@ function NavBar({
                 >
                   <path
                     fillRule="evenodd"
-                  // eslint-disable-next-line max-len
+                    // eslint-disable-next-line max-len
                     d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z"
                   />
                   <path
@@ -204,7 +209,7 @@ function NavBar({
             >
               <path
                 fillRule="evenodd"
-              // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
                 d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"
               />
             </svg>
