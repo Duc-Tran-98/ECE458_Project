@@ -15,6 +15,8 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   EditModel.defaultProps = {
     handleDelete: null,
   };
+
+  const [modelId, setModelId] = useState(0);
   const user = useContext(UserContext);
   const history = useHistory();
   const [model, setModel] = useState({
@@ -34,6 +36,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     console.log(response);
     const categories = response.categories.map((item) => item.name);
     const { description, comment, id } = response;
+    setModelId(parseInt(id, 10));
     let { calibrationFrequency } = response;
     if (calibrationFrequency !== null) {
       calibrationFrequency = calibrationFrequency.toString();
@@ -68,24 +71,21 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const handleSubmit = (values) => {
     console.log('Handling EditModel submit with values: ');
     console.log(values);
-    // handle submitting the data; no validation ATM
+    console.log(`modelId: ${modelId}`);
 
-    // Parse information from model information (TODO: refactor to from form values)
-    let { id, calibrationFrequency } = values;
-    id = parseInt(id, 10);
-    calibrationFrequency = parseInt(calibrationFrequency, 10);
+    // Parse information from model information
     const {
-      description, comment, modelNumber, vendor, categories,
+      calibrationFrequency, description, comment, modelNumber, vendor, categories,
     } = values;
 
     // Send actual query to edit model
     EditModelQuery({
-      id,
+      id: modelId,
       modelNumber,
       vendor,
       description,
       comment,
-      calibrationFrequency,
+      calibrationFrequency: parseInt(calibrationFrequency, 10),
       categories,
       handleResponse: (response) => {
         console.log('Completed edit model query with response: ');
