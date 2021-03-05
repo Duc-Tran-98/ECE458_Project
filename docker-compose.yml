@@ -59,7 +59,7 @@ services:
     volumes:
       - "./client/:/app"
       - "/app/node_modules"
-      - assets:/usr/src/app/uploads
+      - assets:/app/public/data
     ports:
       - 3000:3000
     links:
