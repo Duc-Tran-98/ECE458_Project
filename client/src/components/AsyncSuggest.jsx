@@ -10,7 +10,7 @@ import { QueryAndThen } from './UseQuery';
 const filter = createFilterOptions();
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, multiple, multipleValues, isComboBox,
+  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid, multiple, multipleValues, isComboBox,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -24,6 +24,7 @@ export default function AsyncSuggest({
     // eslint-disable-next-line react/forbid-prop-types
     multipleValues: PropTypes.array,
     allowAdditions: PropTypes.bool, // Whether or not user should be able to create new input
+    isInvalid: PropTypes.bool.isRequired,
     multiple: PropTypes.bool, // whether or not user should be able to select mutliple
     isComboBox: PropTypes.bool, // whether or not display should be textfield input or combo box
   };
@@ -76,6 +77,7 @@ export default function AsyncSuggest({
           type="text"
           required
           placeholder={label}
+          isInvalid={isInvalid}
             // eslint-disable-next-line react/jsx-props-no-spreading
           {...params.inputProps}
         />
@@ -150,13 +152,15 @@ export default function AsyncSuggest({
         onChange={onInputChange}
         value={multipleValues}
         renderInput={(params) => (
-          <TextField
+          <>
+            <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading
-            {...params}
-            variant="outlined"
-            size="small"
-            label={label}
-          />
+              {...params}
+              variant="outlined"
+              size="small"
+              label={label}
+            />
+          </>
         )}
       />
     );

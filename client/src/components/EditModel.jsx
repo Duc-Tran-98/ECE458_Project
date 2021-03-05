@@ -1,12 +1,13 @@
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import ModelForm from './ModelForm';
-import Query from './UseQuery';
 import UserContext from './UserContext';
+import FindModel from '../queries/FindModel';
+import EditModelQuery from '../queries/EditModel';
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
   EditModel.propTypes = {
@@ -17,9 +18,11 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   EditModel.defaultProps = {
     handleDelete: null,
   };
-  const user = React.useContext(UserContext);
+
+  const [modelId, setModelId] = useState(0);
+  const user = useContext(UserContext);
   const history = useHistory();
-  const [model, setModel] = React.useState({
+  const [model, setModel] = useState({
     // set model state
     modelNumber: initModelNumber,
     vendor: initVendor,
@@ -29,137 +32,66 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     calibrationFrequency: '',
     categories: [],
   });
-  const [loading, setLoading] = React.useState(false); // if we are waiting for response
-  const [responseMsg, setResponseMsg] = React.useState(''); // msg response
+  const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
 
-  React.useEffect(() => {
-    let active = true;
-    (() => {
-      if (active) {
-        Query({
-          query: print(gql`
-            query FindModel($modelNumber: String!, $vendor: String!) {
-              getModel(modelNumber: $modelNumber, vendor: $vendor) {
-                id
-                description
-                comment
-                calibrationFrequency
-                categories {
-                  name
-                }
-              }
-            }
-          `),
-          queryName: 'getModel',
-          getVariables: () => ({
-            modelNumber: initModelNumber,
-            vendor: initVendor,
-          }),
-          handleResponse: (response) => {
-            const categories = response.categories.map((item) => item.name);
-            const { description, comment, id } = response;
-            let { calibrationFrequency } = response;
-            if (calibrationFrequency !== null) {
-              calibrationFrequency = calibrationFrequency.toString();
-            } else {
-              calibrationFrequency = 0;
-            }
-            setModel({
-              ...model,
-              description,
-              comment,
-              id,
-              categories,
-              calibrationFrequency,
-              modelNumber: initModelNumber,
-              vendor: initVendor,
-            });
-          },
-        });
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [initModelNumber, initVendor]);
-
-  const onInputChange = (e, v) => {
-    // handle input change from async suggest
-    if (v.inputValue) {
-      // If use inputs a new value
-      setModel({ ...model, vendor: v.inputValue });
+  const handleFindModel = (response) => {
+    const categories = response.categories.map((item) => item.name);
+    const { description, comment, id } = response;
+    setModelId(parseInt(id, 10));
+    let { calibrationFrequency } = response;
+    if (calibrationFrequency !== null) {
+      calibrationFrequency = calibrationFrequency.toString();
     } else {
-      // Else they picked an existing option
-      setModel({ ...model, vendor: v.vendor });
+      calibrationFrequency = 0;
     }
-  };
-
-  const changeHandler = (e) => {
-    // handle other input
-    setModel({ ...model, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    // handle submitting the data; no validation ATM
-    e.preventDefault();
-    setLoading(true);
-    const EDIT_MODEL = gql`
-      mutation EditModel(
-        $modelNumber: String!
-        $vendor: String!
-        $description: String!
-        $comment: String
-        $calibrationFrequency: Int
-        $categories: [String]
-        $id: Int!
-      ) {
-        editModel(
-          modelNumber: $modelNumber
-          vendor: $vendor
-          comment: $comment
-          description: $description
-          calibrationFrequency: $calibrationFrequency
-          categories: $categories
-          id: $id
-        )
-      }
-    `;
-    const query = print(EDIT_MODEL);
-    const queryName = 'editModel';
-    let { id, calibrationFrequency } = model;
-    id = parseInt(id, 10);
-    calibrationFrequency = parseInt(calibrationFrequency, 10);
-    const {
-      description, comment, modelNumber, vendor, categories,
-    } = model;
-    const getVariables = () => ({
+    setModel({
+      ...model,
       description,
       comment,
-      calibrationFrequency,
       id,
+      categories,
+      calibrationFrequency,
+      modelNumber: initModelNumber,
+      vendor: initVendor,
+    });
+    setCompleteFetch(true);
+  };
+
+  useEffect(() => {
+    FindModel({ modelNumber: initModelNumber, vendor: initVendor, handleResponse: handleFindModel });
+  }, []); // empty dependency array, only run once on mount
+
+  const updateHistory = (modelNumber, vendor, description) => {
+    const { state } = history.location;
+    history.replace(
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      state,
+    ); // change url because link for view instruments have changed;
+  };
+
+  const handleSubmit = (values) => {
+    // Parse information from model information
+    const {
+      calibrationFrequency, description, comment, modelNumber, vendor, categories,
+    } = values;
+
+    // Send actual query to edit model
+    EditModelQuery({
+      id: modelId,
       modelNumber,
       vendor,
+      description,
+      comment,
+      calibrationFrequency: parseInt(calibrationFrequency, 10),
       categories,
-    });
-    const handleResponse = (response) => {
-      setLoading(false);
-      setResponseMsg(response.message);
-      if (response.success) {
-        const { state } = history.location;
-        history.replace(
-          `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-          state,
-        ); // change url because link for view instruments have changed;
-      }
-      setTimeout(() => {
-        setResponseMsg('');
-      }, 1000);
-    };
-    Query({
-      query,
-      queryName,
-      getVariables,
-      handleResponse,
+      handleResponse: (response) => {
+        if (response.success) {
+          toast.success(response.message);
+          updateHistory(modelNumber, vendor, description);
+        } else {
+          toast.error(response.message);
+        }
+      },
     });
   };
 
@@ -171,56 +103,29 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     calibrationFrequency,
     categories,
   } = model;
-  let footElement = null;
-  if (user.isAdmin) {
-    footElement = responseMsg.length > 0 ? (
-      <div className="row">
-        <div className="col">
-          <button type="button" className="btn ">
-            Delete Model
-          </button>
-        </div>
-        <div className="col">
-          <button type="button" className="btn  text-nowrap">
-            {responseMsg}
-          </button>
-        </div>
-      </div>
-    ) : (
-      <div className="row">
-        <div className="col">
-          <button type="button" className="btn " onClick={handleDelete}>
-            Delete Model
-          </button>
-        </div>
-        <div className="col">
-          <button type="button" className="btn  text-nowrap" onClick={handleSubmit}>
-            Save Changes
-          </button>
-        </div>
-      </div>
-    ); // foot element controls when to display Save Changes buttion or response msg
-  }
 
   return (
     <>
-      <ModelForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        description={description}
-        comment={comment}
-        categories={categories}
-        calibrationFrequency={calibrationFrequency}
-        handleSubmit={handleSubmit}
-        changeHandler={changeHandler}
-        validated={false}
-        diffSubmit
-        viewOnly={!user.isAdmin}
-        onInputChange={onInputChange}
-      />
-      <div className="d-flex justify-content-center my-3">
-        <div className="">{loading ? <CircularProgress /> : footElement}</div>
-      </div>
+      {completeFetch
+      && (
+        <>
+          <ToastContainer />
+          <ModelForm
+            modelNumber={modelNumber}
+            vendor={vendor}
+            description={description}
+            comment={comment}
+            categories={categories}
+            calibrationFrequency={calibrationFrequency}
+            handleFormSubmit={handleSubmit}
+            validated={false}
+            diffSubmit
+            viewOnly={!user.isAdmin}
+            handleDelete={handleDelete}
+            type="edit"
+          />
+        </>
+      )}
     </>
   );
 }

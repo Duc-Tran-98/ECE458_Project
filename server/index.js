@@ -159,4 +159,10 @@ app.post('/api/upload', upload.any(), (req, res, next) => {
   res.send('hello louis');
 });
 
+app.post('/api/uploadExcel', (req, res) => {
+  console.log(req);
+  // Do some things
+  res.send('Hello World');
+});
+
 app.listen({ port: expressPort }, () => console.log(`🚀 Server ready at http://localhost:${expressPort}`));
