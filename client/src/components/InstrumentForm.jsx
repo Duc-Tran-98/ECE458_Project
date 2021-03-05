@@ -36,11 +36,16 @@ const charLimits = {
     min: 100000,
     max: 999999,
   },
+  serialNumber: {
+    max: 40,
+  },
 };
 
 const schema = Yup.object({
   vendor: Yup.string()
     .required('Model is required'),
+  serialNumber: Yup.string()
+    .max(charLimits.serialNumber.max, `Must be less than ${charLimits.serialNumber.max} characters`),
   assetTag: Yup.number().integer()
     .max(charLimits.assetTag.max, `Must be less than ${charLimits.assetTag.max}`)
     .min(charLimits.assetTag.min, `Must be greater than ${charLimits.assetTag.min}`),
@@ -197,21 +202,20 @@ export default function InstrumentForm({
                 />
               </Form.Group>
             </div>
+            {/* TODO: What are problems with serial number? */}
             <div className="col mt-3">
-              <Form.Group controlId="formDescription">
-                <Form.Label className="h4">Serial Number</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Serial Number"
-                  name="serialNumber"
-                  value={values.serialNumber}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Please enter a valid serial number.
-                </Form.Control.Feedback>
-              </Form.Group>
+              <CustomInput
+                controlId="formSerialNumber"
+                className="h4"
+                label="Serial Number"
+                name="serialNumber"
+                type="text"
+                value={values.serialNumber}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.serialNumber}
+                error={errors.serialNumber}
+              />
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
