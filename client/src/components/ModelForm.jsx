@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { Formik, useFormikContext } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AsyncSuggest from './AsyncSuggest';
@@ -81,7 +81,7 @@ const CustomInput = ({
 );
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit, setResetForm,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -95,6 +95,8 @@ export default function ModelForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
+    // shouldResetForm: PropTypes.bool.isRequired,
+    setResetForm: PropTypes.func.isRequired,
   };
   ModelForm.defaultProps = {
     modelNumber: '',
@@ -122,8 +124,9 @@ export default function ModelForm({
         categories: categories || [],
       }}
       validationSchema={schema}
-      onSubmit={(values, { setSubmitting }) => {
-        handleFormSubmit(values);
+      onSubmit={(values, { setSubmitting, resetForm }) => {
+        setResetForm(resetForm);
+        handleFormSubmit(values, resetForm);
         setSubmitting(false);
         // resetForm();
       }}
@@ -142,21 +145,7 @@ export default function ModelForm({
           onSubmit={handleSubmit}
         >
           <div className="row mx-3">
-            <div className="col mt-3">
-              <CustomInput
-                controlId="formModelNumber"
-                className="h4"
-                label="Model Number"
-                name="modelNumber"
-                type="text"
-                required
-                value={values.modelNumber}
-                onChange={handleChange}
-                disabled={disabled}
-                isInvalid={!!errors.modelNumber}
-                error={errors.modelNumber}
-              />
-            </div>
+
             <div className="col mt-3">
               <Form.Group>
                 <Form.Label className="h4">Vendor</Form.Label>
@@ -186,6 +175,21 @@ export default function ModelForm({
                   />
                 )}
               </Form.Group>
+            </div>
+            <div className="col mt-3">
+              <CustomInput
+                controlId="formModelNumber"
+                className="h4"
+                label="Model Number"
+                name="modelNumber"
+                type="text"
+                required
+                value={values.modelNumber}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.modelNumber}
+                error={errors.modelNumber}
+              />
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
@@ -237,7 +241,6 @@ export default function ModelForm({
               </Form.Group>
             </div>
           </div>
-          {/* TODO: Add tags to formik */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Label className="h4">Categories</Form.Label>

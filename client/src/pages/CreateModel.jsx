@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
 import CreateModel from '../queries/CreateModel';
@@ -13,12 +13,15 @@ function CreateModelPage({ onCreation }) {
     onCreation: PropTypes.func.isRequired,
   };
   const user = useContext(UserContext);
+  // const [shouldResetForm, setResetForm] = useState(false);
+  const [resetForm, setResetForm] = useState('');
 
   const handleResponse = (response) => {
     console.log(response);
     if (response.success) {
       toast.success(response.message);
       onCreation();
+      resetForm();
     } else {
       toast.error(response.message);
     }
@@ -53,6 +56,8 @@ function CreateModelPage({ onCreation }) {
           <ToastContainer />
           <ModelForm
             handleFormSubmit={handleSubmit}
+            // shouldResetForm={shouldResetForm}
+            setResetForm={setResetForm}
           />
         </>
       ) : <ErrorPage message="You don't have the right permissions!" />}
