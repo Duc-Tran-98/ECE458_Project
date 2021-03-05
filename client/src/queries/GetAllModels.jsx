@@ -39,6 +39,9 @@ export default async function GetAllModels({
           description
           calibrationFrequency
           comment
+          categories {
+            name
+          }
         }
         total
       }

@@ -94,16 +94,14 @@ function ListModels() {
   const cols = [
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 400 },
+    { field: 'description', headerName: 'Description', width: 350 },
     {
       field: 'comment',
       headerName: 'Comment',
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
@@ -113,7 +111,7 @@ function ListModels() {
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
-            {(params.value === 0 || params.value === null) ? (
+            {params.value === 0 || params.value === null ? (
               <MouseOverPopover message="Model not calibratable">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -134,6 +132,23 @@ function ListModels() {
             )}
           </div>
         </div>
+      ),
+    },
+    {
+      field: 'categories',
+      headerName: 'Categories',
+      width: 350,
+      renderCell: (params) => (
+        <ul className="d-flex flex-row overflow-auto pt-2">
+          {params.value.map((element) => (
+            <li
+              key={element.name}
+              className="list-group-item list-group-item-secondary"
+            >
+              {element.name}
+            </li>
+          ))}
+        </ul>
       ),
     },
     {

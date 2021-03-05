@@ -124,6 +124,24 @@ export default function ListInstruments() {
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
+    { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
+    {
+      field: 'categories',
+      headerName: 'Categories',
+      width: 350,
+      renderCell: (params) => (
+        <ul className="d-flex flex-row overflow-auto pt-2">
+          {params.value.map((element) => (
+            <li
+              key={element.name}
+              className="list-group-item list-group-item-secondary"
+            >
+              {element.name}
+            </li>
+          ))}
+        </ul>
+      ),
+    },
     {
       field: 'comment',
       headerName: 'Comment',
@@ -411,6 +429,7 @@ export default function ListInstruments() {
           // console.log('fetched data');
           response.instruments.forEach((element) => {
             if (element !== null) {
+              element.categories = element.modelCategories.concat(element.instrumentCategories);
               element.calibrationStatus = element.calibrationFrequency === null
                 || element.calibrationFrequency === 0
                 ? 'N/A'

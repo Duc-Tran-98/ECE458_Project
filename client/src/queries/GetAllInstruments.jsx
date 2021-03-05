@@ -64,6 +64,12 @@ export default async function GetAllInstruments({
             date
             comment
           }
+          modelCategories {
+            name
+          }
+          instrumentCategories {
+            name
+          }
         }
         total
       }
