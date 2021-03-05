@@ -46,17 +46,6 @@ function CreateInstrumentPage({ onCreation }) {
     categories: [],
     assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
   };
-  // const [formState, setFormState] = useState({
-  //   // This state is for an instrument
-  //   modelNumber: '',
-  //   vendor: '',
-  //   comment: '',
-  //   serialNumber: '',
-  //   calibrationFrequency: 0,
-  //   description: '',
-  //   categories: [],
-  //   assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
-  // });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
@@ -80,6 +69,8 @@ function CreateInstrumentPage({ onCreation }) {
   };
 
   const handleSubmit = (values, resetForm) => {
+    console.log('Creating instrument with values: ');
+    console.log(values);
     // This is to submit all the data
     const {
       modelNumber, vendor, comment, serialNumber, categories,
@@ -94,6 +85,7 @@ function CreateInstrumentPage({ onCreation }) {
     }).then((response) => {
       if (response.success) {
         toast.success(response.message);
+        resetForm();
         // If we successfully added new instrument
         const validEvents = calibHistory.filter(
           (entry) => entry.user.length > 0,
@@ -108,7 +100,6 @@ function CreateInstrumentPage({ onCreation }) {
             categories,
             handleResponse: () => undefined,
           });
-          resetForm();
         }
         onCreation();
       } else {

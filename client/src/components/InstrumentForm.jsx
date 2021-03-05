@@ -138,7 +138,7 @@ export default function InstrumentForm({
                     getOptionSelected={formatSelected}
                     getOptionLabel={formatOption}
                     value={{ vendor: values.vendor, modelNumber: values.modelNumber }}
-                    isInvalid={!!errors.vendor}
+                    isInvalid={!!errors.vendor && !!errors.modelNumber}
                   />
                 )}
               </Form.Group>
