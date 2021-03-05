@@ -9,6 +9,7 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { CustomInput } from './CustomFormComponents';
 
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
@@ -39,7 +40,7 @@ const charLimits = {
 const schema = Yup.object({
   vendor: Yup.string()
     .required('Model is required'),
-  assetTag: Yup.string()
+  assetTag: Yup.number().integer()
     .max(charLimits.assetTag.max, `Must be less than ${charLimits.assetTag.max}`)
     .min(charLimits.assetTag.min, `Must be greater than ${charLimits.assetTag.min}`),
   comment: Yup.string()
@@ -143,18 +144,19 @@ export default function InstrumentForm({
               </Form.Group>
             </div>
             <div className="col mt-3">
-              <Form.Group controlId="formDescription">
-                <Form.Label className="h4">Asset Tag</Form.Label>
-                <Form.Control
-                  type="number"
-                  required
-                  min={100000}
-                  name="assetTag"
-                  value={values.assetTag}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-              </Form.Group>
+              <CustomInput
+                controlId="formAssetTag"
+                className="h4"
+                label="Asset Tag"
+                name="assetTag"
+                type="number"
+                required
+                value={values.assetTag}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.assetTag}
+                error={errors.assetTag}
+              />
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">

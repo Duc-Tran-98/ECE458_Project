@@ -35,7 +35,7 @@ function CreateInstrumentPage({ onCreation }) {
     }
     setCalibHistory(newHistory);
   };
-  const [formState, setFormState] = useState({
+  const formState = {
     // This state is for an instrument
     modelNumber: '',
     vendor: '',
@@ -45,7 +45,18 @@ function CreateInstrumentPage({ onCreation }) {
     description: '',
     categories: [],
     assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
-  });
+  };
+  // const [formState, setFormState] = useState({
+  //   // This state is for an instrument
+  //   modelNumber: '',
+  //   vendor: '',
+  //   comment: '',
+  //   serialNumber: '',
+  //   calibrationFrequency: 0,
+  //   description: '',
+  //   categories: [],
+  //   assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
+  // });
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
@@ -68,11 +79,11 @@ function CreateInstrumentPage({ onCreation }) {
     setCalibHistory(newHistory);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (values, resetForm) => {
     // This is to submit all the data
     const {
       modelNumber, vendor, comment, serialNumber, categories,
-    } = formState;
+    } = values;
     // check validation here in backend?
     CreateInstrument({
       modelNumber,
@@ -81,8 +92,8 @@ function CreateInstrumentPage({ onCreation }) {
       categories,
       comment,
     }).then((response) => {
-      toast(response.message);
       if (response.success) {
+        toast.success(response.message);
         // If we successfully added new instrument
         const validEvents = calibHistory.filter(
           (entry) => entry.user.length > 0,
@@ -97,19 +108,11 @@ function CreateInstrumentPage({ onCreation }) {
             categories,
             handleResponse: () => undefined,
           });
+          resetForm();
         }
-        // this section deals with resetting the form
-        setFormState({
-          modelNumber: '',
-          vendor: '',
-          comment: '',
-          serialNumber: '',
-          calibrationFrequency: 0,
-          categories: [],
-          description: '',
-          assetTag: '',
-        });
         onCreation();
+      } else {
+        toast.error(response.message);
       }
     });
   };
