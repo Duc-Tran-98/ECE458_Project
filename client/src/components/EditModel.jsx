@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from 'react-router-dom';
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
+import EditModelQuery from '../queries/EditModel';
 
 export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
   EditModel.propTypes = {
@@ -59,72 +58,46 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     FindModel({ modelNumber: initModelNumber, vendor: initVendor, handleResponse: handleFindModel });
   }, []); // empty dependency array, only run once on mount
 
-  const changeHandler = (e) => {
-    // handle other input
-    setModel({ ...model, [e.target.name]: e.target.value });
+  const updateHistory = (modelNumber, vendor, description) => {
+    const { state } = history.location;
+    history.replace(
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      state,
+    ); // change url because link for view instruments have changed;
   };
 
   const handleSubmit = (e) => {
     // handle submitting the data; no validation ATM
     e.preventDefault();
     setLoading(true);
-    const EDIT_MODEL = gql`
-      mutation EditModel(
-        $modelNumber: String!
-        $vendor: String!
-        $description: String!
-        $comment: String
-        $calibrationFrequency: Int
-        $categories: [String]
-        $id: Int!
-      ) {
-        editModel(
-          modelNumber: $modelNumber
-          vendor: $vendor
-          comment: $comment
-          description: $description
-          calibrationFrequency: $calibrationFrequency
-          categories: $categories
-          id: $id
-        )
-      }
-    `;
-    const query = print(EDIT_MODEL);
-    const queryName = 'editModel';
+
+    // Parse information from model information (TODO: Refactor to from formik values)
     let { id, calibrationFrequency } = model;
     id = parseInt(id, 10);
     calibrationFrequency = parseInt(calibrationFrequency, 10);
     const {
       description, comment, modelNumber, vendor, categories,
     } = model;
-    const getVariables = () => ({
-      description,
-      comment,
-      calibrationFrequency,
+
+    // Send actual query to edit model
+    EditModelQuery({
       id,
       modelNumber,
       vendor,
+      description,
+      comment,
+      calibrationFrequency,
       categories,
-    });
-    const handleResponse = (response) => {
-      setLoading(false);
-      setResponseMsg(response.message);
-      if (response.success) {
-        const { state } = history.location;
-        history.replace(
-          `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-          state,
-        ); // change url because link for view instruments have changed;
-      }
-      setTimeout(() => {
-        setResponseMsg('');
-      }, 1000);
-    };
-    Query({
-      query,
-      queryName,
-      getVariables,
-      handleResponse,
+      handleResponse: (response) => {
+        setLoading(false);
+        setResponseMsg(response.message);
+        if (response.success) {
+          updateHistory(modelNumber, vendor, description);
+        }
+        setTimeout(() => {
+          setResponseMsg('');
+        }, 1000);
+      },
     });
   };
 
@@ -177,7 +150,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         categories={categories}
         calibrationFrequency={calibrationFrequency}
         handleFormSubmit={handleSubmit}
-        changeHandler={changeHandler}
         validated={false}
         diffSubmit
         viewOnly={!user.isAdmin}
