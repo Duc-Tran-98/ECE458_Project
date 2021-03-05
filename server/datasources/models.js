@@ -154,6 +154,7 @@ class ModelAPI extends DataSource {
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    const response = { models: [], total: 0 };
     let includeData;
     if (categories) {
       includeData = [
@@ -182,12 +183,15 @@ class ModelAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
 
-    const models = await this.store.models.findAll({
+    let models = await this.store.models.findAndCountAll({
       include: includeData,
       where: filters,
       limit,
       offset,
     });
+    response.models = models.rows;
+    response.total = models.count;
+    models = models.rows;
     if (categories) {
       // eslint-disable-next-line prefer-const
       let modelsWithCategories = [];
@@ -198,9 +202,10 @@ class ModelAPI extends DataSource {
           modelsWithCategories.push(models[i]);
         }
       }
-      return modelsWithCategories;
+      response.models = modelsWithCategories;
+      response.total = modelsWithCategories.length;
     }
-    return models;
+    return response;
   }
 
   async getAllModelsWithModelNum({ modelNumber }) {

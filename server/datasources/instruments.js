@@ -60,10 +60,11 @@ class InstrumentAPI extends DataSource {
 
   async getInstrumentsWithFilter({
     // eslint-disable-next-line max-len
-    vendor, modelNumber, description, serialNumber, id, modelCategories, instrumentCategories, limit = null, offset = null,
+    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    const response = { instruments: [], total: 0 };
     // eslint-disable-next-line prefer-const
     let checkModelCategories;
     let checkInstrumentCategories;
@@ -124,12 +125,15 @@ class InstrumentAPI extends DataSource {
     // if (assetTag) filters.push({ assetTag: SQL.where(SQL.fn('LOWER', SQL.col('assetTag')), 'LIKE', `%${assetTag.toLowerCase()}%`) });
     // ^^^ uncomment this once asset tag is implemented
 
-    const instruments = await this.store.instruments.findAll({
+    let instruments = await this.store.instruments.findAndCountAll({
       include: includeData,
       where: filters,
       limit,
       offset,
     });
+    response.instruments = instruments.rows;
+    response.total = instruments.count;
+    instruments = instruments.rows;
     if (modelCategories || instrumentCategories) {
       const instrumentsWithCategories = [];
       const checker = (arr, target) => target.every((v) => arr.includes(v));
@@ -143,9 +147,10 @@ class InstrumentAPI extends DataSource {
           }
         }
       }
-      return instrumentsWithCategories;
+      response.instruments = instrumentsWithCategories;
+      response.total = instrumentsWithCategories.length;
     }
-    return instruments;
+    return response;
   }
 
   async getAllInstrumentsWithInfo({ limit = null, offset = null }) {
@@ -354,7 +359,7 @@ class InstrumentAPI extends DataSource {
   }) {
     const response = { message: '', success: true };
     const validation = validateInstrument({
-      modelNumber, vendor, serialNumber, comment, id: assetTag,
+      modelNumber, vendor, serialNumber, comment, assetTag,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring

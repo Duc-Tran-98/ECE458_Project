@@ -35,7 +35,7 @@ function CreateInstrumentPage({ onCreation }) {
     }
     setCalibHistory(newHistory);
   };
-  const [formState, setFormState] = useState({
+  const formState = {
     // This state is for an instrument
     modelNumber: '',
     vendor: '',
@@ -45,7 +45,7 @@ function CreateInstrumentPage({ onCreation }) {
     description: '',
     categories: [],
     assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
-  });
+  };
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
@@ -68,12 +68,14 @@ function CreateInstrumentPage({ onCreation }) {
     setCalibHistory(newHistory);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (values, resetForm) => {
+    console.log('Creating instrument with values: ');
+    console.log(values);
     // This is to submit all the data
     const {
       modelNumber, vendor, comment, serialNumber, categories,
-    } = formState;
-
+    } = values;
+    // check validation here in backend?
     CreateInstrument({
       modelNumber,
       vendor,
@@ -81,8 +83,9 @@ function CreateInstrumentPage({ onCreation }) {
       categories,
       comment,
     }).then((response) => {
-      toast(response.message);
       if (response.success) {
+        toast.success(response.message);
+        resetForm();
         // If we successfully added new instrument
         const validEvents = calibHistory.filter(
           (entry) => entry.user.length > 0,
@@ -98,36 +101,13 @@ function CreateInstrumentPage({ onCreation }) {
             handleResponse: () => undefined,
           });
         }
-        // this section deals with resetting the form
-        setFormState({
-          modelNumber: '',
-          vendor: '',
-          comment: '',
-          serialNumber: '',
-          calibrationFrequency: 0,
-          categories: [],
-          description: '',
-          assetTag: '',
-        });
         onCreation();
+      } else {
+        toast.error(response.message);
       }
     });
   };
 
-  const changeHandler = (e) => {
-    // This is for updating the instrument's fields from regular inputs
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  };
-  const onInputChange = (e, v) => {
-    // This if for updating instrument's fields from autocomplete input
-    setFormState({
-      ...formState,
-      modelNumber: v.modelNumber,
-      vendor: v.vendor,
-      calibrationFrequency: v.calibrationFrequency,
-      description: v.description,
-    });
-  };
   const {
     modelNumber,
     vendor,
@@ -157,18 +137,14 @@ function CreateInstrumentPage({ onCreation }) {
         vendor={vendor}
         comment={comment}
         serialNumber={serialNumber}
-        changeHandler={changeHandler}
-        validated={false}
-        onInputChange={onInputChange}
         categories={categories}
         description={description}
         calibrationFrequency={calibrationFrequency}
         assetTag={assetTag}
+        handleFormSubmit={handleSubmit}
+        type="create"
       />
       <div className="d-flex justify-content-center my-3">
-        <button type="submit" className="btn  mx-3" onClick={handleSubmit}>
-          Create Instrument
-        </button>
         <button type="button" className="btn  mx-3" onClick={addRow}>
           Add Calibration Event
         </button>

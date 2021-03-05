@@ -17,12 +17,22 @@ const typeDefs = gql`
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
     getUniqueVendors: [Model]
-    getModelsWithFilter(vendor: String, modelNumber: String, description: String, categories: [String], limit: Int, offset: Int): [ModelOutput]
+    getModelsWithFilter(
+      vendor: String
+      modelNumber: String
+      description: String
+      categories: [String]
+      limit: Int
+      offset: Int
+    ): ModelOutput
 
     # Instrument Related Queries
     countAllInstruments: Int!
     getAllInstruments(limit: Int, offset: Int): [Instrument]
-    getAllInstrumentsWithInfo(limit: Int, offset: Int): [InstrumentWithCalibration]
+    getAllInstrumentsWithInfo(
+      limit: Int
+      offset: Int
+    ): [InstrumentWithCalibration]
     getAllInstrumentsWithModel(
       modelNumber: String!
       vendor: String!
@@ -37,15 +47,16 @@ const typeDefs = gql`
       serialNumber: String!
     ): Instrument
     getInstrumentsWithFilter(
-      vendor: String, 
-      modelNumber: String, 
-      description: String,
-      serialNumber: String, 
-      modelCategories: [String], 
-      instrumentCategories: [String], 
-      limit: Int, 
+      vendor: String
+      modelNumber: String
+      description: String
+      serialNumber: String
+      assetTag: Int
+      modelCategories: [String]
+      instrumentCategories: [String]
+      limit: Int
       offset: Int
-      ): [InstrumentOutput]
+    ): InstrumentOutput
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
@@ -91,13 +102,8 @@ const typeDefs = gql`
   }
 
   type ModelOutput {
-    id: ID!
-    vendor: String!
-    modelNumber: String!
-    description: String!
-    comment: String
-    calibrationFrequency: Int
-    categories: [Category]
+    models: [Model]
+    total: Int!
   }
 
   type Category {
@@ -118,7 +124,7 @@ const typeDefs = gql`
     assetTag: Int!
   }
 
-  type InstrumentOutput {
+  type FilteredInstrument {
     vendor: String!
     modelNumber: String!
     serialNumber: String!
@@ -130,6 +136,11 @@ const typeDefs = gql`
     recentCalibration: [Calibration]
     modelCategories: [Category]
     instrumentCategories: [Category]
+  }
+
+  type InstrumentOutput {
+    instruments: [FilteredInstrument]
+    total: Int!
   }
 
   type Calibration {
@@ -193,7 +204,11 @@ const typeDefs = gql`
     # User related mutations
     login(userName: String!, password: String!): String!
     oauthLogin(netId: String!, firstName: String!, lastName: String!): String!
-    changePassword(userName: String!, oldPassword: String!, newPassword: String!): String!
+    changePassword(
+      userName: String!
+      oldPassword: String!
+      newPassword: String!
+    ): String!
     signup(
       email: String!
       firstName: String!
@@ -246,12 +261,27 @@ const typeDefs = gql`
     deleteInstrument(id: Int!): String!
 
     # Calibration Events related mutations
-    addCalibrationEvent(modelNumber: String!, vendor: String!, serialNumber: String!, date: String!, user: String! comment: String): String!
+    addCalibrationEvent(
+      modelNumber: String!
+      vendor: String!
+      serialNumber: String!
+      date: String!
+      user: String!
+      comment: String
+    ): String!
 
     #bulk import
     # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
-    bulkImportData(models: [ModelInput], instruments: [InstrumentInput]): String!
-    addCalibrationEventById(calibrationHistoryIdReference: Int!, date: String!, user: String! comment: String): String!
+    bulkImportData(
+      models: [ModelInput]
+      instruments: [InstrumentInput]
+    ): String!
+    addCalibrationEventById(
+      calibrationHistoryIdReference: Int!
+      date: String!
+      user: String!
+      comment: String
+    ): String!
     deleteCalibrationEvent(id: Int!): String!
     editCalibrationEvent(
       user: String
@@ -269,12 +299,29 @@ const typeDefs = gql`
     removeInstrumentCategory(name: String!): String!
     editInstrumentCategory(currentName: String!, updatedName: String!): String!
 
-    addCategoryToModel(vendor: String!, modelNumber: String!, category: String!): String!
-    removeCategoryFromModel(vendor: String!, modelNumber: String!, category: String!): String!
+    addCategoryToModel(
+      vendor: String!
+      modelNumber: String!
+      category: String!
+    ): String!
+    removeCategoryFromModel(
+      vendor: String!
+      modelNumber: String!
+      category: String!
+    ): String!
 
-    addCategoryToInstrument(vendor: String!, modelNumber: String!, serialNumber: String!, category: String!): String!
-    removeCategoryFromInstrument(vendor: String!, modelNumber: String!, serialNumber: String!, category: String!): String!
-
+    addCategoryToInstrument(
+      vendor: String!
+      modelNumber: String!
+      serialNumber: String!
+      category: String!
+    ): String!
+    removeCategoryFromInstrument(
+      vendor: String!
+      modelNumber: String!
+      serialNumber: String!
+      category: String!
+    ): String!
   }
 `;
 

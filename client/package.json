@@ -22,6 +22,7 @@
     "csv-file-validator": "^1.10.1",
     "dotenv": "^8.2.0",
     "export-to-csv": "^0.2.1",
+    "formik": "^2.2.6",
     "graphql": "^15.5.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.20",
@@ -43,7 +44,8 @@
     "sync-request": "^6.1.0",
     "use-state-with-callback": "^2.0.3",
     "web-vitals": "^0.2.4",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "react-scripts start",

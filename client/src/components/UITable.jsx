@@ -170,7 +170,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, rowCount]);
+  }, [initLimit, initPage, fetchData]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
@@ -272,8 +272,8 @@ export function ServerPaginationGrid({
         />
       </div>
       <div className="row bg-offset rounded py-2 mx-auto">
-        <div className="col" ref={paginationContainer} />
-        <div className="col">
+        <div className="col-auto me-auto" ref={paginationContainer} />
+        <div className="col-auto">
           <div className="btn-group dropup">
             <button
               className="btn  dropdown-toggle"
@@ -322,10 +322,10 @@ export function ServerPaginationGrid({
           {handleExport && (
             <>
               {loadingExport && <LinearProgress color="secondary" />}
-              {(filename && filename.includes('model')) && (
+              {filename && filename.includes('model') && (
                 <ExportModels setLoading={setLoadingExport} />
               )}
-              {(filename && filename.includes('instrument')) && (
+              {filename && filename.includes('instrument') && (
                 <ExportInstruments setLoading={setLoadingExport} />
               )}
             </>
@@ -335,7 +335,3 @@ export function ServerPaginationGrid({
     </div>
   );
 }
-
-/*
-TODO: Move bottom buttons to right hand side
-*/

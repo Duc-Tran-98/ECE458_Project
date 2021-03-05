@@ -12,38 +12,33 @@ function CreateModelPage({ onCreation }) {
   CreateModelPage.propTypes = {
     onCreation: PropTypes.func.isRequired,
   };
-  const [formState, setFormState] = useState({
-    modelNumber: '',
-    vendor: '',
-    description: '',
-    comment: '',
-    calibrationFrequency: '0',
-    categories: [],
-  });
+  const user = useContext(UserContext);
+  // const [shouldResetForm, setResetForm] = useState(false);
+  const [resetForm, setResetForm] = useState(() => {});
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // const form = event.currentTarget;
-    // if (form.checkValidity() === false) {
-    //   console.log(form.validationMessage);
-    //   console.log(form);
-    //   event.stopPropagation();
-    // } else {
-    let { calibrationFrequency } = formState;
+  const handleResponse = (response) => {
+    console.log(response);
+    if (response.success) {
+      toast.success(response.message);
+      onCreation();
+      resetForm();
+    } else {
+      toast.error(response.message);
+    }
+  };
+
+  const handleSubmit = (values, formReset) => {
+    setResetForm(formReset);
+    console.log('Inside CreateModel with values: ');
+    console.log(JSON.stringify(values));
+    let { calibrationFrequency } = values;
     if (typeof calibrationFrequency === 'string') {
       // If user increments input, it becomes string so change it back to number
       calibrationFrequency = parseInt(calibrationFrequency, 10);
     }
     const {
       modelNumber, vendor, description, comment, categories,
-    } = formState;
-    const handleResponse = (response) => {
-      console.log(response);
-      toast(response.message);
-      if (response.success) {
-        onCreation();
-      }
-    };
+    } = values;
     CreateModel({
       modelNumber,
       vendor,
@@ -53,55 +48,19 @@ function CreateModelPage({ onCreation }) {
       categories,
       handleResponse,
     });
-  //  }
   };
-
-  const changeHandler = (e) => {
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  };
-  const onInputChange = (e, v) => {
-    // This if for model's instrument's fields from autocomplete input
-    if (v.inputValue) {
-      // If use inputs a new value
-      setFormState({
-        ...formState,
-        vendor: v.inputValue,
-      });
-    } else {
-      // Else they picked an existing option
-      setFormState({
-        ...formState,
-        vendor: v.vendor,
-      });
-    }
-  };
-  const user = useContext(UserContext);
-  if (!user.isAdmin) {
-    return <ErrorPage message="You don't have the right permissions!" />;
-  }
-  const {
-    modelNumber,
-    vendor,
-    description,
-    comment,
-    calibrationFrequency,
-    categories,
-  } = formState;
   return (
+
     <>
-      <ToastContainer />
-      <ModelForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        description={description}
-        comment={comment}
-        calibrationFrequency={calibrationFrequency}
-        categories={categories}
-        handleSubmit={handleSubmit}
-        changeHandler={changeHandler}
-        validated={false}
-        onInputChange={onInputChange}
-      />
+      {user.isAdmin ? (
+        <>
+          <ToastContainer />
+          <ModelForm
+            handleFormSubmit={handleSubmit}
+            type="create"
+          />
+        </>
+      ) : <ErrorPage message="You don't have the right permissions!" />}
     </>
   );
 }
