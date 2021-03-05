@@ -211,7 +211,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
         comment={comment}
         categories={categories}
         calibrationFrequency={calibrationFrequency}
-        handleSubmit={handleSubmit}
+        handleFormSubmit={handleSubmit}
         changeHandler={changeHandler}
         validated={false}
         diffSubmit

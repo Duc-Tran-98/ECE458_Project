@@ -56,7 +56,7 @@ function CreateModelPage({ onCreation }) {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
   const onInputChange = (e, v) => {
-    // This if for model's instrument's fields from autocomplete input
+    // This is for model's instrument's fields from autocomplete input
     const vendorValue = v.inputValue ? v.inputValue : v.vendor;
     setFormState({
       ...formState,
@@ -85,9 +85,8 @@ function CreateModelPage({ onCreation }) {
             comment={comment}
             calibrationFrequency={calibrationFrequency}
             categories={categories}
-            handleSubmit={handleSubmit}
+            handleFormSubmit={handleSubmit}
             changeHandler={changeHandler}
-            validated={false}
             onInputChange={onInputChange}
           />
         </>
