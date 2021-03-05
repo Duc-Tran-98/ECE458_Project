@@ -73,6 +73,8 @@ export default function EditInstrument({
   };
 
   const handleSubmit = (values) => {
+    console.log('EditInstrument handling submit with values: ');
+    console.log(values);
     const {
       comment,
       modelNumber,
@@ -80,7 +82,6 @@ export default function EditInstrument({
       serialNumber,
       description,
       categories,
-      id,
       calibrationFrequency,
     } = values;
     const handleResponse = (response) => {
