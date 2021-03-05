@@ -57,8 +57,7 @@ function CreateModelPage({ onCreation }) {
           <ToastContainer />
           <ModelForm
             handleFormSubmit={handleSubmit}
-            // shouldResetForm={shouldResetForm}
-            // setResetForm={setResetForm}
+            type="create"
           />
         </>
       ) : <ErrorPage message="You don't have the right permissions!" />}

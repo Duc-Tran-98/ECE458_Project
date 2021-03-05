@@ -142,8 +142,11 @@ export default function ModelForm({
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        handleFormSubmit(values, resetForm);
-        setSubmitting(false);
+        setSubmitting(true);
+        setTimeout(() => {
+          handleFormSubmit(values, resetForm);
+          setSubmitting(false);
+        }, 500);
       }}
     >
       {({
