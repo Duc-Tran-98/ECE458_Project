@@ -20,15 +20,18 @@ function CreateModelPage({ onCreation }) {
     calibrationFrequency: '0',
     categories: [],
   });
+  const user = useContext(UserContext);
+
+  const handleResponse = (response) => {
+    console.log(response);
+    toast(response.message);
+    if (response.success) {
+      onCreation();
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // const form = event.currentTarget;
-    // if (form.checkValidity() === false) {
-    //   console.log(form.validationMessage);
-    //   console.log(form);
-    //   event.stopPropagation();
-    // } else {
     let { calibrationFrequency } = formState;
     if (typeof calibrationFrequency === 'string') {
       // If user increments input, it becomes string so change it back to number
@@ -37,13 +40,6 @@ function CreateModelPage({ onCreation }) {
     const {
       modelNumber, vendor, description, comment, categories,
     } = formState;
-    const handleResponse = (response) => {
-      console.log(response);
-      toast(response.message);
-      if (response.success) {
-        onCreation();
-      }
-    };
     CreateModel({
       modelNumber,
       vendor,
@@ -61,24 +57,13 @@ function CreateModelPage({ onCreation }) {
   };
   const onInputChange = (e, v) => {
     // This if for model's instrument's fields from autocomplete input
-    if (v.inputValue) {
-      // If use inputs a new value
-      setFormState({
-        ...formState,
-        vendor: v.inputValue,
-      });
-    } else {
-      // Else they picked an existing option
-      setFormState({
-        ...formState,
-        vendor: v.vendor,
-      });
-    }
+    const vendorValue = v.inputValue ? v.inputValue : v.vendor;
+    setFormState({
+      ...formState,
+      vendor: vendorValue,
+    });
   };
-  const user = useContext(UserContext);
-  if (!user.isAdmin) {
-    return <ErrorPage message="You don't have the right permissions!" />;
-  }
+
   const {
     modelNumber,
     vendor,
@@ -88,20 +73,25 @@ function CreateModelPage({ onCreation }) {
     categories,
   } = formState;
   return (
+
     <>
-      <ToastContainer />
-      <ModelForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        description={description}
-        comment={comment}
-        calibrationFrequency={calibrationFrequency}
-        categories={categories}
-        handleSubmit={handleSubmit}
-        changeHandler={changeHandler}
-        validated={false}
-        onInputChange={onInputChange}
-      />
+      {user.isAdmin ? (
+        <>
+          <ToastContainer />
+          <ModelForm
+            modelNumber={modelNumber}
+            vendor={vendor}
+            description={description}
+            comment={comment}
+            calibrationFrequency={calibrationFrequency}
+            categories={categories}
+            handleSubmit={handleSubmit}
+            changeHandler={changeHandler}
+            validated={false}
+            onInputChange={onInputChange}
+          />
+        </>
+      ) : <ErrorPage message="You don't have the right permissions!" />}
     </>
   );
 }
