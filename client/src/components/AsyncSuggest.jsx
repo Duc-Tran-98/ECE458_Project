@@ -77,6 +77,7 @@ export default function AsyncSuggest({
           type="text"
           required
           placeholder={label}
+          isInvalid={isInvalid}
             // eslint-disable-next-line react/jsx-props-no-spreading
           {...params.inputProps}
         />
@@ -152,25 +153,6 @@ export default function AsyncSuggest({
         value={multipleValues}
         renderInput={(params) => (
           <>
-            <div ref={params.InputProps.ref}>
-              <Form.Control
-                type="text"
-                required
-                placeholder={label}
-                isInvalid={isInvalid}
-              // eslint-disable-next-line react/jsx-props-no-spreading
-                {...params.inputProps}
-              />
-              <>{loading ? <LinearProgress /> : null}</>
-              <Form.Control.Feedback type="invalid">
-                Please
-                {' '}
-                {`${label}`}
-              </Form.Control.Feedback>
-              <Form.Control.Feedback type="valid">
-                Looks good!
-              </Form.Control.Feedback>
-            </div>
             <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading
               {...params}
