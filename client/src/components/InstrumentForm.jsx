@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
-import React from 'react';
+import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
@@ -9,7 +9,8 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { CustomInput } from './CustomFormComponents';
+import { CustomInput, CustomButton } from './CustomFormComponents';
+import UserContext from './UserContext';
 
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
@@ -35,11 +36,16 @@ const charLimits = {
     min: 100000,
     max: 999999,
   },
+  serialNumber: {
+    max: 40,
+  },
 };
 
 const schema = Yup.object({
   vendor: Yup.string()
     .required('Model is required'),
+  serialNumber: Yup.string()
+    .max(charLimits.serialNumber.max, `Must be less than ${charLimits.serialNumber.max} characters`),
   assetTag: Yup.number().integer()
     .max(charLimits.assetTag.max, `Must be less than ${charLimits.assetTag.max}`)
     .min(charLimits.assetTag.min, `Must be greater than ${charLimits.assetTag.min}`),
@@ -58,6 +64,9 @@ export default function InstrumentForm({
   vendor,
   description,
   calibrationFrequency,
+  type,
+  handleDelete,
+  footer,
 }) {
   InstrumentForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -70,6 +79,10 @@ export default function InstrumentForm({
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
     description: PropTypes.string,
     calibrationFrequency: PropTypes.number,
+    type: PropTypes.string.isRequired,
+    handleDelete: PropTypes.func,
+    footer: PropTypes.node,
+
   };
   InstrumentForm.defaultProps = {
     handleFormSubmit: null,
@@ -80,6 +93,9 @@ export default function InstrumentForm({
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
+  const user = useContext(UserContext);
+  const showFooter = type === 'edit' && user.isAdmin;
+
   return (
     <Formik
       initialValues={{
@@ -186,21 +202,20 @@ export default function InstrumentForm({
                 />
               </Form.Group>
             </div>
+            {/* TODO: What are problems with serial number? */}
             <div className="col mt-3">
-              <Form.Group controlId="formDescription">
-                <Form.Label className="h4">Serial Number</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Serial Number"
-                  name="serialNumber"
-                  value={values.serialNumber}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Please enter a valid serial number.
-                </Form.Control.Feedback>
-              </Form.Group>
+              <CustomInput
+                controlId="formSerialNumber"
+                className="h4"
+                label="Serial Number"
+                name="serialNumber"
+                type="text"
+                value={values.serialNumber}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.serialNumber}
+                error={errors.serialNumber}
+              />
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
@@ -214,7 +229,12 @@ export default function InstrumentForm({
                   value={values.comment}
                   onChange={handleChange}
                   disabled={disabled}
+                  isInvalid={!!errors.comment}
+                  error={errors.comment}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.comment}
+                </Form.Control.Feedback>
               </Form.Group>
             </div>
           </div>
@@ -232,12 +252,23 @@ export default function InstrumentForm({
               />
             </div>
           </div>
-          {handleSubmit && (
+          {type === 'create' && (
           <div className="d-flex justify-content-center my-3">
             {isSubmitting
               ? <CircularProgress />
               : <Button type="submit" onClick={handleSubmit}>Add Instrument</Button>}
           </div>
+          )}
+          {showFooter && (
+            <div className="d-flex justify-content-center my-3">
+              <div className="row">
+                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Instrument" />
+                {isSubmitting
+                  ? <CircularProgress />
+                  : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}
+                {footer}
+              </div>
+            </div>
           )}
         </Form>
       )}
