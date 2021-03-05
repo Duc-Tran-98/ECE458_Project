@@ -52,6 +52,7 @@ const TagsInput = (props) => {
     if (typeof tags === 'undefined') {
       setTags([tag]);
     } else if (tag !== '' && !tags.includes(tag)) {
+      console.log(`calling props.selected tags with tag: ${tag}`);
       setTags([...tags, tag]);
       props.selectedTags([...tags, tag]);
     }

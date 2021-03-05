@@ -26,6 +26,7 @@ const charLimits = {
     max: 40,
   },
   vendor: {
+    min: 1,
     max: 30,
   },
   calibrationFrequency: {
@@ -46,6 +47,7 @@ const schema = Yup.object({
     .required('Model Number is required'),
   vendor: Yup.string()
     .max(charLimits.vendor.max, `Must be less than ${charLimits.vendor.max} characters`)
+    .min(charLimits.vendor.min, 'Vendor is required')
     .required('Vendor is required'),
   calibrationFrequency: Yup.number().integer()
     .min(charLimits.calibrationFrequency.min, `Must be greater than ${charLimits.calibrationFrequency.min} days`)
@@ -104,15 +106,6 @@ export default function ModelForm({
     categories: [],
     diffSubmit: false,
   };
-  // const selectedTags = (tags) => {
-  //   const event = {
-  //     target: {
-  //       name: 'categories',
-  //       value: tags,
-  //     },
-  //   };
-  //   changeHandler(event);
-  // };
   const cats = [];
   if (categories) categories.forEach((el) => cats.push(el));
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
@@ -123,21 +116,17 @@ export default function ModelForm({
     <Formik
       initialValues={{
         modelNumber,
-        vendor,
+        vendor: vendor || '',
         calibrationFrequency,
         comment,
         description,
         categories,
       }}
       validationSchema={schema}
-      onSubmit={(values, { setSubmitting, resetForm }) => {
-        console.log('Submitting Formik form');
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          resetForm();
-          setSubmitting(false);
-          handleFormSubmit(values);
-        }, 1000);
+      onSubmit={(values, { setSubmitting }) => {
+        handleFormSubmit(values);
+        setSubmitting(false);
+        // resetForm();
       }}
     >
       {({

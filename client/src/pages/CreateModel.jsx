@@ -16,7 +16,7 @@ function CreateModelPage({ onCreation }) {
 
   const handleResponse = (response) => {
     console.log(response);
-    toast(response.message);
+    toast.success(response.message);
     if (response.success) {
       onCreation();
     }
