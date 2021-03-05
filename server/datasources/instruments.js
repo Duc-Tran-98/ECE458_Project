@@ -289,7 +289,6 @@ class InstrumentAPI extends DataSource {
     await this.store.instruments.findOne({ where: { assetTag } }).then(
       (instrument) => {
         if (instrument) {
-          console.log('Found an instrument with similar asset tag!');
           if (instrument.dataValues.assetTag === assetTag && instrument.dataValues.id !== id) {
             response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists!`;
             response.success = false;
