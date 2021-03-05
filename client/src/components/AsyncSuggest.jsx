@@ -10,7 +10,7 @@ import { QueryAndThen } from './UseQuery';
 const filter = createFilterOptions();
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, multiple, multipleValues,
+  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, multiple, multipleValues, isComboBox,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -25,12 +25,14 @@ export default function AsyncSuggest({
     multipleValues: PropTypes.array,
     allowAdditions: PropTypes.bool, // Whether or not user should be able to create new input
     multiple: PropTypes.bool, // whether or not user should be able to select mutliple
+    isComboBox: PropTypes.bool, // whether or not display should be textfield input or combo box
   };
   AsyncSuggest.defaultProps = {
     value: null,
     allowAdditions: false,
     multiple: false,
     multipleValues: null,
+    isComboBox: false,
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
@@ -64,6 +66,31 @@ export default function AsyncSuggest({
       active = false;
     };
   }, [open]);
+  const genLook = (params) => (
+    isComboBox ? (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <TextField {...params} label={label} variant="outlined" size="small" />
+    ) : (
+      <div ref={params.InputProps.ref}>
+        <Form.Control
+          type="text"
+          required
+          placeholder={label}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+          {...params.inputProps}
+        />
+        <>{loading ? <LinearProgress /> : null}</>
+        <Form.Control.Feedback type="invalid">
+          Please
+          {' '}
+          {`${label}`}
+        </Form.Control.Feedback>
+        <Form.Control.Feedback type="valid">
+          Looks good!
+        </Form.Control.Feedback>
+      </div>
+    )
+  );
   if (allowAdditions) { // If we want use to add new suggestions
     return (
       <Autocomplete
@@ -171,28 +198,9 @@ export default function AsyncSuggest({
       value={value}
       autoComplete
       autoHighlight
-      disableClearable
+      disableClearable={!isComboBox}
       onChange={onInputChange}
-      renderInput={(params) => (
-        <div ref={params.InputProps.ref}>
-          <Form.Control
-            type="text"
-            required
-            placeholder={label}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...params.inputProps}
-          />
-          <>{loading ? <LinearProgress /> : null}</>
-          <Form.Control.Feedback type="invalid">
-            Please
-            {' '}
-            {`${label}`}
-          </Form.Control.Feedback>
-          <Form.Control.Feedback type="valid">
-            Looks good!
-          </Form.Control.Feedback>
-        </div>
-      )}
+      renderInput={(params) => genLook(params)}
     />
   );
 }

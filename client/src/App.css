@@ -87,11 +87,13 @@ button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-sele
 
 
 label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-marginDense.MuiInputLabel-outlined{
+  /* Multiple combo box label styling */
   font-weight: bold;
   color: black;
 }
 
 label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-shrink.MuiInputLabel-marginDense.MuiInputLabel-outlined{
+  /* Multiple combo box label when label is shurnk */
   padding-top: 3px;
 }
 .tags-input {

@@ -31,9 +31,9 @@ function ListModels() {
     // console.log(selectedFilters);
   }
   const [filterOptions, setFilterOptions] = React.useState({
-    vendors: selectedFilters ? selectedFilters.vendors : [],
-    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : [],
-    descriptions: selectedFilters ? selectedFilters.descriptions : [],
+    vendors: selectedFilters ? selectedFilters.vendors : null,
+    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
+    descriptions: selectedFilters ? selectedFilters.descriptions : null,
     categories: selectedFilters ? selectedFilters.categories : null,
   });
   const navLink = document.getElementById('modelNavLink');
@@ -51,9 +51,9 @@ function ListModels() {
     navLink.onclick = () => {
       // console.log('clicked');
       if (
-        filterOptions.vendors.length !== 0
-        || filterOptions.modelNumbers.length !== 0
-        || filterOptions.descriptions.length !== 0
+        filterOptions.vendors !== null
+        || filterOptions.modelNumbers !== null
+        || filterOptions.descriptions !== null
         || filterOptions.categories !== null
       ) {
         // console.log('clearing filters');
@@ -65,9 +65,9 @@ function ListModels() {
         //   } categories: ${filterOptions.categories !== null}`,
         // );
         setFilterOptions({
-          vendors: [],
-          modelNumbers: [],
-          descriptions: [],
+          vendors: null,
+          modelNumbers: null,
+          descriptions: null,
           categories: null,
         });
       }
@@ -203,10 +203,10 @@ function ListModels() {
       'ascii',
     ).toString('base64');
     if (
-      vendors.length === 0
+      (!vendors)
       && (categories === null || categories?.length === 0)
-      && modelNumbers.length === 0
-      && descriptions.length === 0
+      && (!modelNumbers)
+      && (!descriptions)
     ) {
       history.push(`/viewModels?page=1&limit=${initLimit}&count=${total}`);
     } else {
@@ -215,6 +215,7 @@ function ListModels() {
       );
       // console.log(JSON.parse(Buffer.from(filters, 'base64').toString('ascii')));
     }
+    console.log(`vendors ${!vendors} modelNumbs ${!modelNumbers} desc ${!descriptions} cat ${(categories === null || categories?.length === 0)}`);
   };
 
   const onSearch = ({
@@ -228,9 +229,9 @@ function ListModels() {
     GetAllModels({
       limit: 1,
       offset: 0,
-      modelNumber: modelNumbers[0]?.modelNumber,
-      description: descriptions[0]?.description,
-      vendor: vendors[0]?.vendor,
+      modelNumber: modelNumbers,
+      description: descriptions,
+      vendor: vendors,
       categories: actualCategories,
     }).then((response) => {
       setRowCount(response.total);
@@ -253,9 +254,6 @@ function ListModels() {
   const {
     vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
-  const filterDescription = descriptions[0]?.description;
-  const filterModelNumber = modelNumbers[0]?.modelNumber;
-  const filterVendor = vendors[0]?.vendor;
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
       JSON.stringify({
@@ -312,9 +310,9 @@ function ListModels() {
         fetchData={(limit, offset) => GetAllModels({
           limit,
           offset,
-          vendor: filterVendor,
-          modelNumber: filterModelNumber,
-          description: filterDescription,
+          vendor: vendors,
+          modelNumber: modelNumbers,
+          description: descriptions,
           categories,
         }).then((response) => response.models)}
         filterRowForCSV={filterRowForCSV}

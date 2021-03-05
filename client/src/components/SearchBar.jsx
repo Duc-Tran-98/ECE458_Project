@@ -22,9 +22,9 @@ export default function SearchBar({
     initModelCategories: PropTypes.array,
   };
   SearchBar.defaultProps = {
-    initVendors: [],
-    initModelNumbers: [],
-    initDescriptions: [],
+    initVendors: null,
+    initModelNumbers: null,
+    initDescriptions: null,
     initModelCategories: [],
   };
   const actualCategories = initModelCategories === null ? [] : initModelCategories;
@@ -59,7 +59,8 @@ export default function SearchBar({
 
     (() => {
       if (active) {
-        setVendors(initVendors);
+        const formatedVendor = initVendors !== null ? { vendor: initVendors } : null;
+        setVendors(formatedVendor);
       }
     })();
 
@@ -72,7 +73,8 @@ export default function SearchBar({
 
     (() => {
       if (active) {
-        setDescriptions(initDescriptions);
+        const formattedDesc = initDescriptions !== null ? { description: initDescriptions } : null;
+        setDescriptions(formattedDesc);
       }
     })();
 
@@ -85,7 +87,8 @@ export default function SearchBar({
 
     (() => {
       if (active) {
-        setModelNumbers(initModelNumbers);
+        const fomrattedModelNumber = initModelNumbers !== null ? { modelNumber: initModelNumbers } : null;
+        setModelNumbers(fomrattedModelNumber);
       }
     })();
 
@@ -178,8 +181,8 @@ export default function SearchBar({
             label="Filter by Vendor"
             getOptionLabel={(option) => `${option.vendor}`}
             getOptionSelected={(option, value) => option.vendor === value.vendor}
-            multiple
-            multipleValues={vendors}
+            value={vendors}
+            isComboBox
           />
         </div>
         <div className="m-2 w-25 my-auto pt-1">
@@ -195,9 +198,9 @@ export default function SearchBar({
             onInputChange={(_e, v) => setModelNumbers(v)}
             label="Filter by Model Number"
             getOptionLabel={(option) => `${option.modelNumber}`}
-            getOptionSelected={() => undefined}
-            multiple
-            multipleValues={modelNumbers}
+            getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
+            value={modelNumbers}
+            isComboBox
           />
         </div>
         <div className="m-2 w-25 my-auto pt-1">
@@ -231,9 +234,9 @@ export default function SearchBar({
             onInputChange={(_e, v) => setDescriptions(v)}
             label="Filter by Description"
             getOptionLabel={(option) => `${option.description}`}
-            getOptionSelected={() => undefined}
-            multiple
-            multipleValues={descriptions}
+            getOptionSelected={(option, value) => option.description === value.description}
+            value={descriptions}
+            isComboBox
           />
         </div>
         {/* {dropdownMenu} */}
@@ -241,7 +244,10 @@ export default function SearchBar({
           className="btn my-auto mx-2"
           type="button"
           onClick={() => onSearch({
-            vendors, modelNumbers, descriptions, modelCategories,
+            vendors: vendors?.vendor,
+            modelNumbers: modelNumbers?.modelNumber,
+            descriptions: descriptions?.description,
+            modelCategories,
           })}
         >
           <SearchIcon />
