@@ -142,6 +142,7 @@ function CreateInstrumentPage({ onCreation }) {
         calibrationFrequency={calibrationFrequency}
         assetTag={assetTag}
         handleFormSubmit={handleSubmit}
+        type="create"
       />
       <div className="d-flex justify-content-center my-3">
         <button type="button" className="btn  mx-3" onClick={addRow}>
