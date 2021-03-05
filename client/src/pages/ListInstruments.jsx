@@ -41,9 +41,9 @@ export default function ListInstruments() {
     // console.log(selectedFilters);
   }
   const [filterOptions, setFilterOptions] = React.useState({
-    vendors: selectedFilters ? selectedFilters.vendors : [],
-    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : [],
-    descriptions: selectedFilters ? selectedFilters.descriptions : [],
+    vendors: selectedFilters ? selectedFilters.vendors : null,
+    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
+    descriptions: selectedFilters ? selectedFilters.descriptions : null,
     modelCategories: selectedFilters ? selectedFilters.modelCategories : null,
     instrumentCategories: selectedFilters ? selectedFilters.instrumentCategories : null,
   });
@@ -62,17 +62,17 @@ export default function ListInstruments() {
     navLink.onclick = () => {
       // console.log('clicked');
       if (
-        filterOptions.vendors.length !== 0
-        || filterOptions.modelNumbers.length !== 0
-        || filterOptions.descriptions.length !== 0
+        filterOptions.vendors !== null
+        || filterOptions.modelNumbers !== null
+        || filterOptions.descriptions !== null
         || filterOptions.modelCategories !== null
         || filterOptions.instrumentCategories !== null
       ) {
         console.log('clearing filters');
         setFilterOptions({
-          vendors: [],
-          modelNumbers: [],
-          descriptions: [],
+          vendors: null,
+          modelNumbers: null,
+          descriptions: null,
           modelCategories: null,
           instrumentCategories: null,
         });
@@ -272,11 +272,11 @@ export default function ListInstruments() {
       'ascii',
     ).toString('base64');
     if (
-      vendors.length === 0
+      (!vendors)
       && (modelCategories === null || modelCategories?.length === 0)
       && (instrumentCategories === null || instrumentCategories?.length === 0)
-      && modelNumbers.length === 0
-      && descriptions.length === 0
+      && (!modelNumbers)
+      && (!descriptions)
     ) {
       history.push(`/viewInstruments?page=1&limit=${initLimit}&count=${total}`);
     } else {
@@ -289,7 +289,7 @@ export default function ListInstruments() {
   const onSearch = ({
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories,
   }) => {
-    console.log('searching...');
+    //  console.log('searching...');
     let formatedModelCategories = [];
     let formatedInstrumentCategories = [];
     modelCategories?.forEach((element) => {
@@ -298,15 +298,15 @@ export default function ListInstruments() {
     instrumentCategories?.forEach((element) => {
       formatedInstrumentCategories.push(element.name);
     });
-    console.log(modelCategories);
+    // console.log(modelCategories);
     formatedInstrumentCategories = formatedInstrumentCategories.length > 0 ? formatedInstrumentCategories : null;
     formatedModelCategories = formatedModelCategories.length > 0 ? formatedModelCategories : null;
     GetAllInstruments({
       limit: 1,
       offset: 0,
-      modelNumber: modelNumbers[0]?.modelNumber,
-      description: descriptions[0]?.description,
-      vendor: vendors[0]?.vendor,
+      modelNumber: modelNumbers,
+      description: descriptions,
+      vendor: vendors,
       modelCategories: formatedModelCategories,
     }).then((response) => {
       setRowCount(response.total);
@@ -331,9 +331,6 @@ export default function ListInstruments() {
   const {
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories,
   } = filterOptions;
-  const filterDescription = descriptions[0]?.description;
-  const filterModelNumber = modelNumbers[0]?.modelNumber;
-  const filterVendor = vendors[0]?.vendor;
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
       JSON.stringify({
@@ -391,9 +388,9 @@ export default function ListInstruments() {
         fetchData={(limit, offset) => GetAllInstruments({
           limit,
           offset,
-          vendor: filterVendor,
-          modelNumber: filterModelNumber,
-          description: filterDescription,
+          vendor: vendors,
+          modelNumber: modelNumbers,
+          description: descriptions,
           modelCategories,
           instrumentCategories,
           serialNumber: null,
