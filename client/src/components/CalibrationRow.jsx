@@ -2,9 +2,10 @@
 This class deals with what a calibration event should be
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import MouseOverPopover from './PopOver';
 import UserContext from './UserContext';
 
@@ -40,6 +41,9 @@ export default function CalibrationRow({
   // const formatOption = (option) => `${option.userName}`;
   // const formatSelected = (option, value) => option.userName === value.userName;
   const val = { userName: entry.user };
+  const [file, setFile] = useState('');
+  // const [fileData, setFileData] = useState(null);
+  // eslint-disable-next-line prefer-const
   return (
     <div className="d-flex justify-content-center">
       <div className="delete-container rounded">
@@ -112,13 +116,41 @@ export default function CalibrationRow({
                 <label className="btn position-relative text-center w-100">
                   <input
                     type="file"
+                    accept=".pdf,.jpg,.jpeg,.gif,.png,.xlsx"
                     className="invisible position-absolute top-0 start-0"
                     id={`inputFile-${id}`}
-                    onInput={(e) => console.log(e)}
+                    onInput={(e) => {
+                      const data = new FormData();
+                      setFile(e.target.files[0].name);
+                      console.log(`uploading ${e.target.files[0]}`);
+                      data.append('file', e.target.files[0]);
+
+                      axios.post('http://localhost:4001/api/upload', data, {
+                        // receive two    parameter endpoint url ,form data
+                      }).then((res) => { // then print response status
+                        console.log(res);
+                      }).catch((err) => {
+                        console.log(err.message);
+                      });
+                    }}
                   />
                   Upload File
                 </label>
               </MouseOverPopover>
+            )}
+            {file.length > 0 && (
+            <div>
+              <div>{file}</div>
+              <button
+                type="button"
+                className="btn w-100"
+                onClick={() => {
+                  setFile('');
+                }}
+              >
+                Remove File
+              </button>
+            </div>
             )}
           </div>
           <div className="col-4">

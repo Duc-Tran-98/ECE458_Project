@@ -142,16 +142,16 @@ const storage = multer.diskStorage({
 
 const filter = function (req, file, cb) {
   // accept image only
-  if (1 === 2) {
-  // if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    return cb(new Error('Only image files are allowed!'), false);
+  // if (1 === 2) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf|xlsx)$/)) {
+    return cb(new Error('Only files of the format JPG, PNG, GIF, PDF, or XLSX are allowed!'), false);
   }
   return cb(null, true);
 };
 
 const upload = multer({ storage, fileFilter: filter });
 
-app.post('/upload', upload.any(), (req, res, next) => {
+app.post('/api/upload', upload.any(), (req, res, next) => {
   // req.file is the `avatar` file
   // req.body will hold the text fields, if there were any
   console.log(req.file);
