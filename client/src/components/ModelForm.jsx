@@ -26,7 +26,6 @@ const charLimits = {
     max: 40,
   },
   vendor: {
-    min: 1,
     max: 30,
   },
   calibrationFrequency: {
@@ -47,7 +46,6 @@ const schema = Yup.object({
     .required('Model Number is required'),
   vendor: Yup.string()
     .max(charLimits.vendor.max, `Must be less than ${charLimits.vendor.max} characters`)
-    .min(charLimits.vendor.min, 'Vendor is required')
     .required('Vendor is required'),
   calibrationFrequency: Yup.number().integer()
     .min(charLimits.calibrationFrequency.min, `Must be greater than ${charLimits.calibrationFrequency.min} days`)
@@ -55,7 +53,8 @@ const schema = Yup.object({
   comment: Yup.string()
     .max(charLimits.comment.max, `Must be less than ${charLimits.comment.max} characters`),
   description: Yup.string()
-    .max(charLimits.description.max, `Must be less than ${charLimits.description.max} characters`),
+    .max(charLimits.description.max, `Must be less than ${charLimits.description.max} characters`)
+    .required('Description is required'),
 });
 
 const CustomInput = ({
@@ -115,12 +114,12 @@ export default function ModelForm({
   return (
     <Formik
       initialValues={{
-        modelNumber,
+        modelNumber: modelNumber || '',
         vendor: vendor || '',
-        calibrationFrequency,
-        comment,
-        description,
-        categories,
+        calibrationFrequency: calibrationFrequency || '0',
+        comment: comment || '',
+        description: description || '',
+        categories: categories || [],
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting }) => {
@@ -183,6 +182,7 @@ export default function ModelForm({
                     getOptionLabel={formatOption}
                     value={{ vendor: values.vendor }}
                     allowAdditions
+                    isInvalid={!!errors.vendor}
                   />
                 )}
               </Form.Group>
@@ -255,7 +255,6 @@ export default function ModelForm({
           </div>
           {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit) && (
             <div className="d-flex justify-content-center mt-3 mb-3">
-              {/* TODO: Circular progress replace button on submit */}
               {isSubmitting
                 ? <CircularProgress />
                 : <Button type="submit" onClick={handleSubmit}>Add Model</Button>}

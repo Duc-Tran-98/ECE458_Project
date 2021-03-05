@@ -16,9 +16,11 @@ function CreateModelPage({ onCreation }) {
 
   const handleResponse = (response) => {
     console.log(response);
-    toast.success(response.message);
     if (response.success) {
+      toast.success(response.message);
       onCreation();
+    } else {
+      toast.error(response.message);
     }
   };
 

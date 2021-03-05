@@ -9,7 +9,7 @@ import { QueryAndThen } from './UseQuery';
 const filter = createFilterOptions();
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions,
+  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -21,6 +21,7 @@ export default function AsyncSuggest({
     // eslint-disable-next-line react/forbid-prop-types
     value: PropTypes.object,
     allowAdditions: PropTypes.bool, // Whether or not user should be able to create new input
+    isInvalid: PropTypes.bool.isRequired,
   };
   AsyncSuggest.defaultProps = {
     value: null,
@@ -100,6 +101,7 @@ export default function AsyncSuggest({
               type="text"
               required
               placeholder={label}
+              isInvalid={isInvalid}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...params.inputProps}
             />
@@ -142,6 +144,7 @@ export default function AsyncSuggest({
             type="text"
             required
             placeholder={label}
+            isInvalid={isInvalid}
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...params.inputProps}
           />
