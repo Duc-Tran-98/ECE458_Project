@@ -229,7 +229,12 @@ export default function InstrumentForm({
                   value={values.comment}
                   onChange={handleChange}
                   disabled={disabled}
+                  isInvalid={!!errors.comment}
+                  error={errors.comment}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {errors.comment}
+                </Form.Control.Feedback>
               </Form.Group>
             </div>
           </div>
