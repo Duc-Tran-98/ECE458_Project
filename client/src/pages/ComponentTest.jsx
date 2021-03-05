@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 /* eslint-disable react/no-this-in-sfc */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
-=======
->>>>>>> 88143bf862b1e7c0adb0deb9600bf2bfe837aeee
 import React from 'react';
 import { Link } from 'react-router-dom';
 // import Form from 'react-bootstrap/Form';
