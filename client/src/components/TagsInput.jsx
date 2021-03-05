@@ -100,7 +100,6 @@ const TagsInput = (props) => {
           label="Select Categories"
           getOptionSelected={formatSelected}
           getOptionLabel={formatOption}
-          allowAdditions={false}
         />
       )}
     </div>
