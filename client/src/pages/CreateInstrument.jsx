@@ -114,20 +114,6 @@ function CreateInstrumentPage({ onCreation }) {
     });
   };
 
-  const changeHandler = (e) => {
-    // This is for updating the instrument's fields from regular inputs
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  };
-  const onInputChange = (e, v) => {
-    // This if for updating instrument's fields from autocomplete input
-    setFormState({
-      ...formState,
-      modelNumber: v.modelNumber,
-      vendor: v.vendor,
-      calibrationFrequency: v.calibrationFrequency,
-      description: v.description,
-    });
-  };
   const {
     modelNumber,
     vendor,
@@ -157,18 +143,13 @@ function CreateInstrumentPage({ onCreation }) {
         vendor={vendor}
         comment={comment}
         serialNumber={serialNumber}
-        changeHandler={changeHandler}
-        validated={false}
-        onInputChange={onInputChange}
         categories={categories}
         description={description}
         calibrationFrequency={calibrationFrequency}
         assetTag={assetTag}
+        handleFormSubmit={handleSubmit}
       />
       <div className="d-flex justify-content-center my-3">
-        <button type="submit" className="btn  mx-3" onClick={handleSubmit}>
-          Create Instrument
-        </button>
         <button type="button" className="btn  mx-3" onClick={addRow}>
           Add Calibration Event
         </button>

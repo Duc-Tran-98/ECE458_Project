@@ -10,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
+import { CustomButton, CustomInput } from './CustomFormComponents';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -57,40 +58,6 @@ const schema = Yup.object({
     .max(charLimits.description.max, `Must be less than ${charLimits.description.max} characters`)
     .required('Description is required'),
 });
-
-const CustomInput = ({
-  // eslint-disable-next-line react/prop-types
-  controlId, className, label, name, type, required, value, onChange, disabled, isInvalid, error,
-}) => (
-  <>
-    <Form.Group controlId={controlId}>
-      <Form.Label className={className}>{label}</Form.Label>
-      <Form.Control
-        name={name}
-        type={type}
-        required={required}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        isInvalid={isInvalid}
-      />
-      <Form.Control.Feedback type="invalid">
-        {error}
-      </Form.Control.Feedback>
-    </Form.Group>
-  </>
-);
-
-const CustomButton = ({
-  // eslint-disable-next-line react/prop-types
-  onClick, divClass, buttonClass, buttonLabel,
-}) => (
-  <div className={divClass}>
-    <button type="button" className={buttonClass} onClick={onClick}>
-      {buttonLabel}
-    </button>
-  </div>
-);
 
 export default function ModelForm({
   modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
