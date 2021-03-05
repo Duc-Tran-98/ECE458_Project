@@ -142,8 +142,6 @@ export default function ModelForm({
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        console.log('Submitting ModelForm with values: ');
-        console.log(values);
         handleFormSubmit(values, resetForm);
         setSubmitting(false);
       }}
@@ -155,6 +153,7 @@ export default function ModelForm({
         isSubmitting,
         values,
         errors,
+        // touched,
       }) => (
 
         <Form
@@ -179,9 +178,7 @@ export default function ModelForm({
                     query={query}
                     queryName={queryName}
                     onInputChange={(e, v) => {
-                      const newVendor = v.inputValue ? v.inputValue : v.vendor;
-                      setFieldValue('vendor', newVendor);
-                      console.log(`Set vendor to: ${newVendor}`);
+                      setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
                     }}
                     label="Choose a vendor"
                     getOptionSelected={formatSelected}
@@ -259,21 +256,18 @@ export default function ModelForm({
               </Form.Group>
             </div>
           </div>
-          {/* TODO: Ensure tags are added into the db  */}
+          {/* TODO: Ensure tags are added into the db (not rendering on view)  */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Label className="h4">Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
-                  console.log('setting categories to: ');
-                  console.log(tags);
                   setFieldValue('categories', tags);
                 }}
                 tags={values.categories}
                 dis={disabled}
                 models
                 isInvalid={false}
-                // TODO: Make invalid tags with spaces
               />
             </div>
           </div>
@@ -288,7 +282,9 @@ export default function ModelForm({
             <div className="d-flex justify-content-center my-3">
               <div className="row">
                 <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Model" />
-                <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />
+                {isSubmitting
+                  ? <CircularProgress />
+                  : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}
               </div>
             </div>
           )}

@@ -1,10 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
 import EditModelQuery from '../queries/EditModel';
+import 'react-toastify/dist/ReactToastify.css';
+import '../css/customToast.css';
 
 export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
   EditModel.propTypes = {
@@ -32,8 +35,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
 
   const handleFindModel = (response) => {
-    console.log('EditModel with response: ');
-    console.log(response);
     const categories = response.categories.map((item) => item.name);
     const { description, comment, id } = response;
     setModelId(parseInt(id, 10));
@@ -69,10 +70,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   };
 
   const handleSubmit = (values) => {
-    console.log('Handling EditModel submit with values: ');
-    console.log(values);
-    console.log(`modelId: ${modelId}`);
-
     // Parse information from model information
     const {
       calibrationFrequency, description, comment, modelNumber, vendor, categories,
@@ -88,10 +85,11 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       calibrationFrequency: parseInt(calibrationFrequency, 10),
       categories,
       handleResponse: (response) => {
-        console.log('Completed edit model query with response: ');
-        console.log(response);
         if (response.success) {
+          toast.success(response.message);
           updateHistory(modelNumber, vendor, description);
+        } else {
+          toast.error(response.message);
         }
       },
     });
@@ -110,20 +108,23 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     <>
       {completeFetch
       && (
-      <ModelForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        description={description}
-        comment={comment}
-        categories={categories}
-        calibrationFrequency={calibrationFrequency}
-        handleFormSubmit={handleSubmit}
-        validated={false}
-        diffSubmit
-        viewOnly={!user.isAdmin}
-        handleDelete={handleDelete}
-        type="edit"
-      />
+        <>
+          <ToastContainer />
+          <ModelForm
+            modelNumber={modelNumber}
+            vendor={vendor}
+            description={description}
+            comment={comment}
+            categories={categories}
+            calibrationFrequency={calibrationFrequency}
+            handleFormSubmit={handleSubmit}
+            validated={false}
+            diffSubmit
+            viewOnly={!user.isAdmin}
+            handleDelete={handleDelete}
+            type="edit"
+          />
+        </>
       )}
     </>
   );
