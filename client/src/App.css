@@ -96,6 +96,11 @@ label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLab
   /* Multiple combo box label when label is shurnk */
   padding-top: 3px;
 }
+span.MuiTypography-root.MuiStepLabel-label.MuiTypography-body2.MuiTypography-displayBlock{
+  /* Label styling for vertical stepper */
+  font-weight: bold;
+  font-size: large;
+}
 .tags-input {
   display: flex;
   align-items: flex-start;
