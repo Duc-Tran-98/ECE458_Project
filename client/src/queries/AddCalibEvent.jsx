@@ -22,6 +22,8 @@ export default async function AddCalibEvent({
         $date: String!
         $user: String! 
         $comment: String
+        $fileLocation: String
+        $fileName: String
       ) {
         addCalibrationEvent(
           modelNumber: $modelNumber
@@ -30,6 +32,8 @@ export default async function AddCalibEvent({
           serialNumber: $serialNumber
           user: $user
           date: $date
+          fileLocation: $fileLocation
+          fileName: $fileName
         )
       }
     `;
@@ -40,6 +44,8 @@ export default async function AddCalibEvent({
       modelNumber,
       vendor,
       serialNumber,
+      fileLocation: entry.fileLocation,
+      fileName: entry.fileName,
       comment: entry.comment,
       user: entry.user,
       date: entry.date,

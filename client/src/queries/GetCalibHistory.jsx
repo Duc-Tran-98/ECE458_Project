@@ -30,6 +30,8 @@ export default async function GetCalibHistory({
         date
         user
         comment
+        fileLocation
+        fileName
       }
     }
   `;

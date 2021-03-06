@@ -1,3 +1,7 @@
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-unused-vars */
+/* eslint-disable max-len */
 import React from 'react';
 import { Link } from 'react-router-dom';
 // import Form from 'react-bootstrap/Form';
@@ -112,40 +116,44 @@ export default function ComponentTest() {
   const vendor = vendors[0]?.vendor;
   console.log(vendor, modelNumber, description);
   return (
+    // <>
+    //   <ServerPaginationGrid
+    //     rowCount={64}
+    //     cellHandler={() => undefined}
+    //     headerElement={(
+    //       <div className="d-flex justify-content-between">
+    //         <div className="p-2">
+    //           <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
+    //             Create Model
+    //           </Link>
+    //         </div>
+    //         <SearchBar
+    //           forModelSearch
+    //           onSearch={onSearch}
+    //           onClearFilters={onClearFilters}
+    //         />
+    //       </div>
+    //     )}
+    //     cols={cols}
+    //     initPage={1}
+    //     initLimit={100}
+    //     // eslint-disable-next-line no-unused-vars
+    //     onPageChange={(page, limit) => undefined}
+    //     // eslint-disable-next-line no-unused-vars
+    //     onPageSizeChange={(page, limit) => undefined}
+    //     fetchData={(limit, offset) => GetAllModels({
+    //       limit,
+    //       offset,
+    //       vendor,
+    //       modelNumber,
+    //       description,
+    //       categories,
+    //     }).then((response) => response)}
+    //   />
+    // </>
     <>
-      <ServerPaginationGrid
-        rowCount={64}
-        cellHandler={() => undefined}
-        headerElement={(
-          <div className="d-flex justify-content-between">
-            <div className="p-2">
-              <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
-                Create Model
-              </Link>
-            </div>
-            <SearchBar
-              forModelSearch
-              onSearch={onSearch}
-              onClearFilters={onClearFilters}
-            />
-          </div>
-        )}
-        cols={cols}
-        initPage={1}
-        initLimit={100}
-        // eslint-disable-next-line no-unused-vars
-        onPageChange={(page, limit) => undefined}
-        // eslint-disable-next-line no-unused-vars
-        onPageSizeChange={(page, limit) => undefined}
-        fetchData={(limit, offset) => GetAllModels({
-          limit,
-          offset,
-          vendor,
-          modelNumber,
-          description,
-          categories,
-        }).then((response) => response)}
-      />
+      <div>Hello World</div>
+      <a href="data/1615011409187-rainbowrow2.jpg" download="a.jpg">Click to download</a>
     </>
   );
 }

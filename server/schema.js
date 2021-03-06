@@ -170,6 +170,8 @@ const typeDefs = gql`
     user: String!
     date: String!
     comment: String
+    fileLocation: String
+    fileName: String
   }
 
   input ModelInput {
@@ -268,6 +270,8 @@ const typeDefs = gql`
       date: String!
       user: String!
       comment: String
+      fileLocation: String
+      fileName: String
     ): String!
 
     #bulk import

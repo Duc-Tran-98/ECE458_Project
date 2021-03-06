@@ -12,7 +12,7 @@ function isValidDate(dateString) {
 }
 
 function validateEvent(comment) {
-  if (comment.length > 2000) {
+  if (comment && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
   return [true];
@@ -76,6 +76,8 @@ class CalibrationEventAPI extends DataSource {
     user,
     date,
     comment,
+    fileLocation,
+    fileName,
   }) {
     const response = { message: '' };
     const validation = validateEvent(comment);
@@ -94,12 +96,15 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
+        console.log(`${fileLocation} ${fileName}`);
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
           date,
           comment,
+          fileLocation,
+          fileName,
         });
         response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {

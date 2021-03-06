@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
@@ -75,6 +76,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     GetCalibHistory({ id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
+        console.log(item);
         // eslint-disable-next-line no-param-reassign
         item.id = counter;
         // eslint-disable-next-line no-param-reassign
@@ -82,7 +84,6 @@ export default function DetailedInstrumentView({ onDelete }) {
         counter += 1;
       });
       const openEdits = calibHist.filter((element) => !element.viewOnly && (!excludeEntry || excludeEntry?.id !== element.id));
-      console.log(openEdits);
       setCalibHist(openEdits.concat(data));
       setNextId(counter);
     });
@@ -113,15 +114,34 @@ export default function DetailedInstrumentView({ onDelete }) {
       newHistory[index].user = e.target.value;
     } else if (e.target.name === 'date') {
       newHistory[index].date = e.target.value;
+    } else if (e.target.name === 'fileInput') {
+      if (e.target.remove === true) {
+        newHistory[index].file = null;
+      } else {
+        const data = new FormData();
+        data.append('file', e.target.files[0]);
+        newHistory[index].file = data;
+      }
     } else {
       newHistory[index].comment = e.target.value;
     }
     setCalibHist(newHistory);
   };
-  const handleSubmit = (entry) => {
+  const handleSubmit = async (entry) => {
     // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     const newHistory = [entry];
-    console.log(entry.id);
+    if (entry.file) {
+      await axios.post('http://localhost:4001/api/upload', entry.file, {
+        // receive two    parameter endpoint url ,form data
+      }).then((res) => { // then print response status
+        // eslint-disable-next-line no-param-reassign
+        entry.fileLocation = res.data.assetName;
+        // eslint-disable-next-line no-param-reassign
+        entry.fileName = res.data.fileName;
+      }).catch((err) => {
+        console.log(err.message);
+      });
+    }
     // If there are valid entries, add them to DB
     AddCalibEvent({
       events: newHistory,

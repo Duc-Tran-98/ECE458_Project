@@ -5,6 +5,7 @@ const isEmail = require('isemail');
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
 // const bodyParser = require('body-parser');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
@@ -130,8 +131,36 @@ app.get('/api/userinfo', (req, res) => {
     });
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '/usr/src/app/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const filter = function (req, file, cb) {
+  // accept image only
+  // if (1 === 2) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf|xlsx)$/)) {
+    return cb(new Error('Only files of the format JPG, PNG, GIF, PDF, or XLSX are allowed!'), false);
+  }
+  return cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter: filter });
+
+app.post('/api/upload', upload.any(), (req, res, next) => {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  res.send({
+    assetName: req.files[0].filename,
+    fileName: req.files[0].originalname,
+  });
+});
+
 app.post('/api/uploadExcel', (req, res) => {
-  console.log(req);
   // Do some things
   res.send('Hello World');
 });
