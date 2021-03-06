@@ -153,7 +153,7 @@ export default function ComponentTest() {
     // </>
     <>
       <div>Hello World</div>
-      <a href="data/1614977249821-IMG_4172.JPG" download="a.jpg">Click to download</a>
+      <a href="data/1615011409187-rainbowrow2.jpg" download="a.jpg">Click to download</a>
     </>
   );
 }

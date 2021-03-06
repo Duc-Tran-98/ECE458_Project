@@ -83,7 +83,6 @@ export default function DetailedInstrumentView({ onDelete }) {
         counter += 1;
       });
       const openEdits = calibHist.filter((element) => !element.viewOnly && (!excludeEntry || excludeEntry?.id !== element.id));
-      console.log(openEdits);
       setCalibHist(openEdits.concat(data));
       setNextId(counter);
     });
@@ -127,18 +126,17 @@ export default function DetailedInstrumentView({ onDelete }) {
     }
     setCalibHist(newHistory);
   };
-  const handleSubmit = (entry) => {
+  const handleSubmit = async (entry) => {
     // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     const newHistory = [entry];
-    console.log(entry.id);
-    console.log(entry);
-
     if (entry.file) {
-      console.log('adding file');
-      axios.post('http://localhost:4001/api/upload', entry.file, {
+      await axios.post('http://localhost:4001/api/upload', entry.file, {
         // receive two    parameter endpoint url ,form data
       }).then((res) => { // then print response status
-        console.log(res);
+        // eslint-disable-next-line no-param-reassign
+        entry.fileLocation = res.data.assetName;
+        // eslint-disable-next-line no-param-reassign
+        entry.fileName = res.data.fileName;
       }).catch((err) => {
         console.log(err.message);
       });

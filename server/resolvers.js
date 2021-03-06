@@ -222,7 +222,7 @@ module.exports = {
     addCalibrationEvent: async (
       _,
       {
-        modelNumber, vendor, serialNumber, user, date, comment,
+        modelNumber, vendor, serialNumber, user, date, comment, fileLocation, fileName,
       },
       { dataSources },
     ) => {
@@ -234,6 +234,8 @@ module.exports = {
           user,
           date,
           comment,
+          fileLocation,
+          fileName,
         },
       );
       return response;

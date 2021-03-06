@@ -154,13 +154,13 @@ const upload = multer({ storage, fileFilter: filter });
 app.post('/api/upload', upload.any(), (req, res, next) => {
   // req.file is the `avatar` file
   // req.body will hold the text fields, if there were any
-  console.log(req.file);
-  console.log(req.body);
-  res.send('hello louis');
+  res.send({
+    assetName: req.files[0].filename,
+    fileName: req.files[0].originalname,
+  });
 });
 
 app.post('/api/uploadExcel', (req, res) => {
-  console.log(req);
   // Do some things
   res.send('Hello World');
 });
