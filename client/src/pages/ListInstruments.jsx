@@ -1,5 +1,6 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
+/* eslint-disable no-unused-expressions */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
