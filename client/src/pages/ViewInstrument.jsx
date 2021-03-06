@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
@@ -113,6 +114,14 @@ export default function DetailedInstrumentView({ onDelete }) {
       newHistory[index].user = e.target.value;
     } else if (e.target.name === 'date') {
       newHistory[index].date = e.target.value;
+    } else if (e.target.name === 'fileInput') {
+      if (e.target.remove === true) {
+        newHistory[index].file = null;
+      } else {
+        const data = new FormData();
+        data.append('file', e.target.files[0]);
+        newHistory[index].file = data;
+      }
     } else {
       newHistory[index].comment = e.target.value;
     }
@@ -122,6 +131,18 @@ export default function DetailedInstrumentView({ onDelete }) {
     // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     const newHistory = [entry];
     console.log(entry.id);
+    console.log(entry);
+
+    if (entry.file) {
+      console.log('adding file');
+      axios.post('http://localhost:4001/api/upload', entry.file, {
+        // receive two    parameter endpoint url ,form data
+      }).then((res) => { // then print response status
+        console.log(res);
+      }).catch((err) => {
+        console.log(err.message);
+      });
+    }
     // If there are valid entries, add them to DB
     AddCalibEvent({
       events: newHistory,

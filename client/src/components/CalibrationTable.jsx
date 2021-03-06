@@ -35,6 +35,7 @@ export default function CalibrationTable({
       onChangeCalibRow={onChangeCalibRow}
       comment={entry.comment}
       date={entry.date}
+      file={entry.file}
       entry={entry}
       showSaveButton={showSaveButton}
       onSaveClick={onSaveClick}

@@ -5,6 +5,7 @@ This class deals with what a calibration event should be
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
+// eslint-disable-next-line no-unused-vars
 import axios from 'axios';
 import MouseOverPopover from './PopOver';
 import UserContext from './UserContext';
@@ -14,6 +15,8 @@ export default function CalibrationRow({
   id,
   onChangeCalibRow,
   comment,
+  // eslint-disable-next-line no-unused-vars
+  file,
   date,
   entry,
   showSaveButton,
@@ -26,11 +29,14 @@ export default function CalibrationRow({
     comment: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
+    file: PropTypes.object,
+    // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
     showSaveButton: PropTypes.bool, // whether or not to show save button on rows
     onSaveClick: PropTypes.func, // what to call when save button clicked
   };
   CalibrationRow.defaultProps = {
+    file: null,
     handleDelete: null,
     showSaveButton: false,
     onSaveClick: () => undefined,
@@ -41,7 +47,7 @@ export default function CalibrationRow({
   // const formatOption = (option) => `${option.userName}`;
   // const formatSelected = (option, value) => option.userName === value.userName;
   const val = { userName: entry.user };
-  const [file, setFile] = useState('');
+  const [fileName, setFileName] = useState('');
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
@@ -120,32 +126,31 @@ export default function CalibrationRow({
                     className="invisible position-absolute top-0 start-0"
                     id={`inputFile-${id}`}
                     onInput={(e) => {
-                      const data = new FormData();
-                      setFile(e.target.files[0].name);
-                      console.log(`uploading ${e.target.files[0]}`);
-                      data.append('file', e.target.files[0]);
-
-                      axios.post('http://localhost:4001/api/upload', data, {
-                        // receive two    parameter endpoint url ,form data
-                      }).then((res) => { // then print response status
-                        console.log(res);
-                      }).catch((err) => {
-                        console.log(err.message);
-                      });
+                      e.target.name = 'fileInput';
+                      e.target.remove = false;
+                      setFileName(e.target.files[0].name);
+                      onChangeCalibRow(e, entry);
                     }}
                   />
                   Upload File
                 </label>
               </MouseOverPopover>
             )}
-            {file.length > 0 && (
+            {fileName.length > 0 && (
             <div>
-              <div>{file}</div>
+              <div>{fileName}</div>
               <button
                 type="button"
                 className="btn w-100"
                 onClick={() => {
-                  setFile('');
+                  setFileName('');
+                  const e = {
+                    target: {
+                      name: 'fileInput',
+                      remove: true,
+                    },
+                  };
+                  onChangeCalibRow(e, entry);
                 }}
               >
                 Remove File
