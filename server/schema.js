@@ -170,6 +170,8 @@ const typeDefs = gql`
     user: String!
     date: String!
     comment: String
+    fileLocation: String
+    fileName: String
   }
 
   input ModelInput {

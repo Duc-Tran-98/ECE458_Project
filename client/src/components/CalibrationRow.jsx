@@ -15,6 +15,8 @@ export default function CalibrationRow({
   id,
   onChangeCalibRow,
   comment,
+  fileName,
+  fileLocation,
   // eslint-disable-next-line no-unused-vars
   file,
   date,
@@ -27,6 +29,8 @@ export default function CalibrationRow({
     id: PropTypes.number.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
     comment: PropTypes.string.isRequired,
+    fileName: PropTypes.string.isRequired,
+    fileLocation: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     file: PropTypes.object,
@@ -47,7 +51,7 @@ export default function CalibrationRow({
   // const formatOption = (option) => `${option.userName}`;
   // const formatSelected = (option, value) => option.userName === value.userName;
   const val = { userName: entry.user };
-  const [fileName, setFileName] = useState('');
+  const [fileNameDisplay, setFileNameDisplay] = useState('');
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
@@ -128,7 +132,7 @@ export default function CalibrationRow({
                     onInput={(e) => {
                       e.target.name = 'fileInput';
                       e.target.remove = false;
-                      setFileName(e.target.files[0].name);
+                      setFileNameDisplay(e.target.files[0].name);
                       onChangeCalibRow(e, entry);
                     }}
                   />
@@ -136,14 +140,23 @@ export default function CalibrationRow({
                 </label>
               </MouseOverPopover>
             )}
-            {fileName.length > 0 && (
+            {viewOnly && (
+              <div>
+                <a href={`../data/${fileLocation}`} download={fileName}>
+                  Download attachment
+                  {' '}
+                  {fileName}
+                </a>
+              </div>
+            )}
+            {fileNameDisplay.length > 0 && (
             <div>
-              <div>{fileName}</div>
+              <div>{fileNameDisplay}</div>
               <button
                 type="button"
                 className="btn w-100"
                 onClick={() => {
-                  setFileName('');
+                  setFileNameDisplay('');
                   const e = {
                     target: {
                       name: 'fileInput',

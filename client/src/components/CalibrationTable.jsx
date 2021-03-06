@@ -34,6 +34,8 @@ export default function CalibrationTable({
       id={entry.id}
       onChangeCalibRow={onChangeCalibRow}
       comment={entry.comment}
+      fileName={entry.fileName}
+      fileLocation={entry.fileLocation}
       date={entry.date}
       file={entry.file}
       entry={entry}
