@@ -140,7 +140,7 @@ export default function CalibrationRow({
                 </label>
               </MouseOverPopover>
             )}
-            {viewOnly && (
+            {viewOnly && fileName && (
               <div>
                 <a href={`../data/${fileLocation}`} download={fileName}>
                   Download attachment
