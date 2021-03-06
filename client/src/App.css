@@ -101,6 +101,10 @@ span.MuiTypography-root.MuiStepLabel-label.MuiTypography-body2.MuiTypography-dis
   font-weight: bold;
   font-size: large;
 }
+div.MuiPaper-root.MuiStepper-root.MuiStepper-vertical{
+  /*  Styling vertical stepper root container */
+  background: #e5e5e5;
+}
 .tags-input {
   display: flex;
   align-items: flex-start;

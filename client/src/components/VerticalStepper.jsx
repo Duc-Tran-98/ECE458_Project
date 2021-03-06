@@ -48,12 +48,16 @@ import PropTypes from 'prop-types';
 // }
 
 export default function VerticalLinearStepper({
-  getSteps, getStepContent, onFinish,
+  getSteps, getStepContent, onFinish, orientation,
 }) {
   VerticalLinearStepper.propTypes = {
     getSteps: PropTypes.func.isRequired,
     getStepContent: PropTypes.func.isRequired,
     onFinish: PropTypes.func.isRequired,
+    orientation: PropTypes.string,
+  };
+  VerticalLinearStepper.defaultProps = {
+    orientation: 'vertical',
   };
   // const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -75,8 +79,12 @@ export default function VerticalLinearStepper({
   };
 
   return (
-    <div className="rounded">
-      <Stepper activeStep={activeStep} orientation="vertical">
+    <div>
+      <Stepper
+        activeStep={activeStep}
+        orientation={orientation}
+        className="rounded p-5"
+      >
         {steps.map((label, index) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>

@@ -1,12 +1,18 @@
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
+import Form from 'react-bootstrap/Form';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import VerticalLinearStepper from './VerticalStepper';
-// import AsyncSuggest from './AsyncSuggest';
+import UserContext from './UserContext';
+import AsyncSuggest from './AsyncSuggest';
 
 export default function LoadBankWiz() {
+  const user = React.useContext(UserContext);
+  const today = new Date().toISOString().split('T')[0];
   const getSteps = () => [
     'Calibration Info', // 0
-    'Ensure measurement tools are calibrated', // 1
+    'Verify measurement tools are calibrated', // 1
     'Visual Check', // 2
     'Connect to DC source', // 3
     'Turn on load steps', // 4 5 6 7?
@@ -18,18 +24,112 @@ export default function LoadBankWiz() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`;
+        return (
+          <div className="col my-1">
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">Model:</Form.Label>
+              <Form.Control
+                name="model"
+                type="text"
+                disabled
+                className="w-25 ms-2"
+                value="HPT-10001"
+              />
+            </Form.Group>
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">Serial:</Form.Label>
+              <Form.Control
+                name="serialNumber"
+                type="text"
+                value="ABC123"
+                disabled
+                className="w-25 ms-2"
+              />
+            </Form.Group>
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">Asset Tag:</Form.Label>
+              <Form.Control
+                name="assetTag"
+                type="number"
+                value={100000}
+                disabled
+                className="w-25 ms-2"
+              />
+            </Form.Group>
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">
+                Date of calibration:
+              </Form.Label>
+              <Form.Control
+                name="date"
+                type="date"
+                max={today}
+                onChange={() => undefined}
+                required
+                className="w-25 ms-2"
+              />
+            </Form.Group>
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">Engineer: </Form.Label>
+              <Form.Control
+                name="user"
+                type="text"
+                value={user.userName}
+                disabled
+                className="w-25 ms-2"
+              />
+            </Form.Group>
+          </div>
+        );
       case 1:
         return (
           <div className="d-flex flex-column my-1">
-            <div className="d-flex flex-row">
-              <div className="h6">Voltmeter to be used:</div>
-            </div>
-            <div className="d-flex flex-row">
-              <div className="h6">Current shunt meter to be used:</div>
-            </div>
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">
+                Voltmeter to be used:
+              </Form.Label>
+              <div className="w-25">
+                <AsyncSuggest
+                  query={print(gql`
+                    query GetModelNumbers {
+                      getAllModels {
+                        modelNumber
+                      }
+                    }
+                  `)} // TODO: Make sure selection also shows asset tag and passes it to backend
+                  queryName="getAllModels"
+                  // eslint-disable-next-line no-unused-vars
+                  onInputChange={(_e, v) => undefined}
+                  label="Select a voltmeter"
+                  getOptionLabel={(option) => `${option.modelNumber}`}
+                  getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
+                  isInvalid={false}
+                />
+              </div>
+            </Form.Group>
+            <Form.Group className="row my-2">
+              <Form.Label className="h6 my-auto">
+                Current shunt meter to be used:
+              </Form.Label>
+              <div className="w-25">
+                <AsyncSuggest
+                  query={print(gql`
+                    query GetModelNumbers {
+                      getAllModels {
+                        modelNumber
+                      }
+                    }
+                  `)} // TODO: Make sure selection also shows asset tag and passes it to backend
+                  queryName="getAllModels"
+                  // eslint-disable-next-line no-unused-vars
+                  onInputChange={(_e, v) => undefined}
+                  label="Select a shunt meter"
+                  getOptionLabel={(option) => `${option.modelNumber}`}
+                  getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
+                  isInvalid={false}
+                />
+              </div>
+            </Form.Group>
             <div className="d-flex flex-row mx-3 mb-2">
               Ensure voltmeter and current shunt meter are calibrated
             </div>
@@ -72,14 +172,21 @@ export default function LoadBankWiz() {
         return (
           <div className="d-flex flex-column my-1">
             <div className="d-flex flex-row">
-              <div className="h6">Connected to DC source? </div>
+              <div className="h6">Load steps </div>
             </div>
+            {/* <VerticalLinearStepper
+                onFinish={() => undefined}
+                getSteps={() => ['No load', '1 x 100A']}
+                getStepContent={(step) => {
+
+                }}
+            /> */}
             <div className="d-flex flex-row mx-3 mb-2">
               Turn on load steps one at time (10 steps of 100A, 5 steps of 20A,
-              20 steps of 1A) Record current displayed on load bank and current
-              measured from shunt for each load step Continue until all load
-              steps are on Record voltage displayed on load bank and voltage
-              measured via DMM
+              20 steps of 1A). Then record current displayed on load bank and current
+              measured from shunt for each load step. Continue until all load
+              steps are on. Lastly, record voltage displayed on load bank and voltage
+              measured via DMM.
             </div>
           </div>
         );
