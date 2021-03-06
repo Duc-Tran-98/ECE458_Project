@@ -2,9 +2,11 @@
 This class deals with what a calibration event should be
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
+// eslint-disable-next-line no-unused-vars
+import axios from 'axios';
 import MouseOverPopover from './PopOver';
 import UserContext from './UserContext';
 
@@ -13,6 +15,10 @@ export default function CalibrationRow({
   id,
   onChangeCalibRow,
   comment,
+  fileName,
+  fileLocation,
+  // eslint-disable-next-line no-unused-vars
+  file,
   date,
   entry,
   showSaveButton,
@@ -23,13 +29,18 @@ export default function CalibrationRow({
     id: PropTypes.number.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
     comment: PropTypes.string.isRequired,
+    fileName: PropTypes.string.isRequired,
+    fileLocation: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    file: PropTypes.object,
     // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
     showSaveButton: PropTypes.bool, // whether or not to show save button on rows
     onSaveClick: PropTypes.func, // what to call when save button clicked
   };
   CalibrationRow.defaultProps = {
+    file: null,
     handleDelete: null,
     showSaveButton: false,
     onSaveClick: () => undefined,
@@ -40,6 +51,9 @@ export default function CalibrationRow({
   // const formatOption = (option) => `${option.userName}`;
   // const formatSelected = (option, value) => option.userName === value.userName;
   const val = { userName: entry.user };
+  const [fileNameDisplay, setFileNameDisplay] = useState('');
+  // const [fileData, setFileData] = useState(null);
+  // eslint-disable-next-line prefer-const
   return (
     <div className="d-flex justify-content-center">
       <div className="delete-container rounded">
@@ -112,13 +126,49 @@ export default function CalibrationRow({
                 <label className="btn position-relative text-center w-100">
                   <input
                     type="file"
+                    accept=".pdf,.jpg,.jpeg,.gif,.png,.xlsx"
                     className="invisible position-absolute top-0 start-0"
                     id={`inputFile-${id}`}
-                    onInput={(e) => console.log(e)}
+                    onInput={(e) => {
+                      e.target.name = 'fileInput';
+                      e.target.remove = false;
+                      setFileNameDisplay(e.target.files[0].name);
+                      onChangeCalibRow(e, entry);
+                    }}
                   />
                   Upload File
                 </label>
               </MouseOverPopover>
+            )}
+            {viewOnly && fileName && (
+              <div>
+                <a href={`../data/${fileLocation}`} download={fileName}>
+                  Download attachment
+                  {' '}
+                  {fileName}
+                </a>
+              </div>
+            )}
+            {fileNameDisplay.length > 0 && (
+            <div>
+              <div>{fileNameDisplay}</div>
+              <button
+                type="button"
+                className="btn w-100"
+                onClick={() => {
+                  setFileNameDisplay('');
+                  const e = {
+                    target: {
+                      name: 'fileInput',
+                      remove: true,
+                    },
+                  };
+                  onChangeCalibRow(e, entry);
+                }}
+              >
+                Remove File
+              </button>
+            </div>
             )}
           </div>
           <div className="col-4">

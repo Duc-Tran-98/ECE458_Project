@@ -190,7 +190,7 @@ module.exports = {
     editInstrument: async (
       _,
       {
-        modelNumber, vendor, serialNumber, comment, id, categories,
+        modelNumber, vendor, serialNumber, comment, assetTag, id, categories,
       },
       { dataSources },
     ) => await dataSources.instrumentAPI.editInstrument({
@@ -198,19 +198,21 @@ module.exports = {
       vendor,
       serialNumber,
       comment,
+      assetTag,
       id,
       categories,
     }),
     addInstrument: async (
       _,
       {
-        modelNumber, vendor, serialNumber, comment, categories,
+        modelNumber, vendor, assetTag, serialNumber, comment, categories,
       },
       { dataSources },
     ) => {
       const response = await dataSources.instrumentAPI.addInstrument({
         modelNumber,
         vendor,
+        assetTag,
         serialNumber,
         comment,
         categories,
@@ -220,7 +222,7 @@ module.exports = {
     addCalibrationEvent: async (
       _,
       {
-        modelNumber, vendor, serialNumber, user, date, comment,
+        modelNumber, vendor, serialNumber, user, date, comment, fileLocation, fileName,
       },
       { dataSources },
     ) => {
@@ -232,6 +234,8 @@ module.exports = {
           user,
           date,
           comment,
+          fileLocation,
+          fileName,
         },
       );
       return response;

@@ -252,7 +252,7 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
-    categories,
+    categories = [],
   }) {
     const response = { message: '', success: false };
     const storeModel = await this.store;

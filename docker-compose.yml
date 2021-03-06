@@ -44,6 +44,7 @@ services:
       - mysql
     volumes:
       - "./server/:/usr/src/app"
+      - assets:/usr/src/app/uploads
     env_file: #tell the backend to use the .env file in the root directory
       - "./.env"
 
@@ -58,6 +59,7 @@ services:
     volumes:
       - "./client/:/app"
       - "/app/node_modules"
+      - assets:/app/public/data
     ports:
       - 3000:3000
     links:
@@ -68,3 +70,4 @@ services:
       - ".env"
 volumes:
   my-db: #docker stores our db for us so our data is persistent
+  assets:
