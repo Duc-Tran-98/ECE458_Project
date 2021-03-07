@@ -75,7 +75,7 @@ export default function InstrumentForm({
     vendor: PropTypes.string,
     comment: PropTypes.string.isRequired,
     categories: PropTypes.array.isRequired,
-    assetTag: PropTypes.string.isRequired,
+    assetTag: PropTypes.number.isRequired,
     handleFormSubmit: PropTypes.func,
     serialNumber: PropTypes.string.isRequired,
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made

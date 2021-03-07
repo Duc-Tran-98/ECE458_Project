@@ -23,6 +23,7 @@ export default function FindInstrument({
             vendor: $vendor
             serialNumber: $serialNumber
             ) {
+            assetTag
             calibrationFrequency
             comment
             instrumentCategories{

@@ -55,6 +55,7 @@ export default async function GetAllInstruments({
           id
           vendor
           modelNumber
+          assetTag
           serialNumber
           description
           calibrationFrequency

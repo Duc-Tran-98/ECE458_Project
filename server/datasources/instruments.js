@@ -17,9 +17,9 @@ function validateInstrument({
   if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
-  // if (Math.floor(assetTag / 100000) < 1 || Math.floor(assetTag / 100000) > 10) {
-  //   return [false, 'Asset Tag not within 100000 - 999999 Range'];
-  // }
+  if (Math.floor(assetTag / 100000) < 1 || Math.floor(assetTag / 100000) > 10) {
+    return [false, 'Asset Tag not within 100000 - 999999 Range'];
+  }
   return [true];
 }
 
@@ -121,9 +121,6 @@ class InstrumentAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
     if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
-    // eslint-disable-next-line max-len
-    // if (assetTag) filters.push({ assetTag: SQL.where(SQL.fn('LOWER', SQL.col('assetTag')), 'LIKE', `%${assetTag.toLowerCase()}%`) });
-    // ^^^ uncomment this once asset tag is implemented
 
     let instruments = await this.store.instruments.findAndCountAll({
       include: includeData,

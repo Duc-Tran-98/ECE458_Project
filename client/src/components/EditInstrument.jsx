@@ -26,7 +26,7 @@ export default function EditInstrument({
     description: PropTypes.string.isRequired,
     handleDelete: PropTypes.func,
     footer: PropTypes.node,
-    initAssetTag: PropTypes.string.isRequired,
+    initAssetTag: PropTypes.number.isRequired,
   };
   EditInstrument.defaultProps = {
     handleDelete: null,
@@ -64,10 +64,10 @@ export default function EditInstrument({
     });
   }, []); // empty dependency array, only run once on mount
 
-  const updateHistory = (modelNumber, vendor, serialNumber, description, id, calibrationFrequency) => {
+  const updateHistory = (modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency) => {
     const { state } = history.location;
     history.replace(
-      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
+      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}$assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
       state,
     );
   };
@@ -78,6 +78,7 @@ export default function EditInstrument({
     const {
       comment,
       modelNumber,
+      assetTag,
       vendor,
       serialNumber,
       description,
@@ -87,7 +88,7 @@ export default function EditInstrument({
     const handleResponse = (response) => {
       if (response.success) {
         toast.success(response.message);
-        updateHistory(modelNumber, vendor, serialNumber, description, id, calibrationFrequency);
+        updateHistory(modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency);
       } else {
         toast.error(response.message);
       }
@@ -96,6 +97,7 @@ export default function EditInstrument({
     EditInstrumentQuery({
       modelNumber,
       vendor,
+      assetTag,
       serialNumber,
       id,
       comment,
