@@ -8,13 +8,23 @@ import CalibrationRow from './CalibrationRow';
 
 export default function CalibrationTable({
   // eslint-disable-next-line no-unused-vars
-  rows, deleteRow, onChangeCalibRow,
+  rows,
+  deleteRow,
+  onChangeCalibRow,
+  showSaveButton,
+  onSaveClick,
 }) {
   CalibrationTable.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     rows: PropTypes.array.isRequired,
     deleteRow: PropTypes.func.isRequired,
     onChangeCalibRow: PropTypes.func.isRequired,
+    showSaveButton: PropTypes.bool, // whether or not to show a save button on rows
+    onSaveClick: PropTypes.func, // what to call when save button clicked
+  };
+  CalibrationTable.defaultProps = {
+    showSaveButton: false,
+    onSaveClick: () => undefined,
   };
   // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (
@@ -24,8 +34,13 @@ export default function CalibrationTable({
       id={entry.id}
       onChangeCalibRow={onChangeCalibRow}
       comment={entry.comment}
+      fileName={entry.fileName}
+      fileLocation={entry.fileLocation}
       date={entry.date}
+      file={entry.file}
       entry={entry}
+      showSaveButton={showSaveButton}
+      onSaveClick={onSaveClick}
     />
   ));
   return (

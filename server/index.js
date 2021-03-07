@@ -1,6 +1,12 @@
 // This is the actual backend server;
 const { ApolloServer } = require('apollo-server');
+// const { ApolloServer } = require('apollo-server-express');
 const isEmail = require('isemail');
+const axios = require('axios');
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+// const bodyParser = require('body-parser');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
 const ModelAPI = require('./datasources/models');
@@ -9,6 +15,8 @@ const CalibrationEventAPI = require('./datasources/calibrationEvents');
 const { createStore, createDB } = require('./util');
 const resolvers = require('./resolvers');
 const BulkDataAPI = require('./datasources/bulkData');
+
+const { oauthClientId, oauthClientSecret, oauthRedirectURI } = require('./config');
 
 // Connect to db and init tables
 let store;
@@ -49,3 +57,112 @@ server.listen().then(() => {
     Explore at https://studio.apollographql.com/dev
   `);
 });
+
+// Create express server with oauth route
+const app = express();
+app.use(cors());
+app.use(express.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+const expressPort = 4001;
+
+app.post('/api/oauthConsume', (req, res) => {
+  const { code } = req.body;
+  const authString = Buffer.from(
+    `${oauthClientId}:${oauthClientSecret}`,
+  ).toString('base64');
+  const url = process.env.OAUTH_TOKEN_URL ? process.env.OAUTH_TOKEN_URL : 'https://oauth.oit.duke.edu/oidc/token';
+
+  const options = {
+    url,
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${authString}`,
+    },
+    data: `grant_type=authorization_code&redirect_uri=${encodeURI(
+      oauthRedirectURI,
+    )}&code=${code}`,
+  };
+
+  axios(options)
+    .then((response) => {
+      res.json({
+        success: true,
+        result: response.data,
+      });
+    })
+    .catch((err) => {
+      res.json({
+        error: err,
+        success: false,
+      });
+    });
+});
+
+app.get('/api/userinfo', (req, res) => {
+  const url = 'https://oauth.oit.duke.edu/oidc/userinfo';
+  const { accessToken } = req.query;
+
+  const options = {
+    url,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+
+  console.log('calling userInfo API with options: ');
+  console.log(options);
+
+  axios(options)
+    .then((response) => {
+      console.log(response);
+      res.json({
+        success: true,
+        result: response.data,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        error: err,
+        success: false,
+      });
+    });
+});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, '/usr/src/app/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const filter = function (req, file, cb) {
+  // accept image only
+  // if (1 === 2) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf|xlsx)$/)) {
+    return cb(new Error('Only files of the format JPG, PNG, GIF, PDF, or XLSX are allowed!'), false);
+  }
+  return cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter: filter });
+
+app.post('/api/upload', upload.any(), (req, res, next) => {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  res.send({
+    assetName: req.files[0].filename,
+    fileName: req.files[0].originalname,
+  });
+});
+
+app.post('/api/uploadExcel', (req, res) => {
+  // Do some things
+  res.send('Hello World');
+});
+
+app.listen({ port: expressPort }, () => console.log(`🚀 Server ready at http://localhost:${expressPort}`));

@@ -1,30 +1,79 @@
+/* eslint-disable react/forbid-prop-types */
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
-export default async function GetAllInstruments({ handleResponse, limit, offset }) {
+export default async function GetAllInstruments({
+  handleResponse,
+  limit,
+  offset,
+  vendor,
+  modelNumber,
+  description,
+  modelCategories,
+  instrumentCategories,
+  serialNumber,
+  assetTag,
+}) {
   GetAllInstruments.propTypes = {
     handleResponse: PropTypes.func,
     limit: PropTypes.number,
     offset: PropTypes.number,
+    vendor: PropTypes.string,
+    modelNumber: PropTypes.string,
+    description: PropTypes.string,
+    modelCategories: PropTypes.array,
+    instrumentCategories: PropTypes.array,
+    serialNumber: PropTypes.string,
+    assetTag: PropTypes.number,
   };
   const GET_INSTRUMENTS_QUERY = gql`
-    query Instruments($limit: Int, $offset: Int) {
-      getAllInstruments(limit: $limit, offset: $offset) {
-        id
-        vendor
-        modelNumber
-        serialNumber
-        description
-        calibrationFrequency
-        comment
+    query Instruments(
+      $limit: Int
+      $offset: Int
+      $vendor: String
+      $modelNumber: String
+      $description: String
+      $serialNumber: String
+      $assetTag: Int
+      $modelCategories: [String]
+      $instrumentCategories: [String]
+    ) {
+      getInstrumentsWithFilter(
+        limit: $limit
+        offset: $offset
+        vendor: $vendor
+        modelNumber: $modelNumber
+        description: $description
+        serialNumber: $serialNumber
+        assetTag: $assetTag
+        modelCategories: $modelCategories
+        instrumentCategories: $instrumentCategories
+      ) {
+        instruments {
+          id
+          vendor
+          modelNumber
+          serialNumber
+          description
+          calibrationFrequency
+          comment
+          recentCalibration {
+            user
+            date
+            comment
+          }
+        }
+        total
       }
     }
   `;
+  const queryName = 'getInstrumentsWithFilter';
   const query = print(GET_INSTRUMENTS_QUERY);
-  const queryName = 'getAllInstruments';
-  const getVariables = () => ({ limit, offset });
+  const getVariables = () => ({
+    limit, offset, vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories,
+  });
   if (handleResponse) {
     Query({
       query,

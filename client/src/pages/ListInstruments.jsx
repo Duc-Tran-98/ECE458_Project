@@ -1,12 +1,12 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
-import { useState } from 'react';
-import SearchIcon from '@material-ui/icons/Search';
+import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
-import GetCalibHistory from '../queries/GetCalibHistory';
+import SearchBar from '../components/SearchBar';
+import UserContext from '../components/UserContext';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -17,36 +17,92 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
 
 export default function ListInstruments() {
   const history = useHistory();
+  const user = React.useContext(UserContext);
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
   const [serialNumber, setSerialNumber] = useState('');
+  const [calibrationFrequency, setcalibrationFrequency] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [description, setDescription] = useState('');
   const [id, setId] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const rowCount = parseInt(urlParams.get('count'), 10);
+  const [rowCount, setRowCount] = useState(parseInt(urlParams.get('count'), 10));
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(
     parseInt(urlParams.get('limit'), 10),
   );
-  history.listen((location, action) => {
-    const urlVals = new URLSearchParams(location.search);
+  const urlFilter = urlParams.get('filters');
+  let selectedFilters = null;
+  if (urlFilter) {
+    selectedFilters = JSON.parse(
+      Buffer.from(urlFilter, 'base64').toString('ascii'),
+    );
+    // console.log(selectedFilters);
+  }
+  const [filterOptions, setFilterOptions] = React.useState({
+    vendors: selectedFilters ? selectedFilters.vendors : null,
+    modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
+    descriptions: selectedFilters ? selectedFilters.descriptions : null,
+    modelCategories: selectedFilters ? selectedFilters.modelCategories : null,
+    instrumentCategories: selectedFilters ? selectedFilters.instrumentCategories : null,
+    filterSerialNumber: selectedFilters ? selectedFilters.filterSerialNumber : null,
+  });
+  const navLink = document.getElementById('instrumentNavLink');
+  const getAndSetUrlVals = () => {
+    const urlVals = new URLSearchParams(window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
-    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
+    const total = parseInt(urlVals.get('count'), 10);
+    setInitLimit(lim);
+    setInitPage(pg);
+    // console.log(`total = ${total}`);
+    setRowCount(total);
+  };
+  if (navLink !== null) {
+    navLink.onclick = () => {
+      // console.log('clicked');
+      if (
+        filterOptions.vendors !== null
+        || filterOptions.modelNumbers !== null
+        || filterOptions.descriptions !== null
+        || filterOptions.modelCategories !== null
+        || filterOptions.instrumentCategories !== null
+        || filterOptions.filterSerialNumber !== null
+      ) {
+        console.log('clearing filters');
+        setFilterOptions({
+          vendors: null,
+          modelNumbers: null,
+          descriptions: null,
+          modelCategories: null,
+          instrumentCategories: null,
+          filterSerialNumber: null,
+        });
+      }
+      setTimeout(() => {
+        getAndSetUrlVals();
+      }, 50);
+    };
+  }
+  console.log(navLink);
+  history.listen((location, action) => {
+    if (action === 'POP') {
       // if user clicks on models nav link or goes back
-      setInitLimit(lim);
-      setInitPage(pg);
+      getAndSetUrlVals();
+      // console.log('popped!');
     }
   });
   const cellHandler = (e) => {
-    if (e.field === 'view' || e.field === 'delete' || e.field === 'edit') {
+    if (e.field === 'view') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setDescription(e.row.description);
+      if (e.row.calibrationFrequency !== null) {
+        setcalibrationFrequency(e.row.calibrationFrequency);
+      }
     }
   };
   const genDaysLeft = (date) => {
@@ -59,19 +115,11 @@ export default function ListInstruments() {
       return 'text-success';
     }
     if (daysLeft > 0 && daysLeft <= 30) {
-      return 'text-warning';
+      return 'text-warning-theme';
     }
     return 'text-danger';
   };
   const cols = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 60,
-      hide: true,
-      disableColumnMenu: true,
-      type: 'number',
-    },
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
@@ -82,26 +130,22 @@ export default function ListInstruments() {
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
-      field: 'date',
+      field: 'recentCalDate',
       headerName: 'Calibration Date',
       width: 175,
       type: 'date',
     },
     {
-      field: 'calibrationComment',
+      field: 'recentCalComment',
       headerName: 'Calibration Comment',
       width: 300,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
@@ -168,7 +212,7 @@ export default function ListInstruments() {
     {
       field: 'view',
       headerName: 'View',
-      width: 80,
+      width: 120,
       disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
@@ -176,21 +220,21 @@ export default function ListInstruments() {
             <MouseOverPopover message="View Instrument">
               <button
                 type="button"
-                className="btn btn-dark"
+                className="btn "
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
-                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}`,
+                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
                     state,
                   );
                 }}
               >
-                <SearchIcon />
+                View
               </button>
             </MouseOverPopover>
           </div>
         </div>
-      ),
+      ), // TODO: put asset tag in url?
     },
   ];
 
@@ -215,65 +259,180 @@ export default function ListInstruments() {
     { label: 'Calibration-Comment', key: 'calibrationComment' },
   ];
 
+  const updateUrlWithFilter = ({
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, total, filterSerialNumber,
+  }) => {
+    const formatedInstrumentCategories = instrumentCategories !== null ? instrumentCategories : null;
+    const formatedModelCategories = modelCategories !== null ? modelCategories : null;
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        instrumentCategories: formatedInstrumentCategories,
+        modelCategories: formatedModelCategories,
+        filterSerialNumber,
+      }),
+      'ascii',
+    ).toString('base64');
+    if (
+      (!vendors)
+      && (modelCategories === null || modelCategories?.length === 0)
+      && (instrumentCategories === null || instrumentCategories?.length === 0)
+      && (!modelNumbers)
+      && (!descriptions)
+      && (!filterSerialNumber)
+    ) {
+      history.push(`/viewInstruments?page=1&limit=${initLimit}&count=${total}`);
+    } else {
+      history.push(
+        `/viewInstruments?page=1&limit=${initLimit}&count=${total}&filters=${filters}`,
+      );
+    }
+  };
+
+  const onSearch = ({
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber,
+  }) => {
+    //  console.log('searching...');
+    let formatedModelCategories = [];
+    let formatedInstrumentCategories = [];
+    modelCategories?.forEach((element) => {
+      formatedModelCategories.push(element.name);
+    });
+    instrumentCategories?.forEach((element) => {
+      formatedInstrumentCategories.push(element.name);
+    });
+    // console.log(modelCategories);
+    formatedInstrumentCategories = formatedInstrumentCategories.length > 0 ? formatedInstrumentCategories : null;
+    formatedModelCategories = formatedModelCategories.length > 0 ? formatedModelCategories : null;
+    GetAllInstruments({
+      limit: 1,
+      offset: 0,
+      modelNumber: modelNumbers,
+      description: descriptions,
+      vendor: vendors,
+      modelCategories: formatedModelCategories,
+      instrumentCategories: formatedInstrumentCategories,
+      serialNumber: filterSerialNumber,
+    }).then((response) => {
+      setRowCount(response.total);
+      setInitPage(1);
+      updateUrlWithFilter({
+        vendors,
+        modelNumbers,
+        descriptions,
+        modelCategories: formatedModelCategories,
+        instrumentCategories: formatedInstrumentCategories,
+        total: response.total,
+        filterSerialNumber,
+      });
+    });
+    setFilterOptions({
+      vendors,
+      modelNumbers,
+      descriptions,
+      modelCategories: formatedModelCategories,
+      instrumentCategories: formatedInstrumentCategories,
+      filterSerialNumber,
+    });
+  };
+  const {
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber,
+  } = filterOptions;
+  const updateUrl = (page, limit) => {
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        modelCategories,
+        instrumentCategories,
+        filterSerialNumber,
+      }),
+      'ascii',
+    ).toString('base64');
+    let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+    if (window.location.search.includes('filters')) {
+      searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
+    }
+    if (window.location.search !== searchString) {
+      // If current location != next location, update url
+      history.push(`/viewInstruments${searchString}`);
+      setInitLimit(limit);
+      setInitPage(page);
+    }
+  };
+
   return (
     <>
       <ServerPaginationGrid
         rowCount={rowCount}
         cellHandler={cellHandler}
         headerElement={(
-          <Link className="btn btn-dark m-2" to="/addInstrument">
-            Create Instrument
-          </Link>
+          <div className="d-flex justify-content-between py-2">
+            {user.isAdmin && (
+              <Link className="btn m-2 my-auto text-nowrap" to="/addInstrument">
+                Create Instrument
+              </Link>
+            )}
+            <SearchBar
+              onSearch={onSearch}
+              forModelSearch={false}
+              initDescriptions={filterOptions.descriptions}
+              initModelNumbers={filterOptions.modelNumbers}
+              initVendors={filterOptions.vendors}
+              initModelCategories={filterOptions.modelCategories}
+              initInstrumentCategories={filterOptions.instrumentCategories}
+              initSerialNumber={filterOptions.filterSerialNumber}
+            />
+          </div>
         )}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/viewInstruments${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
+          updateUrl(page, limit);
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-          if (window.location.search !== searchString) {
-            // If current location != next location, update url
-            history.push(`/viewInstruments${searchString}`);
-            setInitLimit(limit);
-            setInitPage(page);
-          }
+          updateUrl(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllInstruments({ limit, offset }).then((response) => {
-          response.forEach((element) => {
+        fetchData={(limit, offset) => GetAllInstruments({
+          limit,
+          offset,
+          vendor: vendors,
+          modelNumber: modelNumbers,
+          description: descriptions,
+          modelCategories,
+          instrumentCategories,
+          serialNumber: filterSerialNumber,
+          assetTag: null,
+        }).then((response) => {
+          // console.log('fetched data');
+          response.instruments.forEach((element) => {
             if (element !== null) {
-              GetCalibHistory({
-                // Get calibration history for each instrument
-                id: element.id,
-                mostRecent: true,
-              }).then((value) => {
-                element.date = element.calibrationFrequency === 0
-                  ? 'Item not calibratable'
-                  : 'Not calibrated';
-                element.calibrationComment = value.comment;
-                element.calibrationStatus = element.calibrationFrequency === 0
-                  ? 'N/A'
-                  : 'Out of Calibration';
-                if (value) {
-                  element.date = value.date;
-                  const nextCalibDate = new Date(value.date)
-                    .addDays(element.calibrationFrequency)
-                    .toISOString()
-                    .split('T')[0];
-                  element.calibrationStatus = nextCalibDate;
-                }
-                delete element.calibrationFrequency;
-              });
+              element.calibrationStatus = element.calibrationFrequency === null
+                || element.calibrationFrequency === 0
+                ? 'N/A'
+                : 'Out of Calibration';
+              element.recentCalDate = 'N/A';
+              if (
+                element.calibrationFrequency
+                  && element.recentCalibration
+                  && element.recentCalibration[0]
+              ) {
+                // eslint-disable-next-line prefer-destructuring
+                element.calibrationStatus = new Date(
+                  element.recentCalibration[0].date,
+                )
+                  .addDays(element.calibrationFrequency)
+                  .toISOString()
+                  .split('T')[0];
+                element.recentCalDate = element.recentCalibration[0].date;
+              }
             }
           });
-          return response;
+          return response.instruments;
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}

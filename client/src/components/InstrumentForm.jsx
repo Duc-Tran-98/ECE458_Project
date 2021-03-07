@@ -1,9 +1,19 @@
-import React from 'react';
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/forbid-prop-types */
+import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import * as Yup from 'yup';
+import { Formik } from 'formik';
+import Button from 'react-bootstrap/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { CustomInput, CustomButton } from './CustomFormComponents';
+import UserContext from './UserContext';
+
 import AsyncSuggest from './AsyncSuggest';
+import TagsInput from './TagsInput';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -18,195 +28,250 @@ const GET_MODELS_QUERY = gql`
 const query = print(GET_MODELS_QUERY);
 const queryName = 'getAllModels';
 
+const charLimits = {
+  comment: {
+    max: 2000,
+  },
+  assetTag: {
+    min: 100000,
+    max: 999999,
+  },
+  serialNumber: {
+    max: 40,
+  },
+};
+
+const schema = Yup.object({
+  vendor: Yup.string()
+    .required('Model is required'),
+  serialNumber: Yup.string()
+    .max(charLimits.serialNumber.max, `Must be less than ${charLimits.serialNumber.max} characters`),
+  assetTag: Yup.number().integer()
+    .max(charLimits.assetTag.max, `Must be less than ${charLimits.assetTag.max}`)
+    .min(charLimits.assetTag.min, `Must be greater than ${charLimits.assetTag.min}`),
+  comment: Yup.string()
+    .max(charLimits.comment.max, `Must be less than ${charLimits.comment.max} characters`),
+});
+
 export default function InstrumentForm({
-  // calibrationFrequency,
   comment,
-  handleSubmit,
-  changeHandler,
-  onInputChange,
+  handleFormSubmit,
+  assetTag,
   serialNumber,
-  validated,
+  categories,
   viewOnly,
   modelNumber,
   vendor,
   description,
   calibrationFrequency,
+  type,
+  handleDelete,
+  footer,
 }) {
   InstrumentForm.propTypes = {
-    // eslint-disable-next-line react/require-default-props
     modelNumber: PropTypes.string,
-    // eslint-disable-next-line react/require-default-props
     vendor: PropTypes.string,
-    // calibrationFrequency: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
-    changeHandler: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func,
-    validated: PropTypes.bool.isRequired,
+    categories: PropTypes.array.isRequired,
+    assetTag: PropTypes.string.isRequired,
+    handleFormSubmit: PropTypes.func,
     serialNumber: PropTypes.string.isRequired,
-    onInputChange: PropTypes.func.isRequired,
-    // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool, // If true, then the fields are disabled and no input changes can be made
     description: PropTypes.string,
     calibrationFrequency: PropTypes.number,
+    type: PropTypes.string.isRequired,
+    handleDelete: PropTypes.func,
+    footer: PropTypes.node,
+
   };
   InstrumentForm.defaultProps = {
-    handleSubmit: null,
+    handleFormSubmit: null,
     viewOnly: false,
     description: '',
     calibrationFrequency: 0,
   };
-  const val = modelNumber.length > 0 ? { modelNumber, vendor } : null;
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
+  const user = useContext(UserContext);
+  const showFooter = type === 'edit' && user.isAdmin;
+
   return (
-    <Form
-      className="needs-validation"
-      noValidate
-      validated={validated}
-      onSubmit={handleSubmit}
+    <Formik
+      initialValues={{
+        modelNumber: modelNumber || '',
+        vendor: vendor || '',
+        calibrationFrequency: calibrationFrequency || '0',
+        serialNumber: serialNumber || '',
+        assetTag: assetTag || '',
+        comment: comment || '',
+        description: description || '',
+        categories: categories || [],
+      }}
+      validationSchema={schema}
+      onSubmit={(values, { setSubmitting, resetForm }) => {
+        setSubmitting(true);
+        setTimeout(() => {
+          handleFormSubmit(values, resetForm);
+          setSubmitting(false);
+        }, 500);
+      }}
     >
-      <div className="row mx-3">
-        <div className="col mt-3">
-          <Form.Group>
-            <Form.Label className="h4 text-center">Model Selection</Form.Label>
-            {viewOnly ? (
-              <Form.Control
-                type="text"
-                name="modelSelection"
-                value={`${vendor} ${modelNumber}`}
-                onChange={changeHandler}
+      {({
+        handleSubmit,
+        handleChange,
+        setFieldValue,
+        isSubmitting,
+        values,
+        errors,
+        // touched,
+      }) => (
+        <Form
+          noValidate
+          onSubmit={handleSubmit}
+        >
+          <div className="row mx-3">
+            <div className="col mt-3">
+              <Form.Group>
+                <Form.Label className="h4 text-center">Model Selection</Form.Label>
+                {viewOnly ? (
+                  // TODO: Can you edit this during change?
+                  <Form.Control
+                    type="text"
+                    name="modelSelection"
+                    value={`${values.vendor} ${values.modelNumber}`}
+                    disabled={disabled}
+                  />
+                ) : (
+                  <AsyncSuggest
+                    query={query}
+                    queryName={queryName}
+                    onInputChange={(e, v) => {
+                      setFieldValue('vendor', v.vendor);
+                      setFieldValue('modelNumber', v.modelNumber);
+                    }}
+                    label="Choose a model"
+                    getOptionSelected={formatSelected}
+                    getOptionLabel={formatOption}
+                    value={{ vendor: values.vendor, modelNumber: values.modelNumber }}
+                    isInvalid={!!errors.vendor && !!errors.modelNumber}
+                  />
+                )}
+              </Form.Group>
+            </div>
+            <div className="col mt-3">
+              <CustomInput
+                controlId="formAssetTag"
+                className="h4"
+                label="Asset Tag"
+                name="assetTag"
+                type="number"
+                required
+                value={values.assetTag}
+                onChange={handleChange}
                 disabled={disabled}
+                isInvalid={!!errors.assetTag}
+                error={errors.assetTag}
               />
-            ) : (
-              <AsyncSuggest
-                query={query}
-                queryName={queryName}
-                onInputChange={onInputChange}
-                label="Choose a model"
-                getOptionSelected={formatSelected}
-                getOptionLabel={formatOption}
-                value={val}
+            </div>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="col mt-3">
+              <Form.Group>
+                <Form.Label className="h4 text-center text-nowrap ">
+                  Calibration Frequency
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="calibrationFrequency"
+                  value={calibrationFrequency}
+                  disabled
+                />
+              </Form.Group>
+            </div>
+            <div className="col mt-3">
+              <Form.Group>
+                <Form.Label className="h4 text-center">
+                  Model Description
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="modelDescription"
+                  value={description}
+                  disabled
+                />
+              </Form.Group>
+            </div>
+            {/* TODO: What are problems with serial number? */}
+            <div className="col mt-3">
+              <CustomInput
+                controlId="formSerialNumber"
+                className="h4"
+                label="Serial Number"
+                name="serialNumber"
+                type="text"
+                value={values.serialNumber}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.serialNumber}
+                error={errors.serialNumber}
               />
-            )}
-          </Form.Group>
-        </div>
-        <div className="col mt-3">
-          <Form.Group controlId="formDescription">
-            <Form.Label className="h4">Serial Number</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Serial Number"
-              required
-              name="serialNumber"
-              value={serialNumber}
-              onChange={changeHandler}
-              disabled={disabled}
-            />
-            <Form.Control.Feedback type="invalid">
-              Please enter a valid serial number.
-            </Form.Control.Feedback>
-          </Form.Group>
-        </div>
-      </div>
-      <div className="row mx-3 border-top border-dark mt-3">
-        <div className="col mt-3">
-          <Form.Group>
-            <Form.Label className="h4 text-center text-nowrap ">
-              Calibration Frequency
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="calibrationFrequency"
-              value={calibrationFrequency}
-              disabled
-            />
-          </Form.Group>
-        </div>
-        <div className="col mt-3">
-          <Form.Group>
-            <Form.Label className="h4 text-center">
-              Model Description
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="modelDescription"
-              value={description}
-              disabled
-            />
-          </Form.Group>
-        </div>
-      </div>
-      <div className="row mx-3 border-top border-dark mt-3">
-        <div className="col mt-3">
-          <Form.Group controlId="formComment">
-            <Form.Label className="h4">Comment</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="comment"
-              value={comment}
-              onChange={changeHandler}
-              disabled={disabled}
-            />
-          </Form.Group>
-        </div>
-      </div>
-      {handleSubmit !== null && !viewOnly && (
-        <div className="d-flex justify-content-center my-3">
-          <button type="submit" className="btn btn-dark">
-            Create Instrument
-          </button>
-        </div>
+            </div>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="col mt-3">
+              <Form.Group controlId="formComment">
+                <Form.Label className="h4">Comment</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="comment"
+                  value={values.comment}
+                  onChange={handleChange}
+                  disabled={disabled}
+                  isInvalid={!!errors.comment}
+                  error={errors.comment}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errors.comment}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </div>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="col mt-3">
+              <Form.Label className="h4">Categories</Form.Label>
+              <TagsInput
+                selectedTags={(tags) => {
+                  setFieldValue('categories', tags);
+                }}
+                tags={values.categories}
+                dis={disabled}
+                models={false}
+                isInvalid={false}
+              />
+            </div>
+          </div>
+          {type === 'create' && (
+          <div className="d-flex justify-content-center my-3">
+            {isSubmitting
+              ? <CircularProgress />
+              : <Button type="submit" onClick={handleSubmit}>Add Instrument</Button>}
+          </div>
+          )}
+          {showFooter && (
+            <div className="d-flex justify-content-center my-3">
+              <div className="row">
+                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Instrument" />
+                {isSubmitting
+                  ? <CircularProgress />
+                  : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}
+                {footer}
+              </div>
+            </div>
+          )}
+        </Form>
       )}
-    </Form>
+    </Formik>
   );
 }
-
-/*
-{(typeof viewOnly === 'undefined' || !viewOnly) && (
-        <div className="d-flex justify-content-center mt-3 mb-3">
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </div>
-      )}
-<div className="col mt-2">
-          <Form.Group controlId="formModelNumber">
-            <Form.Label className="h4">Model Number</Form.Label>
-            <AsyncSuggest
-              query={query}
-              label="Model Number"
-              queryName={queryName}
-              id="modelNumber"
-              suggestHandler={suggestHandler}
-            />
-          </Form.Group>
-        </div>
-        <div className="col mt-2">
-          <Form.Group controlId="formVendor">
-            <Form.Label className="h4">Vendor</Form.Label>
-            {viewOnly ? (
-              <Form.Control
-                name="vendor"
-                type="text"
-                placeholder="Vendor"
-                required
-                value={vendor}
-                onChange={changeHandler}
-              />
-            ) : (
-              <AsyncSuggest
-                query={query}
-                label="Vendor"
-                queryName={queryName}
-                id="vendor"
-                suggestHandler={suggestHandler}
-              />
-            )}
-            <Form.Control.Feedback type="invalid">
-              Please enter a valid vendor.
-            </Form.Control.Feedback>
-          </Form.Group>
-        </div>
-*/

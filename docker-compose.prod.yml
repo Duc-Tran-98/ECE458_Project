@@ -30,11 +30,13 @@ services:
       dockerfile: Dockerfile.prod
     expose:
       - 4000
+      - 4001
     links:
       - mysql
     volumes:
       - "./server/:/usr/src/app"
       - "/usr/src/app/node_modules"
+      - assets:/usr/src/app/uploads
     networks:
       - app-network
   # Frontend
@@ -49,6 +51,7 @@ services:
     volumes:
       - "./client/:/app"
       - "/app/node_modules"
+      - assets:/app/public/data
     ports:
       - 80:80
       - 443:443
@@ -59,6 +62,7 @@ services:
 # Volumes
 volumes:
   my-db: #docker stores our db for us so our data is persistent
+  assets:
 # Network
 networks:
   app-network:

@@ -1,11 +1,10 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
-import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import DeleteInstrument from '../queries/DeleteInstrument';
-import { QueryAndThen } from '../components/UseQuery';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
@@ -15,25 +14,13 @@ import ModalAlert from '../components/ModalAlert';
 import GetUser from '../queries/GetUser';
 import EditInstrument from '../components/EditInstrument';
 
-export default function DetailedInstrumentView() {
+export default function DetailedInstrumentView({ onDelete }) {
+  DetailedInstrumentView.propTypes = {
+    onDelete: PropTypes.func.isRequired,
+  };
   const user = React.useContext(UserContext);
-  const query = print(gql`
-    query GetInstrument(
-      $modelNumber: String!
-      $vendor: String!
-      $serialNumber: String!
-    ) {
-      getInstrument(
-        modelNumber: $modelNumber
-        vendor: $vendor
-        serialNumber: $serialNumber
-      ) {
-        comment
-        calibrationFrequency
-      }
-    }
-  `);
   const history = useHistory();
+  // TODO: put asset tag in url or make api call to get it
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -41,6 +28,7 @@ export default function DetailedInstrumentView() {
   const vendor = urlParams.get('vendor');
   const serialNumber = urlParams.get('serialNumber');
   const description = urlParams.get('description');
+  const calibFrequency = urlParams.get('calibrationFrequency');
   let id = urlParams.get('id');
   id = parseInt(id, 10);
   const [show, setShow] = React.useState(false);
@@ -50,26 +38,29 @@ export default function DetailedInstrumentView() {
   const closeModal = () => {
     setShow(false);
   };
-  const handleResponse = (response) => {
+  const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
+      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (show) {
           setShow(false);
         }
-        if (history.location.state.previousUrl) {
-          // console.log(history.location.state.previousUrl.split(window.location.host));
-          history.replace(
-            history.location.state.previousUrl.split(window.location.host)[1],
+        if (history.location.state?.previousUrl) {
+          let path = history.location.state.previousUrl.split(window.location.host)[1];
+          if (path.includes('count')) {
+            const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
+            path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
+          }
+          history.replace( // This code updates the url to have the correct count
+            path,
             null,
           );
         } else {
           history.replace('/', null);
         }
-        //  window.location.replace('/'); // This makes it so the user can't navigate back
-        // to this page (they just deleted it) and redirects them to homepage after deletion
       }, 1000);
     }
   };
@@ -78,37 +69,25 @@ export default function DetailedInstrumentView() {
     DeleteInstrument({ id, handleResponse });
   };
   // This code  is getting calibration frequency, calibration history and comment of instrument
-  // const [comment, setComment] = useState('');
-  const [calibFrequency, setCalibFrequency] = useState(0);
-  const [queried, setQueried] = useState(false);
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const getVariables = () => ({ modelNumber, serialNumber, vendor });
-  const queryName = 'getInstrument';
-  const fetchData = () => { // This will refetch calib history and set it as our state
+  const fetchData = (excludeEntry) => {
+    // This will refetch calib history and set it as our state
     GetCalibHistory({ id }).then((data) => {
-      let counter = 0;
+      let counter = nextId;
       data.forEach((item) => {
+        console.log(item);
         // eslint-disable-next-line no-param-reassign
         item.id = counter;
         // eslint-disable-next-line no-param-reassign
         item.viewOnly = true;
         counter += 1;
       });
-      // console.log(data);
-      setCalibHist(data);
+      const openEdits = calibHist.filter((element) => !element.viewOnly && (!excludeEntry || excludeEntry?.id !== element.id));
+      setCalibHist(openEdits.concat(data));
       setNextId(counter);
     });
   };
-  React.useEffect(() => {
-    if (!queried) {
-      QueryAndThen({ query, queryName, getVariables }).then((data) => {
-        setCalibFrequency(data.calibrationFrequency);
-      });
-      fetchData();
-      setQueried(true);
-    }
-  });
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
     const newHistory = calibHist;
@@ -135,23 +114,44 @@ export default function DetailedInstrumentView() {
       newHistory[index].user = e.target.value;
     } else if (e.target.name === 'date') {
       newHistory[index].date = e.target.value;
+    } else if (e.target.name === 'fileInput') {
+      if (e.target.remove === true) {
+        newHistory[index].file = null;
+      } else {
+        const data = new FormData();
+        data.append('file', e.target.files[0]);
+        newHistory[index].file = data;
+      }
     } else {
       newHistory[index].comment = e.target.value;
     }
     setCalibHist(newHistory);
   };
-  const handleSubmit = () => {
-    const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
-    if (validEvents.length > 0) {
-      // If there are valid entries, add them to DB
-      AddCalibEvent({
-        events: validEvents,
-        modelNumber,
-        vendor,
-        serialNumber,
-        handleResponse: () => fetchData(),
+  const handleSubmit = async (entry) => {
+    // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
+    const newHistory = [entry];
+    if (entry.file) {
+      await axios.post('http://localhost:4001/api/upload', entry.file, {
+        // receive two    parameter endpoint url ,form data
+      }).then((res) => { // then print response status
+        // eslint-disable-next-line no-param-reassign
+        entry.fileLocation = res.data.assetName;
+        // eslint-disable-next-line no-param-reassign
+        entry.fileName = res.data.fileName;
+      }).catch((err) => {
+        console.log(err.message);
       });
     }
+    // If there are valid entries, add them to DB
+    AddCalibEvent({
+      events: newHistory,
+      modelNumber,
+      vendor,
+      serialNumber,
+      handleResponse: () => {
+        fetchData(entry);
+      },
+    });
   };
   // This code is for setting window variables for certificate
   if (calibFrequency > 0 && calibHist.length > 0) {
@@ -160,7 +160,10 @@ export default function DetailedInstrumentView() {
     window.sessionStorage.setItem('modelDescription', description);
     window.sessionStorage.setItem('vendor', vendor);
     window.sessionStorage.setItem('calibrationDate', calibHist[0].date);
-    window.sessionStorage.setItem('expirationDate', new Date(calibHist[0].date).addDays(calibFrequency));
+    window.sessionStorage.setItem(
+      'expirationDate',
+      new Date(calibHist[0].date).addDays(calibFrequency),
+    );
     window.sessionStorage.setItem('calibComment', calibHist[0].comment);
     GetUser({ userName: calibHist[0].user }).then((value) => {
       if (value) {
@@ -169,6 +172,19 @@ export default function DetailedInstrumentView() {
       }
     });
   }
+
+  React.useEffect(() => {
+    let active = true;
+    (() => {
+      if (!active) {
+        return;
+      }
+      fetchData();
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <>
@@ -188,21 +204,14 @@ export default function DetailedInstrumentView() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn btn-dark"
-                    type="button"
-                    onClick={handleDelete}
-                  >
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={handleDelete}>
                     Yes
                   </button>
                 </div>
-                <div className="mx-5 mt-3">
-                  <button
-                    className="btn btn-dark"
-                    type="button"
-                    onClick={closeModal}
-                  >
+                <span className="mx-3" />
+                <div className="mt-3">
+                  <button className="btn " type="button" onClick={closeModal}>
                     No
                   </button>
                 </div>
@@ -220,6 +229,7 @@ export default function DetailedInstrumentView() {
             initSerialNumber={serialNumber}
             id={id}
             description={description}
+            initAssetTag="100000"
             footer={(
               <>
                 <MouseOverPopover
@@ -227,7 +237,7 @@ export default function DetailedInstrumentView() {
                   message="Go to model's detail view"
                 >
                   <Link
-                    className="btn btn-dark text-nowrap"
+                    className="btn  text-nowrap"
                     to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
                   >
                     View Model
@@ -238,10 +248,7 @@ export default function DetailedInstrumentView() {
                     className="col"
                     message="View instrument's calibration certificate"
                   >
-                    <Link
-                      className="btn btn-dark text-nowrap"
-                      to="/viewCertificate"
-                    >
+                    <Link className="btn  text-nowrap" to="/viewCertificate">
                       View Certificate
                     </Link>
                   </MouseOverPopover>
@@ -250,26 +257,6 @@ export default function DetailedInstrumentView() {
             )}
           />
         </div>
-        {/* <div className="d-flex justify-content-center mx-3 mt-3">
-          <MouseOverPopover className="" message="Go to model's detail view">
-            <Link
-              className="btn btn-dark mx-3"
-              to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
-            >
-              View Model
-            </Link>
-          </MouseOverPopover>
-          {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-            <MouseOverPopover
-              className=""
-              message="View instrument's calibration certificate"
-            >
-              <Link className="btn btn-dark mx-3" to="/viewCertificate">
-                View Certificate
-              </Link>
-            </MouseOverPopover>
-          )}
-        </div> */}
         <div className="row px-3 mt-3">
           <div
             style={{
@@ -279,28 +266,13 @@ export default function DetailedInstrumentView() {
           >
             <div className="sticky-top bg-secondary text-light">
               <div className="row px-3">
-                <h2 className="col">Calibration History:</h2>
+                <h2 className="col-auto me-auto">Calibration History:</h2>
                 {calibFrequency > 0 && (
                   <>
-                    <div className="col mt-1">
+                    <div className="col-auto mt-1">
                       <MouseOverPopover message="Add new calibration event">
-                        <button
-                          type="button"
-                          className="btn btn-dark"
-                          onClick={addRow}
-                        >
+                        <button type="button" className="btn " onClick={addRow}>
                           Add Calibration Event
-                        </button>
-                      </MouseOverPopover>
-                    </div>
-                    <div className="col mt-1">
-                      <MouseOverPopover message="Save added calibration events">
-                        <button
-                          type="button"
-                          className="btn btn-dark"
-                          onClick={handleSubmit}
-                        >
-                          Save
                         </button>
                       </MouseOverPopover>
                     </div>
@@ -313,6 +285,8 @@ export default function DetailedInstrumentView() {
                 rows={calibHist}
                 deleteRow={deleteRow}
                 onChangeCalibRow={onChangeCalibRow}
+                showSaveButton
+                onSaveClick={handleSubmit}
               />
             ) : (
               <div className="row mt-3">
@@ -325,7 +299,3 @@ export default function DetailedInstrumentView() {
     </>
   );
 }
-
-/*
-TODO: clear state instead of reload page
-*/

@@ -15,7 +15,16 @@ function validateModel({
   if (description.length > 100) {
     return [false, 'Description input must be under 100 characters!'];
   }
-  if (comment.length > 2000) {
+  if (vendor.length < 1) {
+    return [false, 'Vendor input must be included!'];
+  }
+  if (modelNumber.length < 1) {
+    return [false, 'Model number must be included!'];
+  }
+  if (description.length < 1) {
+    return [false, 'Description input must be included!'];
+  }
+  if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
   return [true];
@@ -75,6 +84,7 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    categories,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -101,6 +111,14 @@ class ModelAPI extends DataSource {
           },
           { where: { id } },
         );
+        this.store.modelCategoryRelationships.destroy({
+          where: {
+            modelId: id,
+          },
+        });
+        categories.forEach(async (category) => {
+          await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
         const modelReference = id;
         const instrumentList = await this.store.instruments.findAll({
           where: { modelReference },
@@ -136,6 +154,7 @@ class ModelAPI extends DataSource {
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    const response = { models: [], total: 0 };
     let includeData;
     if (categories) {
       includeData = [
@@ -164,12 +183,15 @@ class ModelAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
 
-    const models = await this.store.models.findAll({
+    let models = await this.store.models.findAndCountAll({
       include: includeData,
       where: filters,
       limit,
       offset,
     });
+    response.models = models.rows;
+    response.total = models.count;
+    models = models.rows;
     if (categories) {
       // eslint-disable-next-line prefer-const
       let modelsWithCategories = [];
@@ -180,9 +202,10 @@ class ModelAPI extends DataSource {
           modelsWithCategories.push(models[i]);
         }
       }
-      return modelsWithCategories;
+      response.models = modelsWithCategories;
+      response.total = modelsWithCategories.length;
     }
-    return models;
+    return response;
   }
 
   async getAllModelsWithModelNum({ modelNumber }) {
@@ -211,6 +234,11 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
+      include: {
+        model: this.store.modelCategories,
+        as: 'categories',
+        through: 'modelCategoryRelationships',
+      },
     });
     if (model && model[0]) {
       return model[0];
@@ -224,8 +252,9 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    categories = [],
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     const validation = validateModel({
@@ -236,25 +265,29 @@ class ModelAPI extends DataSource {
       response.message = validation[1];
       return JSON.stringify(response);
     }
-    await this.getModel({ modelNumber, vendor }).then((value) => {
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         response.message = `Model ${vendor} ${modelNumber} already exists!`;
       } else {
-        this.store.models.create({
+        await this.store.models.create({
           modelNumber,
           vendor,
           description,
           comment,
           calibrationFrequency,
         });
+        categories.forEach(async (category) => {
+          await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
+        response.success = true;
       }
     });
     return JSON.stringify(response);
   }
 
   async addModelCategory({ name }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (hasWhiteSpace(name)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -268,6 +301,7 @@ class ModelAPI extends DataSource {
         this.store.modelCategories.create({
           name,
         });
+        response.success = true;
         response.message = `Added new model category, ${name}, into the DB!`;
       }
     });
@@ -275,7 +309,7 @@ class ModelAPI extends DataSource {
   }
 
   async removeModelCategory({ name }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModelCategory({ name }).then((value) => {
@@ -291,6 +325,7 @@ class ModelAPI extends DataSource {
             modelCategoryId,
           },
         });
+        response.success = true;
         response.message = `Model category ${name} successfully deleted!`;
       } else {
         response.message = `ERROR: Cannot delete model category ${name}, it does not exist!`;
@@ -300,7 +335,7 @@ class ModelAPI extends DataSource {
   }
 
   async editModelCategory({ currentName, updatedName }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -323,6 +358,7 @@ class ModelAPI extends DataSource {
               },
               { where: { id } },
             );
+            response.success = true;
             response.message = `Model category ${updatedName} successfully updated!`;
           }
         });
@@ -334,7 +370,7 @@ class ModelAPI extends DataSource {
   }
 
   async addCategoryToModel({ vendor, modelNumber, category }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
@@ -348,6 +384,7 @@ class ModelAPI extends DataSource {
               modelId,
               modelCategoryId,
             });
+            response.success = true;
             response.message = `Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
           } else {
             response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
@@ -361,7 +398,7 @@ class ModelAPI extends DataSource {
   }
 
   async removeCategoryFromModel({ vendor, modelNumber, category }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
@@ -384,6 +421,7 @@ class ModelAPI extends DataSource {
                   modelCategoryId,
                 },
               });
+              response.success = true;
               response.message = `Category ${category} successfully removed from model ${vendor} ${modelNumber}!`;
             } else {
               response.message = `ERROR: category ${category} was not attached to model ${vendor} ${modelNumber}!`;
@@ -409,6 +447,18 @@ class ModelAPI extends DataSource {
       return category[0];
     }
     return null;
+  }
+
+  async getAllModelCategories({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.modelCategories.findAll({ limit, offset });
+  }
+
+  async countModelCategories() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    return await this.store.modelCategories.count();
   }
 }
 

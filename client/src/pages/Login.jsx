@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
+import { ToastContainer, toast } from 'react-toastify';
 import Query from '../components/UseQuery';
-import NeedsValidation from '../components/NeedsValidation';
+import OAuthLogin from '../components/OAuthLogin';
 
 const Login = ({ handleLogin }) => {
   Login.propTypes = {
@@ -15,9 +16,6 @@ const Login = ({ handleLogin }) => {
     password: '',
     userName: '',
     isChecked: false,
-  });
-  useEffect(() => {
-    NeedsValidation();
   });
   // const onChangeCheckbox = (event) => {
   //   setFormState({ ...formState, isChecked: event.target.checked });
@@ -52,14 +50,14 @@ const Login = ({ handleLogin }) => {
     const queryName = 'login';
     const query = print(LOGIN_MUTATION);
     function handleResponse(response) {
-      // eslint-disable-next-line no-alert
-      alert(response.message);
       if (response.success) {
         window.sessionStorage.setItem(
           'token',
           Buffer.from(userName, 'ascii').toString('base64'),
         );
         handleLogin();
+      } else {
+        toast.error('You have entered an incorrect username/password');
       }
     }
     Query({
@@ -74,6 +72,7 @@ const Login = ({ handleLogin }) => {
   };
   return (
     <Form className="needs-validation" noValidate onSubmit={submitForm}>
+      <ToastContainer />
       <div className="row mx-3 d-flex justify-content-center">
         <div className="col-6 mt-3">
           <Form.Group controlId="formUsername">
@@ -117,10 +116,13 @@ const Login = ({ handleLogin }) => {
             Remember me
           </label>
         </div> */}
-      <div className="d-flex justify-content-center mb-3 mt-3">
-        <button className="btn btn-dark" type="submit">
+      <div className="d-flex flex-column my-3">
+        <button className="btn mx-auto" type="submit">
           Log In
         </button>
+        <div className="mx-auto mt-3">
+          <OAuthLogin />
+        </div>
       </div>
       {/* <div className="d-flex justify-content-center">
           <p className="text-muted">

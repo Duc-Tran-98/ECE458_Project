@@ -7,6 +7,7 @@ body {
  background: #fca311;
   font-weight: bold;
   color: black;
+  border: 1px solid black;
 }
 
 .delete-container {
@@ -33,6 +34,7 @@ body {
   background: #fca311;
   font-weight: bold;
   color: black;
+  border: 1px solid black;
 }
 
 input:disabled{ /* Styling for disabled input*/
@@ -56,7 +58,7 @@ textarea:disabled{ /* Styling for disabled textarea*/
 
 .bg-theme {
   background: #e5e5e5;
-  width: 85vw;
+  width: 92vw;
   /* Platinum color */
 }
 
@@ -64,6 +66,7 @@ textarea:disabled{ /* Styling for disabled textarea*/
   background: #86A0D8;
 }
 
+/* Selected page */
 button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-selected{
   background: #fca311;
   font-weight: bold;
@@ -76,3 +79,68 @@ button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-sele
   background: #404040;
   /* Dark gray/smoke color */
 }
+
+.text-warning-theme{
+  /* background: rgb(121, 118, 112,1); */
+  color: darkgoldenrod;
+}
+
+
+label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-marginDense.MuiInputLabel-outlined{
+  /* Multiple combo box label styling */
+  font-weight: bold;
+  color: black;
+}
+
+label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-shrink.MuiInputLabel-marginDense.MuiInputLabel-outlined{
+  /* Multiple combo box label when label is shurnk */
+  padding-top: 3px;
+}
+.tags-input {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  min-height: 48px;
+  border-radius: 6px;
+
+}
+
+#tags {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 8px 0 0 0;
+}
+
+.tag {
+  width: auto;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  padding: 0 8px;
+  font-size: 14px;
+  list-style: none;
+  border-radius: 6px;
+  margin: 0 8px 8px 0;
+  background: #fca311;
+}
+  .tag-title {
+    margin-top: 3px;
+  }
+  .tag-close-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+    font-size: 12px;
+    margin-left: 8px;
+    position: relative;
+    color: #000;
+    border-radius: 50%;
+    background: #e5e5e5;
+    cursor: pointer;
+  }
