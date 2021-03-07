@@ -26,9 +26,26 @@ export default function LoadBankWiz() {
     recordedDataOk: false,
     printerOk: false,
   });
-  //   const canAdvance = (step) => {
-
-  //   };
+  const canAdvance = (step) => {
+    switch (step) {
+      case 1:
+        return formState.voltMeter !== null && formState.shuntMeter !== null;
+      case 2:
+        return formState.visualCheckOk;
+      case 3:
+        return formState.connectedToDC;
+      case 5:
+        return formState.voltageCutoffOk;
+      case 6:
+        return formState.alarmOk;
+      case 7:
+        return formState.recordedDataOk;
+      case 8:
+        return formState.printerOk;
+      default:
+        return true;
+    }
+  };
   const getLoadSteps = () => [
     'No load',
     '1 x 100A',
@@ -70,7 +87,54 @@ export default function LoadBankWiz() {
   const getLoadStepContent = (step) => {
     switch (step) {
       default:
-        return 'stuff here';
+        return (
+          <>
+            <div className="row">
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">
+                  CR: Current reported [A] (from display)
+                </Form.Label>
+                <Form.Control name="cr" type="text" className="w-50" />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">
+                  CA: Current actual [A] (from shunt meter)
+                </Form.Label>
+                <Form.Control name="ca" type="text" className="w-50" />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">
+                  Ideal current [A]
+                </Form.Label>
+                <Form.Control type="text" className="w-50" disabled value="0" />
+              </Form.Group>
+            </div>
+            <div className="row">
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">CR error [%]</Form.Label>
+                <Form.Control type="text" className="w-50" disabled value="0" />
+                <Form.Label className="h6 my-auto">
+                  CR ok? (under 3%)
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  className="w-50"
+                  disabled
+                  value="Yes"
+                />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">CA error [%]</Form.Label>
+                <Form.Control type="text" className="w-50" disabled value="0" />
+                <Form.Label className="h6 my-auto">
+                  CA ok? (under 5%)
+                </Form.Label>
+                <Form.Control type="text" className="w-50" disabled value="0" />
+              </Form.Group>
+              <div className="col" />
+            </div>
+          </>
+        );
     }
   };
   const getSteps = () => [
@@ -331,6 +395,7 @@ export default function LoadBankWiz() {
     <VerticalLinearStepper
       getStepContent={getStepContent}
       getSteps={getSteps}
+      canAdvance={canAdvance}
       onFinish={() => setFormState({
         modelNumber: '458',
         vendor: 'Fluke',
