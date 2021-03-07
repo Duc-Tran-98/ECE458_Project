@@ -52,6 +52,7 @@ export default function CalibrationRow({
   // const formatSelected = (option, value) => option.userName === value.userName;
   const val = { userName: entry.user };
   const [fileNameDisplay, setFileNameDisplay] = useState('');
+  const [displayError, setDisplayError] = useState('');
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
@@ -130,10 +131,38 @@ export default function CalibrationRow({
                     className="invisible position-absolute top-0 start-0"
                     id={`inputFile-${id}`}
                     onInput={(e) => {
-                      e.target.name = 'fileInput';
-                      e.target.remove = false;
-                      setFileNameDisplay(e.target.files[0].name);
-                      onChangeCalibRow(e, entry);
+                      console.log(e);
+                      if (e.target.files[0]) {
+                        setFileNameDisplay('');
+                        const removeIfCurrent = {
+                          target: {
+                            name: 'fileInput',
+                            remove: true,
+                          },
+                        };
+                        onChangeCalibRow(removeIfCurrent, entry);
+                        if (e.target.files[0].size < (32 * 1024 * 1024)) {
+                          if (
+                            e.target.files[0].type === 'image/jpeg'
+                          || e.target.files[0].type === 'image/png'
+                          || e.target.files[0].type === 'image/gif'
+                          || e.target.files[0].type === 'application/pdf'
+                          || e.target.files[0].type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                          ) {
+                            e.target.name = 'fileInput';
+                            e.target.remove = false;
+                            setFileNameDisplay(e.target.files[0].name);
+                            setDisplayError('');
+                            onChangeCalibRow(e, entry);
+                          } else {
+                            setDisplayError('ERROR: File must be of type JPG, PNG, GIF, PDF, or XLSX');
+                            setFileNameDisplay('');
+                          }
+                        } else {
+                          setDisplayError('ERROR: File size must be less than 32 mb');
+                          setFileNameDisplay('');
+                        }
+                      }
                     }}
                   />
                   Upload File
@@ -166,9 +195,12 @@ export default function CalibrationRow({
                   onChangeCalibRow(e, entry);
                 }}
               >
-                Remove File
+                Remove
               </button>
             </div>
+            )}
+            {displayError.length > 0 && (
+              <div>{displayError}</div>
             )}
           </div>
           <div className="col-4">
