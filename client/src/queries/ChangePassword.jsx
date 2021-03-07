@@ -18,7 +18,7 @@ export default function ChangePassword({
     }
   `;
   const query = print(CHANGE_PASS);
-  const queryName = 'oauthLogin';
+  const queryName = 'changePassword';
   const getVariables = () => ({ userName, oldPassword, newPassword });
   Query({
     query,

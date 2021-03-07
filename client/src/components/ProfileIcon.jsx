@@ -17,7 +17,7 @@ export default function ProfileIcon({ handleSignOut }) {
   const { email } = user;
 
   return (
-    <NavDropdown title={welcomeMessage}>
+    <NavDropdown title={welcomeMessage} style={{ zIndex: 1000 }}>
       <NavDropdown.Item href="/userInfo" className="text-center">
         <PersonIcon fontSize="large" />
         <p style={{ fontSize: '24px' }}>{fullName}</p>

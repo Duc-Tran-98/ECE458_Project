@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import UserContext from '../components/UserContext';
 import PasswordForm from '../components/PasswordForm';
+import ProfileInfo from '../components/ProfileInfo';
 import ChangePassword from '../queries/ChangePassword';
 import 'react-toastify/dist/ReactToastify.css';
 import '../css/customToast.css';
@@ -23,6 +24,8 @@ export default function UserInfo() {
       oldPassword: currentPassword,
       newPassword,
       handleResponse: (response) => {
+        console.log('Handling changePassword response');
+        console.log(response);
         if (response.success) {
           toast.success(response.message);
           resetForm();
@@ -38,6 +41,9 @@ export default function UserInfo() {
     <>
       <ToastContainer />
       <h1 className="m-4">{`${fullName}'s Profile`}</h1>
+      <div className="row border-bottom border-dark">
+        <ProfileInfo />
+      </div>
       <PasswordForm handleSubmitPassword={handleSubmitPassword} />
     </>
   );
