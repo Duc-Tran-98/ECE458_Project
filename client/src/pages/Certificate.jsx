@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  PDFViewer, Page, Text, Image, View, Document, StyleSheet,
+  PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
 } from '@react-pdf/renderer';
 
 const strftime = require('strftime');
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     padding: 10,
     border: '10pt solid #ff0000',
   },
-  logoView: {
+  centerView: {
     alignItems: 'center',
   },
   logo: {
@@ -63,6 +63,10 @@ const styles = StyleSheet.create({
   outerBorder: {
     border: '5pt solid black',
   },
+  image: {
+    width: '70%',
+    height: 'auto',
+  },
 });
 
 // Create Document Component
@@ -75,11 +79,19 @@ function MyCertificate() {
   const username = matches[2];
   const vendor = window.sessionStorage.getItem('vendor');
   const serial = window.sessionStorage.getItem('serialNumber');
+  // const assetTag = window.sessionStorage.getItem('assetTag');
   const model = window.sessionStorage.getItem('modelNumber');
   const description = window.sessionStorage.getItem('modelDescription');
   const calibrationDate = window.sessionStorage.getItem('calibrationDate');
   const expirationDate = strftime('%F', new Date(window.sessionStorage.getItem('expirationDate')));
   const comment = window.sessionStorage.getItem('calibComment');
+
+  function getURLExtension(url) {
+    return url.split(/[#?]/)[0].split('.').pop().trim();
+  }
+
+  const evidenceFileURL = 'https://people.duke.edu/~tkb13/courses/ece458/ev2.pdf';
+  const evidenceFileType = getURLExtension(evidenceFileURL);
 
   return (
     <Document>
@@ -87,7 +99,7 @@ function MyCertificate() {
         <View style={styles.outerBorder}>
           <View style={styles.innerBorder}>
 
-            <View style={styles.logoView}>
+            <View style={styles.centerView}>
               <Image style={styles.logo} src="HPT_logo.png" />
             </View>
 
@@ -114,6 +126,11 @@ function MyCertificate() {
                   Serial Number:
                   {' '}
                   {serial}
+                </Text>
+                <Text style={styles.largeText}>
+                  Asset Tag:
+                  {' '}
+                  ADD THIS IN
                 </Text>
               </View>
             </View>
@@ -163,6 +180,21 @@ function MyCertificate() {
                 </Text>
               </View>
             </View>
+
+            {((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx')) && (
+            <Text style={styles.largeText}>
+              {'\n'}
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
+              <Link src={evidenceFileURL}> View Evidence </Link>
+              {'\n'}
+            </Text>
+            )}
+
+            {((evidenceFileType === 'jpg') || (evidenceFileType === 'png') || (evidenceFileType === 'gif')) && (
+            <View style={styles.centerView}>
+              <Image style={styles.image} src={evidenceFileURL} />
+            </View>
+            )}
 
           </View>
         </View>
