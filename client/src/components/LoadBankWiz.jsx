@@ -10,6 +10,69 @@ import AsyncSuggest from './AsyncSuggest';
 export default function LoadBankWiz() {
   const user = React.useContext(UserContext);
   const today = new Date().toISOString().split('T')[0];
+  const [formState, setFormState] = React.useState({
+    modelNumber: '458',
+    vendor: 'Fluke',
+    serialNumber: 'ABC123',
+    assetTag: 100000,
+    date: today,
+    user: user.userName,
+    voltMeter: null,
+    shuntMeter: null,
+    visualCheckOk: false,
+    connectedToDC: false,
+    voltageCutoffOk: false,
+    alarmOk: false,
+    recordedDataOk: false,
+    printerOk: false,
+  });
+  //   const canAdvance = (step) => {
+
+  //   };
+  const getLoadSteps = () => [
+    'No load',
+    '1 x 100A',
+    '2 x 100A',
+    '3 x 100A',
+    '4 x 100A',
+    '5 x 100A',
+    '6 x 100A',
+    '7 x 100A',
+    '8 x 100A',
+    '9 x 100A',
+    '10 x 100A',
+    '10 x 100A + 1 x 20A',
+    '10 x 100A + 2 x 20A',
+    '10 x 100A + 3 x 20A',
+    '10 x 100A + 4 x 20A',
+    '10 x 100A + 5 x 20A',
+    '10 x 100A + 5 x 20A + 1 x 1A',
+    '10 x 100A + 5 x 20A + 2 x 1A',
+    '10 x 100A + 5 x 20A + 3 x 1A',
+    '10 x 100A + 5 x 20A + 4 x 1A',
+    '10 x 100A + 5 x 20A + 5 x 1A',
+    '10 x 100A + 5 x 20A + 6 x 1A',
+    '10 x 100A + 5 x 20A + 7 x 1A',
+    '10 x 100A + 5 x 20A + 8 x 1A',
+    '10 x 100A + 5 x 20A + 9 x 1A',
+    '10 x 100A + 5 x 20A + 10 x 1A',
+    '10 x 100A + 5 x 20A + 11 x 1A',
+    '10 x 100A + 5 x 20A + 12 x 1A',
+    '10 x 100A + 5 x 20A + 13 x 1A',
+    '10 x 100A + 5 x 20A + 14 x 1A',
+    '10 x 100A + 5 x 20A + 15 x 1A',
+    '10 x 100A + 5 x 20A + 16 x 1A',
+    '10 x 100A + 5 x 20A + 17 x 1A',
+    '10 x 100A + 5 x 20A + 18 x 1A',
+    '10 x 100A + 5 x 20A + 19 x 1A',
+    '10 x 100A + 5 x 20A + 20 x 1A',
+  ];
+  const getLoadStepContent = (step) => {
+    switch (step) {
+      default:
+        return 'stuff here';
+    }
+  };
   const getSteps = () => [
     'Calibration Info', // 0
     'Verify measurement tools are calibrated', // 1
@@ -33,7 +96,7 @@ export default function LoadBankWiz() {
                 type="text"
                 disabled
                 className="w-25 ms-2"
-                value="HPT-10001"
+                value={`${formState.vendor}-${formState.modelNumber}`}
               />
             </Form.Group>
             <Form.Group className="row my-2">
@@ -41,7 +104,7 @@ export default function LoadBankWiz() {
               <Form.Control
                 name="serialNumber"
                 type="text"
-                value="ABC123"
+                value={formState.serialNumber}
                 disabled
                 className="w-25 ms-2"
               />
@@ -51,7 +114,7 @@ export default function LoadBankWiz() {
               <Form.Control
                 name="assetTag"
                 type="number"
-                value={100000}
+                value={formState.assetTag}
                 disabled
                 className="w-25 ms-2"
               />
@@ -64,8 +127,9 @@ export default function LoadBankWiz() {
                 name="date"
                 type="date"
                 max={today}
-                onChange={() => undefined}
+                onChange={(e) => setFormState({ ...formState, date: e.target.value })}
                 required
+                value={formState.date}
                 className="w-25 ms-2"
               />
             </Form.Group>
@@ -99,11 +163,12 @@ export default function LoadBankWiz() {
                   `)} // TODO: Make sure selection also shows asset tag and passes it to backend
                   queryName="getAllModels"
                   // eslint-disable-next-line no-unused-vars
-                  onInputChange={(_e, v) => undefined}
+                  onInputChange={(_e, v) => setFormState({ ...formState, voltMeter: v.modelNumber })}
                   label="Select a voltmeter"
                   getOptionLabel={(option) => `${option.modelNumber}`}
                   getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
                   isInvalid={false}
+                  value={formState.voltMeter ? { modelNumber: formState.voltMeter } : null}
                 />
               </div>
             </Form.Group>
@@ -122,11 +187,12 @@ export default function LoadBankWiz() {
                   `)} // TODO: Make sure selection also shows asset tag and passes it to backend
                   queryName="getAllModels"
                   // eslint-disable-next-line no-unused-vars
-                  onInputChange={(_e, v) => undefined}
+                  onInputChange={(_e, v) => setFormState({ ...formState, shuntMeter: v.modelNumber })}
                   label="Select a shunt meter"
                   getOptionLabel={(option) => `${option.modelNumber}`}
                   getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
                   isInvalid={false}
+                  value={formState.shuntMeter ? { modelNumber: formState.shuntMeter } : null}
                 />
               </div>
             </Form.Group>
@@ -143,7 +209,7 @@ export default function LoadBankWiz() {
                 <label className="form-check-label mx-2 h6">
                   Visual check ok?
                 </label>
-                <input type="checkbox" className="form-check-input" />
+                <input type="checkbox" className="form-check-input" onChange={(e) => setFormState({ ...formState, visualCheckOk: e.target.checked })} />
               </div>
             </div>
             <div className="d-flex flex-row mx-3 mb-2">
@@ -160,7 +226,7 @@ export default function LoadBankWiz() {
                 <label className="form-check-label mx-2 h6">
                   Connected to DC source?
                 </label>
-                <input type="checkbox" className="form-check-input" />
+                <input type="checkbox" className="form-check-input" onChange={(e) => setFormState({ ...formState, connectedToDC: e.target.checked })} />
               </div>
             </div>
             <div className="d-flex flex-row mx-3 mb-2">
@@ -171,23 +237,18 @@ export default function LoadBankWiz() {
       case 4:
         return (
           <div className="d-flex flex-column my-1">
-            <div className="d-flex flex-row">
-              <div className="h6">Load steps </div>
-            </div>
-            {/* <VerticalLinearStepper
-                onFinish={() => undefined}
-                getSteps={() => ['No load', '1 x 100A']}
-                getStepContent={(step) => {
-
-                }}
-            /> */}
-            <div className="d-flex flex-row mx-3 mb-2">
+            <div className="d-flex flex-row mx-3">
               Turn on load steps one at time (10 steps of 100A, 5 steps of 20A,
-              20 steps of 1A). Then record current displayed on load bank and current
-              measured from shunt for each load step. Continue until all load
-              steps are on. Lastly, record voltage displayed on load bank and voltage
-              measured via DMM.
+              20 steps of 1A). Then record current displayed on load bank and
+              current measured from shunt for each load step. Continue until all
+              load steps are on. Lastly, record voltage displayed on load bank
+              and voltage measured via DMM.
             </div>
+            <VerticalLinearStepper
+              onFinish={() => undefined}
+              getSteps={getLoadSteps}
+              getStepContent={getLoadStepContent}
+            />
           </div>
         );
       case 5:
@@ -198,7 +259,7 @@ export default function LoadBankWiz() {
                 <label className="form-check-label mx-2 h6">
                   Low voltage cutoff?
                 </label>
-                <input type="checkbox" className="form-check-input" />
+                <input type="checkbox" className="form-check-input" onChange={(e) => setFormState({ ...formState, voltageCutoffOk: e.target.checked })} />
               </div>
             </div>
             <div className="d-flex flex-row mx-3 mb-2">
@@ -215,7 +276,7 @@ export default function LoadBankWiz() {
                 <label className="form-check-label mx-2 h6">
                   Cell voltage disconnect alarm?
                 </label>
-                <input type="checkbox" className="form-check-input" />
+                <input type="checkbox" className="form-check-input" onChange={(e) => setFormState({ ...formState, alarmOk: e.target.checked })} />
               </div>
             </div>
             <div className="d-flex flex-row mx-3 mb-2">
@@ -231,7 +292,7 @@ export default function LoadBankWiz() {
                 <label className="form-check-label mx-2 h6">
                   Recorded data ok?
                 </label>
-                <input type="checkbox" className="form-check-input" />
+                <input type="checkbox" className="form-check-input" onChange={(e) => setFormState({ ...formState, recordedDataOk: e.target.checked })} />
               </div>
             </div>
             <div className="d-flex flex-row mx-3 mb-2">
@@ -252,6 +313,7 @@ export default function LoadBankWiz() {
                 <input
                   type="checkbox"
                   className="form-check-input"
+                  onChange={(e) => setFormState({ ...formState, printerOk: e.target.checked })}
                 />
               </div>
             </div>
@@ -269,7 +331,22 @@ export default function LoadBankWiz() {
     <VerticalLinearStepper
       getStepContent={getStepContent}
       getSteps={getSteps}
-      onFinish={() => console.log('finished')}
+      onFinish={() => setFormState({
+        modelNumber: '458',
+        vendor: 'Fluke',
+        serialNumber: 'ABC123',
+        assetTag: 100000,
+        date: today,
+        user: user.userName,
+        voltMeter: null,
+        shuntMeter: null,
+        visualCheckOk: false,
+        connectedToDC: false,
+        voltageCutoffOk: false,
+        alarmOk: false,
+        recordedDataOk: false,
+        printerOk: false,
+      })}
     />
   );
 }

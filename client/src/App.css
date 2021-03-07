@@ -105,6 +105,11 @@ div.MuiPaper-root.MuiStepper-root.MuiStepper-vertical{
   /*  Styling vertical stepper root container */
   background: #e5e5e5;
 }
+div.MuiPaper-root.MuiPaper-elevation0{
+   /*  Styling vertical stepper root container */
+  background: #e5e5e5;
+}
+
 .tags-input {
   display: flex;
   align-items: flex-start;
