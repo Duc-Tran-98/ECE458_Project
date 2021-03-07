@@ -4,6 +4,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import { Formik } from 'formik';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
 import AsyncSuggest from './AsyncSuggest';
@@ -412,87 +413,109 @@ export default function LoadBankWiz() {
       default:
         return (
           <>
-            <div className="row">
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">
-                  CR: Current reported [A] (from display)
-                </Form.Label>
-                <Form.Control
-                  name="cr"
-                  type="number"
-                  min={0}
-                  className="w-50"
-                  autoFocus
-                  value={currentReadings.filter((element) => element.id === step)[0].cr}
-                  onChange={(e) => updateCurrentReadings({ e, step })}
-                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(step) })}
-                />
-              </Form.Group>
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">
-                  CA: Current actual [A] (from shunt meter)
-                </Form.Label>
-                <Form.Control
-                  name="ca"
-                  type="number"
-                  min={0}
-                  className="w-50"
-                  value={currentReadings.filter((element) => element.id === step)[0].ca}
-                  onChange={(e) => updateCurrentReadings({ e, step })}
-                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(step) })}
-                />
-              </Form.Group>
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">
-                  Ideal current [A]
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={idealCurrents[step]}
-                />
-              </Form.Group>
-            </div>
-            <div className="row">
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">CR error [%]</Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={step === 0 ? 'N/A' : calcCRError(step).toFixed(2)}
-                />
-                <Form.Label className="h6 my-auto">
-                  CR ok? (under 3%)
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={calcCRError(step) < 3 ? 'Ok' : 'FAIL'}
-                />
-              </Form.Group>
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">CA error [%]</Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={step === 0 ? 'N/A' : calcCAError(step).toFixed(2)}
-                />
-                <Form.Label className="h6 my-auto">
-                  CA ok? (under 5%)
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={calcCAError(step) < 3 ? 'Ok' : 'FAIL'}
-                />
-              </Form.Group>
-              <div className="col" />
-            </div>
+            <Formik
+              initialValues={{
+                currentReported: 100,
+                currentActual: 100,
+              }}
+            >
+              {({
+                isValid,
+                values,
+              }) => (
+                <>
+                  <div className="row">
+                    <Form.Group className="col">
+                      <Form.Label className="h6 my-auto">
+                        CR: Current reported [A] (from display)
+                      </Form.Label>
+                      <Form.Control
+                        name="cr"
+                        type="number"
+                        min={0}
+                        className="w-50"
+                        autoFocus
+                        value={currentReadings.filter((element) => element.id === step)[0].cr}
+                        onChange={(e) => updateCurrentReadings({ e, step })}
+                        onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(step) })}
+                        isInvalid={calcCRError(step)}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Adjust ppm setting to fix, then restart
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className="col">
+                      <Form.Label className="h6 my-auto">
+                        CA: Current actual [A] (from shunt meter)
+                      </Form.Label>
+                      <Form.Control
+                        name="ca"
+                        type="number"
+                        min={0}
+                        className="w-50"
+                        value={currentReadings.filter((element) => element.id === step)[0].ca}
+                        onChange={(e) => updateCurrentReadings({ e, step })}
+                        onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(step) })}
+                        isInvalid={calcCAError(step)}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Check and repair/replace load cell, then restart
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group className="col">
+                      <Form.Label className="h6 my-auto">
+                        Ideal current [A]
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="w-50"
+                        disabled
+                        value={idealCurrents[step]}
+                      />
+                    </Form.Group>
+                  </div>
+                  <div className="row">
+                    <Form.Group className="col">
+                      <Form.Label className="h6 my-auto">CR error [%]</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="w-50"
+                        disabled
+                        value={step === 0 ? 'N/A' : calcCRError(step).toFixed(2)}
+                      />
+                      <Form.Label className="h6 my-auto">
+                        CR ok? (under 3%)
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="w-50"
+                        disabled
+                        value={calcCRError(step) < 3 ? 'Ok' : 'FAIL'}
+                      />
+                    </Form.Group>
+                    <Form.Group className="col">
+                      <Form.Label className="h6 my-auto">CA error [%]</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="w-50"
+                        disabled
+                        value={step === 0 ? 'N/A' : calcCAError(step).toFixed(2)}
+                      />
+                      <Form.Label className="h6 my-auto">
+                        CA ok? (under 5%)
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="w-50"
+                        disabled
+                        value={calcCAError(step) < 3 ? 'Ok' : 'FAIL'}
+                      />
+                    </Form.Group>
+                    <div className="col" />
+                  </div>
+                </>
+              )}
+            </Formik>
           </>
         );
     }
