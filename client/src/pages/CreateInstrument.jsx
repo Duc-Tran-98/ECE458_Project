@@ -72,10 +72,15 @@ function CreateInstrumentPage({ onCreation }) {
     console.log('Creating instrument with values: ');
     console.log(values);
     // This is to submit all the data
-    const {
+    let {
+      // eslint-disable-next-line prefer-const
       modelNumber, vendor, assetTag, comment, serialNumber, categories,
     } = values;
     // check validation here in backend?
+    if (typeof assetTag === 'string') {
+      assetTag = null;
+    }
+
     CreateInstrument({
       modelNumber,
       vendor,
