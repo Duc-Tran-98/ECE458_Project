@@ -17,7 +17,8 @@ function validateInstrument({
   if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
-  if (Math.floor(assetTag / 100000) < 1 || Math.floor(assetTag / 100000) > 10) {
+  // eslint-disable-next-line max-len
+  if (assetTag != null && (Math.floor(assetTag / 100000) < 1 || Math.floor(assetTag / 100000) > 10)) {
     return [false, 'Asset Tag not within 100000 - 999999 Range'];
   }
   return [true];
