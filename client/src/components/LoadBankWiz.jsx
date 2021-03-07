@@ -27,9 +27,10 @@ export default function LoadBankWiz() {
     recordedDataOk: false,
     printerOk: false,
   });
+  const [canProgress, setCanProgress] = React.useState(false);
   const [currentReadings, setCurrentReadings] = React.useState([
     {
-      cr: 0, ca: 0, id: 0, crError: 0, crOk: false, caError: 0, caOk: false,
+      cr: 0, ca: 0, id: 0, crError: 0, crOk: true, caError: 0, caOk: true, // id represents which step
     },
     {
       cr: 0, ca: 0, id: 1, crError: 0, crOk: false, caError: 0, caOk: false,
@@ -146,32 +147,29 @@ export default function LoadBankWiz() {
   const [voltageReading, setVoltageReading] = React.useState({
     va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
   });
-  const calcVRError = () => {
+  const calcVRError = () => { // calculate vr error given va and vr
     if (voltageReading.va > 0) {
       return 100 * (Math.abs(voltageReading.va - voltageReading.vr) / voltageReading.va);
     }
     return 100;
   };
-  const calcVAError = () => 100 * (Math.abs(voltageReading.va - 48) / 48);
-  const updateVoltageReadings = ({ e = null, finished = false }) => {
+  const calcVAError = () => 100 * (Math.abs(voltageReading.va - 48) / 48); // calculate va error
+  const updateVoltageReadings = ({ e }) => { // update state
     const {
       va, vr, vaOk, vrOk, vaError, vrError,
     } = voltageReading;
     const newReadings = {
       va, vr, vaOk, vrOk, vaError, vrError,
     };
-    if (!finished) {
-      if (e.target.name === 'va') {
-        newReadings.va = e.target.valueAsNumber;
-      } else {
-        newReadings.vr = e.target.valueAsNumber;
-      }
+    if (e.target.name === 'va') {
+      newReadings.va = e.target.valueAsNumber;
     } else {
-      newReadings.vaError = calcVAError();
-      newReadings.vaOk = newReadings.vaError < 10;
-      newReadings.vrError = calcVRError();
-      newReadings.vrOk = newReadings.vrError < 1;
+      newReadings.vr = e.target.valueAsNumber;
     }
+    newReadings.vaError = 100 * (Math.abs(newReadings.va - 48) / 48);
+    newReadings.vaOk = newReadings.vaError < 10;
+    newReadings.vrError = newReadings.va > 0 ? 100 * (Math.abs(newReadings.va - newReadings.vr) / newReadings.va) : 100;
+    newReadings.vrOk = newReadings.vrError < 1;
     setVoltageReading(newReadings);
   };
   const canAdvance = (step) => { // whether or not user can advance a step
@@ -182,6 +180,8 @@ export default function LoadBankWiz() {
         return formState.visualCheckOk;
       case 3:
         return formState.connectedToDC;
+      case 4:
+        return canProgress;
       case 5:
         return formState.voltageCutoffOk;
       case 6:
@@ -194,7 +194,7 @@ export default function LoadBankWiz() {
         return true;
     }
   };
-  const idealCurrents = [
+  const idealCurrents = [ // values copied from excel spread sheet
     0,
     100,
     200,
@@ -271,7 +271,7 @@ export default function LoadBankWiz() {
     '10 x 100A + 5 x 20A + 20 x 1A', // 35
     'Record final voltage', // 36
   ];
-  const calcCRError = (step) => {
+  const calcCRError = (step) => { // calc cr error
     const entry = currentReadings.filter((element) => element.id === step)[0];
     if (step === 0) {
       return entry.cr === 0 ? 0 : 100;
@@ -281,7 +281,7 @@ export default function LoadBankWiz() {
     }
     return 100;
   };
-  const calcCAError = (step) => {
+  const calcCAError = (step) => { // calc ca error
     const entry = currentReadings.filter((element) => element.id === step)[0];
     if (step === 0) {
       return entry.ca === 0 ? 0 : 100;
@@ -290,22 +290,34 @@ export default function LoadBankWiz() {
       100 * (Math.abs(entry.ca - idealCurrents[step]) / idealCurrents[step])
     );
   };
-  const updateCurrentReadings = ({ e = null, step, finished = false }) => {
+  const updateCurrentReadings = ({ e, step }) => { // update current measurements
     const newReadings = currentReadings.filter((element) => element.id !== step);
     const entry = currentReadings.filter((element) => element.id === step);
-    if (!finished) {
-      if (e.target.name === 'ca') {
-        entry[0].ca = e.target.valueAsNumber;
-      } else {
-        entry[0].cr = e.target.valueAsNumber;
-      }
+    if (e.target.name === 'ca') {
+      entry[0].ca = e.target.valueAsNumber;
     } else {
-      entry[0].caError = calcCAError(step);
-      entry[0].caOk = entry[0].caError < 3;
-      entry[0].crError = calcCRError(step);
-      entry[0].crOk = entry[0].crError < 3;
+      entry[0].cr = e.target.valueAsNumber;
     }
+    entry[0].caError = calcCAError(step);
+    entry[0].caOk = entry[0].caError < 3;
+    entry[0].crError = calcCRError(step);
+    entry[0].crOk = entry[0].crError < 3;
     setCurrentReadings(newReadings.concat(entry));
+  };
+  const canAdvanceLoadStep = (step) => { // when user can go to next step in load steps
+    if (step >= 0 && step < 36) { // 36 is the last load step
+      const entry = currentReadings.filter((element) => element.id === step)[0];
+      return entry && entry.caOk && entry.crOk;
+    }
+    return voltageReading.vaOk && voltageReading.vrOk;
+  };
+  const handleKeyPress = ({ e, canAdvanceStep = false }) => {
+    if (e.code === 'Enter' && canAdvanceStep) {
+      const nextBtn = document.querySelector('button[class="MuiButtonBase-root MuiButton-root MuiButton-contained btn MuiButton-containedPrimary"]');
+      if (nextBtn) {
+        nextBtn.click();
+      }
+    }
   };
   const getLoadStepContent = (step) => { // what to display for each load step
     switch (step) {
@@ -325,8 +337,11 @@ export default function LoadBankWiz() {
                   name="vr"
                   type="number"
                   className="w-50"
+                  autoFocus
+                  min={0}
                   onChange={(e) => updateVoltageReadings({ e })}
                   value={voltageReading.vr}
+                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
                 />
               </Form.Group>
               <Form.Group className="col">
@@ -336,9 +351,11 @@ export default function LoadBankWiz() {
                 <Form.Control
                   name="va"
                   type="number"
+                  min={0}
                   className="w-50"
                   onChange={(e) => updateVoltageReadings({ e })}
                   value={voltageReading.va}
+                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
                 />
               </Form.Group>
               <Form.Group className="col">
@@ -405,8 +422,10 @@ export default function LoadBankWiz() {
                   type="number"
                   min={0}
                   className="w-50"
+                  autoFocus
                   value={currentReadings.filter((element) => element.id === step)[0].cr}
                   onChange={(e) => updateCurrentReadings({ e, step })}
+                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(step) })}
                 />
               </Form.Group>
               <Form.Group className="col">
@@ -420,6 +439,7 @@ export default function LoadBankWiz() {
                   className="w-50"
                   value={currentReadings.filter((element) => element.id === step)[0].ca}
                   onChange={(e) => updateCurrentReadings({ e, step })}
+                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(step) })}
                 />
               </Form.Group>
               <Form.Group className="col">
@@ -659,11 +679,11 @@ export default function LoadBankWiz() {
               and voltage measured via DMM.
             </div>
             <VerticalLinearStepper
-              onFinish={() => undefined}
+              onFinish={() => setCanProgress(true)}
               getSteps={getLoadSteps}
               getStepContent={getLoadStepContent}
+              canAdvance={canAdvanceLoadStep}
               finishMsg="You're finished with the load steps"
-              onNext={(prevStep) => (prevStep !== 36 ? updateCurrentReadings({ step: prevStep, finished: true }) : updateVoltageReadings({ finished: true }))}
             />
           </div>
         );
