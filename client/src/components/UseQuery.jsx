@@ -20,11 +20,14 @@ const Query = ({
   axios
     .post(route, data)
     .then((res) => {
+      console.log('Successful axios request in Query');
+      console.log(res);
       response = (typeof res.data.data[queryName] === 'string') ? JSON.parse(res.data.data[queryName]) : res.data.data[queryName];
       handleResponse(response);
     })
     .catch((err) => {
-      console.log(err);
+      console.log('Failed Query');
+      console.error(err);
     });
 };
 
