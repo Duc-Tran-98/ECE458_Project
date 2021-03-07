@@ -127,6 +127,7 @@ const typeDefs = gql`
   type FilteredInstrument {
     vendor: String!
     modelNumber: String!
+    assetTag: Int!
     serialNumber: String!
     modelReference: Int!
     calibrationFrequency: Int
