@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
 export default async function CreateInstrument({
-  modelNumber, vendor, serialNumber, comment, categories, handleResponse,
+  modelNumber, vendor, assetTag, serialNumber, comment, categories, handleResponse,
 }) {
   CreateInstrument.propTypes = {
     modelNumber: PropTypes.string.isRequired,
     vendor: PropTypes.string.isRequired,
+    assetTag: PropTypes.number,
     serialNumber: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
@@ -22,6 +23,7 @@ export default async function CreateInstrument({
       mutation AddInstrument(
         $modelNumber: String!
         $vendor: String!
+        $assetTag: Int
         $serialNumber: String!
         $comment: String
         $categories: [String]
@@ -29,6 +31,7 @@ export default async function CreateInstrument({
         addInstrument(
           modelNumber: $modelNumber
           vendor: $vendor
+          assetTag: $assetTag
           comment: $comment
           serialNumber: $serialNumber
           categories: $categories
@@ -38,7 +41,7 @@ export default async function CreateInstrument({
   const query = print(ADD_INSTRUMENT);
   const queryName = 'addInstrument';
   const getVariables = () => ({
-    modelNumber, vendor, serialNumber, comment, categories,
+    modelNumber, vendor, assetTag, serialNumber, comment, categories,
   });
   if (handleResponse) {
     Query({

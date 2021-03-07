@@ -26,6 +26,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const urlParams = new URLSearchParams(queryString);
   const modelNumber = urlParams.get('modelNumber');
   const vendor = urlParams.get('vendor');
+  const assetTag = urlParams.get('assetTag');
   const serialNumber = urlParams.get('serialNumber');
   const description = urlParams.get('description');
   const calibFrequency = urlParams.get('calibrationFrequency');
@@ -229,7 +230,7 @@ export default function DetailedInstrumentView({ onDelete }) {
             initSerialNumber={serialNumber}
             id={id}
             description={description}
-            initAssetTag="100000"
+            initAssetTag={assetTag}
             footer={(
               <>
                 <MouseOverPopover

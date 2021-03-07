@@ -44,7 +44,7 @@ function CreateInstrumentPage({ onCreation }) {
     calibrationFrequency: 0,
     description: '',
     categories: [],
-    assetTag: '', // TODO: use api to get last id of instrument, then add 100001 to it;
+    assetTag: 0, // TODO: use api to get last id of instrument, then add 100001 to it;
   };
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
@@ -73,12 +73,13 @@ function CreateInstrumentPage({ onCreation }) {
     console.log(values);
     // This is to submit all the data
     const {
-      modelNumber, vendor, comment, serialNumber, categories,
+      modelNumber, vendor, assetTag, comment, serialNumber, categories,
     } = values;
     // check validation here in backend?
     CreateInstrument({
       modelNumber,
       vendor,
+      assetTag,
       serialNumber,
       categories,
       comment,
