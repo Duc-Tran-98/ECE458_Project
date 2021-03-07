@@ -21,6 +21,7 @@ export default function ListInstruments() {
   const user = React.useContext(UserContext);
   const [modelNumber, setModelNumber] = useState('');
   const [vendor, setVendor] = useState('');
+  const [assetTag, setAssetTag] = useState(0);
   const [serialNumber, setSerialNumber] = useState('');
   const [calibrationFrequency, setcalibrationFrequency] = useState(0);
   // eslint-disable-next-line no-unused-vars
@@ -98,6 +99,7 @@ export default function ListInstruments() {
     if (e.field === 'view') {
       setModelNumber(e.row.modelNumber);
       setVendor(e.row.vendor);
+      setAssetTag(e.row.assetTag);
       setId(e.row.id);
       setSerialNumber(e.row.serialNumber);
       setDescription(e.row.description);
@@ -123,6 +125,7 @@ export default function ListInstruments() {
   const cols = [
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
+    { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
     {
@@ -225,7 +228,7 @@ export default function ListInstruments() {
                 onClick={() => {
                   const state = { previousUrl: window.location.href };
                   history.push(
-                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
+                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
                     state,
                   );
                 }}
@@ -243,6 +246,7 @@ export default function ListInstruments() {
     const filteredRows = exportRows.map((element) => ({
       vendor: element.vendor,
       modelNumber: element.modelNumber,
+      assetTag: element.assetTag,
       serialNumber: element.serialNumber,
       comment: element.comment,
       calibrationDate: element.date,
@@ -254,6 +258,7 @@ export default function ListInstruments() {
   const headers = [
     { label: 'Vendor', key: 'vendor' },
     { label: 'Model-Number', key: 'modelNumber' },
+    { label: 'Asset-Tag', key: 'assetTag' },
     { label: 'Serial-Number', key: 'serialNumber' },
     { label: 'Comment', key: 'comment' },
     { label: 'Calibration-Date', key: 'calibrationDate' },

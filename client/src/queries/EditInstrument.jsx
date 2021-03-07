@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
 export default async function EditInstrumentQuery({
-  modelNumber, vendor, serialNumber, id, comment, categories, handleResponse,
+  modelNumber, vendor, assetTag, serialNumber, id, comment, categories, handleResponse,
 }) {
   EditInstrumentQuery.propTypes = {
     modelNumber: PropTypes.string.isRequired,
     vendor: PropTypes.string.isRequired,
+    assetTag: PropTypes.number.isRequired,
     serialNumber: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     comment: PropTypes.string.isRequired,
@@ -20,8 +21,8 @@ export default async function EditInstrumentQuery({
     handleResponse: null,
   };
   const EDIT_INST = gql`
-    mutation EditInst($modelNumber: String!, $vendor: String!, $serialNumber: String!, $comment: String, $categories: [String], $id: Int!) {
-      editInstrument(modelNumber: $modelNumber, vendor: $vendor, serialNumber: $serialNumber, comment: $comment, categories: $categories, id: $id)
+    mutation EditInst($modelNumber: String!, $vendor: String!, $assetTag: Int!, $serialNumber: String!, $comment: String, $categories: [String], $id: Int!) {
+      editInstrument(modelNumber: $modelNumber, vendor: $vendor, assetTag: $assetTag, serialNumber: $serialNumber, comment: $comment, categories: $categories, id: $id)
     }
   `;
   const query = print(EDIT_INST);
@@ -29,6 +30,7 @@ export default async function EditInstrumentQuery({
   const getVariables = () => ({
     modelNumber,
     vendor,
+    assetTag,
     serialNumber,
     id,
     comment,
@@ -46,13 +48,3 @@ export default async function EditInstrumentQuery({
     return await QueryAndThen({ query, queryName, getVariables });
   }
 }
-
-/*
-editInstrument(
-      modelNumber: String!
-      vendor: String!
-      comment: String
-      serialNumber: String!
-      id: Int!
-    )
-*/
