@@ -21,11 +21,8 @@ const BasicLabel = ({
 export default function ProfileInfo() {
   const user = useContext(UserContext);
   const {
-    firstName, lastName, userName,
+    firstName, lastName, userName, email,
   } = user;
-  //   const {
-  //     firstName, lastName, isAdmin, email, userName,
-  //   } = user;
   return (
     <div className="m-4">
       <h2>Profile Information</h2>
@@ -38,6 +35,9 @@ export default function ProfileInfo() {
         </Col>
         <Col>
           <BasicLabel className="p" label="User Name" formName="userName" value={userName} />
+        </Col>
+        <Col>
+          <BasicLabel className="p" label="eMail" formName="eMail" value={email} />
         </Col>
       </Form.Row>
     </div>
