@@ -8,6 +8,9 @@ import { Formik } from 'formik';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
 import AsyncSuggest from './AsyncSuggest';
+import { defaultCurrents, idealCurrents, devCurrents } from '../utils/LoadBank';
+
+const DEBUG = true;
 
 export default function LoadBankWiz() {
   const user = React.useContext(UserContext);
@@ -29,122 +32,7 @@ export default function LoadBankWiz() {
     printerOk: false,
   });
   const [canProgress, setCanProgress] = React.useState(false);
-  const [currentReadings, setCurrentReadings] = React.useState([
-    {
-      cr: 0, ca: 0, id: 0, crError: 0, crOk: true, caError: 0, caOk: true, // id represents which step
-    },
-    {
-      cr: 0, ca: 0, id: 1, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 2, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 3, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 4, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 5, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 6, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 7, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 8, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 9, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 10, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 11, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 12, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 13, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 14, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 15, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 16, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 17, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 18, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 19, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 20, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 21, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 22, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 23, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 24, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 25, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 26, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 27, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 28, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 29, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 30, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 31, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 32, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 33, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0, ca: 0, id: 34, crError: 0, crOk: false, caError: 0, caOk: false,
-    },
-    {
-      cr: 0,
-      ca: 0,
-      id: 35,
-      crError: 0,
-      crOk: false,
-      caError: 0,
-      caOk: false,
-    },
-  ]);
+  const [currentReadings, setCurrentReadings] = React.useState(DEBUG ? devCurrents : defaultCurrents);
   const [voltageReading, setVoltageReading] = React.useState({
     va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
   });
@@ -154,6 +42,7 @@ export default function LoadBankWiz() {
     }
     return 100;
   };
+  const isVRError = () => calcVRError() >= 1;
   const calcVAError = () => 100 * (Math.abs(voltageReading.va - 48) / 48); // calculate va error
   const updateVoltageReadings = ({ e }) => { // update state
     const {
@@ -195,44 +84,6 @@ export default function LoadBankWiz() {
         return true;
     }
   };
-  const idealCurrents = [ // values copied from excel spread sheet
-    0,
-    100,
-    200,
-    300,
-    400,
-    500,
-    600,
-    700,
-    800,
-    900,
-    1000,
-    1020,
-    1040,
-    1060,
-    1080,
-    1100,
-    1101,
-    1102,
-    1103,
-    1104,
-    1105,
-    1106,
-    1107,
-    1108,
-    1109,
-    1110,
-    1111,
-    1112,
-    1113,
-    1114,
-    1115,
-    1116,
-    1117,
-    1118,
-    1119,
-    1120,
-  ];
   const getLoadSteps = () => [ // steps for load calibration
     'No load', // 0
     '1 x 100A', // 1
@@ -332,91 +183,113 @@ export default function LoadBankWiz() {
     switch (step) {
       case 36:
         return (
-          <div className="d-flex flex-column">
-            <div className="d-flex flex-row mb-2">
-              Record voltage displayed on load bank and voltage measured via DMM
-              when all load banks are on.
-            </div>
-            <div className="row mx-2">
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">
-                  VR: Voltage reported [V] (from display)
-                </Form.Label>
-                <Form.Control
-                  name="vr"
-                  type="number"
-                  className="w-50"
-                  autoFocus
-                  min={0}
-                  onChange={(e) => updateVoltageReadings({ e })}
-                  value={voltageReading.vr}
-                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
-                />
-              </Form.Group>
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">
-                  VA: Voltage actual [V] (from voltmeter)
-                </Form.Label>
-                <Form.Control
-                  name="va"
-                  type="number"
-                  min={0}
-                  className="w-50"
-                  onChange={(e) => updateVoltageReadings({ e })}
-                  value={voltageReading.va}
-                  onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
-                />
-              </Form.Group>
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">Test voltage [V]</Form.Label>
-                <Form.Control
-                  type="number"
-                  className="w-50"
-                  disabled
-                  value={48}
-                />
-              </Form.Group>
-            </div>
-            <div className="row mx-2">
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">VR error [%]</Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={calcVRError().toFixed(2)}
-                />
-                <Form.Label className="h6 my-auto">
-                  VR ok? (under 1%)
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={calcVRError() < 1 ? 'Ok' : 'FAIL'}
-                />
-              </Form.Group>
-              <Form.Group className="col">
-                <Form.Label className="h6 my-auto">VA error [%]</Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={calcVAError().toFixed(2)}
-                />
-                <Form.Label className="h6 my-auto">
-                  VA ok? (under 10%)
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  className="w-50"
-                  disabled
-                  value={calcVAError() < 10 ? 'Ok' : 'FAIL'}
-                />
-              </Form.Group>
-              <div className="col" />
-            </div>
-          </div>
+          <Formik>
+            {({
+              setFieldTouched,
+              touched,
+            }) => (
+              <div className="d-flex flex-column">
+                <div className="d-flex flex-row mb-2">
+                  Record voltage displayed on load bank and voltage measured via DMM
+                  when all load banks are on.
+                </div>
+                <div className="row mx-2">
+                  <Form.Group className="col">
+                    <Form.Label className="h6 my-auto">
+                      VR: Voltage reported [V] (from display)
+                    </Form.Label>
+                    <Form.Control
+                      name="vr"
+                      type="number"
+                      className="w-50"
+                      autoFocus
+                      min={0}
+                      value={voltageReading.vr}
+                      onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
+                      onChange={(e) => {
+                        setFieldTouched('vr', true);
+                        updateVoltageReadings({ e });
+                      }}
+                      isInvalid={touched.vr && isVRError(step)}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      Adjust ppm setting to fix, then check again
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="col">
+                    <Form.Label className="h6 my-auto">
+                      VA: Voltage actual [V] (from voltmeter)
+                    </Form.Label>
+                    <Form.Control
+                      name="va"
+                      type="number"
+                      min={0}
+                      className="w-50"
+                      value={voltageReading.va}
+                      onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
+                      onChange={(e) => {
+                        setFieldTouched('va', true);
+                        updateVoltageReadings({ e });
+                      }}
+                      isInvalid={touched.vr && voltageReading.va < 43.2}
+                    />
+                    { /* TODO: Force restart of entire process */ }
+                    <Form.Control.Feedback type="invalid">
+                      Too much sag. Check DC source and redo calibration
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="col">
+                    <Form.Label className="h6 my-auto">Test voltage [V]</Form.Label>
+                    <Form.Control
+                      type="number"
+                      className="w-50"
+                      disabled
+                      value={48}
+                    />
+                  </Form.Group>
+                </div>
+                <div className="row mx-2">
+                  <Form.Group className="col">
+                    <Form.Label className="h6 my-auto">VR error [%]</Form.Label>
+                    <Form.Control
+                      type="text"
+                      className="w-50"
+                      disabled
+                      value={calcVRError().toFixed(2)}
+                    />
+                    <Form.Label className="h6 my-auto">
+                      VR ok? (under 1%)
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      className="w-50"
+                      disabled
+                      value={calcVRError() < 1 ? 'Ok' : 'FAIL'}
+                    />
+                  </Form.Group>
+                  <Form.Group className="col">
+                    <Form.Label className="h6 my-auto">VA error [%]</Form.Label>
+                    <Form.Control
+                      type="text"
+                      className="w-50"
+                      disabled
+                      value={calcVAError().toFixed(2)}
+                    />
+                    <Form.Label className="h6 my-auto">
+                      VA ok? (under 10%)
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      className="w-50"
+                      disabled
+                      value={calcVAError() < 10 ? 'Ok' : 'FAIL'}
+                    />
+                  </Form.Group>
+                  <div className="col" />
+                </div>
+              </div>
+            )}
+          </Formik>
         );
       default:
         return (
@@ -712,7 +585,8 @@ export default function LoadBankWiz() {
               onFinish={() => setCanProgress(true)}
               getSteps={getLoadSteps}
               getStepContent={getLoadStepContent}
-              canAdvance={canAdvanceLoadStep}
+              canAdvance={() => true}
+              // TODO: CHange me back canAdvance={canAdvanceLoadStep}
               finishMsg="You're finished with the load steps"
             />
           </div>
