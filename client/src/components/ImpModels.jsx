@@ -5,20 +5,20 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
-// import ModalAlert from './ModalAlert';
-// import ImportModelError from './ImportModelError';
-// import DisplayGrid from './UITable';
+import ModalAlert from './ModalAlert';
+import ImportModelError from './ImportModelError';
+import DisplayGrid from './UITable';
 
 export default function ImpModels() {
-  const [csvData, setCSVData] = React.useState([]);
-  // const [show, setShow] = useState(false);
-  // const [showTable, setShowTable] = useState(false);
-  // const [importCount, setImportCount] = useState(0);
-  // const closeModal = () => {
-  //   setShow(false);
-  //   setAllRowErrors([]);
-  //   setAllQueryErrors([]);
-  // };
+  const [rows, setRow] = React.useState([]);
+  const [showTable, setShowTable] = React.useState(false);
+  const [importStatus, setImportStatus] = React.useState('Import');
+  const [show, setShow] = React.useState(false);
+  const [allRowErrors, setAllRowErrors] = React.useState([]);
+  const closeModal = () => {
+    setShow(false);
+    setAllRowErrors([]);
+  };
 
   const requiredHeaders = [
     { display: 'Vendor', value: 'vendor' },
@@ -66,35 +66,160 @@ export default function ImpModels() {
   `;
   const query = print(IMPORT_MODELS);
   const queryName = 'bulkImportModels';
-  const renderTable = (fileInfo) => {
-    toast('TODO render table with fileInfo');
-    console.log(fileInfo);
+  const renderTable = (models) => {
+    const filteredData = models.map((obj) => ({
+      id: String(obj.vendor + obj.modelNumber),
+      vendor: String(obj.vendor),
+      modelNumber: String(obj.modelNumber),
+      description: String(obj.description),
+      ...(obj.comment) && { comment: String(obj.comment) },
+      ...(obj.calibrationFrequency !== 'N/A') && { calibrationFrequency: parseInt(obj.calibrationFrequency, 10) },
+    }));
+    setRow(filteredData);
+    setShowTable(true);
+    console.log(filteredData);
   };
 
-  // TODO: Implement me! (maybe not needed with transform?)
-  const filterData = (fileInfo) => fileInfo;
+  const cols = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 60,
+      hide: true,
+      disableColumnMenu: true,
+      type: 'number',
+    },
+    { field: 'vendor', headerName: 'Vendor', width: 150 },
+    { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
+    { field: 'description', headerName: 'Short-Description', width: 240 },
+    {
+      field: 'comment',
+      headerName: 'Comment',
+      width: 300,
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+  ];
 
-  const handleQueryResponse = (response) => {
-    console.log(response);
-    if (response.success) {
-      toast.success(`Successfully imported ${csvData.length} models!`);
-      renderTable(csvData);
-    } else {
-      toast.error(response.message);
+  const characterLimits = {
+    model: {
+      vendor: 30,
+      modelNumber: 40,
+      description: 100,
+      comment: 2000,
+      calibrationFrequency: 10,
+    },
+  };
+
+  const getMissingKeys = (row) => {
+    const missingKeys = [];
+    if (!row.vendor) missingKeys.push('Vendor');
+    if (!row.modelNumber) missingKeys.push('Model-Number');
+    if (!row.description) missingKeys.push('Short-Description');
+    return missingKeys.length > 0 ? missingKeys : null;
+  };
+
+  const checkDuplicateModel = (data, vendor, modelNumber, myIndex) => {
+    let isDuplicateModel = false;
+    data.forEach((row, index) => {
+      if (index !== myIndex && row.vendor === vendor && row.modelNumber === modelNumber) {
+        isDuplicateModel = true;
+      }
+    });
+    return isDuplicateModel;
+  };
+
+  const validateRow = (row) => {
+    // TODO: Make this less ugly
+    const invalidKeys = [];
+    if (row.vendor && row.vendor.length > characterLimits.model.vendor) { invalidKeys.push('Vendor'); }
+    if (row.modelNumber && row.modelNumber.length > characterLimits.model.modelNumber) { invalidKeys.push('Model-Number'); }
+    if (row.description && row.description.length > characterLimits.model.description) { invalidKeys.push('Short-Description'); }
+    if (row.comment && row.comment.length > characterLimits.model.comment) { invalidKeys.push('Comment'); }
+    if (row.calibrationFrequency && row.calibrationFrequency.length > characterLimits.model.calibrationFrequency) { invalidKeys.push('Calibration-Frequency'); }
+    return invalidKeys.length > 0 ? invalidKeys : null;
+  };
+
+  const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
+
+  const isEmptyLine = (obj) => {
+    Object.values(obj).every((x) => (x === null || x === ''));
+  };
+
+  const getImportErrors = (fileInfo) => {
+    const importRowErrors = [];
+    fileInfo.forEach((row, index) => {
+      // Check missing keys
+      if (!isEmptyLine(row)) {
+        const missingKeys = getMissingKeys(row);
+
+        let isDuplicateModel;
+        if (row.vendor && row.modelNumber) {
+          isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
+        }
+
+        // Validate entries by length
+        const invalidEntries = validateRow(row);
+
+        // Validate calibration frequency
+        const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
+
+        // If any errors exist, create errors object
+        if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
+          const rowError = {
+            data: row,
+            row: index + 2,
+            ...(missingKeys) && { missingKeys },
+            ...(invalidEntries) && { invalidEntries },
+            ...(isDuplicateModel) && { isDuplicateModel },
+            ...(invalidCalibration) && { invalidCalibration },
+          };
+          importRowErrors.push(rowError);
+        }
+      }
+    });
+    return importRowErrors.length > 0 ? importRowErrors : null;
+  };
+
+  const validateFile = (fileInfo) => {
+    const importRowErrors = getImportErrors(fileInfo);
+    if (importRowErrors) {
+      console.log(importRowErrors);
+      setAllRowErrors(importRowErrors);
+      setShow(true);
+      return false;
     }
+    return true;
   };
 
-  const handleImport = (fileInfo) => {
+  const handleImport = (fileInfo, resetUpload) => {
     console.log('Handling import');
-    const models = filterData(fileInfo);
+    setImportStatus('Validating');
+    if (!validateFile(fileInfo)) {
+      setImportStatus('Import');
+      return;
+    }
+
+    // File has been validated, now push to database
+    const models = fileInfo;
     const getVariables = () => ({ models });
-    setCSVData(models);
-    console.log(fileInfo);
     Query({
       query,
       queryName,
       getVariables,
-      handleResponse: handleQueryResponse,
+      handleResponse: (response) => {
+        console.log(response);
+        if (response.success) {
+          toast.success(`Successfully imported ${models.length} models!`);
+          renderTable(models);
+          resetUpload();
+        } else {
+          toast.error(response.message);
+        }
+      },
     });
   };
 
@@ -107,21 +232,12 @@ export default function ImpModels() {
         customTransform={customTransform}
         uploadLabel={uploadLabel}
         handleImport={handleImport}
+        importStatus={importStatus}
       />
-      {/* <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
-        <ImportModelError allRowErrors={allRowErrors} errorList={allQueryErrors} />
-      </ModalAlert> */}
-      {/* <div style={{
-        display: showTable ? 'inline-block' : 'none',
-        width: showTable ? '100%' : '0',
-        height: 'auto',
-      }}
-      >
-        <h2 className="m-2">
-          {`Successfully Imported ${importCount} ${importCount === 1 ? 'Model' : 'Models'}`}
-        </h2>
-        <DisplayGrid rows={csvData} cols={cols} />
-      </div> */}
+      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
+        <ImportModelError allRowErrors={allRowErrors} errorList={[]} />
+      </ModalAlert>
+      {showTable && <DisplayGrid rows={rows} cols={cols} />}
     </>
   );
 }

@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function CustomUpload({
-  requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport,
+  requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus,
 }) {
   CustomUpload.propTypes = {
     requiredHeaders: PropTypes.array.isRequired,
@@ -15,16 +15,15 @@ export default function CustomUpload({
     customTransform: PropTypes.func.isRequired,
     uploadLabel: PropTypes.string.isRequired,
     handleImport: PropTypes.func.isRequired,
+    importStatus: PropTypes.string.isRequired,
   };
 
   const [fileInfo, setFileInfo] = useState([]);
   const [shouldReset, setReset] = useState(false);
-  const [status, setStatus] = useState('Import');
   const [show, setShow] = useState(false);
   const buttonRef = createRef();
 
   const resetUpload = () => {
-    setStatus('Import');
     setReset(true);
     setReset(false);
     setShow(false);
@@ -37,11 +36,6 @@ export default function CustomUpload({
       if (!availableHeaders.includes(header.value)) missingHeaders.push(header.display);
     });
     return missingHeaders;
-  };
-
-  const validateContents = () => {
-    setStatus('Validating Contents');
-    return true;
   };
 
   const handleOpenDialog = (e) => {
@@ -92,8 +86,7 @@ export default function CustomUpload({
   };
 
   const submitFileContents = () => {
-    setStatus('Preparing Transactions');
-    handleImport(fileInfo);
+    handleImport(fileInfo, resetUpload);
   };
 
   // TODO: Add batching for massive files (test this)
@@ -106,14 +99,7 @@ export default function CustomUpload({
 
   // TODO: Send file to backend (for now spoofing)
   const handleSubmitFile = () => {
-    if (validateContents()) {
-      setTimeout(() => {
-        submitFileContents();
-        setTimeout(() => {
-          handleRemoveFile();
-        }, 1000);
-      }, 1000);
-    }
+    submitFileContents(handleRemoveFile);
   };
 
   return (
@@ -158,9 +144,9 @@ export default function CustomUpload({
                 onClick={handleSubmitFile}
                 style={{ borderRadius: 5 }}
               >
-                {status}
+                {importStatus}
               </Button>
-              {status === 'Import'
+              {importStatus === 'Import'
                 ? (
                   <Button
                     className="m-2"
