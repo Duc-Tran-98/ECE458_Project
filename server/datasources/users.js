@@ -103,7 +103,7 @@ class UserAPI extends DataSource {
           response.success = true;
           response.message = 'Successfully updated password';
         } else {
-          response.messgae = 'Incorrect password';
+          response.message = 'Incorrect password';
         }
       } else {
         response.message = 'User does not exist';
