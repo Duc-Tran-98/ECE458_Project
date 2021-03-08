@@ -122,6 +122,7 @@ class InstrumentAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
     if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+    if (assetTag) filters.push({ assetTag });
 
     let instruments = await this.store.instruments.findAndCountAll({
       include: includeData,
