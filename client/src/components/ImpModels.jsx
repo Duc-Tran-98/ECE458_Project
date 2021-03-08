@@ -31,6 +31,8 @@ export default function ImpModels() {
     switch (header) {
       case 'categories':
         return value.split(/\s+/);
+      case 'calibrationFrequency':
+        return parseInt(value, 10);
       default:
         return value.trim();
     }
