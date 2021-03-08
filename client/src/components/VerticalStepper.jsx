@@ -51,27 +51,21 @@ export default function VerticalLinearStepper({
   getSteps,
   getStepContent,
   onFinish,
-  orientation,
   canAdvance,
   showResetBtn,
   finishMsg,
-  onNext,
 }) {
   VerticalLinearStepper.propTypes = {
     getSteps: PropTypes.func.isRequired,
     getStepContent: PropTypes.func.isRequired,
     onFinish: PropTypes.func.isRequired,
-    orientation: PropTypes.string,
     canAdvance: PropTypes.func,
     showResetBtn: PropTypes.bool,
     finishMsg: PropTypes.string,
-    onNext: PropTypes.func,
   };
   VerticalLinearStepper.defaultProps = {
-    orientation: 'vertical',
     showResetBtn: false,
     canAdvance: () => true,
-    onNext: () => undefined,
     finishMsg: "All steps completed - you're finished",
   };
   // const classes = useStyles();
@@ -92,7 +86,6 @@ export default function VerticalLinearStepper({
 
   const handleNext = () => {
     if (canAdvance(activeStep)) {
-      onNext(activeStep);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       if (activeStep === steps.length - 1) {
         onFinish();
@@ -116,7 +109,7 @@ export default function VerticalLinearStepper({
         <>
           <Stepper
             activeStep={activeStep}
-            orientation={orientation}
+            orientation="vertical"
             className="rounded p-4"
           >
             {steps.map((label, index) => (
