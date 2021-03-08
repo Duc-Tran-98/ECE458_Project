@@ -58,27 +58,32 @@ class BulkDataAPI extends DataSource {
           supportLoadBankCalibration,
         }, { transaction: t });
         const modelId = createdModel.dataValues.id;
-
-        for (let j = 0; j < categories.length; j += 1) {
-          const name = categories[j];
-          const category = await this.store.modelCategories.findAll({
-            where: { name },
-          }, { transaction: t });
-          if (category && category[0]) {
-            const modelCategoryId = (category[0]).dataValues.id;
-            await this.store.modelCategoryRelationships.create({
-              modelId,
-              modelCategoryId,
+        if (categories) {
+          for (let j = 0; j < categories.length; j += 1) {
+            const name = categories[j];
+            const category = await this.store.modelCategories.findAll({
+              where: { name },
+              include: {
+                all: true,
+              },
+              transaction: t,
             }, { transaction: t });
-          } else {
-            const createdCat = await this.store.modelCategories.create({
-              name,
-            }, { transaction: t });
-            const modelCategoryId = createdCat.dataValues.id;
-            await this.store.modelCategoryRelationships.create({
-              modelId,
-              modelCategoryId,
-            }, { transaction: t });
+            if (category && category[0]) {
+              const modelCategoryId = (category[0]).dataValues.id;
+              await this.store.modelCategoryRelationships.create({
+                modelId,
+                modelCategoryId,
+              }, { transaction: t });
+            } else {
+              const createdCat = await this.store.modelCategories.create({
+                name,
+              }, { transaction: t });
+              const modelCategoryId = createdCat.dataValues.id;
+              await this.store.modelCategoryRelationships.create({
+                modelId,
+                modelCategoryId,
+              }, { transaction: t });
+            }
           }
         }
       }
@@ -91,6 +96,7 @@ class BulkDataAPI extends DataSource {
     } catch (error) {
       // If the execution reaches this line, an error was thrown.
       // We rollback the transaction.
+      console.log(error);
       await t.rollback();
       response.success = false;
       response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
@@ -212,6 +218,10 @@ class BulkDataAPI extends DataSource {
                   const name = categories[j];
                   const category = await this.store.instrumentCategories.findAll({
                     where: { name },
+                    include: {
+                      all: true,
+                    },
+                    transaction: t,
                   }, { transaction: t });
                   if (category && category[0]) {
                     const instrumentCategoryId = (category[0]).dataValues.id;
