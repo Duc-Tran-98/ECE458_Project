@@ -240,6 +240,25 @@ module.exports = {
       );
       return response;
     },
+    addCalibrationEventByAssetTag: async (
+      _,
+      {
+        assetTag, user, date, comment, fileLocation, fileName,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEventByAssetTag(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          fileLocation,
+          fileName,
+        },
+      );
+      return response;
+    },
     addCalibrationEventById: async (
       _,
       {

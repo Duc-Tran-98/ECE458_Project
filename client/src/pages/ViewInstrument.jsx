@@ -144,11 +144,18 @@ export default function DetailedInstrumentView({ onDelete }) {
       });
     }
     // If there are valid entries, add them to DB
-    AddCalibEvent({
+    // AddCalibEvent({
+    //   events: newHistory,
+    //   modelNumber,
+    //   vendor,
+    //   serialNumber,
+    //   handleResponse: () => {
+    //     fetchData(entry);
+    //   },
+    // });
+    AddCalibEventByAssetTag({
       events: newHistory,
-      modelNumber,
-      vendor,
-      serialNumber,
+      assetTag,
       handleResponse: () => {
         fetchData(entry);
       },

@@ -275,6 +275,15 @@ const typeDefs = gql`
       fileName: String
     ): String!
 
+    addCalibrationEventByAssetTag(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      fileLocation: String
+      fileName: String
+    ): String!
+
     #bulk import
     # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
     bulkImportData(
