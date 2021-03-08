@@ -245,7 +245,7 @@ export default function InstrumentForm({
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
                 }}
-                tags={values.categories}
+                tags={categories}
                 dis={disabled}
                 models={false}
                 isInvalid={false}

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -75,7 +76,7 @@ export default function EditInstrument({
   const handleSubmit = (values) => {
     console.log('EditInstrument handling submit with values: ');
     console.log(values);
-    const {
+    let {
       comment,
       modelNumber,
       assetTag,
@@ -94,6 +95,7 @@ export default function EditInstrument({
       }
     };
     // TODO: update api to include assetTag for edit instrument
+    assetTag = parseInt(assetTag, 10);
     EditInstrumentQuery({
       modelNumber,
       vendor,
