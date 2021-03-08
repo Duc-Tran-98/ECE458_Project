@@ -156,7 +156,7 @@ module.exports = {
     editModel: async (
       _,
       {
-        id, modelNumber, vendor, description, comment, calibrationFrequency, categories,
+        id, modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, categories,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
@@ -165,13 +165,14 @@ module.exports = {
       vendor,
       description,
       comment,
+      supportLoadBankCalibration,
       calibrationFrequency,
       categories,
     }),
     addModel: async (
       _,
       {
-        modelNumber, vendor, description, comment, calibrationFrequency, categories,
+        modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, categories,
       },
       { dataSources },
     ) => {
@@ -181,6 +182,7 @@ module.exports = {
         description,
         comment,
         calibrationFrequency,
+        supportLoadBankCalibration,
         categories,
       });
       return response;
@@ -236,6 +238,43 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+        },
+      );
+      return response;
+    },
+    addCalibrationEventByAssetTag: async (
+      _,
+      {
+        assetTag, user, date, comment, fileLocation, fileName,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEventByAssetTag(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          fileLocation,
+          fileName,
+        },
+      );
+      return response;
+    },
+    addLoadBankCalibration: async (
+      _,
+      {
+        assetTag, user, date, comment, loadBankData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addLoadBankCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          loadBankData,
         },
       );
       return response;

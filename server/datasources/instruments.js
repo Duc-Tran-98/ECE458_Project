@@ -17,7 +17,8 @@ function validateInstrument({
   if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
   }
-  if (Math.floor(assetTag / 100000) < 1 || Math.floor(assetTag / 100000) > 10) {
+  // eslint-disable-next-line max-len
+  if (assetTag != null && (Math.floor(assetTag / 100000) < 1 || Math.floor(assetTag / 100000) > 10)) {
     return [false, 'Asset Tag not within 100000 - 999999 Range'];
   }
   return [true];
@@ -121,6 +122,7 @@ class InstrumentAPI extends DataSource {
     if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
     if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
     if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+    if (assetTag) filters.push({ assetTag });
 
     let instruments = await this.store.instruments.findAndCountAll({
       include: includeData,
@@ -239,7 +241,7 @@ class InstrumentAPI extends DataSource {
   async getInstrument({ modelNumber, vendor, serialNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instrument = await this.store.instruments.findAll({
+    const instrument = await this.store.instruments.findOne({
       where: { modelNumber, vendor, serialNumber },
       include: {
         model: this.store.instrumentCategories,
@@ -247,8 +249,22 @@ class InstrumentAPI extends DataSource {
         through: 'instrumentCategoryRelationships',
       },
     });
-    if (instrument && instrument[0]) {
-      return instrument[0];
+    if (instrument) {
+      await this.store.models.findOne({ where: { modelNumber, vendor } }).then((model) => {
+        const instrumentInfo = {
+          vendor: instrument.dataValues.vendor,
+          modelNumber: instrument.dataValues.modelNumber,
+          serialNumber: instrument.dataValues.serialNumber,
+          modelReference: instrument.dataValues.modelReference,
+          calibrationFrequency: instrument.dataValues.calibrationFrequency,
+          comment: instrument.dataValues.comment,
+          description: instrument.dataValues.description,
+          id: instrument.dataValues.id,
+          assetTag: instrument.dataValues.assetTag,
+          supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
+        };
+        return instrumentInfo;
+      });
     }
     return null;
   }

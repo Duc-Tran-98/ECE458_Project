@@ -30,13 +30,16 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     id: '',
     comment: '',
     calibrationFrequency: '',
+    supportLoadBankCalibration: false,
     categories: [],
   });
   const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
 
   const handleFindModel = (response) => {
     const categories = response.categories.map((item) => item.name);
-    const { description, comment, id } = response;
+    const {
+      description, comment, id, supportLoadBankCalibration,
+    } = response;
     setModelId(parseInt(id, 10));
     let { calibrationFrequency } = response;
     if (calibrationFrequency !== null) {
@@ -51,6 +54,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       id,
       categories,
       calibrationFrequency,
+      supportLoadBankCalibration,
       modelNumber: initModelNumber,
       vendor: initVendor,
     });
@@ -72,7 +76,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const handleSubmit = (values) => {
     // Parse information from model information
     const {
-      calibrationFrequency, description, comment, modelNumber, vendor, categories,
+      calibrationFrequency, supportLoadBankCalibration, description, comment, modelNumber, vendor, categories,
     } = values;
 
     // Send actual query to edit model
@@ -83,6 +87,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       description,
       comment,
       calibrationFrequency: parseInt(calibrationFrequency, 10),
+      supportLoadBankCalibration,
       categories,
       handleResponse: (response) => {
         if (response.success) {
@@ -101,6 +106,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     description,
     comment,
     calibrationFrequency,
+    supportLoadBankCalibration,
     categories,
   } = model;
 
@@ -117,6 +123,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             comment={comment}
             categories={categories}
             calibrationFrequency={calibrationFrequency}
+            supportLoadBankCalibration={supportLoadBankCalibration}
             handleFormSubmit={handleSubmit}
             validated={false}
             diffSubmit

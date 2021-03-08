@@ -60,7 +60,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -68,6 +68,7 @@ export default function ModelForm({
     calibrationFrequency: PropTypes.string,
     comment: PropTypes.string,
     description: PropTypes.string,
+    supportLoadBankCalibration: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
@@ -83,6 +84,7 @@ export default function ModelForm({
     calibrationFrequency: '0',
     comment: '',
     description: '',
+    supportLoadBankCalibration: false,
     categories: [],
     diffSubmit: false,
     handleDelete: () => {},
@@ -96,7 +98,7 @@ export default function ModelForm({
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
-
+  console.log(supportLoadBankCalibration);
   return (
     <Formik
       initialValues={{
@@ -106,6 +108,7 @@ export default function ModelForm({
         comment: comment || '',
         description: description || '',
         categories: categories || [],
+        supportLoadBankCalibration: supportLoadBankCalibration || false,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -123,7 +126,7 @@ export default function ModelForm({
         isSubmitting,
         values,
         errors,
-        // touched,
+        touched,
       }) => (
 
         <Form
@@ -155,7 +158,7 @@ export default function ModelForm({
                     getOptionLabel={formatOption}
                     value={{ vendor: values.vendor }}
                     allowAdditions
-                    isInvalid={!!errors.vendor}
+                    isInvalid={touched.vendor && !!errors.vendor}
                   />
                 )}
               </Form.Group>
@@ -171,7 +174,7 @@ export default function ModelForm({
                 value={values.modelNumber}
                 onChange={handleChange}
                 disabled={disabled}
-                isInvalid={!!errors.modelNumber}
+                isInvalid={touched.modelNumber && !!errors.modelNumber}
                 error={errors.modelNumber}
               />
             </div>
@@ -204,7 +207,7 @@ export default function ModelForm({
                 value={values.description}
                 onChange={handleChange}
                 disabled={disabled}
-                isInvalid={!!errors.description}
+                isInvalid={touched.description && !!errors.description}
                 error={errors.description}
               />
             </div>
@@ -227,6 +230,25 @@ export default function ModelForm({
                   {errors.comment}
                 </Form.Control.Feedback>
               </Form.Group>
+            </div>
+            <div className="col mt-3">
+              <div className="form-check form-switch mt-4">
+                <label className="form-check-label h4 col" htmlFor="adminCheck">
+                  Can model be calibrated with load bank?
+                </label>
+                <Form.Control
+                  className="form-check-input"
+                  type="checkbox"
+                  id="adminCheck"
+                  name="supportLoadBankCalibration"
+                  checked={values.supportLoadBankCalibration}
+                  onChange={handleChange}
+                  disabled={disabled}
+                />
+                <div className="col">
+                  <strong>{values.supportLoadBankCalibration ? 'Yes' : 'No'}</strong>
+                </div>
+              </div>
             </div>
           </div>
           {/* TODO: Ensure tags are added into the db (not rendering on view)  */}

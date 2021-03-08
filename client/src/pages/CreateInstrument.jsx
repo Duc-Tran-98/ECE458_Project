@@ -5,7 +5,7 @@ import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import InstrumentForm from '../components/InstrumentForm';
 import CalibrationTable from '../components/CalibrationTable';
-import AddCalibEvent from '../queries/AddCalibEvent';
+import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 
 function CreateInstrumentPage({ onCreation }) {
   CreateInstrumentPage.propTypes = {
@@ -72,10 +72,15 @@ function CreateInstrumentPage({ onCreation }) {
     console.log('Creating instrument with values: ');
     console.log(values);
     // This is to submit all the data
-    const {
+    let {
+      // eslint-disable-next-line prefer-const
       modelNumber, vendor, assetTag, comment, serialNumber, categories,
     } = values;
     // check validation here in backend?
+    if (typeof assetTag === 'string') {
+      assetTag = null;
+    }
+
     CreateInstrument({
       modelNumber,
       vendor,
@@ -93,11 +98,19 @@ function CreateInstrumentPage({ onCreation }) {
         ); // Collect valid entries
         if (validEvents.length > 0 && formState.calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
-          AddCalibEvent({
+          // AddCalibEvent({
+          //   events: validEvents,
+          //   modelNumber,
+          //   vendor,
+          //   serialNumber,
+          //   categories,
+          //   handleResponse: () => undefined,
+          // });
+          assetTag = parseInt(assetTag, 10);
+
+          AddCalibEventByAssetTag({
             events: validEvents,
-            modelNumber,
-            vendor,
-            serialNumber,
+            assetTag,
             categories,
             handleResponse: () => undefined,
           });

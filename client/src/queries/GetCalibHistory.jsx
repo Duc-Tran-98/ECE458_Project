@@ -32,6 +32,7 @@ export default async function GetCalibHistory({
         comment
         fileLocation
         fileName
+        loadBankData
       }
     }
   `;

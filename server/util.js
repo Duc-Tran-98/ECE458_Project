@@ -118,6 +118,10 @@ module.exports.createStore = async () => {
         allowNull: true,
       },
       calibrationFrequency: SQL.INTEGER,
+      supportLoadBankCalibration: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {
@@ -372,6 +376,7 @@ module.exports.createStore = async () => {
       comment: SQL.STRING(2000),
       fileLocation: SQL.STRING,
       fileName: SQL.STRING,
+      loadBankData: SQL.TEXT,
     },
     { freezeTableName: true },
     {
