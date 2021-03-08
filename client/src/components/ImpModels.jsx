@@ -30,9 +30,14 @@ export default function ImpModels() {
   const customTransform = (value, header) => {
     switch (header) {
       case 'categories':
-        return value.split(/\s+/);
+        // eslint-disable-next-line no-case-declarations
+        const arr = value.trim().split(/\s+/);
+        if (arr.length > 0 && arr[0] !== '') { return arr; }
+        return null;
       case 'calibrationFrequency':
-        return parseInt(value, 10);
+        return Number.isNaN(value) ? null : parseInt(value, 10);
+      case 'loadBankSupport':
+        return value === 'Y' || value === 'y';
       default:
         return value.trim();
     }
@@ -44,11 +49,11 @@ export default function ImpModels() {
     mutation ImportModels (
       $filteredData: [ModelInput]!
     ) {
-      bulkImportData(models: $filteredData)
+      bulkImportModels(models: $filteredData)
     }
   `;
   const query = print(IMPORT_MODELS);
-  const queryName = 'bulkImportData';
+  const queryName = 'bulkImportModels';
 
   // TODO: Implement me!
   const filterData = (fileInfo) => fileInfo;
