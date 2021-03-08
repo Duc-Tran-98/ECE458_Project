@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 
 import { CSVReader } from 'react-papaparse';
 import Button from 'react-bootstrap/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const buttonRef = React.createRef();
 
 export default function PapaparseTest() {
-  const [status, setStatus] = useState('');
-  const [statusColor, setStatusColor] = useState('black');
+  const [status, setStatus] = useState('Submit');
 
   const handleOpenDialog = (e) => {
     // Note that the ref is set async, so it might be null at some point
@@ -27,13 +27,12 @@ export default function PapaparseTest() {
     console.log(reason);
   };
 
-  const handleOnRemoveFile = (data) => {
-    console.log('---------------------------');
-    console.log(data);
-    console.log('---------------------------');
+  const handleOnRemoveFile = () => {
+    console.log('removing file');
   };
 
   const handleRemoveFile = (e) => {
+    setStatus('Submit');
     // Note that the ref is set async, so it might be null at some point
     if (buttonRef.current) {
       buttonRef.current.removeFile(e);
@@ -42,23 +41,23 @@ export default function PapaparseTest() {
 
   const submitFileContents = () => {
     setStatus('Preparing Transactions');
-    setStatusColor('orange');
   };
 
   const validateContents = () => {
-    setStatus('Parsing');
-    setStatusColor('blue');
+    setStatus('Validating Contents');
   };
 
   const handleSubmitFile = (e) => {
     // Send file to backend
     setTimeout(() => {
       validateContents();
+      setTimeout(() => {
+        submitFileContents();
+        setTimeout(() => {
+          handleRemoveFile();
+        }, 1000);
+      }, 1000);
     }, 1000);
-    setTimeout(() => {
-      submitFileContents();
-    }, 1000);
-    handleRemoveFile(e);
   };
 
   return (
@@ -73,7 +72,7 @@ export default function PapaparseTest() {
       progressBarColor="#fca311"
     >
       {({ file }) => (
-        <aside
+        <div
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -91,22 +90,9 @@ export default function PapaparseTest() {
           >
             Select Instruments File
           </button>
-          <div
-            style={{
-              borderWidth: 1,
-              borderStyle: 'solid',
-              borderColor: '#ccc',
-              height: 30,
-              lineHeight: 2.5,
-              marginTop: 5,
-              marginBottom: 5,
-              paddingLeft: 13,
-              paddingTop: 3,
-              width: '40%',
-            }}
-          >
+          <p className="m-2" style={{ marginTop: '12px' }}>
             {file && file.name}
-          </div>
+          </p>
           {file && file.name
           && (
             <>
@@ -116,21 +102,22 @@ export default function PapaparseTest() {
                 onClick={handleSubmitFile}
                 style={{ borderRadius: 5 }}
               >
-                Submit
+                {status}
               </Button>
-              <Button
-                className="m-2"
-                type="submit"
-                onClick={handleRemoveFile}
-                style={{ background: '#fc2311', borderRadius: 5 }}
-              >
-                Remove
-              </Button>
-
+              {status === 'Submit'
+                ? (
+                  <Button
+                    className="m-2"
+                    type="submit"
+                    onClick={handleRemoveFile}
+                    style={{ background: '#fc2311', borderRadius: 5 }}
+                  >
+                    Remove
+                  </Button>
+                ) : <CircularProgress />}
             </>
           )}
-          {status && <p style={{ color: { statusColor } }}>{status}</p>}
-        </aside>
+        </div>
       )}
     </CSVReader>
   );
