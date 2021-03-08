@@ -11,7 +11,7 @@ function validateInstrument({
   if (modelNumber.length > 40) {
     return [false, 'Model number input must be under 40 characters!'];
   }
-  if (serialNumber.length > 40) {
+  if (serialNumber != null && serialNumber.length > 40) {
     return [false, 'Serial number input must be under 40 characters!'];
   }
   if (comment != null && comment.length > 2000) {
@@ -372,14 +372,16 @@ class InstrumentAPI extends DataSource {
       .findOne({ where: { modelNumber, vendor } })
       .then(async (model) => {
         if (model) {
-          await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
-            async (instrument) => {
-              if (instrument) {
-                response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
-                response.success = false;
-              }
-            },
-          );
+          if (serialNumber) {
+            await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
+              async (instrument) => {
+                if (instrument) {
+                  response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
+                  response.success = false;
+                }
+              },
+            );
+          }
           let newAssetTag;
           if (assetTag) {
             await this.store.instruments.findOne({ where: { assetTag } }).then(
