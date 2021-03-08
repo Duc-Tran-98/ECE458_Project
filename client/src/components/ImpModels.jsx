@@ -60,7 +60,7 @@ export default function ImpModels() {
       query,
       queryName,
       getVariables,
-      // TODO: Handle response correctly
+      // TODO: Handle response correctly (see ImportModels, add table if success)
       handleResponse: (response) => {
         console.log(response);
       },
