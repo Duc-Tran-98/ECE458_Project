@@ -79,7 +79,7 @@ function MyCertificate() {
   const username = matches[2];
   const vendor = window.sessionStorage.getItem('vendor');
   const serial = window.sessionStorage.getItem('serialNumber');
-  // const assetTag = window.sessionStorage.getItem('assetTag');
+  const assetTag = window.sessionStorage.getItem('assetTag');
   const model = window.sessionStorage.getItem('modelNumber');
   const description = window.sessionStorage.getItem('modelDescription');
   const calibrationDate = window.sessionStorage.getItem('calibrationDate');
@@ -130,7 +130,7 @@ function MyCertificate() {
                 <Text style={styles.largeText}>
                   Asset Tag:
                   {' '}
-                  ADD THIS IN
+                  {assetTag}
                 </Text>
               </View>
             </View>
@@ -195,6 +195,10 @@ function MyCertificate() {
               <Image style={styles.image} src={evidenceFileURL} />
             </View>
             )}
+
+            {/* {(evidenceFileType === 'load_bank') && (
+
+            )} */}
 
           </View>
         </View>
