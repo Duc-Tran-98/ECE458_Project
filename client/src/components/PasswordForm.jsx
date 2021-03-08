@@ -52,53 +52,51 @@ export default function PasswordForm({ handleSubmitPassword }) {
           className="m-4"
         >
           <h2>Update Password</h2>
-          <div className="row mx-3">
-            <div className="col mt-3">
-              <Form.Group controlId="formCurrentPassword">
-                <Form.Label className="p">Current Password</Form.Label>
-                <Form.Control
-                  name="currentPassword"
-                  type="password"
-                  required
-                  onChange={handleChange}
-                  value={values.currentPassword}
-                  isInvalid={!!errors.currentPassword}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.currentPassword}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group controlId="formNewPassword">
-                <Form.Label className="p">New Password</Form.Label>
-                <Form.Control
-                  name="newPassword"
-                  type="password"
-                  required
-                  onChange={handleChange}
-                  value={values.newPassword}
-                  isInvalid={isInvalidPassword(values.newPassword, values.confirmPassword)}
-                  isValid={isValidPassword(values.newPassword, values.confirmPassword)}
-                />
-              </Form.Group>
-              <Form.Group controlId="formConfirmPassword">
-                <Form.Label className="p">Confirm New Password</Form.Label>
-                <Form.Control
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  onChange={handleChange}
-                  value={values.confirmPassword}
-                  isInvalid={isInvalidPassword(values.newPassword, values.confirmPassword)}
-                  isValid={isValidPassword(values.newPassword, values.confirmPassword)}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Passwords do not match
-                </Form.Control.Feedback>
-                <Form.Control.Feedback type="valid">
-                  Looks great
-                </Form.Control.Feedback>
-              </Form.Group>
-            </div>
+          <div className="row mt-3">
+            <Form.Group controlId="formCurrentPassword" className="col mt-3">
+              <Form.Label className="p">Current Password</Form.Label>
+              <Form.Control
+                name="currentPassword"
+                type="password"
+                required
+                onChange={handleChange}
+                value={values.currentPassword}
+                isInvalid={!!errors.currentPassword}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.currentPassword}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="formNewPassword" className="col mt-3">
+              <Form.Label className="p">New Password</Form.Label>
+              <Form.Control
+                name="newPassword"
+                type="password"
+                required
+                onChange={handleChange}
+                value={values.newPassword}
+                isInvalid={isInvalidPassword(values.newPassword, values.confirmPassword)}
+                isValid={isValidPassword(values.newPassword, values.confirmPassword)}
+              />
+            </Form.Group>
+            <Form.Group controlId="formConfirmPassword" className="col mt-3">
+              <Form.Label className="p">Confirm New Password</Form.Label>
+              <Form.Control
+                name="confirmPassword"
+                type="password"
+                required
+                onChange={handleChange}
+                value={values.confirmPassword}
+                isInvalid={isInvalidPassword(values.newPassword, values.confirmPassword)}
+                isValid={isValidPassword(values.newPassword, values.confirmPassword)}
+              />
+              <Form.Control.Feedback type="invalid">
+                Passwords do not match
+              </Form.Control.Feedback>
+              <Form.Control.Feedback type="valid">
+                Looks great
+              </Form.Control.Feedback>
+            </Form.Group>
           </div>
           <div className="d-flex justify-content-center mt-3 mb-3">
             {isSubmitting
