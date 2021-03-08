@@ -173,6 +173,7 @@ const typeDefs = gql`
     comment: String
     fileLocation: String
     fileName: String
+    loadBankData: String
   }
 
   input ModelInput {
@@ -273,6 +274,23 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+    ): String!
+
+    addCalibrationEventByAssetTag(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      fileLocation: String
+      fileName: String
+    ): String!
+
+    addLoadBankCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      loadBankData: String!
     ): String!
 
     #bulk import
