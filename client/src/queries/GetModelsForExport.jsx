@@ -5,7 +5,7 @@ import { QueryAndThen } from '../components/UseQuery';
 export default async function GetModelsForExport() {
   const GET_MODELS_QUERY = gql`
     query Models {
-      getAllModels{
+      getAllModelsWithFilter{
         vendor
         modelNumber
         description
