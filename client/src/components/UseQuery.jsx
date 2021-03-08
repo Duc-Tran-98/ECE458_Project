@@ -23,7 +23,7 @@ const Query = ({
       handleResponse(response);
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
     });
 };
 

@@ -18,21 +18,21 @@ export default function ProfileIcon({ handleSignOut }) {
 
   return (
     <NavDropdown title={welcomeMessage}>
-      <NavDropdown.Item href="/userInfo" className="text-center">
-        <PersonIcon fontSize="large" />
-        <p style={{ fontSize: '24px' }}>{fullName}</p>
-        <p style={{ color: 'gray' }}>{email}</p>
-        <hr />
-      </NavDropdown.Item>
-      <NavDropdown.Item>
-        <SettingsIcon />
-        <p style={{ display: 'inline' }}>User Settings</p>
-        <hr />
-      </NavDropdown.Item>
-      <NavDropdown.Item onClick={handleSignOut}>
-        <ExitToAppIcon />
-        <p style={{ display: 'inline' }}>Sign Out</p>
-      </NavDropdown.Item>
+      <div className="shadow-sm p-3 rounded">
+        <NavDropdown.Item href="/userInfo" className="text-center border-bottom border-dark">
+          <PersonIcon fontSize="large" />
+          <p style={{ fontSize: '24px' }}>{fullName}</p>
+          <p style={{ color: 'gray' }}>{email}</p>
+        </NavDropdown.Item>
+        <NavDropdown.Item href="/userInfo" className="text-center border-bottom border-dark" style={{ margin: '20px 0px' }}>
+          <SettingsIcon />
+          <p style={{ display: 'inline' }}>User Settings</p>
+        </NavDropdown.Item>
+        <NavDropdown.Item onClick={handleSignOut} className="text-center" style={{ margin: '10px 0px' }}>
+          <ExitToAppIcon />
+          <p style={{ display: 'inline' }}>Sign Out</p>
+        </NavDropdown.Item>
+      </div>
     </NavDropdown>
   );
 }

@@ -215,7 +215,7 @@ export function ServerPaginationGrid({
   };
 
   return (
-    <div className="rounded">
+    <div className="rounded" style={{ zIndex: 0 }}>
       <div
         className="rounded"
         style={{
@@ -233,7 +233,7 @@ export function ServerPaginationGrid({
             ref={csvLink}
           />
         )}
-        <div className="sticky-top bg-offset rounded">{headerElement}</div>
+        <div className="sticky-top bg-offset rounded" style={{ zIndex: 40 }}>{headerElement}</div>
         <DataGrid
           rows={rows}
           columns={cols}

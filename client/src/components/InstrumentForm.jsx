@@ -43,7 +43,9 @@ const charLimits = {
 
 const schema = Yup.object({
   vendor: Yup.string()
-    .required('Model is required'),
+    .required('Please select a model'),
+  modelNumber: Yup.string()
+    .required('Please select a model'),
   serialNumber: Yup.string()
     .max(charLimits.serialNumber.max, `Must be less than ${charLimits.serialNumber.max} characters`),
   assetTag: Yup.number().integer()
@@ -143,19 +145,24 @@ export default function InstrumentForm({
                     disabled={disabled}
                   />
                 ) : (
-                  <AsyncSuggest
-                    query={query}
-                    queryName={queryName}
-                    onInputChange={(e, v) => {
-                      setFieldValue('vendor', v.vendor);
-                      setFieldValue('modelNumber', v.modelNumber);
-                    }}
-                    label="Choose a model"
-                    getOptionSelected={formatSelected}
-                    getOptionLabel={formatOption}
-                    value={{ vendor: values.vendor, modelNumber: values.modelNumber }}
-                    isInvalid={!!errors.vendor && !!errors.modelNumber}
-                  />
+                  <>
+                    <AsyncSuggest
+                      query={query}
+                      queryName={queryName}
+                      onInputChange={(e, v) => {
+                        setFieldValue('vendor', v.vendor);
+                        setFieldValue('modelNumber', v.modelNumber);
+                      }}
+                      label="Choose a model"
+                      getOptionSelected={formatSelected}
+                      getOptionLabel={formatOption}
+                      value={{ modelNumber: values.modelNumber, vendor: values.vendor }}
+                      isInvalid={!!errors.vendor && !!errors.modelNumber}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.vendor}
+                    </Form.Control.Feedback>
+                  </>
                 )}
               </Form.Group>
             </div>
