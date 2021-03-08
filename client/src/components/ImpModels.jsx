@@ -59,9 +59,9 @@ export default function ImpModels() {
 
   const IMPORT_MODELS = gql`
     mutation ImportModels (
-      $filteredData: [ModelInput]!
+      $models: [ModelInput]!
     ) {
-      bulkImportModels(models: $filteredData)
+      bulkImportModels(models: $models)
     }
   `;
   const query = print(IMPORT_MODELS);
@@ -87,9 +87,10 @@ export default function ImpModels() {
 
   const handleImport = (fileInfo) => {
     console.log('Handling import');
-    const filteredData = filterData(fileInfo);
-    setCSVData(filteredData);
-    const getVariables = () => ({ filteredData });
+    const models = filterData(fileInfo);
+    const getVariables = () => ({ models });
+    setCSVData(models);
+    console.log(fileInfo);
     Query({
       query,
       queryName,
