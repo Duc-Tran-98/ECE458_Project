@@ -284,6 +284,14 @@ const typeDefs = gql`
       fileName: String
     ): String!
 
+    addLoadBankCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      loadBankData: String!
+    ): String!
+
     #bulk import
     # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
     bulkImportData(
