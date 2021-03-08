@@ -173,6 +173,7 @@ const typeDefs = gql`
     comment: String
     fileLocation: String
     fileName: String
+    loadBankData: String
   }
 
   input ModelInput {

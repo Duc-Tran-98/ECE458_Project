@@ -17,6 +17,7 @@ export default function CalibrationRow({
   comment,
   fileName,
   fileLocation,
+  loadBankData,
   // eslint-disable-next-line no-unused-vars
   file,
   date,
@@ -31,6 +32,7 @@ export default function CalibrationRow({
     comment: PropTypes.string.isRequired,
     fileName: PropTypes.string.isRequired,
     fileLocation: PropTypes.string.isRequired,
+    loadBankData: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     file: PropTypes.object,
@@ -177,6 +179,9 @@ export default function CalibrationRow({
                   {fileName}
                 </a>
               </div>
+            )}
+            {viewOnly && loadBankData && !fileName && (
+              <div> CALIBRATED BY HPT LOAD BANK </div>
             )}
             {fileNameDisplay.length > 0 && (
             <div>
