@@ -298,7 +298,7 @@ class InstrumentAPI extends DataSource {
     }); // Get all instruments associated with model
     if (instruments) {
       instruments.rows.forEach((element) => {
-        if (element.serialNumber === serialNumber && element.id !== id) {
+        if (element.serialNumber === serialNumber && serialNumber !== '' && element.id !== id) {
           response.message = `ERROR: The instrument ${vendor} ${modelNumber} ${serialNumber} already exists!`;
           response.success = false;
         } // check that there are no unique conflicts, but exclude ourselves

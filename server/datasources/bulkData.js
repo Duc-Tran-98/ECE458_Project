@@ -3,7 +3,6 @@
 /* eslint-disable no-await-in-loop */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
-const SQL = require('sequelize');
 
 function isValidDate(dateString) {
   const regEx = /^\d{4}-\d{2}-\d{2}$/;
@@ -35,7 +34,6 @@ class BulkDataAPI extends DataSource {
     const response = { success: false, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    console.log('bulk importing models');
     // First, we start a transaction and save it into a variable
     const t = await this.store.db.transaction();
 
@@ -102,11 +100,158 @@ class BulkDataAPI extends DataSource {
   }
 
   async bulkImportInstruments({ instruments }) {
-    const response = { success: true, errorList: [] };
+    const response = { success: true, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
-    console.log('bulk importing instruments');
-    console.log(instruments);
+    const t = await this.store.db.transaction();
+
+    try {
+      // Then, we do some calls passing this transaction as an option:
+      for (let i = 0; i < instruments.length; i += 1) {
+        // validate and add instruments
+        const currentInstrument = instruments[i];
+        const vendor = currentInstrument.vendor;
+        const modelNumber = currentInstrument.modelNumber;
+        let serialNumber = currentInstrument.serialNumber;
+        const comment = currentInstrument.comment;
+        const assetTag = currentInstrument.assetTag;
+        const categories = currentInstrument.categories;
+        const calibrationUser = currentInstrument.calibrationUser;
+        const calibrationDate = currentInstrument.calibrationDate;
+        const calibrationComment = currentInstrument.calibrationComment;
+
+        if (calibrationUser == null && calibrationDate != null
+          || calibrationUser != null && calibrationDate == null) {
+          response.message = `ERROR: (Malformed Input) Calibration event for instrument ${vendor} ${modelNumber} ${serialNumber} must have user and date`;
+          response.success = false;
+          return JSON.stringify(response);
+        }
+
+        if (calibrationDate != null && !isValidDate(calibrationDate)) {
+          response.message = `ERROR: (Malformed Input) Instrument ${vendor} ${modelNumber} ${serialNumber} Date must be in format YYYY-MM-DD`;
+          response.success = false;
+          return JSON.stringify(response);
+        }
+
+        await this.store.models
+          .findOne({ where: { modelNumber, vendor } }, { transaction: t })
+          .then(async (model) => {
+            if (model) {
+              if (serialNumber) {
+                await this.getInstrument(
+                  { modelNumber, vendor, serialNumber }, { transaction: t },
+                ).then(
+                  async (instrument) => {
+                    if (instrument) {
+                      throw new Error(`ERROR (type: instrument already exists) (value: ${vendor} ${modelNumber} ${serialNumber})`);
+                    }
+                  },
+                );
+              }
+              const {
+                description,
+                calibrationFrequency,
+              } = model.dataValues;
+              if (calibrationUser != null && calibrationFrequency < 1) {
+                throw new Error(`ERROR (type: cannot calibrate not calibratble instrument) (value: ${vendor} ${modelNumber} ${serialNumber})`);
+              }
+              let newAssetTag;
+              if (assetTag) {
+                await this.store.instruments.findOne({
+                  where: { assetTag },
+                }, { transaction: t }).then(
+                  (instrument) => {
+                    if (instrument) {
+                      throw new Error(`ERROR (type: asset tag already exists) (value: ${assetTag})`);
+                    } else {
+                      newAssetTag = assetTag;
+                    }
+                  },
+                );
+              } else {
+                newAssetTag = Math.floor(Math.random() * 900000) + 100000;
+                // eslint-disable-next-line max-len
+                let instrumentCheck = await this.store.instruments.findOne({ where: { assetTag: newAssetTag } }, { transaction: t });
+                while (instrumentCheck != null) {
+                  newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
+                  // eslint-disable-next-line no-await-in-loop
+                  instrumentCheck = await this.store.instrument.findOne(
+                    { where: { newAssetTag } }, { transaction: t },
+                  );
+                }
+              }
+              if (response.success) {
+                if (serialNumber == null) serialNumber = '';
+                const modelReference = model.dataValues.id;
+                const newInstrumentData = {
+                  modelReference,
+                  vendor,
+                  modelNumber,
+                  serialNumber,
+                  comment,
+                  calibrationFrequency,
+                  description,
+                  assetTag: newAssetTag,
+                };
+                // eslint-disable-next-line max-len
+                const created = await this.store.instruments.create(newInstrumentData, { transaction: t });
+                const instrumentId = created.dataValues.id;
+
+                // add calibration event if included
+                if (calibrationUser != null) {
+                  await this.store.calibrationEvents.create({
+                    calibrationHistoryIdReference: instrumentId,
+                    user: calibrationUser,
+                    date: calibrationDate,
+                    comment: calibrationComment,
+                  }, { transaction: t });
+                }
+
+                for (let j = 0; j < categories.length; j += 1) {
+                  // attach categories and create if they don't exist
+                  const name = categories[j];
+                  const category = await this.store.instrumentCategories.findAll({
+                    where: { name },
+                  }, { transaction: t });
+                  if (category && category[0]) {
+                    const instrumentCategoryId = (category[0]).dataValues.id;
+                    await this.store.instrumentCategoryRelationships.create({
+                      instrumentId,
+                      instrumentCategoryId,
+                    }, { transaction: t });
+                  } else {
+                    const createdCat = await this.store.instrumentCategories.create({
+                      name,
+                    }, { transaction: t });
+                    const instrumentCategoryId = createdCat.dataValues.id;
+                    await this.store.instrumentCategoryRelationships.create({
+                      instrumentId,
+                      instrumentCategoryId,
+                    }, { transaction: t });
+                  }
+                }
+              }
+            } else {
+              throw new Error(`ERROR (type: model does not exist) (value: ${vendor} ${modelNumber})`);
+            }
+          });
+      }
+      // If the execution reaches this line, no errors were thrown.
+      // We commit the transaction.
+      await t.commit();
+      response.message = 'Succesfully imported instruments';
+      response.success = true;
+    } catch (error) {
+      // If the execution reaches this line, an error was thrown.
+      // We rollback the transaction.
+      await t.rollback();
+      response.success = false;
+      if (error.errors) {
+        response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+      } else {
+        response.message = error.message;
+      }
+    }
     return JSON.stringify(response);
   }
 
