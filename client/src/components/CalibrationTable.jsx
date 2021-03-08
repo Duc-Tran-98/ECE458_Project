@@ -36,6 +36,7 @@ export default function CalibrationTable({
       comment={entry.comment}
       fileName={entry.fileName}
       fileLocation={entry.fileLocation}
+      loadBankData={entry.loadBankData}
       date={entry.date}
       file={entry.file}
       entry={entry}

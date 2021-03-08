@@ -240,6 +240,43 @@ module.exports = {
       );
       return response;
     },
+    addCalibrationEventByAssetTag: async (
+      _,
+      {
+        assetTag, user, date, comment, fileLocation, fileName,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCalibrationEventByAssetTag(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          fileLocation,
+          fileName,
+        },
+      );
+      return response;
+    },
+    addLoadBankCalibration: async (
+      _,
+      {
+        assetTag, user, date, comment, loadBankData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addLoadBankCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          loadBankData,
+        },
+      );
+      return response;
+    },
     addCalibrationEventById: async (
       _,
       {
