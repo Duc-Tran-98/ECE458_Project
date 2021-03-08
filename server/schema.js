@@ -123,6 +123,7 @@ const typeDefs = gql`
     description: String!
     id: Int!
     assetTag: Int!
+    supportLoadBankCalibration: Boolean
   }
 
   type FilteredInstrument {
@@ -135,6 +136,7 @@ const typeDefs = gql`
     comment: String
     description: String!
     id: Int!
+    supportLoadBankCalibration: Boolean
     recentCalibration: [Calibration]
     modelCategories: [Category]
     instrumentCategories: [Category]
@@ -161,6 +163,7 @@ const typeDefs = gql`
     description: String!
     assetTag: Int!
     id: Int!
+    supportLoadBankCalibration: Boolean
     recentCalDate: String
     recentCalUser: String
     recentCalComment: String

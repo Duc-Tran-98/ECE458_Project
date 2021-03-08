@@ -18,6 +18,7 @@ export default function FindModel({
         description
         comment
         calibrationFrequency
+        supportLoadBankCalibration
         categories {
             name
         }

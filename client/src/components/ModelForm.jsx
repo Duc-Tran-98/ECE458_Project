@@ -60,7 +60,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, isLoadBank, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -68,7 +68,7 @@ export default function ModelForm({
     calibrationFrequency: PropTypes.string,
     comment: PropTypes.string,
     description: PropTypes.string,
-    isLoadBank: PropTypes.bool,
+    supportLoadBankCalibration: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
@@ -84,7 +84,7 @@ export default function ModelForm({
     calibrationFrequency: '0',
     comment: '',
     description: '',
-    isLoadBank: false,
+    supportLoadBankCalibration: false,
     categories: [],
     diffSubmit: false,
     handleDelete: () => {},
@@ -98,7 +98,7 @@ export default function ModelForm({
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
-  console.log(isLoadBank);
+  console.log(supportLoadBankCalibration);
   return (
     <Formik
       initialValues={{
@@ -108,7 +108,7 @@ export default function ModelForm({
         comment: comment || '',
         description: description || '',
         categories: categories || [],
-        isLoadBank: isLoadBank || false,
+        supportLoadBankCalibration: supportLoadBankCalibration || false,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -240,13 +240,13 @@ export default function ModelForm({
                   className="form-check-input"
                   type="checkbox"
                   id="adminCheck"
-                  name="isLoadBank"
-                  checked={values.isLoadBank}
+                  name="supportLoadBankCalibration"
+                  checked={values.supportLoadBankCalibration}
                   onChange={handleChange}
                   disabled={disabled}
                 />
                 <div className="col">
-                  <strong>{values.isLoadBank ? 'Yes' : 'No'}</strong>
+                  <strong>{values.supportLoadBankCalibration ? 'Yes' : 'No'}</strong>
                 </div>
               </div>
             </div>

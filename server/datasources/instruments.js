@@ -241,7 +241,7 @@ class InstrumentAPI extends DataSource {
   async getInstrument({ modelNumber, vendor, serialNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const instrument = await this.store.instruments.findAll({
+    const instrument = await this.store.instruments.findOne({
       where: { modelNumber, vendor, serialNumber },
       include: {
         model: this.store.instrumentCategories,
@@ -249,8 +249,22 @@ class InstrumentAPI extends DataSource {
         through: 'instrumentCategoryRelationships',
       },
     });
-    if (instrument && instrument[0]) {
-      return instrument[0];
+    if (instrument) {
+      await this.store.models.findOne({ where: { modelNumber, vendor } }).then((model) => {
+        const instrumentInfo = {
+          vendor: instrument.dataValues.vendor,
+          modelNumber: instrument.dataValues.modelNumber,
+          serialNumber: instrument.dataValues.serialNumber,
+          modelReference: instrument.dataValues.modelReference,
+          calibrationFrequency: instrument.dataValues.calibrationFrequency,
+          comment: instrument.dataValues.comment,
+          description: instrument.dataValues.description,
+          id: instrument.dataValues.id,
+          assetTag: instrument.dataValues.assetTag,
+          supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
+        };
+        return instrumentInfo;
+      });
     }
     return null;
   }
