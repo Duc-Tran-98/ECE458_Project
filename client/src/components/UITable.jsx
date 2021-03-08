@@ -215,7 +215,7 @@ export function ServerPaginationGrid({
   };
 
   return (
-    <div className="rounded">
+    <div className="rounded" style={{ zIndex: 0 }}>
       <div
         className="rounded"
         style={{

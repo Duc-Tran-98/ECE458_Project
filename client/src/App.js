@@ -55,7 +55,7 @@ function App() {
           />
         </header>
         <main className="d-flex justify-content-center my-5">
-          <div className="bg-theme rounded">
+          <div className="bg-theme rounded" style={{ zIndex: 0 }}>
             <Switch>
               <Route path="/test">
                 <ComponentTest />
