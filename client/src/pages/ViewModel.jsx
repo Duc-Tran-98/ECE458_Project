@@ -161,7 +161,7 @@ export default function DetailedModelView({ onDelete }) {
                         onClick={() => {
                           const state = { previousUrl: window.location.href };
                           history.push(
-                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}&calibrationFrequency=${entry.calibrationFrequency}`,
+                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${entry.assetTag}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}&calibrationFrequency=${entry.calibrationFrequency}`,
                             state,
                           );
                         }}

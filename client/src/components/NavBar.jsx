@@ -30,7 +30,7 @@ function NavBar({
   }, [updateCount]);
 
   const navContent = loggedIn ? (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', zIndex: 1 }}>
       <ul className="navbar-nav me-auto mb-2 mb-lg-0">
         <li className="nav-item">
           <NavLink className="nav-link" exact to="/">

@@ -38,6 +38,7 @@ export default async function GetAllModels({
           modelNumber
           description
           calibrationFrequency
+          supportLoadBankCalibration
           comment
         }
         total

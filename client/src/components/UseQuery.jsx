@@ -16,7 +16,6 @@ const Query = ({
   };
   let response;
   const data = getVariables ? { query, variables: getVariables() } : { query };
-  console.log(data);
   axios
     .post(route, data)
     .then((res) => {
@@ -24,7 +23,7 @@ const Query = ({
       handleResponse(response);
     })
     .catch((err) => {
-      console.log(err);
+      console.error(err);
     });
 };
 
@@ -39,7 +38,6 @@ export async function QueryAndThen({
     getVariables: PropTypes.func, // This is how we get the variables to pass into the query
   };
   const data = getVariables ? { query, variables: getVariables() } : { query };
-
   // eslint-disable-next-line no-return-await
   return await axios
     .post(route, data)

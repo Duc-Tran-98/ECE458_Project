@@ -4,12 +4,13 @@ import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
 export default function CreateModel({
-  modelNumber, vendor, description, comment, calibrationFrequency, handleResponse, categories,
+  modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, handleResponse, categories,
 }) {
   CreateModel.propTypes = {
     modelNumber: PropTypes.string.isRequired,
     vendor: PropTypes.string.isRequired,
     calibrationFrequency: PropTypes.number.isRequired,
+    supportLoadBankCalibration: PropTypes.bool.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
@@ -23,6 +24,7 @@ export default function CreateModel({
         $description: String!
         $comment: String
         $calibrationFrequency: Int
+        $supportLoadBankCalibration: Boolean!
         $categories: [String]
       ) {
         addModel(
@@ -31,6 +33,7 @@ export default function CreateModel({
           comment: $comment
           description: $description
           calibrationFrequency: $calibrationFrequency
+          supportLoadBankCalibration: $supportLoadBankCalibration
           categories: $categories
         )
       }
@@ -43,6 +46,7 @@ export default function CreateModel({
     description,
     comment,
     calibrationFrequency,
+    supportLoadBankCalibration,
     categories,
   });
   Query({
