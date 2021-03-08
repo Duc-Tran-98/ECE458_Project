@@ -30,6 +30,27 @@ class BulkDataAPI extends DataSource {
     this.context = config.context;
   }
 
+  async bulkImportModels({ models }) {
+    const response = { success: true, errorList: [] };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    console.log('bulk importing models');
+    console.log(models);
+    return JSON.stringify(response);
+  }
+
+  async bulkImportInstruments({ instruments }) {
+    const response = { success: true, errorList: [] };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    console.log('bulk importing instruments');
+    console.log(instruments);
+    return JSON.stringify(response);
+  }
+
+  /*
+  * DEPRECATED, no longer in user as of ev 2
+  */
   async bulkImportData({
     models,
     instruments,

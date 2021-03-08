@@ -151,6 +151,24 @@ module.exports = {
       instruments,
       // calibrationEvents,
     }),
+    bulkImportModels: async (
+      _,
+      {
+        models,
+      },
+      { dataSources },
+    ) => await dataSources.bulkDataAPI.bulkImportModels({
+      models,
+    }),
+    bulkImportInstruments: async (
+      _,
+      {
+        instruments,
+      },
+      { dataSources },
+    ) => await dataSources.bulkDataAPI.bulkImportInstruments({
+      instruments,
+    }),
     // eslint-disable-next-line max-len
     deleteModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.deleteModel({ modelNumber, vendor }),
     editModel: async (
