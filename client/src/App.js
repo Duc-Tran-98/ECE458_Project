@@ -46,7 +46,7 @@ function App() {
   return (
     <Router>
       <UserProvider>
-        <header className="sticky-top text-light">
+        <header className="sticky-top text-light" style={{ zIndex: 100 }}>
           <NavBar
             title="HPC IMS"
             loggedIn={loggedIn}
@@ -54,8 +54,8 @@ function App() {
             updateCount={updateCount}
           />
         </header>
-        <main className="d-flex justify-content-center my-5">
-          <div className="bg-theme rounded" style={{ zIndex: 0 }}>
+        <main className="d-flex justify-content-center my-5" style={{ zIndex: 0 }}>
+          <div className="bg-theme rounded">
             <Switch>
               <Route path="/test">
                 <ComponentTest />
