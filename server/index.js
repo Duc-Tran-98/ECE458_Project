@@ -149,7 +149,13 @@ const filter = function (req, file, cb) {
   return cb(null, true);
 };
 
-const upload = multer({ storage, fileFilter: filter });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 32 * 1024 * 1024,
+  },
+  fileFilter: filter,
+});
 
 app.post('/api/upload', upload.any(), (req, res, next) => {
   // req.file is the `avatar` file

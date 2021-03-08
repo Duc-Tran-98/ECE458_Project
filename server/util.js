@@ -376,6 +376,7 @@ module.exports.createStore = async () => {
       comment: SQL.STRING(2000),
       fileLocation: SQL.STRING,
       fileName: SQL.STRING,
+      loadBankData: SQL.TEXT,
     },
     { freezeTableName: true },
     {
