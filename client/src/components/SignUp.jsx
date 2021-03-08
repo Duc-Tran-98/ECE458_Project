@@ -20,10 +20,11 @@ const schema = Yup.object({
     .required('Please enter Last Name'),
   userName: Yup.string()
     .required('Please enter Username'),
-  email: Yup.string.email()
+  email: Yup.string().email()
     .required('Please enter email'),
   password: Yup.string()
     .required('Please enter password'),
+  isAdmin: Yup.bool(),
 });
 
 const initialValues = {
@@ -50,7 +51,11 @@ export default function SignUp({ onCreation }) {
       userName,
       isAdmin,
     } = values;
+    console.log('handling signup with values: ');
+    console.log(values);
     const handleResponse = (response) => {
+      console.log('signup response: ');
+      console.log(response);
       if (response.success) {
         toast.success(response.message);
         resetForm();
@@ -88,7 +93,7 @@ export default function SignUp({ onCreation }) {
           handleChange,
           errors,
           values,
-          // touched,
+          touched,
           isSubmitting,
         }) => (
           <Form
@@ -102,7 +107,7 @@ export default function SignUp({ onCreation }) {
                 value={values.firstName}
                 placeholder="First Name"
                 onChange={handleChange}
-                isInvalid={!!errors.firstName}
+                isInvalid={touched.firstName && !!errors.firstName}
               />
               <Form.Control.Feedback type="invalid">
                 {errors.firstName}
@@ -115,7 +120,7 @@ export default function SignUp({ onCreation }) {
                 value={values.lastName}
                 placeholder="Last Name"
                 onChange={handleChange}
-                isInvalid={!!errors.lastName}
+                isInvalid={touched.lastName && !!errors.lastName}
               />
               <Form.Control.Feedback type="invalid">
                 {errors.lastName}
@@ -129,7 +134,7 @@ export default function SignUp({ onCreation }) {
                 value={values.userName}
                 placeholder="Username"
                 onChange={handleChange}
-                isInvalid={!!errors.userName}
+                isInvalid={touched.userName && !!errors.userName}
               />
               {/* TODO: Add validation based on username exists
             TODO: Custom onChange method to remove any @ signs */}
@@ -144,7 +149,7 @@ export default function SignUp({ onCreation }) {
                 value={values.email}
                 placeholder="example@duke.edu"
                 onChange={handleChange}
-                isInvalid={!!errors.email}
+                isInvalid={touched.email && !!errors.email}
               />
               <Form.Control.Feedback type="invalid">
                 {errors.email}
@@ -158,12 +163,29 @@ export default function SignUp({ onCreation }) {
                 value={values.password}
                 type="password"
                 onChange={handleChange}
-                isInvalid={!!errors.password}
+                isInvalid={touched.password && !!errors.password}
               />
               <Form.Control.Feedback type="invalid">
                 {errors.password}
               </Form.Control.Feedback>
             </Form.Group>
+            <div className="form-check form-switch mt-4">
+              <label className="form-check-label h4 col" htmlFor="adminCheck">
+                Admin user?
+              </label>
+
+              <input
+                className="form-check-input mt-2"
+                type="checkbox"
+                id="adminCheck"
+                name="isAdmin"
+                value={values.isAdmin}
+                onChange={handleChange}
+              />
+              <div className="col">
+                <strong>{values.isAdmin ? 'Yes' : 'No'}</strong>
+              </div>
+            </div>
             <div className="d-flex justify-content-center my-3">
               {isSubmitting ? <CircularProgress />
                 : (

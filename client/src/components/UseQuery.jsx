@@ -16,17 +16,13 @@ const Query = ({
   };
   let response;
   const data = getVariables ? { query, variables: getVariables() } : { query };
-  console.log(data);
   axios
     .post(route, data)
     .then((res) => {
-      console.log('Successful axios request in Query');
-      console.log(res);
       response = (typeof res.data.data[queryName] === 'string') ? JSON.parse(res.data.data[queryName]) : res.data.data[queryName];
       handleResponse(response);
     })
     .catch((err) => {
-      console.log('Failed Query');
       console.error(err);
     });
 };
