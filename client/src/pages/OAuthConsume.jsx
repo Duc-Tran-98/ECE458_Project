@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 // const jwt_decode = require('jwt-decode');
 // eslint-disable-next-line camelcase
@@ -76,7 +77,8 @@ export default function OAuthConsume({ handleLogin }) {
   return (
     <>
       <h1>OAuth Consume Endpoint</h1>
-      <h3>{`Welcome, ${netID}`}</h3>
+      {netID && <h3>{`Welcome, ${netID}`}</h3>}
+      <CircularProgress />
     </>
   );
 }
