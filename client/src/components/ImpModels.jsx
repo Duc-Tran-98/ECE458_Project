@@ -80,8 +80,7 @@ export default function ImpModels() {
       toast.success(`Successfully imported ${csvData.length} models!`);
       renderTable(csvData);
     } else {
-      // TODO: Display errors correctly
-      toast.error(response.errorList);
+      toast.error(response.message);
     }
   };
 
