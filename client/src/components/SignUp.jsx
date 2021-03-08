@@ -62,7 +62,6 @@ export default function SignUp({ onCreation }) {
         onCreation();
       } else {
         toast.error(response.message);
-        resetForm();
       }
     };
     CreateUser({
