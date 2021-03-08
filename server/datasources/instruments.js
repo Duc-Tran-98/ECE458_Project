@@ -249,14 +249,49 @@ class InstrumentAPI extends DataSource {
         through: 'instrumentCategoryRelationships',
       },
     });
+    let instrumentInfo = null;
     if (instrument) {
       await this.store.models.findOne({ where: { modelNumber, vendor } }).then((model) => {
-        const instrumentInfo = {
+        instrumentInfo = {
           vendor: instrument.dataValues.vendor,
           modelNumber: instrument.dataValues.modelNumber,
           serialNumber: instrument.dataValues.serialNumber,
           modelReference: instrument.dataValues.modelReference,
           calibrationFrequency: instrument.dataValues.calibrationFrequency,
+          instrumentCategories: instrument.dataValues.instrumentCategories,
+          comment: instrument.dataValues.comment,
+          description: instrument.dataValues.description,
+          id: instrument.dataValues.id,
+          assetTag: instrument.dataValues.assetTag,
+          supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
+        };
+      });
+    }
+    return instrumentInfo;
+  }
+
+  async getInstrumentByAssetTag({ assetTag }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.store.instruments.findOne({
+      where: { assetTag },
+      include: {
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      },
+    });
+    let instrumentInfo = null;
+    if (instrument) {
+      const modRef = instrument.dataValues.modelReference;
+      await this.store.models.findOne({ where: { id: modRef } }).then((model) => {
+        instrumentInfo = {
+          vendor: instrument.dataValues.vendor,
+          modelNumber: instrument.dataValues.modelNumber,
+          serialNumber: instrument.dataValues.serialNumber,
+          modelReference: instrument.dataValues.modelReference,
+          calibrationFrequency: instrument.dataValues.calibrationFrequency,
+          instrumentCategories: instrument.dataValues.instrumentCategories,
           comment: instrument.dataValues.comment,
           description: instrument.dataValues.description,
           id: instrument.dataValues.id,
@@ -266,7 +301,7 @@ class InstrumentAPI extends DataSource {
         return instrumentInfo;
       });
     }
-    return null;
+    return instrumentInfo;
   }
 
   async editInstrument({

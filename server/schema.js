@@ -46,6 +46,9 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): Instrument
+    getInstrumentByAssetTag(
+      assetTag: Int!
+    ): Instrument
     getInstrumentsWithFilter(
       vendor: String
       modelNumber: String

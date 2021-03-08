@@ -87,7 +87,7 @@ export default function ListInstruments() {
       }, 50);
     };
   }
-  console.log(navLink);
+  // console.log(navLink);
   history.listen((location, action) => {
     if (action === 'POP') {
       // if user clicks on models nav link or goes back

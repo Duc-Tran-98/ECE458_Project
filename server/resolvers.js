@@ -80,6 +80,13 @@ module.exports = {
       vendor,
       serialNumber,
     }),
+    getInstrumentByAssetTag: async (
+      _,
+      { assetTag },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrumentByAssetTag({
+      assetTag,
+    }),
     getInstrumentsWithFilter: async (
       _,
       {
