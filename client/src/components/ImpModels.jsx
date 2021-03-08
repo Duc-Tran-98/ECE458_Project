@@ -50,7 +50,7 @@ export default function ImpModels() {
       case 'calibrationFrequency':
         return Number.isNaN(value) ? null : parseInt(value, 10);
       case 'loadBankSupport':
-        return value === 'Y' || value === 'y';
+        return typeof (value) === 'string' && (value.toLowerCase() === 'y' || value.toLowerCase() === 'yes');
       default:
         return value.trim();
     }
@@ -123,6 +123,7 @@ export default function ImpModels() {
   };
 
   const checkDuplicateModel = (data, vendor, modelNumber, myIndex) => {
+    if (!vendor || !modelNumber) { return false; }
     let isDuplicateModel = false;
     data.forEach((row, index) => {
       if (index !== myIndex && row.vendor === vendor && row.modelNumber === modelNumber) {
@@ -143,7 +144,10 @@ export default function ImpModels() {
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
 
-  const validateCalibrationFrequency = (calibrationFrequency) => calibrationFrequency >= 0 || calibrationFrequency === 'N/A';
+  const validateCalibrationFrequency = (calibrationFrequency) => {
+    if (calibrationFrequency) { return calibrationFrequency >= 0; }
+    return true;
+  };
 
   const isEmptyLine = (obj) => {
     Object.values(obj).every((x) => (x === null || x === ''));
@@ -152,19 +156,10 @@ export default function ImpModels() {
   const getImportErrors = (fileInfo) => {
     const importRowErrors = [];
     fileInfo.forEach((row, index) => {
-      // Check missing keys
       if (!isEmptyLine(row)) {
         const missingKeys = getMissingKeys(row);
-
-        let isDuplicateModel;
-        if (row.vendor && row.modelNumber) {
-          isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
-        }
-
-        // Validate entries by length
+        const isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
         const invalidEntries = validateRow(row);
-
-        // Validate calibration frequency
         const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
 
         // If any errors exist, create errors object
@@ -219,6 +214,7 @@ export default function ImpModels() {
         } else {
           toast.error(response.message);
         }
+        setImportStatus('Import');
       },
     });
   };
