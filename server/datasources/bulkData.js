@@ -212,32 +212,33 @@ class BulkDataAPI extends DataSource {
                     comment: calibrationComment,
                   }, { transaction: t });
                 }
-
-                for (let j = 0; j < categories.length; j += 1) {
+                if (categories) {
+                  for (let j = 0; j < categories.length; j += 1) {
                   // attach categories and create if they don't exist
-                  const name = categories[j];
-                  const category = await this.store.instrumentCategories.findAll({
-                    where: { name },
-                    include: {
-                      all: true,
-                    },
-                    transaction: t,
-                  }, { transaction: t });
-                  if (category && category[0]) {
-                    const instrumentCategoryId = (category[0]).dataValues.id;
-                    await this.store.instrumentCategoryRelationships.create({
-                      instrumentId,
-                      instrumentCategoryId,
+                    const name = categories[j];
+                    const category = await this.store.instrumentCategories.findAll({
+                      where: { name },
+                      include: {
+                        all: true,
+                      },
+                      transaction: t,
                     }, { transaction: t });
-                  } else {
-                    const createdCat = await this.store.instrumentCategories.create({
-                      name,
-                    }, { transaction: t });
-                    const instrumentCategoryId = createdCat.dataValues.id;
-                    await this.store.instrumentCategoryRelationships.create({
-                      instrumentId,
-                      instrumentCategoryId,
-                    }, { transaction: t });
+                    if (category && category[0]) {
+                      const instrumentCategoryId = (category[0]).dataValues.id;
+                      await this.store.instrumentCategoryRelationships.create({
+                        instrumentId,
+                        instrumentCategoryId,
+                      }, { transaction: t });
+                    } else {
+                      const createdCat = await this.store.instrumentCategories.create({
+                        name,
+                      }, { transaction: t });
+                      const instrumentCategoryId = createdCat.dataValues.id;
+                      await this.store.instrumentCategoryRelationships.create({
+                        instrumentId,
+                        instrumentCategoryId,
+                      }, { transaction: t });
+                    }
                   }
                 }
               }
