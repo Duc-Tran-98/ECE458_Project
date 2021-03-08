@@ -123,7 +123,7 @@ export default function ModelForm({
         isSubmitting,
         values,
         errors,
-        // touched,
+        touched,
       }) => (
 
         <Form
@@ -155,7 +155,7 @@ export default function ModelForm({
                     getOptionLabel={formatOption}
                     value={{ vendor: values.vendor }}
                     allowAdditions
-                    isInvalid={!!errors.vendor}
+                    isInvalid={touched.vendor && !!errors.vendor}
                   />
                 )}
               </Form.Group>
@@ -171,7 +171,7 @@ export default function ModelForm({
                 value={values.modelNumber}
                 onChange={handleChange}
                 disabled={disabled}
-                isInvalid={!!errors.modelNumber}
+                isInvalid={touched.modelNumber && !!errors.modelNumber}
                 error={errors.modelNumber}
               />
             </div>
@@ -204,7 +204,7 @@ export default function ModelForm({
                 value={values.description}
                 onChange={handleChange}
                 disabled={disabled}
-                isInvalid={!!errors.description}
+                isInvalid={touched.description && !!errors.description}
                 error={errors.description}
               />
             </div>
