@@ -19,12 +19,12 @@ export default function CustomUpload({
 
   const [fileInfo, setFileInfo] = useState([]);
   const [shouldReset, setReset] = useState(false);
-  const [status, setStatus] = useState('Submit');
+  const [status, setStatus] = useState('Import');
   const [show, setShow] = useState(false);
   const buttonRef = createRef();
 
   const resetUpload = () => {
-    setStatus('Submit');
+    setStatus('Import');
     setReset(true);
     setReset(false);
     setShow(false);
@@ -160,7 +160,7 @@ export default function CustomUpload({
               >
                 {status}
               </Button>
-              {status === 'Submit'
+              {status === 'Import'
                 ? (
                   <Button
                     className="m-2"
