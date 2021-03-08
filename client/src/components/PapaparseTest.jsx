@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, createRef } from 'react';
 
+import { camelCase } from 'lodash';
 import { CSVReader } from 'react-papaparse';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-const buttonRef = React.createRef();
-
 export default function PapaparseTest() {
   const [status, setStatus] = useState('Submit');
+  const buttonRef = createRef();
 
   const handleOpenDialog = (e) => {
-    // Note that the ref is set async, so it might be null at some point
     if (buttonRef.current) {
       buttonRef.current.open(e);
     }
@@ -47,15 +46,40 @@ export default function PapaparseTest() {
     setStatus('Validating Contents');
   };
 
-  const handleSubmitFile = (e) => {
-    // Send file to backend
+  const customHeaderTransform = (header) => {
+    switch (header) {
+      case 'Short-Description':
+        return 'description';
+      case 'Model-Categories':
+        return 'categories';
+      default:
+        return camelCase(header);
+    }
+  };
+
+  const customTransform = (value, header) => {
+    switch (header) {
+      case 'categories':
+        return value.split(/\s+/);
+      default:
+        return value.trim();
+    }
+  };
+
+  const papaparseOptions = {
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: customHeaderTransform,
+    transform: customTransform,
+  };
+
+  // TODO: Send file to backend (for now spoofing)
+  const handleSubmitFile = () => {
+    validateContents();
     setTimeout(() => {
-      validateContents();
+      submitFileContents();
       setTimeout(() => {
-        submitFileContents();
-        setTimeout(() => {
-          handleRemoveFile();
-        }, 1000);
+        handleRemoveFile();
       }, 1000);
     }, 1000);
   };
@@ -70,6 +94,7 @@ export default function PapaparseTest() {
       onRemoveFile={handleOnRemoveFile}
       accept="text/csv, .csv"
       progressBarColor="#fca311"
+      config={papaparseOptions}
     >
       {({ file }) => (
         <div
