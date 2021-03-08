@@ -1,12 +1,11 @@
 import React from 'react';
 import { camelCase } from 'lodash';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
+import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
 
 export default function ImpModels() {
-  const handleImport = (fileInfo) => {
-    console.log(fileInfo);
-  };
-
   const requiredHeaders = [
     { display: 'Vendor', value: 'vendor' },
     { display: 'Model-Number', value: 'modelNumber' },
@@ -38,6 +37,35 @@ export default function ImpModels() {
   };
 
   const uploadLabel = 'Select Models File';
+
+  const IMPORT_MODELS = gql`
+    mutation ImportModels (
+      $filteredData: [ModelInput]!
+    ) {
+      bulkImportData(models: $filteredData)
+    }
+  `;
+  const query = print(IMPORT_MODELS);
+  const queryName = 'bulkImportData';
+
+  // TODO: Implement me!
+  const filterData = (fileInfo) => fileInfo;
+
+  const handleImport = (fileInfo) => {
+    console.log('Handling import');
+    const filteredData = filterData(fileInfo);
+    const getVariables = () => ({ filteredData });
+    console.log(fileInfo);
+    Query({
+      query,
+      queryName,
+      getVariables,
+      // TODO: Handle response correctly
+      handleResponse: (response) => {
+        console.log(response);
+      },
+    });
+  };
 
   return (
     <>

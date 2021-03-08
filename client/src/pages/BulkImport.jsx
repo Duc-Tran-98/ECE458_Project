@@ -1,15 +1,10 @@
 import React from 'react';
 
-// import ImportModels from '../components/ImportModels';
-// import ImportInstruments from '../components/ImportInstruments';
 import ImpModels from '../components/ImpModels';
 import ImpInstruments from '../components/ImpInstruments';
 import ImportTemplates from '../components/ImportTemplates';
 
 export default function BulkImport() {
-  // const [loadingModels, setLoadingModels] = useState(false);
-  // const [loadingInstruments, setLoadingInstruments] = useState(false);
-
   return (
     <div className="text-center mx-3 my-3">
       <div className="m-2 h1">Welcome to the Import Page!</div>
@@ -23,10 +18,6 @@ export default function BulkImport() {
       <ImportTemplates />
       <ImpModels />
       <ImpInstruments />
-      {/* {loadingModels && <LinearProgress color="secondary" />}
-      <ImportModels setLoading={setLoadingModels} />
-      {loadingInstruments && <LinearProgress color="secondary" />}
-      <ImportInstruments setLoading={setLoadingInstruments} /> */}
     </div>
   );
 }

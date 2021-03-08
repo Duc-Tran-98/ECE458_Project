@@ -16,11 +16,18 @@ export default function CustomUpload({
     uploadLabel: PropTypes.string.isRequired,
     handleImport: PropTypes.func.isRequired,
   };
+
+  const [fileInfo, setFileInfo] = useState([]);
+  const [shouldReset, setReset] = useState(false);
   const [status, setStatus] = useState('Submit');
+  const [show, setShow] = useState(false);
   const buttonRef = createRef();
 
   const resetUpload = () => {
     setStatus('Submit');
+    setReset(true);
+    setReset(false);
+    setShow(false);
   };
 
   const validateHeader = (row) => {
@@ -46,24 +53,25 @@ export default function CustomUpload({
   const extractData = (data) => data.map((row) => row.data);
 
   const handleOnFileLoad = (data) => {
-    // Validate headers immediately
+    // Validate non empty file
     if (data.length === 0) {
       toast.error('Please submit a non empty file');
       resetUpload();
       return;
     }
 
+    // Validate headers next
     const row = data[0].data;
     const missingHeaders = validateHeader(row);
-    if (missingHeaders) {
+    if (missingHeaders.length > 0) {
       toast.error(`Missing the following headers: ${missingHeaders}`);
       resetUpload();
       return;
     }
 
-    // At this point, you know headers are correct
-    const fileInfo = extractData(data);
-    handleImport(fileInfo);
+    // Headers validated, handle import
+    setShow(true);
+    setFileInfo(extractData(data));
   };
 
   const handleOnError = (err, file, inputElem, reason) => {
@@ -73,9 +81,7 @@ export default function CustomUpload({
     console.log(reason);
   };
 
-  const handleOnRemoveFile = () => {
-    console.log('removing file');
-  };
+  const handleOnRemoveFile = () => {};
 
   const handleRemoveFile = (e) => {
     resetUpload();
@@ -87,6 +93,7 @@ export default function CustomUpload({
 
   const submitFileContents = () => {
     setStatus('Preparing Transactions');
+    handleImport(fileInfo);
   };
 
   // TODO: Add batching for massive files (test this)
@@ -123,32 +130,26 @@ export default function CustomUpload({
         noProgressBar
         // progressBarColor="#fca311"
         config={papaparseOptions}
+        isReset={shouldReset}
       >
         {({ file }) => (
-          <div
-            className="m-2"
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              marginBottom: 10,
-              width: '50%',
-            }}
-          >
-            <button
+          <div className="m-2">
+            <Button
               className="m-2"
               type="button"
               onClick={handleOpenDialog}
               style={{
+                background: '#ffffff',
                 borderRadius: 5,
-                width: '40%',
+                width: '300px',
               }}
             >
               { uploadLabel }
-            </button>
+            </Button>
             <p className="m-2" style={{ marginTop: '12px' }}>
               {file && file.name}
             </p>
-            {file && file.name
+            {show
           && (
             <>
               <Button
