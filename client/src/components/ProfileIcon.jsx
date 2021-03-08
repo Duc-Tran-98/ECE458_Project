@@ -24,7 +24,7 @@ export default function ProfileIcon({ handleSignOut }) {
           <p style={{ fontSize: '24px' }}>{fullName}</p>
           <p style={{ color: 'gray' }}>{email}</p>
         </NavDropdown.Item>
-        <NavDropdown.Item className="text-center border-bottom border-dark" style={{ margin: '20px 0px' }}>
+        <NavDropdown.Item href="/userInfo" className="text-center border-bottom border-dark" style={{ margin: '20px 0px' }}>
           <SettingsIcon />
           <p style={{ display: 'inline' }}>User Settings</p>
         </NavDropdown.Item>
