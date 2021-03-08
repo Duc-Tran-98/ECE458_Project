@@ -73,10 +73,9 @@ export default function DetailedModelView({ onDelete }) {
     setLoading(true);
     DeleteModel({ modelNumber, vendor, handleResponse });
   };
-  // TODO: put asset tag in url? display asset tag and serial number under instances
   return (
     <>
-      <ModalAlert show={show} handleClose={closeModal} title="DELETE MODEL">
+      <ModalAlert show={show} handleClose={closeModal} title="Delte Model">
         <>
           {responseMsg.length === 0 && (
             <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
@@ -141,6 +140,7 @@ export default function DetailedModelView({ onDelete }) {
                       serialNumber
                       id
                       calibrationFrequency
+                      assetTag
                     }
                   }
                 }
@@ -151,8 +151,14 @@ export default function DetailedModelView({ onDelete }) {
                 <li className="list-group-item" key={entry.id}>
                   <div className="d-flex justify-content-between">
                     <span>
-                      Serial #
+                      Serial #:
+                      {' '}
                       {entry.serialNumber}
+                    </span>
+                    <span>
+                      Asset Tag:
+                      {' '}
+                      {entry.assetTag}
                     </span>
                     <span className="">
                       <button

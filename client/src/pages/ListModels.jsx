@@ -15,9 +15,9 @@ import UserContext from '../components/UserContext';
 function ListModels() {
   const history = useHistory();
   const user = React.useContext(UserContext);
-  const [modelNumber, setModelNumber] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [description, setDescription] = useState('');
+  // const [modelNumber, setModelNumber] = useState('');
+  // const [vendor, setVendor] = useState('');
+  // const [description, setDescription] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const initRowCount = parseInt(urlParams.get('count'), 10);
@@ -87,9 +87,15 @@ function ListModels() {
 
   const cellHandler = (e) => {
     if (e.field === 'view') {
-      setDescription(e.row.description);
-      setModelNumber(e.row.modelNumber);
-      setVendor(e.row.vendor);
+      const state = { previousUrl: window.location.href };
+      const { modelNumber, vendor, description } = e.row;
+      history.push(
+        `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+        state,
+      );
+      // setDescription(e.row.description);
+      // setModelNumber(e.row.modelNumber);
+      // setVendor(e.row.vendor);
     }
   };
   const cols = [
@@ -164,13 +170,6 @@ function ListModels() {
               <button
                 type="button"
                 className="btn "
-                onClick={() => {
-                  const state = { previousUrl: window.location.href };
-                  history.push(
-                    `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-                    state,
-                  );
-                }}
               >
                 View
               </button>

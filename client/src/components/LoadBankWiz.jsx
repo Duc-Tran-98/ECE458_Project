@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { Formik } from 'formik';
+import PropTypes from 'prop-types';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
 import AsyncSuggest from './AsyncSuggest';
@@ -12,16 +13,25 @@ import { defaultCurrents, idealCurrents, devCurrents } from '../utils/LoadBank';
 
 const DEBUG = true;
 
-export default function LoadBankWiz() {
+export default function LoadBankWiz({
+  initModelNumber, initVendor, initSerialNumber, initAssetTag,
+}) {
+  LoadBankWiz.propTypes = {
+    initModelNumber: PropTypes.string.isRequired,
+    initVendor: PropTypes.string.isRequired,
+    initSerialNumber: PropTypes.string.isRequired,
+    initAssetTag: PropTypes.number.isRequired,
+  };
   const user = React.useContext(UserContext);
   const today = new Date().toISOString().split('T')[0];
   const [formState, setFormState] = React.useState({
-    modelNumber: '458',
-    vendor: 'Fluke',
-    serialNumber: 'ABC123',
-    assetTag: 100000,
+    modelNumber: initModelNumber,
+    vendor: initVendor,
+    serialNumber: initSerialNumber,
+    assetTag: initAssetTag,
     date: today,
     user: user.userName,
+    comment: '',
     voltMeter: null,
     shuntMeter: null,
     visualCheckOk: false,
@@ -415,62 +425,76 @@ export default function LoadBankWiz() {
     switch (step) {
       case 0:
         return (
-          <div className="col my-1">
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">Model:</Form.Label>
-              <Form.Control
-                name="model"
-                type="text"
-                disabled
-                className="w-25 ms-2"
-                value={`${formState.vendor}-${formState.modelNumber}`}
-              />
-            </Form.Group>
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">Serial:</Form.Label>
-              <Form.Control
-                name="serialNumber"
-                type="text"
-                value={formState.serialNumber}
-                disabled
-                className="w-25 ms-2"
-              />
-            </Form.Group>
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">Asset Tag:</Form.Label>
-              <Form.Control
-                name="assetTag"
-                type="number"
-                value={formState.assetTag}
-                disabled
-                className="w-25 ms-2"
-              />
-            </Form.Group>
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">
-                Date of calibration:
-              </Form.Label>
-              <Form.Control
-                name="date"
-                type="date"
-                max={today}
-                onChange={(e) => setFormState({ ...formState, date: e.target.value })}
-                required
-                value={formState.date}
-                className="w-25 ms-2"
-              />
-            </Form.Group>
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">Engineer: </Form.Label>
-              <Form.Control
-                name="user"
-                type="text"
-                value={user.userName}
-                disabled
-                className="w-25 ms-2"
-              />
-            </Form.Group>
-          </div>
+          <>
+            <div className="row my-1">
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">Model:</Form.Label>
+                <Form.Control
+                  name="model"
+                  type="text"
+                  disabled
+                  className=""
+                  value={`${formState.vendor}-${formState.modelNumber}`}
+                />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">Serial:</Form.Label>
+                <Form.Control
+                  name="serialNumber"
+                  type="text"
+                  value={formState.serialNumber}
+                  disabled
+                  className=""
+                />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">Asset Tag:</Form.Label>
+                <Form.Control
+                  name="assetTag"
+                  type="number"
+                  value={formState.assetTag}
+                  disabled
+                  className=""
+                />
+              </Form.Group>
+            </div>
+            <div className="row my-2">
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">
+                  Date of calibration:
+                </Form.Label>
+                <Form.Control
+                  name="date"
+                  type="date"
+                  max={today}
+                  onChange={(e) => setFormState({ ...formState, date: e.target.value })}
+                  required
+                  value={formState.date}
+                  className=""
+                />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6 my-auto">Engineer: </Form.Label>
+                <Form.Control
+                  name="user"
+                  type="text"
+                  value={user.userName}
+                  disabled
+                  className=""
+                />
+              </Form.Group>
+              <Form.Group className="col">
+                <Form.Label className="h6">Calibration Comment</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  name="comment"
+                  value={formState.comment}
+                  onChange={(e) => setFormState({ ...formState, comment: e.target.value })}
+                />
+              </Form.Group>
+            </div>
+          </>
         );
       case 1:
         return (
