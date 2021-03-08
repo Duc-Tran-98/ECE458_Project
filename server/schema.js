@@ -99,6 +99,7 @@ const typeDefs = gql`
     comment: String
     calibrationFrequency: Int
     categories: [Category]
+    supportLoadBankCalibration: Boolean!
   }
 
   type ModelOutput {
@@ -122,6 +123,7 @@ const typeDefs = gql`
     description: String!
     id: Int!
     assetTag: Int!
+    supportLoadBankCalibration: Boolean
   }
 
   type FilteredInstrument {
@@ -134,6 +136,7 @@ const typeDefs = gql`
     comment: String
     description: String!
     id: Int!
+    supportLoadBankCalibration: Boolean
     recentCalibration: [Calibration]
     modelCategories: [Category]
     instrumentCategories: [Category]
@@ -160,6 +163,7 @@ const typeDefs = gql`
     description: String!
     assetTag: Int!
     id: Int!
+    supportLoadBankCalibration: Boolean
     recentCalDate: String
     recentCalUser: String
     recentCalComment: String
@@ -231,6 +235,7 @@ const typeDefs = gql`
       description: String!
       comment: String
       calibrationFrequency: Int
+      supportLoadBankCalibration: Boolean!
       categories: [String]
     ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
@@ -241,6 +246,7 @@ const typeDefs = gql`
       description: String!
       comment: String
       calibrationFrequency: Int
+      supportLoadBankCalibration: Boolean!
       categories: [String]
     ): String!
 

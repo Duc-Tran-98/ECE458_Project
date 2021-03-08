@@ -10,6 +10,7 @@ export default function EditModelQuery({
   description,
   comment,
   calibrationFrequency,
+  supportLoadBankCalibration,
   categories,
   handleResponse,
 }) {
@@ -18,6 +19,7 @@ export default function EditModelQuery({
     modelNumber: PropTypes.string.isRequired,
     vendor: PropTypes.string.isRequired,
     calibrationFrequency: PropTypes.number.isRequired,
+    supportLoadBankCalibration: PropTypes.bool.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
@@ -31,6 +33,7 @@ export default function EditModelQuery({
             $description: String!
             $comment: String
             $calibrationFrequency: Int
+            $supportLoadBankCalibration: Boolean!
             $categories: [String]
             $id: Int!
         ) {
@@ -40,6 +43,7 @@ export default function EditModelQuery({
             comment: $comment
             description: $description
             calibrationFrequency: $calibrationFrequency
+            supportLoadBankCalibration: $supportLoadBankCalibration
             categories: $categories
             id: $id
             )
@@ -51,6 +55,7 @@ export default function EditModelQuery({
     description,
     comment,
     calibrationFrequency,
+    supportLoadBankCalibration,
     id,
     modelNumber,
     vendor,

@@ -118,6 +118,10 @@ module.exports.createStore = async () => {
         allowNull: true,
       },
       calibrationFrequency: SQL.INTEGER,
+      supportLoadBankCalibration: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {

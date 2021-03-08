@@ -21,6 +21,7 @@ const GET_MODELS_QUERY = gql`
       modelNumber
       vendor
       calibrationFrequency
+      supportLoadBankCalibration
       description
     }
   }

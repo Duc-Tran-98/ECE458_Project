@@ -84,6 +84,7 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    supportLoadBankCalibration,
     categories,
   }) {
     const storeModel = await this.store;
@@ -108,6 +109,7 @@ class ModelAPI extends DataSource {
             description,
             comment,
             calibrationFrequency,
+            supportLoadBankCalibration,
           },
           { where: { id } },
         );
@@ -252,6 +254,7 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    supportLoadBankCalibration = false,
     categories = [],
   }) {
     const response = { message: '', success: false };
@@ -275,6 +278,7 @@ class ModelAPI extends DataSource {
           description,
           comment,
           calibrationFrequency,
+          supportLoadBankCalibration,
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
