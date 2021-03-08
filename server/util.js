@@ -220,18 +220,15 @@ module.exports.createStore = async () => {
       },
       vendor: {
         type: SQL.STRING(30),
-        primaryKey: true,
         allowNull: false,
       },
       modelNumber: {
         type: SQL.STRING(40),
-        primaryKey: true,
         allowNull: false,
       },
       serialNumber: {
         type: SQL.STRING(40),
-        primaryKey: true,
-        allowNull: false,
+        allowNull: true,
       },
       calibrationFrequency: {
         type: SQL.INTEGER,
@@ -248,7 +245,7 @@ module.exports.createStore = async () => {
       id: {
         type: SQL.INTEGER,
         autoIncrement: true,
-        unique: true,
+        primaryKey: true,
       },
       assetTag: {
         type: SQL.INTEGER,
