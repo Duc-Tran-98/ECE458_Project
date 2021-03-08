@@ -11,6 +11,10 @@ export default async function GetModelsForExport() {
         description
         comment
         calibrationFrequency
+        categories{
+          name
+        }
+        supportLoadBankCalibration
       }
     }
   `;
