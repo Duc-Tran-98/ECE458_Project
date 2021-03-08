@@ -9,7 +9,7 @@ import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
-import AddCalibEvent from '../queries/AddCalibEvent';
+import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 import ModalAlert from '../components/ModalAlert';
 import GetUser from '../queries/GetUser';
 import EditInstrument from '../components/EditInstrument';
@@ -26,7 +26,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const urlParams = new URLSearchParams(queryString);
   const modelNumber = urlParams.get('modelNumber');
   const vendor = urlParams.get('vendor');
-  const assetTag = urlParams.get('assetTag');
+  let assetTag = urlParams.get('assetTag');
   const serialNumber = urlParams.get('serialNumber');
   const description = urlParams.get('description');
   const calibFrequency = urlParams.get('calibrationFrequency');
@@ -153,6 +153,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     //     fetchData(entry);
     //   },
     // });
+    assetTag = parseInt(assetTag, 10);
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag,

@@ -10,7 +10,7 @@ export default async function AddCalibEventByAssetTag({
     // eslint-disable-next-line react/forbid-prop-types
     events: PropTypes.array.isRequired,
     handleResponse: PropTypes.func.isRequired,
-    assetTag: PropTypes.int.isRequired,
+    assetTag: PropTypes.number.isRequired,
   };
   const ADD_EVENT = gql`
       mutation AddEvent(
@@ -23,7 +23,7 @@ export default async function AddCalibEventByAssetTag({
       ) {
         addCalibrationEventByAssetTag(
           assetTag: $assetTag
-          serialNumber: $serialNumber
+          comment: $comment
           user: $user
           date: $date
           fileLocation: $fileLocation

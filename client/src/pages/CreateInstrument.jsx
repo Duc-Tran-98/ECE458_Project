@@ -106,6 +106,8 @@ function CreateInstrumentPage({ onCreation }) {
           //   categories,
           //   handleResponse: () => undefined,
           // });
+          assetTag = parseInt(assetTag, 10);
+
           AddCalibEventByAssetTag({
             events: validEvents,
             assetTag,
