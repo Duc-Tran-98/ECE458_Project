@@ -186,7 +186,7 @@ const typeDefs = gql`
     description: String!
     comment: String
     categories: [String]
-    loadBankSupport: Boolean
+    loadBankSupport: Boolean!
     calibrationFrequency: Int
   }
 

@@ -3,6 +3,7 @@
 /* eslint-disable no-await-in-loop */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
+const SQL = require('sequelize');
 
 function isValidDate(dateString) {
   const regEx = /^\d{4}-\d{2}-\d{2}$/;
@@ -31,11 +32,72 @@ class BulkDataAPI extends DataSource {
   }
 
   async bulkImportModels({ models }) {
-    const response = { success: true, errorList: [] };
+    const response = { success: false, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
     console.log('bulk importing models');
-    console.log(models);
+    // First, we start a transaction and save it into a variable
+    const t = await this.store.db.transaction();
+
+    try {
+      // Then, we do some calls passing this transaction as an option:
+      for (let i = 0; i < models.length; i += 1) {
+        const currentModel = models[i];
+        const vendor = currentModel.vendor;
+        const modelNumber = currentModel.modelNumber;
+        const description = currentModel.description;
+        const comment = currentModel.comment;
+        const calibrationFrequency = currentModel.calibrationFrequency;
+        const categories = currentModel.categories;
+        const supportLoadBankCalibration = currentModel.loadBankSupport;
+
+        const createdModel = await this.store.models.create({
+          vendor,
+          modelNumber,
+          description,
+          comment,
+          calibrationFrequency,
+          supportLoadBankCalibration,
+        }, { transaction: t });
+        const modelId = createdModel.dataValues.id;
+
+        for (let j = 0; j < categories.length; j += 1) {
+          const name = categories[j];
+          const category = await this.store.modelCategories.findAll({
+            where: { name },
+          }, { transaction: t });
+          if (category && category[0]) {
+            const modelCategoryId = (category[0]).dataValues.id;
+            await this.store.modelCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            }, { transaction: t });
+          } else {
+            const createdCat = await this.store.modelCategories.create({
+              name,
+            }, { transaction: t });
+            const modelCategoryId = createdCat.dataValues.id;
+            await this.store.modelCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            }, { transaction: t });
+          }
+        }
+      }
+
+      // If the execution reaches this line, no errors were thrown.
+      // We commit the transaction.
+      await t.commit();
+      response.message = 'Succesfully imported models';
+      response.success = true;
+    } catch (error) {
+      // If the execution reaches this line, an error was thrown.
+      // We rollback the transaction.
+      await t.rollback();
+      response.success = false;
+      response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+    }
+
     return JSON.stringify(response);
   }
 
