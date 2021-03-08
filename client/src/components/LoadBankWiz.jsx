@@ -10,6 +10,7 @@ import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
 import AsyncSuggest from './AsyncSuggest';
 import { defaultCurrents, idealCurrents, devCurrents } from '../utils/LoadBank';
+import Query from './UseQuery';
 
 const DEBUG = true;
 
@@ -71,6 +72,70 @@ export default function LoadBankWiz({
     newReadings.vrError = newReadings.va > 0 ? 100 * (Math.abs(newReadings.va - newReadings.vr) / newReadings.va) : 100;
     newReadings.vrOk = newReadings.vrError < 1;
     setVoltageReading(newReadings);
+  };
+  const handleFinish = () => {
+    const {
+      assetTag, date, comment, voltMeter, shuntMeter, visualCheckOk, connectedToDC, voltageCutoffOk, alarmOk, recordedDataOk, printerOk,
+    } = formState;
+    const loadBankData = JSON.stringify({
+      currentReadings,
+      voltageReading,
+      voltMeter,
+      shuntMeter,
+      visualCheckOk,
+      connectedToDC,
+      voltageCutoffOk,
+      alarmOk,
+      recordedDataOk,
+      printerOk,
+    });
+    Query({
+      query: print(gql`
+        mutation AddLoadBankCalib (
+            $assetTag: Int!,
+            $date: String!,
+            $user: String!,
+            $comment: String,
+            $loadBankData: String!,
+          ){
+          addLoadBankCalibration(
+            assetTag: $assetTag,
+            date: $date,
+            user: $user,
+            comment: $comment,
+            loadBankData: $loadBankData,
+          )
+        }
+      `),
+      queryName: 'addLoadBankCalibration',
+      getVariables: () => ({
+        assetTag,
+        date,
+        user: user.userName,
+        comment,
+        loadBankData,
+      }),
+      handleResponse: (response) => {
+        console.log(response);
+      },
+    });
+    setFormState({
+      modelNumber: initModelNumber,
+      vendor: initVendor,
+      serialNumber: initSerialNumber,
+      assetTag: initAssetTag,
+      date: today,
+      comment: '',
+      user: user.userName,
+      voltMeter: null,
+      shuntMeter: null,
+      visualCheckOk: false,
+      connectedToDC: false,
+      voltageCutoffOk: false,
+      alarmOk: false,
+      recordedDataOk: false,
+      printerOk: false,
+    });
   };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
@@ -713,22 +778,7 @@ export default function LoadBankWiz({
       getSteps={getSteps}
       canAdvance={canAdvance}
       showResetBtn
-      onFinish={() => setFormState({
-        modelNumber: '458',
-        vendor: 'Fluke',
-        serialNumber: 'ABC123',
-        assetTag: 100000,
-        date: today,
-        user: user.userName,
-        voltMeter: null,
-        shuntMeter: null,
-        visualCheckOk: false,
-        connectedToDC: false,
-        voltageCutoffOk: false,
-        alarmOk: false,
-        recordedDataOk: false,
-        printerOk: false,
-      })}
+      onFinish={handleFinish}
     />
   );
 }
