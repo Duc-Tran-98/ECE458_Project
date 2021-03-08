@@ -4,6 +4,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
 import 'react-toastify/dist/ReactToastify.css';
 import '../css/customToast.css';
@@ -34,7 +35,10 @@ const initialValues = {
   isAdmin: false,
 };
 
-export default function SignUp() {
+export default function SignUp({ onCreation }) {
+  SignUp.propTypes = {
+    onCreation: PropTypes.func.isRequired,
+  };
   const user = useContext(UserContext);
 
   const handleSignup = (values, resetForm) => {
@@ -50,6 +54,7 @@ export default function SignUp() {
       if (response.success) {
         toast.success(response.message);
         resetForm();
+        onCreation();
       } else {
         toast.error(response.message);
         resetForm();
