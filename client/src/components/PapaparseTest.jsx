@@ -8,6 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 export default function PapaparseTest() {
   const [status, setStatus] = useState('Submit');
   const buttonRef = createRef();
+  const [fileInfo, setFileInfo] = useState([]);
 
   const handleOpenDialog = (e) => {
     if (buttonRef.current) {
@@ -15,8 +16,11 @@ export default function PapaparseTest() {
     }
   };
 
+  const extractData = (data) => data.map((row) => row.data);
+
   const handleOnFileLoad = (data) => {
     console.log(data);
+    setFileInfo(extractData(data));
   };
 
   const handleOnError = (err, file, inputElem, reason) => {
@@ -44,6 +48,7 @@ export default function PapaparseTest() {
 
   const validateContents = () => {
     setStatus('Validating Contents');
+    console.log(fileInfo);
   };
 
   const customHeaderTransform = (header) => {
@@ -66,6 +71,7 @@ export default function PapaparseTest() {
     }
   };
 
+  // TODO: Add batching for massive files (test this)
   const papaparseOptions = {
     header: true,
     skipEmptyLines: true,
@@ -98,10 +104,12 @@ export default function PapaparseTest() {
     >
       {({ file }) => (
         <div
+          className="m-2"
           style={{
             display: 'flex',
             flexDirection: 'row',
             marginBottom: 10,
+            width: '50%',
           }}
         >
           <button
@@ -110,7 +118,7 @@ export default function PapaparseTest() {
             onClick={handleOpenDialog}
             style={{
               borderRadius: 5,
-              width: '20%',
+              width: '40%',
             }}
           >
             Select Instruments File
