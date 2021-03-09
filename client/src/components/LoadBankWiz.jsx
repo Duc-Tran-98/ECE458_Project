@@ -567,59 +567,85 @@ export default function LoadBankWiz({
         );
       case 1:
         return (
-          <div className="d-flex flex-column my-1">
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">
-                Voltmeter to be used:
-              </Form.Label>
-              <div className="w-25">
-                <AsyncSuggest
-                  query={print(gql`
-                    query GetModelNumbers {
-                      getAllModels {
-                        modelNumber
+          <>
+            <div className="d-flex flex-row my-1">
+              <Form.Group className="col mx-2">
+                <Form.Label className="h6 my-auto">
+                  Voltmeter to be used: (Vendor-Model number-Asset Tag)
+                </Form.Label>
+                <div className="">
+                  <AsyncSuggest
+                    query={print(gql`
+                      query Instruments($description: String) {
+                        getInstrumentsWithFilter(description: $description) {
+                          instruments {
+                            vendor
+                            modelNumber
+                            assetTag
+                            calibrationFrequency
+                            recentCalibration {
+                              date
+                            }
+                          }
+                        }
                       }
-                    }
-                  `)} // TODO: Make sure selection also shows asset tag and passes it to backend
-                  queryName="getAllModels"
-                  // eslint-disable-next-line no-unused-vars
-                  onInputChange={(_e, v) => setFormState({ ...formState, voltMeter: v.modelNumber })}
-                  label="Select a voltmeter"
-                  getOptionLabel={(option) => `${option.modelNumber}`}
-                  getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
-                  isInvalid={false}
-                  value={formState.voltMeter ? { modelNumber: formState.voltMeter } : null}
-                />
-              </div>
-            </Form.Group>
-            <Form.Group className="row my-2">
-              <Form.Label className="h6 my-auto">
-                Current shunt meter to be used:
-              </Form.Label>
-              <div className="w-25">
-                <AsyncSuggest
-                  query={print(gql`
-                    query GetModelNumbers {
-                      getAllModels {
-                        modelNumber
+                    `)}
+                    queryName="getInstrumentsWithFilter"
+                    getVariables={() => ({ description: 'voltmeter' })}
+                    // eslint-disable-next-line no-unused-vars
+                    onInputChange={(_e, v) => setFormState({ ...formState, voltMeter: v })}
+                    label="Select a voltmeter"
+                    getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
+                    getOptionSelected={(option, value) => (option.assetTag === value.assetTag && option.vendor)
+                        === value.vendor && option.modelNumber === value.modelNumber}
+                    isInvalid={false} // TODO: MAKE SURE VOLTMETER IS CALIBRATED BEFORE MOVING ON
+                    invalidMsg="That voltmeter is out of calibration!"
+                    value={formState.voltMeter}
+                  />
+                </div>
+              </Form.Group>
+              <Form.Group className="col mx-2">
+                <Form.Label className="h6 my-auto">
+                  Current shunt meter to be used: (Vendor-Model number-Asset Tag)
+                </Form.Label>
+                <div className="">
+                  <AsyncSuggest
+                    query={print(gql`
+                      query Instruments($description: String) {
+                        getInstrumentsWithFilter(description: $description) {
+                          instruments {
+                            vendor
+                            modelNumber
+                            assetTag
+                            calibrationFrequency
+                            recentCalibration {
+                              date
+                            }
+                          }
+                        }
                       }
-                    }
-                  `)} // TODO: Make sure selection also shows asset tag and passes it to backend
-                  queryName="getAllModels"
-                  // eslint-disable-next-line no-unused-vars
-                  onInputChange={(_e, v) => setFormState({ ...formState, shuntMeter: v.modelNumber })}
-                  label="Select a shunt meter"
-                  getOptionLabel={(option) => `${option.modelNumber}`}
-                  getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
-                  isInvalid={false}
-                  value={formState.shuntMeter ? { modelNumber: formState.shuntMeter } : null}
-                />
-              </div>
-            </Form.Group>
-            <div className="d-flex flex-row mx-3 mb-2">
-              Ensure voltmeter and current shunt meter are calibrated
+                    `)} // TODO: Make sure selection also shows asset tag and passes it to backend
+                    queryName="getInstrumentsWithFilter"
+                    getVariables={() => ({ description: 'current shunt meter' })}
+                    // eslint-disable-next-line no-unused-vars
+                    onInputChange={(_e, v) => setFormState({ ...formState, shuntMeter: v })}
+                    label="Select a shunt meter"
+                    getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
+                    getOptionSelected={(option, value) => (option.assetTag === value.assetTag && option.vendor)
+                        === value.vendor && option.modelNumber === value.modelNumber}
+                    isInvalid={false} // TODO: MAKE SURE SHUNT METER IS CALIBRATED BEFORE MOVING ON
+                    invalidMsg="That current shunt meter is out of calibration!"
+                    value={formState.shuntMeter}
+                  />
+                </div>
+              </Form.Group>
             </div>
-          </div>
+            <div className="row">
+              <div className="col mb-2 mx-2">
+                Ensure voltmeter and current shunt meter are calibrated
+              </div>
+            </div>
+          </>
         );
       case 2:
         return (

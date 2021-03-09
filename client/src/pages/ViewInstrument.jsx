@@ -215,6 +215,19 @@ export default function DetailedInstrumentView({ onDelete }) {
     };
   }, []);
 
+  React.useEffect(() => {
+    let active = true;
+    (() => {
+      if (!active) {
+        return;
+      }
+      fetchData();
+    })();
+    return () => {
+      active = false;
+    };
+  }, [showWiz]); // update calib hist if user opens/closes wizard
+
   const genCalibButtons = supportsLoadBankWiz ? (
     <div className="d-flex flex-row">
       <MouseOverPopover message="Add new calibration event">
