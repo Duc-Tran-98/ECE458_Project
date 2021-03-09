@@ -68,7 +68,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
   return (
     <>
       <Button onClick={getTransactionData} variant="dark" className="ms-3">
-        Export All Models
+        Export Models
       </Button>
       <CSVLink
         data={transactionData}
