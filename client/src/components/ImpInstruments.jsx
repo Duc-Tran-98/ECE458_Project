@@ -72,11 +72,7 @@ export default function ImpInstruments() {
   const renderTable = (instruments) => {
     const filteredData = instruments.map((obj) => ({
       id: String(obj.vendor + obj.modelNumber),
-      vendor: String(obj.vendor),
-      modelNumber: String(obj.modelNumber),
-      description: String(obj.description),
-      ...(obj.comment) && { comment: String(obj.comment) },
-      ...(obj.calibrationFrequency !== 'N/A') && { calibrationFrequency: parseInt(obj.calibrationFrequency, 10) },
+      ...obj,
     }));
     setRow(filteredData);
     setShowTable(true);
@@ -106,6 +102,7 @@ export default function ImpInstruments() {
     { field: 'vendor', headerName: 'Vendor', width: 120 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
     { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
+    { field: 'assetTag', headerName: 'Asset-Tag', width: 150 },
     {
       field: 'comment',
       headerName: 'Comment',
@@ -116,8 +113,6 @@ export default function ImpInstruments() {
         </div>
       ),
     },
-    { field: 'comment', headerName: 'Comment', width: 250 },
-    { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
       field: 'calibrationComment',
@@ -264,8 +259,8 @@ export default function ImpInstruments() {
         }
         setImportStatus('Import');
       },
-      handleError: (err) => {
-        toast.error(err);
+      handleError: () => {
+        toast.error('Please try again');
         resetUpload();
       },
     });
