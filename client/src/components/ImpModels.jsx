@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -242,7 +242,6 @@ export default function ImpModels() {
 
   return (
     <>
-      <ToastContainer />
       <CustomUpload
         requiredHeaders={requiredHeaders}
         customHeaderTransform={customHeaderTransform}

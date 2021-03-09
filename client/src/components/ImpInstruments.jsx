@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -34,6 +34,10 @@ export default function ImpInstruments() {
     { display: 'Instrument-Categories', value: 'instrumentCategories' },
   ];
   const customHeaderTransform = (header) => {
+    if (header.includes('Instrument-Categories')) {
+      console.log('found instrument categories header, updating to "categories"');
+      return 'categories';
+    }
     switch (header) {
       case 'Short-Description':
         return 'description';
@@ -269,7 +273,6 @@ export default function ImpInstruments() {
 
   return (
     <>
-      <ToastContainer />
       <CustomUpload
         requiredHeaders={requiredHeaders}
         customHeaderTransform={customHeaderTransform}
