@@ -91,7 +91,7 @@ export default function CalibrationRow({
             </Form.Group>
           </div>
           <div className="col-4 mt-3">
-            <Form.Group controlId="formDate">
+            <Form.Group>
               <Form.Label className="h4">Date</Form.Label>
               <Form.Control
                 name="date"

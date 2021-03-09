@@ -52,6 +52,9 @@ docker-compose down
 If you want to remove your db and/or the credentials, run the following command in the root directory:
 docker-compose down -v
 
+Note that this means you will have to run "docker-restart backend" at least twice after you run "docker-compose up -d --build" so that the backend container actually
+runs.
+
 # Common Errors and Fixes
 
 If a docker container running an app crashes saying it can't find some module, it's probably because the node_modules folder wasn't

@@ -68,9 +68,6 @@ export default function ImportInstruments({ setLoading }) {
       calibrationComment: 2000,
     },
   };
-
-  // TODO: hide certain columns for successfuly rendering
-
   const cols = [
     {
       field: 'id',

@@ -151,7 +151,9 @@ export default function ModelForm({
                     query={query}
                     queryName={queryName}
                     onInputChange={(e, v) => {
-                      setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
+                      if (v !== null) {
+                        setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
+                      }
                     }}
                     label="Choose a vendor"
                     getOptionSelected={formatSelected}

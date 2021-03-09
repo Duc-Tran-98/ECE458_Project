@@ -84,6 +84,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     GetCalibHistory({ id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
+        // console.log(item);
         // eslint-disable-next-line no-param-reassign
         item.id = counter;
         // eslint-disable-next-line no-param-reassign
@@ -216,6 +217,19 @@ export default function DetailedInstrumentView({ onDelete }) {
       active = false;
     };
   }, []);
+
+  React.useEffect(() => {
+    let active = true;
+    (() => {
+      if (!active) {
+        return;
+      }
+      fetchData();
+    })();
+    return () => {
+      active = false;
+    };
+  }, [showWiz]); // update calib hist if user opens/closes wizard
 
   const genCalibButtons = supportsLoadBankWiz ? (
     <div className="d-flex flex-row">

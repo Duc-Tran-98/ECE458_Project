@@ -11,7 +11,7 @@ function validateInstrument({
   if (modelNumber.length > 40) {
     return [false, 'Model number input must be under 40 characters!'];
   }
-  if (serialNumber.length > 40) {
+  if (serialNumber != null && serialNumber.length > 40) {
     return [false, 'Serial number input must be under 40 characters!'];
   }
   if (comment != null && comment.length > 2000) {
@@ -249,14 +249,49 @@ class InstrumentAPI extends DataSource {
         through: 'instrumentCategoryRelationships',
       },
     });
+    let instrumentInfo = null;
     if (instrument) {
       await this.store.models.findOne({ where: { modelNumber, vendor } }).then((model) => {
-        const instrumentInfo = {
+        instrumentInfo = {
           vendor: instrument.dataValues.vendor,
           modelNumber: instrument.dataValues.modelNumber,
           serialNumber: instrument.dataValues.serialNumber,
           modelReference: instrument.dataValues.modelReference,
           calibrationFrequency: instrument.dataValues.calibrationFrequency,
+          instrumentCategories: instrument.dataValues.instrumentCategories,
+          comment: instrument.dataValues.comment,
+          description: instrument.dataValues.description,
+          id: instrument.dataValues.id,
+          assetTag: instrument.dataValues.assetTag,
+          supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
+        };
+      });
+    }
+    return instrumentInfo;
+  }
+
+  async getInstrumentByAssetTag({ assetTag }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.store.instruments.findOne({
+      where: { assetTag },
+      include: {
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      },
+    });
+    let instrumentInfo = null;
+    if (instrument) {
+      const modRef = instrument.dataValues.modelReference;
+      await this.store.models.findOne({ where: { id: modRef } }).then((model) => {
+        instrumentInfo = {
+          vendor: instrument.dataValues.vendor,
+          modelNumber: instrument.dataValues.modelNumber,
+          serialNumber: instrument.dataValues.serialNumber,
+          modelReference: instrument.dataValues.modelReference,
+          calibrationFrequency: instrument.dataValues.calibrationFrequency,
+          instrumentCategories: instrument.dataValues.instrumentCategories,
           comment: instrument.dataValues.comment,
           description: instrument.dataValues.description,
           id: instrument.dataValues.id,
@@ -266,7 +301,7 @@ class InstrumentAPI extends DataSource {
         return instrumentInfo;
       });
     }
-    return null;
+    return instrumentInfo;
   }
 
   async editInstrument({
@@ -298,7 +333,7 @@ class InstrumentAPI extends DataSource {
     }); // Get all instruments associated with model
     if (instruments) {
       instruments.rows.forEach((element) => {
-        if (element.serialNumber === serialNumber && element.id !== id) {
+        if (element.serialNumber === serialNumber && serialNumber !== '' && element.id !== id) {
           response.message = `ERROR: The instrument ${vendor} ${modelNumber} ${serialNumber} already exists!`;
           response.success = false;
         } // check that there are no unique conflicts, but exclude ourselves
@@ -386,14 +421,16 @@ class InstrumentAPI extends DataSource {
       .findOne({ where: { modelNumber, vendor } })
       .then(async (model) => {
         if (model) {
-          await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
-            async (instrument) => {
-              if (instrument) {
-                response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
-                response.success = false;
-              }
-            },
-          );
+          if (serialNumber) {
+            await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
+              async (instrument) => {
+                if (instrument) {
+                  response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
+                  response.success = false;
+                }
+              },
+            );
+          }
           let newAssetTag;
           if (assetTag) {
             await this.store.instruments.findOne({ where: { assetTag } }).then(

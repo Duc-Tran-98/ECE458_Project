@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -13,7 +13,6 @@ export default function EditInstrument({
   initVendor,
   initModelNumber,
   initSerialNumber,
-  initCalibrationFrequency,
   id,
   initAssetTag,
   description,
@@ -29,7 +28,6 @@ export default function EditInstrument({
     handleDelete: PropTypes.func,
     footer: PropTypes.node,
     initAssetTag: PropTypes.number.isRequired,
-    initCalibrationFrequency: PropTypes.number.isRequired,
   };
   EditInstrument.defaultProps = {
     handleDelete: null,
@@ -45,23 +43,35 @@ export default function EditInstrument({
     categories: [],
     comment: '',
     id,
-    calibrationFrequency: initCalibrationFrequency,
+    calibrationFrequency: 0,
     assetTag: initAssetTag,
   });
 
+  const [completeFetch, setCompleteFetch] = useState(false);
+
   const handleFindInstrument = (response) => {
-    console.log(response);
-    const categories = response?.instrumentCategories.map((item) => item.name);
-    let comment = response?.comment || '';
+    const categories = response.instrumentCategories.map((item) => item.name);
+    let {
+      comment, calibrationFrequency, modelNumber, vendor, serialNumber, assetTag,
+    } = response;
+    comment = comment || '';
+    modelNumber = modelNumber || '';
+    vendor = vendor || '';
+    serialNumber = serialNumber || '';
+    assetTag = assetTag || '';
+    calibrationFrequency = calibrationFrequency || '';
     setFormState({
-      ...formState, comment, categories,
+      ...formState, comment, calibrationFrequency, categories, modelNumber, vendor, serialNumber, assetTag,
     });
+    setCompleteFetch(true);
   };
 
   useEffect(() => {
-    // TODO: fix find instrument as the response is null
+    // TODO: add api to get assetTag
+    let { assetTag } = formState;
+    assetTag = parseInt(assetTag, 10);
     FindInstrument({
-      modelNumber: initModelNumber, vendor: initVendor, serialNumber: initSerialNumber, handleResponse: handleFindInstrument,
+      assetTag, handleResponse: handleFindInstrument,
     });
   }, []); // empty dependency array, only run once on mount
 
@@ -94,7 +104,6 @@ export default function EditInstrument({
         toast.error(response.message);
       }
     };
-    // TODO: update api to include assetTag for edit instrument
     assetTag = parseInt(assetTag, 10);
     EditInstrumentQuery({
       modelNumber,
@@ -120,22 +129,26 @@ export default function EditInstrument({
 
   return (
     <>
-      <ToastContainer />
-      <InstrumentForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        comment={comment}
-        serialNumber={serialNumber}
-        categories={categories}
-        viewOnly={!user.isAdmin}
-        description={description}
-        calibrationFrequency={calibrationFrequency}
-        assetTag={assetTag}
-        type="edit"
-        handleFormSubmit={handleSubmit}
-        handleDelete={handleDelete}
-        footer={footer}
-      />
+      {completeFetch && (
+      <>
+        <ToastContainer />
+        <InstrumentForm
+          modelNumber={modelNumber}
+          vendor={vendor}
+          comment={comment}
+          serialNumber={serialNumber}
+          categories={categories}
+          viewOnly={!user.isAdmin}
+          description={description}
+          calibrationFrequency={calibrationFrequency}
+          assetTag={assetTag}
+          type="edit"
+          handleFormSubmit={handleSubmit}
+          handleDelete={handleDelete}
+          footer={footer}
+        />
+      </>
+      )}
     </>
   );
 }

@@ -4,9 +4,12 @@ import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import GetModelsForExport from '../queries/GetModelsForExport';
 
-const ExportModels = ({ setLoading }) => {
+// eslint-disable-next-line no-unused-vars
+const ExportModels = ({ setLoading, filterOptions }) => {
   ExportModels.propTypes = {
     setLoading: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    filterOptions: PropTypes.object.isRequired,
   };
 
   const [transactionData, setTransactionData] = useState([]);
@@ -17,11 +20,14 @@ const ExportModels = ({ setLoading }) => {
     { label: 'Model-Number', key: 'modelNumber' },
     { label: 'Short-Description', key: 'description' },
     { label: 'Comment', key: 'comment' },
+    { label: 'Model-Categories', key: 'categories' },
+    { label: 'Load-Bank-Support', key: 'supportLoadBankCalibration' },
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
   const getData = async () => {
-    await GetModelsForExport().then((res) => {
+    await GetModelsForExport({ filterOptions }).then((res) => {
+      console.log(res);
       csvData = res;
     });
     return csvData;
@@ -29,16 +35,19 @@ const ExportModels = ({ setLoading }) => {
 
   const filterTransactionData = (r) => {
     const filteredData = [];
-    r.forEach((row) => {
+    r.models.forEach((row) => {
       const updatedRow = {
         vendor: row.vendor.replace(/"/g, '""'),
         modelNumber: row.modelNumber.replace(/"/g, '""'),
         description: row.description.replace(/"/g, '""'),
-        comment: row.comment.replace(/"/g, '""'),
-        calibrationFrequency: row.calibrationFrequency,
+        comment: row.comment ? row.comment.replace(/"/g, '""') : '',
+        calibrationFrequency: row.calibrationFrequency || 'N/A',
+        supportLoadBankCalibration: row.supportLoadBankCalibration ? 'Y' : '',
+        categories: row.categories.map((item) => item.name).join(' '),
       };
       filteredData.push(updatedRow);
     });
+    console.log(filteredData);
     return filteredData;
   };
 

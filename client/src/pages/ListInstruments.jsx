@@ -85,7 +85,7 @@ export default function ListInstruments() {
       }, 50);
     };
   }
-  console.log(navLink);
+  // console.log(navLink);
   history.listen((location, action) => {
     if (action === 'POP') {
       // if user clicks on models nav link or goes back
@@ -255,7 +255,7 @@ export default function ListInstruments() {
             </MouseOverPopover>
           </div>
         </div>
-      ), // TODO: put asset tag in url?
+      ),
     },
   ];
 
