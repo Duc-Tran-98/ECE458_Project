@@ -608,7 +608,7 @@ export default function LoadBankWiz({
                     getVariables={() => ({ description: 'voltmeter' })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
-                      const voltMeterOk = validateCalibrationDate({ date: v?.recentCalibration[0]?.date, calibrationFrequency: v.calibrationFrequency });
+                      const voltMeterOk = DEBUG || validateCalibrationDate({ date: v?.recentCalibration[0]?.date, calibrationFrequency: v.calibrationFrequency });
                       setFormState({ ...formState, voltMeter: v, voltMeterOk });
                     }}
                     label="Select a voltmeter"
@@ -646,7 +646,7 @@ export default function LoadBankWiz({
                     getVariables={() => ({ description: 'current shunt meter' })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
-                      const shuntMeterOk = validateCalibrationDate({
+                      const shuntMeterOk = DEBUG || validateCalibrationDate({
                         date: v?.recentCalibration[0]?.date,
                         calibrationFrequency: v.calibrationFrequency,
                       });
