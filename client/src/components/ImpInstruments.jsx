@@ -31,7 +31,7 @@ export default function ImpInstruments() {
     { display: 'Comment', value: 'comment' },
     { display: 'Calibration-Date', value: 'calibrationDate' },
     { display: 'Calibration-Comment', value: 'calibrationComment' },
-    { display: 'Instrument-Categories', value: 'instrumentCategories' },
+    { display: 'Instrument-Categories', value: 'categories' },
   ];
   const customHeaderTransform = (header) => {
     switch (header) {
