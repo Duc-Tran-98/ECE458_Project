@@ -134,7 +134,6 @@ export default function ImpModels() {
   };
 
   const validateRow = (row) => {
-    // TODO: Make this less ugly
     const invalidKeys = [];
     if (row.vendor && row.vendor.length > characterLimits.model.vendor) { invalidKeys.push('Vendor'); }
     if (row.modelNumber && row.modelNumber.length > characterLimits.model.modelNumber) { invalidKeys.push('Model-Number'); }
@@ -145,7 +144,7 @@ export default function ImpModels() {
   };
 
   const validateCalibrationFrequency = (calibrationFrequency) => {
-    if (calibrationFrequency) { return calibrationFrequency >= 0; }
+    if (calibrationFrequency) { return calibrationFrequency > 0; }
     return true;
   };
 
