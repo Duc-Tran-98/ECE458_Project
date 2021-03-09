@@ -47,7 +47,6 @@ const ExportModels = ({ setLoading, filterOptions }) => {
       };
       filteredData.push(updatedRow);
     });
-    console.log(filteredData);
     return filteredData;
   };
 
