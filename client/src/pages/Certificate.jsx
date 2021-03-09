@@ -3,6 +3,7 @@ import {
   // eslint-disable-next-line no-unused-vars
   PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
 } from '@react-pdf/renderer';
+import PropTypes from 'prop-types';
 import GetCalibHistory from '../queries/GetCalibHistory';
 
 const strftime = require('strftime');
@@ -80,7 +81,11 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-function MyCertificate() {
+function MyCertificate({ calibEvent }) {
+  MyCertificate.propTypes = {
+    // eslint-disable-next-line react/forbid-prop-types
+    calibEvent: PropTypes.object.isRequired,
+  };
   const names = window.sessionStorage.getItem('calibUser');
   const regex = /(Username:\s)([^,]+)(,\sFirst\sname:\s)([^,]+)(,\sLast\sname:\s)(.*)/g;
   const matches = regex.exec(names);
@@ -95,32 +100,10 @@ function MyCertificate() {
   const calibrationDate = window.sessionStorage.getItem('calibrationDate');
   const expirationDate = strftime('%F', new Date(window.sessionStorage.getItem('expirationDate')));
   const comment = window.sessionStorage.getItem('calibComment');
-  let id = window.sessionStorage.getItem('id');
-  id = parseInt(id, 10);
 
   function getURLExtension(url) {
     return url.split(/[#?]/)[0].split('.').pop().trim();
   }
-
-  const [calibEvent, setCalibEvent] = React.useState(null);
-  // eslint-disable-next-line no-unused-vars
-  const [fetched, setHasFetched] = React.useState(false);
-
-  React.useEffect(() => {
-    let active = true;
-    (() => {
-      if (active) {
-        GetCalibHistory({ id, mostRecent: true }).then((data) => {
-          setCalibEvent(data);
-          console.log(data);
-          setHasFetched(true);
-        });
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   console.log(calibEvent);
 
@@ -158,180 +141,192 @@ function MyCertificate() {
   return (
     <Document>
       <Page style={styles.page} size="LETTER">
-        <>
-          {fetched && (
-
-          <View style={styles.outerBorder}>
-            <View style={styles.innerBorder}>
-
-              <View style={styles.centerView}>
-                <Image style={styles.logo} src="HPT_logo.png" />
-              </View>
-
-              <Text style={styles.title}>
-                Certificate of Calibration
-                {'\n\n'}
-              </Text>
-
-              <View style={styles.columnView}>
-                <View style={styles.rightColumn}>
-                  <Text style={styles.largeText}>
-                    Vendor:
-                    {' '}
-                    {vendor}
-                  </Text>
-                  <Text style={styles.largeText}>
-                    Model Number:
-                    {' '}
-                    {model}
-                  </Text>
-                </View>
-                <View style={styles.leftColumn}>
-                  <Text style={styles.largeText}>
-                    Serial Number:
-                    {' '}
-                    {serial}
-                  </Text>
-                  <Text style={styles.largeText}>
-                    Asset Tag:
-                    {' '}
-                    {assetTag}
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={styles.largeText}>
-                {'\n'}
-                Model Description:
-              </Text>
-              <Text style={styles.smallText}>
-                {description}
-              </Text>
-
-              <Text style={styles.largeText}>
-                {'\n'}
-                Comment:
-              </Text>
-              <Text style={styles.smallText}>
-                {comment}
-              </Text>
-
-              <View style={styles.columnView}>
-                <View style={styles.rightColumn}>
-                  <Text style={styles.largeText}>
-                    {'\n'}
-                    Calibrated By:
-                    {' '}
-                    {name}
-                  </Text>
-                  <Text style={styles.largeText}>
-                    Username:
-                    {' '}
-                    {username}
-                  </Text>
-                </View>
-
-                <View style={styles.leftColumn}>
-                  <Text style={styles.largeText}>
-                    {'\n'}
-                    Date of Calibration:
-                    {' '}
-                    {calibrationDate}
-                  </Text>
-                  <Text style={styles.largeText}>
-                    Date of Expiration:
-                    {' '}
-                    {expirationDate}
-                  </Text>
-                </View>
-              </View>
-
-              {displayLink}
-              {displayImage}
-
-              {(evidenceFileType === 'load_bank') && (
-              <View style={styles.table}>
-                {' '}
-                {/* TableHeader */}
-                {' '}
-                <View style={styles.tableRow}>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>Product</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>Type</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>Period</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>Price</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                </View>
-                {' '}
-                {/* TableContent */}
-                {' '}
-                <View style={styles.tableRow}>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>React-PDF</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>3 User </Text>
-                    {' '}
-                  </View>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>2019-02-20 - 2020-02-19</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                  <View style={styles.tableCol}>
-                    {' '}
-                    <Text style={styles.tableCell}>5€</Text>
-                    {' '}
-                  </View>
-                  {' '}
-                </View>
-                {' '}
-              </View>
-              )}
+        <View style={styles.outerBorder}>
+          <View style={styles.innerBorder}>
+            <View style={styles.centerView}>
+              <Image style={styles.logo} src="HPT_logo.png" />
             </View>
+
+            <Text style={styles.title}>
+              Certificate of Calibration
+              {'\n\n'}
+            </Text>
+
+            <View style={styles.columnView}>
+              <View style={styles.rightColumn}>
+                <Text style={styles.largeText}>
+                  Vendor:
+                  {' '}
+                  {vendor}
+                </Text>
+                <Text style={styles.largeText}>
+                  Model Number:
+                  {' '}
+                  {model}
+                </Text>
+              </View>
+              <View style={styles.leftColumn}>
+                <Text style={styles.largeText}>
+                  Serial Number:
+                  {' '}
+                  {serial}
+                </Text>
+                <Text style={styles.largeText}>
+                  Asset Tag:
+                  {' '}
+                  {assetTag}
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.largeText}>
+              {'\n'}
+              Model Description:
+            </Text>
+            <Text style={styles.smallText}>{description}</Text>
+
+            <Text style={styles.largeText}>
+              {'\n'}
+              Comment:
+            </Text>
+            <Text style={styles.smallText}>{comment}</Text>
+
+            <View style={styles.columnView}>
+              <View style={styles.rightColumn}>
+                <Text style={styles.largeText}>
+                  {'\n'}
+                  Calibrated By:
+                  {' '}
+                  {name}
+                </Text>
+                <Text style={styles.largeText}>
+                  Username:
+                  {' '}
+                  {username}
+                </Text>
+              </View>
+
+              <View style={styles.leftColumn}>
+                <Text style={styles.largeText}>
+                  {'\n'}
+                  Date of Calibration:
+                  {' '}
+                  {calibrationDate}
+                </Text>
+                <Text style={styles.largeText}>
+                  Date of Expiration:
+                  {' '}
+                  {expirationDate}
+                </Text>
+              </View>
+            </View>
+
+            {displayLink}
+            {displayImage}
+
+            {evidenceFileType === 'load_bank' && (
+            <View style={styles.table}>
+              {' '}
+              {/* TableHeader */}
+              {' '}
+              <View style={styles.tableRow}>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>Product</Text>
+                  {' '}
+                </View>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>Type</Text>
+                  {' '}
+                </View>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>Period</Text>
+                  {' '}
+                </View>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>Price</Text>
+                  {' '}
+                </View>
+                {' '}
+              </View>
+              {' '}
+              {/* TableContent */}
+              {' '}
+              <View style={styles.tableRow}>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>React-PDF</Text>
+                  {' '}
+                </View>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>3 User </Text>
+                  {' '}
+                </View>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>
+                    2019-02-20 - 2020-02-19
+                  </Text>
+                  {' '}
+                </View>
+                {' '}
+                <View style={styles.tableCol}>
+                  {' '}
+                  <Text style={styles.tableCell}>5€</Text>
+                  {' '}
+                </View>
+                {' '}
+              </View>
+              {' '}
+            </View>
+            )}
           </View>
-          )}
-
-        </>
+        </View>
       </Page>
-
     </Document>
-
   );
 }
 
 function Certificate() {
+  const [calibEvent, setCalibEvent] = React.useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [fetched, setHasFetched] = React.useState(false);
+  let id = window.sessionStorage.getItem('id');
+  id = parseInt(id, 10);
+
+  React.useEffect(() => {
+    let active = true;
+    (() => {
+      if (active) {
+        GetCalibHistory({ id, mostRecent: true }).then((data) => {
+          setCalibEvent(data);
+          console.log(data);
+          setHasFetched(true);
+        });
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
   return (
     <div>
-      <PDFViewer style={styles.viewer}>
-        <MyCertificate />
-      </PDFViewer>
+      {fetched && (
+        <PDFViewer style={styles.viewer}>
+          <MyCertificate calibEvent={calibEvent} />
+        </PDFViewer>
+      )}
     </div>
   );
 }
