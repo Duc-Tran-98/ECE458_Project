@@ -102,6 +102,7 @@ export default function ImpInstruments() {
     { field: 'vendor', headerName: 'Vendor', width: 120 },
     { field: 'modelNumber', headerName: 'Model-Number', width: 150 },
     { field: 'serialNumber', headerName: 'Serial-Number', width: 150 },
+    { field: 'assetTag', headerName: 'Asset-Tag', width: 150 },
     {
       field: 'comment',
       headerName: 'Comment',
@@ -112,7 +113,6 @@ export default function ImpInstruments() {
         </div>
       ),
     },
-    { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
       field: 'calibrationComment',
@@ -253,8 +253,8 @@ export default function ImpInstruments() {
         }
         setImportStatus('Import');
       },
-      handleError: (err) => {
-        toast.error(err);
+      handleError: () => {
+        toast.error('Please try again');
         resetUpload();
       },
     });
