@@ -92,12 +92,11 @@ export default function CustomUpload({
   // TODO: Add batching for massive files (test this)
   const papaparseOptions = {
     header: true,
-    skipEmptyLines: true,
+    skipEmptyLines: 'greedy',
     transformHeader: customHeaderTransform,
     transform: customTransform,
   };
 
-  // TODO: Send file to backend (for now spoofing)
   const handleSubmitFile = () => {
     submitFileContents(handleRemoveFile);
   };
