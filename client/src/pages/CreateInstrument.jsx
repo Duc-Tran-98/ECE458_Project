@@ -44,7 +44,7 @@ function CreateInstrumentPage({ onCreation }) {
     calibrationFrequency: 0, // TODO: update calibration frequency based on model selection
     description: '', // TODO: update description based on model selection
     categories: [],
-    assetTag: 0, // TODO: use api to get last id of instrument, then add 100001 to it;
+    assetTag: 0, // TODO: let user know that this field is not required
   };
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
