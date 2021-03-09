@@ -68,9 +68,11 @@ export default function ImpInstruments() {
   const queryName = 'bulkImportInstruments';
   const renderTable = (instruments) => {
     const filteredData = instruments.map((obj) => ({
-      id: String(obj.vendor + obj.modelNumber),
+      id: Math.random(),
       ...obj,
     }));
+    console.log('rendering table with data: ');
+    console.log(filteredData);
     setRow(filteredData);
     setShowTable(true);
   };
@@ -112,9 +114,8 @@ export default function ImpInstruments() {
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
       field: 'calibrationComment',
-      headerName: 'Calibration Comment',
+      headerName: 'Calib-Comment',
       width: 300,
-      hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">
           {params.value}
@@ -230,8 +231,6 @@ export default function ImpInstruments() {
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
-    console.log('Handling import with fileInfo: ');
-    console.log(fileInfo);
     const instruments = filterData(fileInfo);
     console.log('filtered data into instruments: ');
     console.log(instruments);
