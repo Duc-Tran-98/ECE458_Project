@@ -133,7 +133,7 @@ export default function CalibrationRow({
                     className="invisible position-absolute top-0 start-0"
                     id={`inputFile-${id}`}
                     onInput={(e) => {
-                      console.log(e);
+                      // console.log(e);
                       if (e.target.files[0]) {
                         setFileNameDisplay('');
                         const removeIfCurrent = {

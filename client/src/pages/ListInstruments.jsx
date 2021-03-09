@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllInstruments from '../queries/GetAllInstruments';
+import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
@@ -47,6 +47,7 @@ export default function ListInstruments() {
     modelCategories: selectedFilters ? selectedFilters.modelCategories : null,
     instrumentCategories: selectedFilters ? selectedFilters.instrumentCategories : null,
     filterSerialNumber: selectedFilters ? selectedFilters.filterSerialNumber : null,
+    assetTag: selectedFilters ? selectedFilters.assetTag : null,
   });
   const navLink = document.getElementById('instrumentNavLink');
   const getAndSetUrlVals = () => {
@@ -69,8 +70,9 @@ export default function ListInstruments() {
         || filterOptions.modelCategories !== null
         || filterOptions.instrumentCategories !== null
         || filterOptions.filterSerialNumber !== null
+        || filterOptions.assetTag !== null
       ) {
-        console.log('clearing filters');
+        // console.log('clearing filters');
         setFilterOptions({
           vendors: null,
           modelNumbers: null,
@@ -78,6 +80,7 @@ export default function ListInstruments() {
           modelCategories: null,
           instrumentCategories: null,
           filterSerialNumber: null,
+          assetTag: null,
         });
       }
       setTimeout(() => {
@@ -134,7 +137,6 @@ export default function ListInstruments() {
     { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
-    { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
     {
       field: 'categories',
       headerName: 'Categories',
@@ -283,7 +285,7 @@ export default function ListInstruments() {
   ];
 
   const updateUrlWithFilter = ({
-    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, total, filterSerialNumber,
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, total, filterSerialNumber, assetTag,
   }) => {
     const formatedInstrumentCategories = instrumentCategories !== null ? instrumentCategories : null;
     const formatedModelCategories = modelCategories !== null ? modelCategories : null;
@@ -295,6 +297,7 @@ export default function ListInstruments() {
         instrumentCategories: formatedInstrumentCategories,
         modelCategories: formatedModelCategories,
         filterSerialNumber,
+        assetTag,
       }),
       'ascii',
     ).toString('base64');
@@ -305,6 +308,7 @@ export default function ListInstruments() {
       && (!modelNumbers)
       && (!descriptions)
       && (!filterSerialNumber)
+      && (!assetTag)
     ) {
       history.push(`/viewInstruments?page=1&limit=${initLimit}&count=${total}`);
     } else {
@@ -315,7 +319,7 @@ export default function ListInstruments() {
   };
 
   const onSearch = ({
-    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber,
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   }) => {
     //  console.log('searching...');
     let formatedModelCategories = [];
@@ -329,28 +333,55 @@ export default function ListInstruments() {
     // console.log(modelCategories);
     formatedInstrumentCategories = formatedInstrumentCategories.length > 0 ? formatedInstrumentCategories : null;
     formatedModelCategories = formatedModelCategories.length > 0 ? formatedModelCategories : null;
-    GetAllInstruments({
-      limit: 1,
-      offset: 0,
-      modelNumber: modelNumbers,
-      description: descriptions,
-      vendor: vendors,
-      modelCategories: formatedModelCategories,
-      instrumentCategories: formatedInstrumentCategories,
-      serialNumber: filterSerialNumber,
-    }).then((response) => {
-      setRowCount(response.total);
-      setInitPage(1);
-      updateUrlWithFilter({
-        vendors,
-        modelNumbers,
-        descriptions,
+    if (
+      !vendors
+      && (modelCategories === null || modelCategories?.length === 0)
+      && (instrumentCategories === null || instrumentCategories?.length === 0)
+      && !modelNumbers
+      && !descriptions
+      && !filterSerialNumber
+      && !assetTag
+    ) {
+      CountInstruments().then((val) => {
+        setRowCount(val);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          modelCategories: formatedModelCategories,
+          instrumentCategories: formatedInstrumentCategories,
+          total: val,
+          filterSerialNumber,
+          assetTag,
+        });
+      });
+    } else {
+      GetAllInstruments({
+        limit: 1,
+        offset: 0,
+        modelNumber: modelNumbers,
+        description: descriptions,
+        vendor: vendors,
         modelCategories: formatedModelCategories,
         instrumentCategories: formatedInstrumentCategories,
-        total: response.total,
-        filterSerialNumber,
+        serialNumber: filterSerialNumber,
+        assetTag,
+      }).then((response) => {
+        setRowCount(response.total);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          modelCategories: formatedModelCategories,
+          instrumentCategories: formatedInstrumentCategories,
+          total: response.total,
+          filterSerialNumber,
+          assetTag,
+        });
       });
-    });
+    }
     setFilterOptions({
       vendors,
       modelNumbers,
@@ -358,10 +389,11 @@ export default function ListInstruments() {
       modelCategories: formatedModelCategories,
       instrumentCategories: formatedInstrumentCategories,
       filterSerialNumber,
+      assetTag,
     });
   };
   const {
-    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber,
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   } = filterOptions;
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
@@ -372,6 +404,7 @@ export default function ListInstruments() {
         modelCategories,
         instrumentCategories,
         filterSerialNumber,
+        assetTag,
       }),
       'ascii',
     ).toString('base64');
@@ -408,6 +441,7 @@ export default function ListInstruments() {
               initModelCategories={filterOptions.modelCategories}
               initInstrumentCategories={filterOptions.instrumentCategories}
               initSerialNumber={filterOptions.filterSerialNumber}
+              initAssetTag={filterOptions.assetTag}
             />
           </div>
         )}
@@ -429,7 +463,7 @@ export default function ListInstruments() {
           modelCategories,
           instrumentCategories,
           serialNumber: filterSerialNumber,
-          assetTag: null,
+          assetTag,
         }).then((response) => {
           // console.log('fetched data');
           response.instruments.forEach((element) => {
