@@ -147,7 +147,15 @@ class ModelAPI extends DataSource {
   async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const models = await this.store.models.findAll({ limit, offset });
+    const models = await this.store.models.findAll({
+      limit,
+      offset,
+      include: {
+        model: this.store.modelCategories,
+        as: 'categories',
+        through: 'modelCategoryRelationships',
+      },
+    });
     return models;
   }
 

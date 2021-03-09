@@ -6,16 +6,18 @@ const route = process.env.NODE_ENV.includes('dev')
   : '/api';
 
 const Query = ({
-  query, queryName, getVariables, handleResponse,
+  query, queryName, getVariables, handleResponse, handleError,
 }) => {
   Query.propTypes = {
     query: PropTypes.string.isRequired, // This is the gql query printed
     queryName: PropTypes.string.isRequired, // This is the name of the query
     getVariables: PropTypes.func, // This is how we get the variables to pass into the query
     handleResponse: PropTypes.func.isRequired, // This is what to do with the response
+    handleError: PropTypes.func,
   };
   let response;
   const data = getVariables ? { query, variables: getVariables() } : { query };
+  console.log(data);
   axios
     .post(route, data)
     .then((res) => {
@@ -23,7 +25,9 @@ const Query = ({
       handleResponse(response);
     })
     .catch((err) => {
+      if (handleError) handleError(err);
       console.error(err);
+      console.error(err.response);
     });
 };
 
@@ -46,6 +50,7 @@ export async function QueryAndThen({
       : res.data.data[queryName]))
     .catch((err) => {
       console.error(err);
+      console.error(err.response);
     });
 }
 

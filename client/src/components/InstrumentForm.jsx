@@ -98,7 +98,7 @@ export default function InstrumentForm({
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && user.isAdmin;
-
+  console.log(categories);
   return (
     <Formik
       initialValues={{
@@ -205,7 +205,7 @@ export default function InstrumentForm({
                 <Form.Control
                   type="text"
                   name="modelDescription"
-                  value={description}
+                  value={values.description}
                   disabled
                 />
               </Form.Group>
@@ -253,7 +253,7 @@ export default function InstrumentForm({
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
                 }}
-                tags={categories}
+                tags={values.categories}
                 dis={disabled}
                 models={false}
                 isInvalid={false}

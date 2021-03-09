@@ -333,6 +333,7 @@ function ListModels() {
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"
+        filterOptions={filterOptions}
       />
     </>
   );
