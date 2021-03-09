@@ -183,7 +183,7 @@ export default function ImpInstruments() {
       const missingKeys = getMissingKeys(row);
       const isDuplicateInstrument = checkDuplicateInstrument(fileInfo, row.vendor, row.modelNumber, row.serialNumber, index);
       const invalidEntries = validateRow(row);
-      const isDuplicateAssetTag = checkDuplicateAssetTag(fileInfo, index, row.assetTag);
+      const isDuplicateAssetTag = checkDuplicateAssetTag(fileInfo, row.assetTag, index);
       const invalidCalibrationDate = validateCalibrationDate(row.calibrationDate);
       const invalidAssetTag = !validAssetTag(row.assetTag);
 
