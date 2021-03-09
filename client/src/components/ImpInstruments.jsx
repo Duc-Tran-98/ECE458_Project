@@ -31,14 +31,12 @@ export default function ImpInstruments() {
     { display: 'Comment', value: 'comment' },
     { display: 'Calibration-Date', value: 'calibrationDate' },
     { display: 'Calibration-Comment', value: 'calibrationComment' },
-    { display: 'Instrument-Categories', value: 'categories' },
+    { display: 'Instrument-Categories', value: 'instrumentCategories' },
   ];
   const customHeaderTransform = (header) => {
     switch (header) {
       case 'Short-Description':
         return 'description';
-      case 'Instrument-Categories':
-        return 'categories';
       case 'Asset-Tag-Number':
         return 'assetTag';
       default:
@@ -50,7 +48,7 @@ export default function ImpInstruments() {
   const customTransform = (value, header) => {
     if (value == null) return null;
     switch (header) {
-      case 'categories':
+      case 'instrumentCategories':
         // eslint-disable-next-line no-case-declarations
         const arr = value.trim().split(/\s+/);
         if (arr.length > 0 && arr[0] !== '') { return arr; }
@@ -153,7 +151,7 @@ export default function ImpInstruments() {
     if (row.modelNumber && row.modelNumber.length > characterLimits.instrument.modelNumber) { invalidKeys.push('Model-Number'); }
     if (row.serialNumber && row.serialNumber.length > characterLimits.instrument.serialNumber) { invalidKeys.push('Serial-Number'); }
     if (row.comment && row.comment.length > characterLimits.instrument.comment) { invalidKeys.push('Comment'); }
-    if (row.categories && row.categories.length > characterLimits.instrument.categories) { invalidKeys.push('Instrument-Categories'); }
+    if (row.instrumentCategories && row.instrumentCategories.length > characterLimits.instrument.categories) { invalidKeys.push('Instrument-Categories'); }
     if (row.calibrationDate && row.calibrationDate.length > characterLimits.instrument.calibrationDate) { invalidKeys.push('Calibration-Date'); }
     if (row.calibrationComment && row.calibrationComment.length > characterLimits.instrument.calibrationComment) { invalidKeys.push('Calibration-Comment'); }
     return invalidKeys.length > 0 ? invalidKeys : null;
@@ -213,12 +211,12 @@ export default function ImpInstruments() {
   //   return !emptyLine(row);
   // });
 
-  // TODO: Validate asset tag is parseable as integer (in validation)
   const filterData = (fileInfo) => fileInfo.map((obj) => ({
-    ...obj,
     vendor: String(obj.vendor),
     modelNumber: String(obj.modelNumber),
-    ...(obj.assetTag) && { assetTag: parseInt(obj.assetTag, 10) },
+    categories: obj.instrumentCategories,
+    serialNumber: obj.serialNumber,
+    assetTag: Number.isNaN(obj.assetTag) ? null : parseInt(obj.assetTag, 10),
     ...(obj.serialNumber) && { serialNumber: String(obj.serialNumber) },
     ...(obj.calibrationDate) && { calibrationUser: user.userName },
     ...(obj.calibrationDate) && { calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') },
