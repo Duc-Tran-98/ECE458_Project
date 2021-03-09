@@ -258,6 +258,10 @@ export default function ImpInstruments() {
         }
         setImportStatus('Import');
       },
+      handleError: (err) => {
+        toast.error(err);
+        resetUpload();
+      },
     });
   };
 
