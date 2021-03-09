@@ -41,8 +41,8 @@ function CreateInstrumentPage({ onCreation }) {
     vendor: '',
     comment: '',
     serialNumber: '',
-    calibrationFrequency: 0,
-    description: '',
+    calibrationFrequency: 0, // TODO: update calibration frequency based on model selection
+    description: '', // TODO: update description based on model selection
     categories: [],
     assetTag: 0, // TODO: use api to get last id of instrument, then add 100001 to it;
   };
@@ -133,11 +133,18 @@ function CreateInstrumentPage({ onCreation }) {
     assetTag,
   } = formState;
   const footer = calibrationFrequency !== 0 ? (
-    <CalibrationTable
-      rows={calibHistory}
-      deleteRow={deleteRow}
-      onChangeCalibRow={onChangeCalibRow}
-    />
+    <>
+      <div className="d-flex justify-content-center my-3">
+        <button type="button" className="btn  mx-3" onClick={addRow}>
+          Add Calibration Event
+        </button>
+      </div>
+      <CalibrationTable
+        rows={calibHistory}
+        deleteRow={deleteRow}
+        onChangeCalibRow={onChangeCalibRow}
+      />
+    </>
   ) : (
     <div className="d-flex justify-content-center my-3">
       <h4>Item Not calibratable</h4>
@@ -158,11 +165,6 @@ function CreateInstrumentPage({ onCreation }) {
         handleFormSubmit={handleSubmit}
         type="create"
       />
-      <div className="d-flex justify-content-center my-3">
-        <button type="button" className="btn  mx-3" onClick={addRow}>
-          Add Calibration Event
-        </button>
-      </div>
       {footer}
     </>
   );

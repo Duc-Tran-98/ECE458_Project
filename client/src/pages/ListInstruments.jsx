@@ -1,6 +1,5 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-unused-expressions */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
@@ -19,14 +18,13 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
 export default function ListInstruments() {
   const history = useHistory();
   const user = React.useContext(UserContext);
-  const [modelNumber, setModelNumber] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [assetTag, setAssetTag] = useState(0);
-  const [serialNumber, setSerialNumber] = useState('');
-  const [calibrationFrequency, setcalibrationFrequency] = useState(0);
-  // eslint-disable-next-line no-unused-vars
-  const [description, setDescription] = useState('');
-  const [id, setId] = useState('');
+  // const [modelNumber, setModelNumber] = useState('');
+  // const [vendor, setVendor] = useState('');
+  // const [assetTag, setAssetTag] = useState(0);
+  // const [serialNumber, setSerialNumber] = useState('');
+  // const [calibrationFrequency, setcalibrationFrequency] = useState(0);
+  // const [description, setDescription] = useState('');
+  //  const [id, setId] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const [rowCount, setRowCount] = useState(parseInt(urlParams.get('count'), 10));
@@ -97,15 +95,23 @@ export default function ListInstruments() {
   });
   const cellHandler = (e) => {
     if (e.field === 'view') {
-      setModelNumber(e.row.modelNumber);
-      setVendor(e.row.vendor);
-      setAssetTag(e.row.assetTag);
-      setId(e.row.id);
-      setSerialNumber(e.row.serialNumber);
-      setDescription(e.row.description);
-      if (e.row.calibrationFrequency !== null) {
-        setcalibrationFrequency(e.row.calibrationFrequency);
-      }
+      const state = { previousUrl: window.location.href };
+      const {
+        modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency,
+      } = e.row;
+      history.push(
+        `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency || 0}`,
+        state,
+      );
+      // setModelNumber(e.row.modelNumber);
+      // setVendor(e.row.vendor);
+      // setAssetTag(e.row.assetTag);
+      // setId(e.row.id);
+      // setSerialNumber(e.row.serialNumber);
+      // setDescription(e.row.description);
+      // if (e.row.calibrationFrequency !== null) {
+      //   setcalibrationFrequency(e.row.calibrationFrequency);
+      // }
     }
   };
   const genDaysLeft = (date) => {
@@ -128,6 +134,24 @@ export default function ListInstruments() {
     { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
+    { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
+    {
+      field: 'categories',
+      headerName: 'Categories',
+      width: 350,
+      renderCell: (params) => (
+        <ul className="d-flex flex-row overflow-auto pt-2">
+          {params.value.map((element) => (
+            <li
+              key={element.name}
+              className="list-group-item list-group-item-secondary"
+            >
+              {element.name}
+            </li>
+          ))}
+        </ul>
+      ),
+    },
     {
       field: 'comment',
       headerName: 'Comment',
@@ -225,13 +249,6 @@ export default function ListInstruments() {
               <button
                 type="button"
                 className="btn "
-                onClick={() => {
-                  const state = { previousUrl: window.location.href };
-                  history.push(
-                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
-                    state,
-                  );
-                }}
               >
                 View
               </button>
@@ -417,6 +434,7 @@ export default function ListInstruments() {
           // console.log('fetched data');
           response?.instruments.forEach((element) => {
             if (element !== null) {
+              element.categories = element.modelCategories.concat(element.instrumentCategories);
               element.calibrationStatus = element.calibrationFrequency === null
                 || element.calibrationFrequency === 0
                 ? 'N/A'

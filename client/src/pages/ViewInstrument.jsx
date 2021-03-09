@@ -4,6 +4,8 @@ import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { gql } from '@apollo/client';
+import { print } from 'graphql';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
@@ -13,6 +15,8 @@ import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 import ModalAlert from '../components/ModalAlert';
 import GetUser from '../queries/GetUser';
 import EditInstrument from '../components/EditInstrument';
+import Query from '../components/UseQuery';
+import LoadBankWiz from '../components/LoadBankWiz';
 
 export default function DetailedInstrumentView({ onDelete }) {
   DetailedInstrumentView.propTypes = {
@@ -20,24 +24,27 @@ export default function DetailedInstrumentView({ onDelete }) {
   };
   const user = React.useContext(UserContext);
   const history = useHistory();
-  // TODO: put asset tag in url or make api call to get it
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const modelNumber = urlParams.get('modelNumber');
   const vendor = urlParams.get('vendor');
   let assetTag = urlParams.get('assetTag');
+  assetTag = parseInt(assetTag, 10);
   const serialNumber = urlParams.get('serialNumber');
   const description = urlParams.get('description');
-  const calibFrequency = urlParams.get('calibrationFrequency');
+  let calibFrequency = urlParams.get('calibrationFrequency');
+  calibFrequency = parseInt(calibFrequency, 10);
   let id = urlParams.get('id');
   id = parseInt(id, 10);
-  const [show, setShow] = React.useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [showWiz, setShowWiz] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  // eslint-disable-next-line no-unused-vars
+  const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
   const closeModal = () => {
-    setShow(false);
+    setShowDeleteModal(false);
+    setShowWiz(false);
   };
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
@@ -46,8 +53,8 @@ export default function DetailedInstrumentView({ onDelete }) {
       onDelete();
       setTimeout(() => {
         setResponseMsg('');
-        if (show) {
-          setShow(false);
+        if (showDeleteModal) {
+          setShowDeleteModal(false);
         }
         if (history.location.state?.previousUrl) {
           let path = history.location.state.previousUrl.split(window.location.host)[1];
@@ -77,7 +84,6 @@ export default function DetailedInstrumentView({ onDelete }) {
     GetCalibHistory({ id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
-        console.log(item);
         // eslint-disable-next-line no-param-reassign
         item.id = counter;
         // eslint-disable-next-line no-param-reassign
@@ -153,7 +159,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     //     fetchData(entry);
     //   },
     // });
-    assetTag = parseInt(assetTag, 10);
+    //  assetTag = parseInt(assetTag, 10);
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag,
@@ -191,18 +197,54 @@ export default function DetailedInstrumentView({ onDelete }) {
         return;
       }
       fetchData();
+      Query({
+        query: print(gql`
+          query GetCalibSupport($modelNumber: String!, $vendor: String!) {
+            getModel(modelNumber: $modelNumber, vendor: $vendor) {
+              supportLoadBankCalibration
+            }
+          }
+        `),
+        queryName: 'getModel',
+        getVariables: () => ({ modelNumber, vendor }),
+        handleResponse: (response) => {
+          setSupportsLoadBankWiz(response.supportLoadBankCalibration);
+        },
+      });
     })();
     return () => {
       active = false;
     };
   }, []);
 
+  const genCalibButtons = supportsLoadBankWiz ? (
+    <div className="d-flex flex-row">
+      <MouseOverPopover message="Add new calibration event">
+        <button type="button" className="btn " onClick={addRow}>
+          Add Calibration
+        </button>
+      </MouseOverPopover>
+      <span className="mx-2" />
+      <MouseOverPopover message="Add calibration event via our Load Bank Wizard">
+        <button type="button" className="btn " onClick={() => setShowWiz(true)}>
+          Add Load Bank Calibration
+        </button>
+      </MouseOverPopover>
+    </div>
+  ) : (
+    <MouseOverPopover message="Add new calibration event">
+      <button type="button" className="btn " onClick={addRow}>
+        Add Calibration
+      </button>
+    </MouseOverPopover>
+  );
+
   return (
     <>
       <ModalAlert
-        show={show}
+        show={showDeleteModal}
         handleClose={closeModal}
-        title="DELETE INSTRUMENT"
+        title="Delte Instrument"
       >
         <>
           {responseMsg.length === 0 && (
@@ -231,10 +273,23 @@ export default function DetailedInstrumentView({ onDelete }) {
           </div>
         </>
       </ModalAlert>
+      <ModalAlert
+        show={showWiz}
+        handleClose={closeModal}
+        title="Load Bank Wizard"
+      >
+        <LoadBankWiz
+          initModelNumber={modelNumber}
+          initSerialNumber={serialNumber}
+          initAssetTag={assetTag}
+          initVendor={vendor}
+        />
+      </ModalAlert>
       <div className="col">
         <div className="row">
           <EditInstrument
-            handleDelete={() => setShow(true)}
+            initCalibrationFrequency={calibFrequency}
+            handleDelete={() => setShowDeleteModal(true)}
             initModelNumber={modelNumber}
             initVendor={vendor}
             initSerialNumber={serialNumber}
@@ -280,13 +335,7 @@ export default function DetailedInstrumentView({ onDelete }) {
                 <h2 className="col-auto me-auto">Calibration History:</h2>
                 {calibFrequency > 0 && (
                   <>
-                    <div className="col-auto mt-1">
-                      <MouseOverPopover message="Add new calibration event">
-                        <button type="button" className="btn " onClick={addRow}>
-                          Add Calibration Event
-                        </button>
-                      </MouseOverPopover>
-                    </div>
+                    <div className="col-auto mt-1">{genCalibButtons}</div>
                   </>
                 )}
               </div>

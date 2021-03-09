@@ -270,7 +270,7 @@ export default function InstrumentForm({
           {showFooter && (
             <div className="d-flex justify-content-center my-3">
               <div className="row">
-                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Instrument" />
+                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Delete Instrument" />
                 {isSubmitting
                   ? <CircularProgress />
                   : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}

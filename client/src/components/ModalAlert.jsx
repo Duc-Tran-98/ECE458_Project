@@ -33,6 +33,7 @@ function ModalAlert({
         dialogClassName="d-flex justify-content-center modal-100w"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static"
       >
         <ModalHeader>
           <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
