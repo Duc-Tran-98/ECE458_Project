@@ -47,10 +47,10 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
         assetTag: row.assetTag,
         comment: row.comment ? row.comment.replace(/"/g, '""') : '',
         instrumentCategories: row.instrumentCategories.map((item) => item.name).join(' '),
-        calibrationDate: row.recentCalibration[0].date ? row.recentCalibration[0].date : '',
-        calibrationComment: row.recentCalibration[0].comment ? row.recentCalibration[0].comment : '',
-        calibrationFile: row.recentCalibration[0].fileName ? `Attached file ${row.recentCalibration[0].fileName}` : '',
-        calibrationLoadBank: row.recentCalibration[0].loadBankData ? 'Calibrated via Load Bank Wizard' : '',
+        calibrationDate: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].date) ? row.recentCalibration[0].date : '',
+        calibrationComment: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].comment) ? row.recentCalibration[0].comment : '',
+        calibrationFile: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].fileName) ? `Attached file ${row.recentCalibration[0].fileName}` : '',
+        calibrationLoadBank: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].loadBankData) ? 'Calibrated via Load Bank Wizard' : '',
       };
       filteredData.push(updatedRow);
     });
