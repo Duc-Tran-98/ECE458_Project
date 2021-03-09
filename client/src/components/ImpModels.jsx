@@ -229,7 +229,7 @@ export default function ImpModels() {
         handleImport={handleImport}
         importStatus={importStatus}
       />
-      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models">
+      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models" width=" ">
         <ImportModelError allRowErrors={allRowErrors} errorList={[]} />
       </ModalAlert>
       {showTable && <DisplayGrid rows={rows} cols={cols} />}

@@ -29,7 +29,7 @@ export default function DisplayGrid({
         rows={rows}
         columns={cols}
         pageSize={10}
-        checkboxSelection
+        checkboxSelection={false}
         showToolbar
         locateText={{
           toolbarDensity: 'Size',
