@@ -21,6 +21,9 @@ export default function FindInstrument({
             getInstrumentByAssetTag(
               assetTag: $assetTag
             ) {
+              modelNumber
+              vendor
+              serialNumber
               assetTag
               calibrationFrequency
               comment
