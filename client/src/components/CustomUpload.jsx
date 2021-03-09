@@ -106,7 +106,6 @@ export default function CustomUpload({
     newline: '\n',
     transformHeader: customHeaderTransform,
     transform: customTransform,
-    newline: '\n',
   };
 
   const handleSubmitFile = () => {
