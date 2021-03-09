@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -43,8 +43,6 @@ export default function ImpInstruments() {
         return camelCase(header);
     }
   };
-  // TODO: Remove transform here, perform after error handling
-  // TODO: Submit variance request to allow these (load bank likely, calib unlikely)
   const customTransform = (value, header) => {
     if (value == null) return null;
     switch (header) {
@@ -70,12 +68,13 @@ export default function ImpInstruments() {
   const queryName = 'bulkImportInstruments';
   const renderTable = (instruments) => {
     const filteredData = instruments.map((obj) => ({
-      id: String(obj.vendor + obj.modelNumber),
+      id: Math.random(),
       ...obj,
     }));
+    console.log('rendering table with data: ');
+    console.log(filteredData);
     setRow(filteredData);
     setShowTable(true);
-    console.log(filteredData);
   };
 
   const characterLimits = {
@@ -115,9 +114,8 @@ export default function ImpInstruments() {
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
       field: 'calibrationComment',
-      headerName: 'Calibration Comment',
+      headerName: 'Calib-Comment',
       width: 300,
-      hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">
           {params.value}
@@ -131,11 +129,21 @@ export default function ImpInstruments() {
     const missingKeys = [];
     if (!row.vendor) missingKeys.push('Vendor');
     if (!row.modelNumber) missingKeys.push('Model-Number');
-    if (!row.serialNumber) missingKeys.push('Serial-Number');
     return missingKeys.length > 0 ? missingKeys : null;
   };
 
+  const checkDuplicateAssetTag = (data, assetTag, myIndex) => {
+    if (!assetTag) { return false; }
+    let isDuplicate = false;
+    data.forEach((row, index) => {
+      if (index !== myIndex && row.assetTag === assetTag) {
+        isDuplicate = true;
+      }
+    });
+    return isDuplicate;
+  };
   const checkDuplicateInstrument = (data, vendor, modelNumber, serialNumber, myIndex) => {
+    if (!vendor || !modelNumber || !serialNumber) { return false; }
     let isDuplicateInstrument = false;
     data.forEach((row, index) => {
       if (index !== myIndex && row.vendor === vendor && row.modelNumber === modelNumber && row.serialNumber === serialNumber) {
@@ -143,6 +151,17 @@ export default function ImpInstruments() {
       }
     });
     return isDuplicateInstrument;
+  };
+  const validateCalibrationDate = (calibrationDate) => {
+    const today = moment();
+    return moment(calibrationDate).isAfter(today);
+  };
+  const validAssetTag = (assetTag) => {
+    if (assetTag) {
+      const assetInt = parseInt(assetTag, 10);
+      return assetInt >= 100000 && assetInt <= 999999;
+    }
+    return true; // blank asset tag is okay too
   };
 
   const validateRow = (row) => {
@@ -157,36 +176,31 @@ export default function ImpInstruments() {
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
 
-  const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
+  // const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
 
   const getImportErrors = (fileInfo) => {
     const importRowErrors = [];
     fileInfo.forEach((row, index) => {
-      if (!emptyLine(row)) {
-        // Check missing keys
-        const missingKeys = getMissingKeys(row);
+      const missingKeys = getMissingKeys(row);
+      const isDuplicateInstrument = checkDuplicateInstrument(fileInfo, row.vendor, row.modelNumber, row.serialNumber, index);
+      const invalidEntries = validateRow(row);
+      const isDuplicateAssetTag = checkDuplicateAssetTag(fileInfo, row.assetTag, index);
+      const invalidCalibrationDate = validateCalibrationDate(row.calibrationDate);
+      const invalidAssetTag = !validAssetTag(row.assetTag);
 
-        let isDuplicateInstrument;
-        if (row.vendor && row.modelNumber && row.serialNumber) {
-          isDuplicateInstrument = checkDuplicateInstrument(fileInfo, row.vendor, row.modelNumber, row.serialNumber, index);
-        }
-
-        // Validate entries by length
-        const invalidEntries = validateRow(row);
-
-        // Validate calibration date (missing, form, future)
-
-        // If any errors exist, create errors object
-        if (missingKeys || invalidEntries || isDuplicateInstrument) {
-          const rowError = {
-            data: row,
-            row: index + 2,
-            ...(missingKeys) && { missingKeys },
-            ...(invalidEntries) && { invalidEntries },
-            ...(isDuplicateInstrument) && { isDuplicateInstrument },
-          };
-          importRowErrors.push(rowError);
-        }
+      // If any errors exist, create errors object
+      if (missingKeys || invalidEntries || isDuplicateInstrument || isDuplicateAssetTag || invalidCalibrationDate || invalidAssetTag) {
+        const rowError = {
+          data: row,
+          row: index + 2,
+          ...(missingKeys) && { missingKeys },
+          ...(invalidEntries) && { invalidEntries },
+          ...(isDuplicateInstrument) && { isDuplicateInstrument },
+          ...(isDuplicateAssetTag && !invalidAssetTag) && { isDuplicateAssetTag },
+          ...(invalidCalibrationDate) && { invalidCalibrationDate },
+          ...(invalidAssetTag) && { invalidAssetTag },
+        };
+        importRowErrors.push(rowError);
       }
     });
     return importRowErrors.length > 0 ? importRowErrors : null;
@@ -204,33 +218,21 @@ export default function ImpInstruments() {
     return true;
   };
 
-  // TODO: Implement trim with transform
-  // const trimEmptyLines = (fileInfo) => fileInfo.filter((row) => {
-  //   console.log(row);
-  //   console.log(`is empty?: ${!emptyLine(row)}`);
-  //   return !emptyLine(row);
-  // });
-
   const filterData = (fileInfo) => fileInfo.map((obj) => ({
     vendor: String(obj.vendor),
     modelNumber: String(obj.modelNumber),
     categories: obj.instrumentCategories,
     serialNumber: obj.serialNumber,
-    assetTag: Number.isNaN(obj.assetTag) ? null : parseInt(obj.assetTag, 10),
-    ...(obj.serialNumber) && { serialNumber: String(obj.serialNumber) },
-    ...(obj.calibrationDate) && { calibrationUser: user.userName },
-    ...(obj.calibrationDate) && { calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') },
-    ...(obj.calibrationDate && obj.calibrationComment) && { calibrationComment: obj.calibrationComment },
+    comment: obj.comment ? String(obj.comment) : null,
+    assetTag: obj.assetTag ? parseInt(obj.assetTag, 10) : null,
+    calibrationDate: obj.calibrationDate ? moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') : null,
+    calibrationUser: obj.calibrationDate ? user.userName : null,
+    calibrationComment: obj.calibrationDate && obj.calibrationComment ? String(obj.calibrationComment) : null,
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
-    console.log('Handling import with fileInfo: ');
-    console.log('fileinfo');
-    console.log(fileInfo);
-    // const models = trimEmptyLines(fileInfo);
     const instruments = filterData(fileInfo);
     console.log('filtered data into instruments: ');
-    console.log(instruments);
     console.log(instruments);
     instruments.forEach((el) => {
       if (el.assetTag !== null && typeof el.assetTag !== 'number') console.log(el.assetTag);
@@ -269,7 +271,6 @@ export default function ImpInstruments() {
 
   return (
     <>
-      <ToastContainer />
       <CustomUpload
         requiredHeaders={requiredHeaders}
         customHeaderTransform={customHeaderTransform}

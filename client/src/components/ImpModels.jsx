@@ -1,5 +1,6 @@
+/* eslint-disable eqeqeq */
 import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -39,8 +40,6 @@ export default function ImpModels() {
         return camelCase(header);
     }
   };
-  // TODO: Remove transform here, perform after error handling
-  // TODO: Submit variance request to allow these (load bank likely, calib unlikely)
   const customTransform = (value, header) => {
     switch (header) {
       case 'categories':
@@ -48,10 +47,10 @@ export default function ImpModels() {
         const arr = value.trim().split(/\s+/);
         if (arr.length > 0 && arr[0] !== '') { return arr; }
         return null;
-      case 'calibrationFrequency':
-        return Number.isNaN(value) ? null : parseInt(value, 10);
-      case 'loadBankSupport':
-        return typeof (value) === 'string' && (value.toLowerCase() === 'y' || value.toLowerCase() === 'yes');
+      // case 'calibrationFrequency':
+      //   return Number.isNaN(value) ? null : parseInt(value, 10);
+      // case 'loadBankSupport':
+      //   return typeof (value) === 'string' && (value.toLowerCase() === 'y' || value.toLowerCase() === 'yes');
       default:
         return value.trim().length > 0 ? value.trim() : null;
     }
@@ -67,6 +66,15 @@ export default function ImpModels() {
   `;
   const query = print(IMPORT_MODELS);
   const queryName = 'bulkImportModels';
+
+  const isNA = (calibrationFrequency) => {
+    if (typeof (calibrationFrequency) === 'string') {
+      const lower = calibrationFrequency.toLowerCase();
+      console.log(`lowerCase calibFreq: ${lower}`);
+      return lower == 'n/a' || lower == 'na';
+    }
+    return false;
+  };
   const renderTable = (models) => {
     const filteredData = models.map((obj) => ({
       id: String(obj.vendor + obj.modelNumber),
@@ -74,7 +82,7 @@ export default function ImpModels() {
       modelNumber: String(obj.modelNumber),
       description: String(obj.description),
       ...(obj.comment) && { comment: String(obj.comment) },
-      ...(obj.calibrationFrequency !== 'N/A') && { calibrationFrequency: parseInt(obj.calibrationFrequency, 10) },
+      ...(!isNA(obj.calibrationFrequency)) && { calibrationFrequency: parseInt(obj.calibrationFrequency, 10) },
     }));
     setRow(filteredData);
     setShowTable(true);
@@ -142,40 +150,42 @@ export default function ImpModels() {
     if (row.description && row.description.length > characterLimits.model.description) { invalidKeys.push('Short-Description'); }
     if (row.categories && row.categories.length > characterLimits.model.categories) { invalidKeys.push('Model-Categories'); }
     if (row.comment && row.comment.length > characterLimits.model.comment) { invalidKeys.push('Comment'); }
+    if (row.loadBankSupport && !(typeof (row.loadBankSupport) === 'string' && (row.loadBankSupport.toLowerCase() === 'y' || row.loadBankSupport.toLowerCase() === 'yes'))) { invalidKeys.push('Load-Bank-Support'); }
     if (row.calibrationFrequency && row.calibrationFrequency.length > characterLimits.model.calibrationFrequency) { invalidKeys.push('Calibration-Frequency'); }
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
 
   const validateCalibrationFrequency = (calibrationFrequency) => {
-    if (calibrationFrequency) { return calibrationFrequency > 0; }
-    return true;
+    if (calibrationFrequency) {
+      // Know value is a string, no filtering/dynamic typing performed
+      return parseInt(calibrationFrequency, 10) > 0 || isNA(calibrationFrequency);
+    }
+    // No calibration frequency given
+    return false;
   };
 
-  const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
+  // const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
 
   const getImportErrors = (fileInfo) => {
     const importRowErrors = [];
     fileInfo.forEach((row, index) => {
-      console.log(row);
-      console.log(`emptyLine: ${emptyLine(row)}`);
-      if (!emptyLine(row)) {
-        const missingKeys = getMissingKeys(row);
-        const isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
-        const invalidEntries = validateRow(row);
-        const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
+      // Maybe add emptyLine check, greedy parse seems to be working well...
+      const missingKeys = getMissingKeys(row);
+      const isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
+      const invalidEntries = validateRow(row);
+      const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
 
-        // If any errors exist, create errors object
-        if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
-          const rowError = {
-            data: row,
-            row: index + 2,
-            ...(missingKeys) && { missingKeys },
-            ...(invalidEntries) && { invalidEntries },
-            ...(isDuplicateModel) && { isDuplicateModel },
-            ...(invalidCalibration) && { invalidCalibration },
-          };
-          importRowErrors.push(rowError);
-        }
+      // If any errors exist, create errors object
+      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
+        const rowError = {
+          data: row,
+          row: index + 2,
+          ...(missingKeys) && { missingKeys },
+          ...(invalidEntries) && { invalidEntries },
+          ...(isDuplicateModel) && { isDuplicateModel },
+          ...(invalidCalibration) && { invalidCalibration },
+        };
+        importRowErrors.push(rowError);
       }
     });
     return importRowErrors.length > 0 ? importRowErrors : null;
@@ -193,26 +203,29 @@ export default function ImpModels() {
     return true;
   };
 
-  // TODO: Implement trim with transform
-  // const trimEmptyLines = (fileInfo) => fileInfo.filter((row) => {
-  //   console.log(row);
-  //   console.log(`is empty?: ${!emptyLine(row)}`);
-  //   return !emptyLine(row);
-  // });
+  const filterData = (fileInfo) => fileInfo.map((obj) => ({
+    vendor: String(obj.vendor),
+    modelNumber: String(obj.modelNumber),
+    description: String(obj.description),
+    categories: obj.categories,
+    loadBankSupport: Boolean(typeof (obj.loadBankSupport) === 'string' && (obj.loadBankSupport.toLowerCase() === 'y' || obj.loadBankSupport.toLowerCase() === 'yes')),
+    comment: String(obj.comment),
+    calibrationFrequency: obj.calibrationFrequency == 'N/A' ? null : parseInt(obj.calibrationFrequency, 10),
+  }));
 
   const handleImport = (fileInfo, resetUpload) => {
     console.log('Handling import with fileInfo: ');
     console.log(fileInfo);
-    // const models = trimEmptyLines(fileInfo);
-    const models = fileInfo;
-    console.log(models);
     setImportStatus('Validating');
-    if (!validateFile(models)) {
+    if (!validateFile(fileInfo)) {
       setImportStatus('Import');
       return;
     }
 
     // File has been validated, now push to database
+    const models = filterData(fileInfo);
+    console.log('filtered data: ');
+    console.log(models);
     const getVariables = () => ({ models });
     Query({
       query,
@@ -236,13 +249,13 @@ export default function ImpModels() {
       handleError: () => {
         toast.error('Please try again');
         resetUpload();
+        setImportStatus('Import');
       },
     });
   };
 
   return (
     <>
-      <ToastContainer />
       <CustomUpload
         requiredHeaders={requiredHeaders}
         customHeaderTransform={customHeaderTransform}
