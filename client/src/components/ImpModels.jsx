@@ -40,6 +40,7 @@ export default function ImpModels() {
     }
   };
   // TODO: Remove transform here, perform after error handling
+  // TODO: Submit variance request to allow these (load bank likely, calib unlikely)
   const customTransform = (value, header) => {
     switch (header) {
       case 'categories':
@@ -52,7 +53,7 @@ export default function ImpModels() {
       case 'loadBankSupport':
         return typeof (value) === 'string' && (value.toLowerCase() === 'y' || value.toLowerCase() === 'yes');
       default:
-        return value.trim();
+        return value.trim().length > 0 ? value.trim() : null;
     }
   };
   const uploadLabel = 'Select Models File';
@@ -148,14 +149,14 @@ export default function ImpModels() {
     return true;
   };
 
-  const isEmptyLine = (obj) => {
-    Object.values(obj).every((x) => (x === null || x === ''));
-  };
+  const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
 
   const getImportErrors = (fileInfo) => {
     const importRowErrors = [];
     fileInfo.forEach((row, index) => {
-      if (!isEmptyLine(row)) {
+      console.log(row);
+      console.log(`emptyLine: ${emptyLine(row)}`);
+      if (!emptyLine(row)) {
         const missingKeys = getMissingKeys(row);
         const isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
         const invalidEntries = validateRow(row);
@@ -181,6 +182,7 @@ export default function ImpModels() {
   const validateFile = (fileInfo) => {
     const importRowErrors = getImportErrors(fileInfo);
     if (importRowErrors) {
+      console.log('Errors in file validation: ');
       console.log(importRowErrors);
       setAllRowErrors(importRowErrors);
       setShow(true);
@@ -189,16 +191,26 @@ export default function ImpModels() {
     return true;
   };
 
+  // TODO: Implement trim with transform
+  // const trimEmptyLines = (fileInfo) => fileInfo.filter((row) => {
+  //   console.log(row);
+  //   console.log(`is empty?: ${!emptyLine(row)}`);
+  //   return !emptyLine(row);
+  // });
+
   const handleImport = (fileInfo, resetUpload) => {
-    console.log('Handling import');
+    console.log('Handling import with fileInfo: ');
+    console.log(fileInfo);
+    // const models = trimEmptyLines(fileInfo);
+    const models = fileInfo;
+    console.log(models);
     setImportStatus('Validating');
-    if (!validateFile(fileInfo)) {
+    if (!validateFile(models)) {
       setImportStatus('Import');
       return;
     }
 
     // File has been validated, now push to database
-    const models = fileInfo;
     const getVariables = () => ({ models });
     Query({
       query,
