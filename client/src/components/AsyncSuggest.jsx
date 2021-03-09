@@ -44,7 +44,7 @@ export default function AsyncSuggest({
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
-  const loading = open && availableOptions.length === 0;
+  const loading = open && availableOptions?.length === 0;
   React.useEffect(() => {
     let active = true;
     if (!loading) {
@@ -55,7 +55,11 @@ export default function AsyncSuggest({
       if (active) {
         if (queryName === 'getInstrumentsWithFilter') {
           console.log(response);
-          setOptions(response.instruments);
+          if (response) {
+            setOptions(response?.instruments);
+          } else {
+            console.log('test');
+          }
         } else {
           setOptions(response);
         }

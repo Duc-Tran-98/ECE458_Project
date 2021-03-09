@@ -61,7 +61,7 @@ class InstrumentAPI extends DataSource {
 
   async getInstrumentsWithFilter({
     // eslint-disable-next-line max-len
-    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
+    vendor, modelNumber, description, serialNumber, modelCategories, instrumentCategories, limit = null, offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
