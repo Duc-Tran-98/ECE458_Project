@@ -3,7 +3,7 @@ import React, { useState, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { CSVReader } from 'react-papaparse';
 import Button from 'react-bootstrap/Button';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function CustomUpload({
@@ -114,7 +114,6 @@ export default function CustomUpload({
 
   return (
     <>
-      <ToastContainer />
       <CSVReader
         ref={buttonRef}
         onFileLoad={handleOnFileLoad}
