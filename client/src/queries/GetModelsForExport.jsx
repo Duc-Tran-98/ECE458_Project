@@ -9,8 +9,18 @@ export default async function GetModelsForExport({ filterOptions }) {
     filterOptions: PropTypes.object.isRequired,
   };
   const GET_MODELS_QUERY = gql`
-    query Models {
-      getModelsWithFilter{
+    query Models(
+      $vendor: String
+      $modelNumber: String
+      $description: String
+      $categories: [String]
+    ) {
+      getModelsWithFilter(
+        vendor: $vendor
+        modelNumber: $modelNumber
+        description: $description
+        categories: $categories
+      ){
           models{
           vendor
           modelNumber
@@ -28,7 +38,15 @@ export default async function GetModelsForExport({ filterOptions }) {
   console.log(filterOptions);
   const query = print(GET_MODELS_QUERY);
   const queryName = 'getModelsWithFilter';
+  const vendor = typeof filterOptions.vendors === 'undefined' ? null : filterOptions.vendors;
+  const modelNumber = typeof filterOptions.modelNumbers === 'undefined' ? null : filterOptions.modelNumbers;
+  const description = typeof filterOptions.descriptions === 'undefined' ? null : filterOptions.descriptions;
+  // eslint-disable-next-line prefer-destructuring
+  const categories = filterOptions.categories;
 
-  const response = await QueryAndThen({ query, queryName });
+  const getVariables = () => ({
+    vendor, modelNumber, description, categories,
+  });
+  const response = await QueryAndThen({ query, queryName, getVariables });
   return response;
 }

@@ -328,10 +328,10 @@ export function ServerPaginationGrid({
             <>
               {loadingExport && <LinearProgress color="secondary" />}
               {filename && filename.includes('model') && (
-                <ExportModels setLoading={setLoadingExport} />
+                <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
               )}
               {filename && filename.includes('instrument') && (
-                <ExportInstruments setLoading={setLoadingExport} />
+                <ExportInstruments setLoading={setLoadingExport} filterOptions={filterOptions} />
               )}
             </>
           )}

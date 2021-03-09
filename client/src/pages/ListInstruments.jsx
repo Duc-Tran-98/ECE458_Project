@@ -460,6 +460,7 @@ export default function ListInstruments() {
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
+        filterOptions={filterOptions}
         filename="instruments.csv"
       />
     </>
