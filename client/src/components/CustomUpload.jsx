@@ -53,6 +53,7 @@ export default function CustomUpload({
       resetUpload();
       return;
     }
+    console.log(data);
 
     // Validate headers next
     const row = data[0].data;
@@ -65,6 +66,7 @@ export default function CustomUpload({
 
     // Headers validated, handle import
     setShow(true);
+    console.log(data);
     setFileInfo(extractData(data));
   };
 
@@ -86,6 +88,7 @@ export default function CustomUpload({
   };
 
   const submitFileContents = () => {
+    console.log(fileInfo);
     handleImport(fileInfo, resetUpload);
   };
 
@@ -95,6 +98,7 @@ export default function CustomUpload({
     skipEmptyLines: true,
     transformHeader: customHeaderTransform,
     transform: customTransform,
+    newline: '\n',
   };
 
   // TODO: Send file to backend (for now spoofing)

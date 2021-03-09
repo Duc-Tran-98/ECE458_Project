@@ -231,10 +231,16 @@ export default function ImpInstruments() {
 
   const handleImport = (fileInfo, resetUpload) => {
     console.log('Handling import with fileInfo: ');
+    console.log('fileinfo');
     console.log(fileInfo);
     // const models = trimEmptyLines(fileInfo);
     const instruments = filterData(fileInfo);
     console.log(instruments);
+    instruments.forEach((el) => {
+      if (el.assetTag !== null && typeof el.assetTag !== 'number') console.log(el.assetTag);
+      if (typeof el.vendor !== 'string') console.log(el.vendor);
+      if (typeof el.modelNumber !== 'string') console.log(el.modelNumber);
+    });
     setImportStatus('Validating');
     if (!validateFile(instruments)) {
       setImportStatus('Import');
