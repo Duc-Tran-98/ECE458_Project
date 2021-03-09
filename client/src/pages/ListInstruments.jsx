@@ -432,7 +432,7 @@ export default function ListInstruments() {
           assetTag: null,
         }).then((response) => {
           // console.log('fetched data');
-          response.instruments.forEach((element) => {
+          response?.instruments.forEach((element) => {
             if (element !== null) {
               element.categories = element.modelCategories.concat(element.instrumentCategories);
               element.calibrationStatus = element.calibrationFrequency === null
@@ -456,7 +456,7 @@ export default function ListInstruments() {
               }
             }
           });
-          return response.instruments;
+          return response?.instruments || [];
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
