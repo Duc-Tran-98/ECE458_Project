@@ -221,11 +221,15 @@ export default function ImpModels() {
       handleResponse: (response) => {
         console.log(response);
         if (response.success) {
-          toast.success(`Successfully imported ${models.length} models!`);
+          toast.success(`Successfully imported ${models.length} models!`, {
+            toastId: 1,
+          });
           renderTable(models);
           resetUpload();
         } else {
-          toast.error(response.message);
+          toast.error(response.message, {
+            toastId: 1,
+          });
         }
         setImportStatus('Import');
       },

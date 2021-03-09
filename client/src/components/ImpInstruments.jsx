@@ -48,6 +48,7 @@ export default function ImpInstruments() {
   // TODO: Remove transform here, perform after error handling
   // TODO: Submit variance request to allow these (load bank likely, calib unlikely)
   const customTransform = (value, header) => {
+    if (value == null) return null;
     switch (header) {
       case 'categories':
         // eslint-disable-next-line no-case-declarations
@@ -229,6 +230,8 @@ export default function ImpInstruments() {
     console.log(fileInfo);
     // const models = trimEmptyLines(fileInfo);
     const instruments = filterData(fileInfo);
+    console.log('filtered data into instruments: ');
+    console.log(instruments);
     console.log(instruments);
     setImportStatus('Validating');
     if (!validateFile(instruments)) {

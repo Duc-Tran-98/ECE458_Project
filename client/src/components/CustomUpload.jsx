@@ -31,7 +31,7 @@ export default function CustomUpload({
 
   const validateHeader = (row) => {
     const missingHeaders = [];
-    const availableHeaders = Object.keys(row);
+    const availableHeaders = Object.keys(row); // Object.keys(row);
     requiredHeaders.forEach((header) => {
       if (!availableHeaders.includes(header.value)) missingHeaders.push(header.display);
     });
@@ -47,9 +47,13 @@ export default function CustomUpload({
   const extractData = (data) => data.map((row) => row.data);
 
   const handleOnFileLoad = (data) => {
+    console.log('Loaded file with data: ');
+    console.log(data);
     // Validate non empty file
     if (data.length === 0) {
-      toast.error('Please submit a non empty file');
+      toast.error('Please submit a non empty file', {
+        toastId: 1,
+      });
       resetUpload();
       return;
     }
@@ -58,7 +62,9 @@ export default function CustomUpload({
     const row = data[0].data;
     const missingHeaders = validateHeader(row);
     if (missingHeaders.length > 0) {
-      toast.error(`Missing the following headers: ${missingHeaders}`);
+      toast.error(`Missing the following headers: ${missingHeaders}`, {
+        toastId: 12,
+      });
       resetUpload();
       return;
     }
@@ -90,9 +96,11 @@ export default function CustomUpload({
   };
 
   // TODO: Add batching for massive files (test this)
+  // TODO: Remove carriage return in customTransform
   const papaparseOptions = {
-    header: true,
+    header: true, // false
     skipEmptyLines: 'greedy',
+    newline: '\n',
     transformHeader: customHeaderTransform,
     transform: customTransform,
   };
