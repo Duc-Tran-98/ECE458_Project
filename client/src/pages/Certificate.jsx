@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  // eslint-disable-next-line no-unused-vars
   PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
 } from '@react-pdf/renderer';
 import PropTypes from 'prop-types';
@@ -67,17 +66,34 @@ const styles = StyleSheet.create({
     border: '5pt solid black',
   },
   image: {
+    padding: 20,
     width: '70%',
     height: 'auto',
   },
   table: {
-    display: 'table', width: 'auto', borderStyle: 'solid', borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0,
+    display: 'table',
+    width: 'auto',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
   },
-  tableRow: { margin: 'auto', flexDirection: 'row' },
+  tableRow: {
+    margin: 'auto',
+    flexDirection: 'row',
+  },
   tableCol: {
-    width: '25%', borderStyle: 'solid', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0,
+    width: '25%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
   },
-  tableCell: { margin: 'auto', marginTop: 5, fontSize: 10 },
+  tableCell: {
+    margin: 'auto',
+    marginTop: 5,
+    fontSize: 10,
+  },
 });
 
 // Create Document Component
@@ -112,31 +128,59 @@ function MyCertificate({ calibEvent }) {
     : `https://hpt.hopto.org/data/${calibEvent?.fileLocation}`;
   const evidenceFile = calibEvent ? urlPath : '';
   const evidenceFileType = calibEvent ? getURLExtension(evidenceFile) : '';
+  // const loadBankData = calibEvent?.loadBankData;
+  const loadBankData = true;
 
   console.log(evidenceFileType);
   console.log(evidenceFile);
 
-  // eslint-disable-next-line no-unused-vars
   const displayLink = (((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx'))) ? (
     <Text style={styles.largeText}>
       {'\n'}
       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
       <Link src={evidenceFile}> View Evidence </Link>
-      {/* <a href={`/data/${calibEvent?.fileLocation}`} rel="noreferrer" target="_blank">link title</a> */}
       {'\n'}
     </Text>
   ) : (null);
 
-  console.log(displayLink);
-
-  // eslint-disable-next-line no-unused-vars
-  const displayImage = ((evidenceFileType === 'jpg') || (evidenceFileType === 'png') || (evidenceFileType === 'gif')) ? (
+  const displayImage = ((evidenceFileType === 'jpeg') || (evidenceFileType === 'jpg') || (evidenceFileType === 'png') || (evidenceFileType === 'gif')) ? (
     <View style={styles.centerView}>
       <Image style={styles.image} src={evidenceFile} />
     </View>
   ) : (null);
 
-  console.log(displayImage);
+  const displayLoadBank = (loadBankData) ? (
+    <View style={styles.table}>
+      <View style={styles.tableRow}>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>Product</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>Type</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>Period</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>Price</Text>
+        </View>
+      </View>
+      <View style={styles.tableRow}>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>React-PDF</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>3 User </Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>2019-02-20 - 2020-02-19</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>5€</Text>
+        </View>
+      </View>
+    </View>
+  ) : (null);
 
   return (
     <Document>
@@ -224,75 +268,11 @@ function MyCertificate({ calibEvent }) {
             {displayLink}
             {displayImage}
 
-            {evidenceFileType === 'load_bank' && (
-            <View style={styles.table}>
-              {' '}
-              {/* TableHeader */}
-              {' '}
-              <View style={styles.tableRow}>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>Product</Text>
-                  {' '}
-                </View>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>Type</Text>
-                  {' '}
-                </View>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>Period</Text>
-                  {' '}
-                </View>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>Price</Text>
-                  {' '}
-                </View>
-                {' '}
-              </View>
-              {' '}
-              {/* TableContent */}
-              {' '}
-              <View style={styles.tableRow}>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>React-PDF</Text>
-                  {' '}
-                </View>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>3 User </Text>
-                  {' '}
-                </View>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>
-                    2019-02-20 - 2020-02-19
-                  </Text>
-                  {' '}
-                </View>
-                {' '}
-                <View style={styles.tableCol}>
-                  {' '}
-                  <Text style={styles.tableCell}>5€</Text>
-                  {' '}
-                </View>
-                {' '}
-              </View>
-              {' '}
-            </View>
-            )}
           </View>
         </View>
+      </Page>
+      <Page style={styles.page}>
+        {displayLoadBank}
       </Page>
     </Document>
   );
