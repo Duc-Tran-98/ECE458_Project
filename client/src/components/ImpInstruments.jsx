@@ -195,7 +195,7 @@ export default function ImpInstruments() {
           ...(missingKeys) && { missingKeys },
           ...(invalidEntries) && { invalidEntries },
           ...(isDuplicateInstrument) && { isDuplicateInstrument },
-          ...(isDuplicateAssetTag) && { isDuplicateAssetTag },
+          ...(isDuplicateAssetTag && !invalidAssetTag) && { isDuplicateAssetTag },
           ...(invalidCalibrationDate) && { invalidCalibrationDate },
           ...(invalidAssetTag) && { invalidAssetTag },
         };
