@@ -171,16 +171,17 @@ function MyCertificate({ calibEvent }) {
         <Text style={styles.tableCell}>{idealCurrents[i]}</Text>
       </View>
       <View style={styles.tableCol}>
-        <Text style={styles.tableCell}>{p.currentReadings[i].crError}</Text>
+        <Text style={styles.tableCell}>{Number(p.currentReadings[i].crError).toFixed(5)}</Text>
       </View>
       <View style={styles.tableCol}>
-        <Text style={styles.tableCell}>{p.currentReadings[i].crOK ? 'OK' : 'NOT OK'}</Text>
+        <Text style={styles.tableCell}>{p.currentReadings[i].crOk ? 'OK' : 'NOT OK'}</Text>
       </View>
       <View style={styles.tableCol}>
-        <Text style={styles.tableCell}>{p.currentReadings[i].caError}</Text>
+        {/* eslint-disable-next-line no-useless-escape */}
+        <Text style={styles.tableCell}>{Number(p.currentReadings[i].caError).toFixed(5)}</Text>
       </View>
       <View style={styles.tableCol}>
-        <Text style={styles.tableCell}>{p.currentReadings[i].caOK ? 'OK' : 'NOT OK'}</Text>
+        <Text style={styles.tableCell}>{p.currentReadings[i].caOk ? 'OK' : 'NOT OK'}</Text>
       </View>
     </View>
   );
@@ -282,13 +283,13 @@ function MyCertificate({ calibEvent }) {
           <Text style={styles.tableCell}>48</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vrError}</Text>
+          <Text style={styles.tableCell}>{Number(loadBankJSON.voltageReading.vrError).toFixed(5)}</Text>
         </View>
         <View style={styles.tableCol}>
           <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vrOk ? 'OK' : 'NOT OK'}</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vaError}</Text>
+          <Text style={styles.tableCell}>{Number(loadBankJSON.voltageReading.vaError).toFixed(5)}</Text>
         </View>
         <View style={styles.tableCol}>
           <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vaOk ? 'OK' : 'NOT OK'}</Text>
