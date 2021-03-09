@@ -34,10 +34,6 @@ export default function ImpInstruments() {
     { display: 'Instrument-Categories', value: 'instrumentCategories' },
   ];
   const customHeaderTransform = (header) => {
-    if (header.includes('Instrument-Categories')) {
-      console.log('found instrument categories header, updating to "categories"');
-      return 'categories';
-    }
     switch (header) {
       case 'Short-Description':
         return 'description';
@@ -47,8 +43,6 @@ export default function ImpInstruments() {
         return camelCase(header);
     }
   };
-  // TODO: Remove transform here, perform after error handling
-  // TODO: Submit variance request to allow these (load bank likely, calib unlikely)
   const customTransform = (value, header) => {
     if (value == null) return null;
     switch (header) {
@@ -79,7 +73,6 @@ export default function ImpInstruments() {
     }));
     setRow(filteredData);
     setShowTable(true);
-    console.log(filteredData);
   };
 
   const characterLimits = {
@@ -135,11 +128,21 @@ export default function ImpInstruments() {
     const missingKeys = [];
     if (!row.vendor) missingKeys.push('Vendor');
     if (!row.modelNumber) missingKeys.push('Model-Number');
-    if (!row.serialNumber) missingKeys.push('Serial-Number');
     return missingKeys.length > 0 ? missingKeys : null;
   };
 
+  const checkDuplicateAssetTag = (data, assetTag, myIndex) => {
+    if (!assetTag) { return false; }
+    let isDuplicate = false;
+    data.forEach((row, index) => {
+      if (index !== myIndex && row.assetTag === assetTag) {
+        isDuplicate = true;
+      }
+    });
+    return isDuplicate;
+  };
   const checkDuplicateInstrument = (data, vendor, modelNumber, serialNumber, myIndex) => {
+    if (!vendor || !modelNumber || !serialNumber) { return false; }
     let isDuplicateInstrument = false;
     data.forEach((row, index) => {
       if (index !== myIndex && row.vendor === vendor && row.modelNumber === modelNumber && row.serialNumber === serialNumber) {
@@ -147,6 +150,10 @@ export default function ImpInstruments() {
       }
     });
     return isDuplicateInstrument;
+  };
+  const validateCalibrationDate = (calibrationDate) => {
+    const today = moment();
+    return moment(calibrationDate).isAfter(today);
   };
 
   const validateRow = (row) => {
@@ -161,36 +168,29 @@ export default function ImpInstruments() {
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
 
-  const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
+  // const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
 
   const getImportErrors = (fileInfo) => {
     const importRowErrors = [];
     fileInfo.forEach((row, index) => {
-      if (!emptyLine(row)) {
-        // Check missing keys
-        const missingKeys = getMissingKeys(row);
+      const missingKeys = getMissingKeys(row);
+      const isDuplicateInstrument = checkDuplicateInstrument(fileInfo, row.vendor, row.modelNumber, row.serialNumber, index);
+      const invalidEntries = validateRow(row);
+      const isDuplicateAssetTag = checkDuplicateAssetTag(fileInfo, index, row.assetTag);
+      const invalidCalibrationDate = validateCalibrationDate(row.calibrationDate);
 
-        let isDuplicateInstrument;
-        if (row.vendor && row.modelNumber && row.serialNumber) {
-          isDuplicateInstrument = checkDuplicateInstrument(fileInfo, row.vendor, row.modelNumber, row.serialNumber, index);
-        }
-
-        // Validate entries by length
-        const invalidEntries = validateRow(row);
-
-        // Validate calibration date (missing, form, future)
-
-        // If any errors exist, create errors object
-        if (missingKeys || invalidEntries || isDuplicateInstrument) {
-          const rowError = {
-            data: row,
-            row: index + 2,
-            ...(missingKeys) && { missingKeys },
-            ...(invalidEntries) && { invalidEntries },
-            ...(isDuplicateInstrument) && { isDuplicateInstrument },
-          };
-          importRowErrors.push(rowError);
-        }
+      // If any errors exist, create errors object
+      if (missingKeys || invalidEntries || isDuplicateInstrument || isDuplicateAssetTag || invalidCalibrationDate) {
+        const rowError = {
+          data: row,
+          row: index + 2,
+          ...(missingKeys) && { missingKeys },
+          ...(invalidEntries) && { invalidEntries },
+          ...(isDuplicateInstrument) && { isDuplicateInstrument },
+          ...(isDuplicateAssetTag) && { isDuplicateAssetTag },
+          ...(invalidCalibrationDate) && { invalidCalibrationDate },
+        };
+        importRowErrors.push(rowError);
       }
     });
     return importRowErrors.length > 0 ? importRowErrors : null;
@@ -207,13 +207,6 @@ export default function ImpInstruments() {
     }
     return true;
   };
-
-  // TODO: Implement trim with transform
-  // const trimEmptyLines = (fileInfo) => fileInfo.filter((row) => {
-  //   console.log(row);
-  //   console.log(`is empty?: ${!emptyLine(row)}`);
-  //   return !emptyLine(row);
-  // });
 
   const filterData = (fileInfo) => fileInfo.map((obj) => ({
     vendor: String(obj.vendor),

@@ -29,6 +29,11 @@ export default function ImportInstrumentError({ allRowErrors, errorList }) {
         {`Invalid Calibration-Date: (${rowError.data.calibrationDate}), ${rowError.invalidCalibrationDate}`}
       </li>
       )}
+      {rowError.isDuplicateAssetTag && (
+      <li>
+        {`Duplicate Asset Tag: (${rowError.data.assetTag})`}
+      </li>
+      )}
     </div>
 
   );
