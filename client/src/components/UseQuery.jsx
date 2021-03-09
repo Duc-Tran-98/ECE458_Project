@@ -27,6 +27,7 @@ const Query = ({
     .catch((err) => {
       if (handleError) handleError(err);
       console.error(err);
+      console.error(err.response);
     });
 };
 
