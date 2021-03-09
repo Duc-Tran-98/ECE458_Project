@@ -13,6 +13,7 @@ export default function EditInstrument({
   initVendor,
   initModelNumber,
   initSerialNumber,
+  initCalibrationFrequency,
   id,
   initAssetTag,
   description,
@@ -28,6 +29,7 @@ export default function EditInstrument({
     handleDelete: PropTypes.func,
     footer: PropTypes.node,
     initAssetTag: PropTypes.number.isRequired,
+    initCalibrationFrequency: PropTypes.number.isRequired,
   };
   EditInstrument.defaultProps = {
     handleDelete: null,
@@ -43,35 +45,26 @@ export default function EditInstrument({
     categories: [],
     comment: '',
     id,
-    calibrationFrequency: 0,
+    calibrationFrequency: initCalibrationFrequency,
     assetTag: initAssetTag,
   });
 
   const [completeFetch, setCompleteFetch] = useState(false);
 
   const handleFindInstrument = (response) => {
-    const categories = response.instrumentCategories.map((item) => item.name);
-    let {
-      comment, calibrationFrequency, modelNumber, vendor, serialNumber, assetTag,
-    } = response;
-    comment = comment || '';
-    modelNumber = modelNumber || '';
-    vendor = vendor || '';
-    serialNumber = serialNumber || '';
-    assetTag = assetTag || '';
-    calibrationFrequency = calibrationFrequency || '';
+    console.log(response);
+    const categories = response?.instrumentCategories.map((item) => item.name);
+    let comment = response?.comment || '';
     setFormState({
-      ...formState, comment, calibrationFrequency, categories, modelNumber, vendor, serialNumber, assetTag,
+      ...formState, comment, categories,
     });
     setCompleteFetch(true);
   };
 
   useEffect(() => {
-    // TODO: add api to get assetTag
-    let { assetTag } = formState;
-    assetTag = parseInt(assetTag, 10);
+    // TODO: fix find instrument as the response is null
     FindInstrument({
-      assetTag, handleResponse: handleFindInstrument,
+      modelNumber: initModelNumber, vendor: initVendor, serialNumber: initSerialNumber, handleResponse: handleFindInstrument,
     });
   }, []); // empty dependency array, only run once on mount
 
