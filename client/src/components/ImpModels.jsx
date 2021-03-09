@@ -110,6 +110,7 @@ export default function ImpModels() {
       vendor: 30,
       modelNumber: 40,
       description: 100,
+      categories: 100,
       comment: 2000,
       calibrationFrequency: 10,
     },
@@ -139,6 +140,7 @@ export default function ImpModels() {
     if (row.vendor && row.vendor.length > characterLimits.model.vendor) { invalidKeys.push('Vendor'); }
     if (row.modelNumber && row.modelNumber.length > characterLimits.model.modelNumber) { invalidKeys.push('Model-Number'); }
     if (row.description && row.description.length > characterLimits.model.description) { invalidKeys.push('Short-Description'); }
+    if (row.categories && row.categories.length > characterLimits.model.categories) { invalidKeys.push('Model-Categories'); }
     if (row.comment && row.comment.length > characterLimits.model.comment) { invalidKeys.push('Comment'); }
     if (row.calibrationFrequency && row.calibrationFrequency.length > characterLimits.model.calibrationFrequency) { invalidKeys.push('Calibration-Frequency'); }
     return invalidKeys.length > 0 ? invalidKeys : null;

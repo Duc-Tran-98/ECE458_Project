@@ -7,7 +7,7 @@ import moment from 'moment';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
 import ModalAlert from './ModalAlert';
-import ImportModelError from './ImportModelError';
+import ImportInstrumentError from './ImportInstrumentError';
 import DisplayGrid from './UITable';
 import UserContext from './UserContext';
 
@@ -89,6 +89,7 @@ export default function ImpInstruments() {
       modelNumber: 40,
       serialNumber: 40,
       comment: 2000,
+      categories: 100,
       calibrationDate: 20,
       calibrationComment: 2000,
     },
@@ -156,6 +157,7 @@ export default function ImpInstruments() {
     if (row.modelNumber && row.modelNumber.length > characterLimits.instrument.modelNumber) { invalidKeys.push('Model-Number'); }
     if (row.serialNumber && row.serialNumber.length > characterLimits.instrument.serialNumber) { invalidKeys.push('Serial-Number'); }
     if (row.comment && row.comment.length > characterLimits.instrument.comment) { invalidKeys.push('Comment'); }
+    if (row.categories && row.categories.length > characterLimits.instrument.categories) { invalidKeys.push('Instrument-Categories'); }
     if (row.calibrationDate && row.calibrationDate.length > characterLimits.instrument.calibrationDate) { invalidKeys.push('Calibration-Date'); }
     if (row.calibrationComment && row.calibrationComment.length > characterLimits.instrument.calibrationComment) { invalidKeys.push('Calibration-Comment'); }
     return invalidKeys.length > 0 ? invalidKeys : null;
@@ -215,11 +217,13 @@ export default function ImpInstruments() {
   //   return !emptyLine(row);
   // });
 
+  // TODO: Validate asset tag is parseable as integer (in validation)
   const filterData = (fileInfo) => fileInfo.map((obj) => ({
+    ...obj,
     vendor: String(obj.vendor),
     modelNumber: String(obj.modelNumber),
-    serialNumber: String(obj.serialNumber),
-    ...(obj.comment) && { comment: String(obj.comment) },
+    ...(obj.assetTag) && { assetTag: parseInt(obj.assetTag, 10) },
+    ...(obj.serialNumber) && { serialNumber: String(obj.serialNumber) },
     ...(obj.calibrationDate) && { calibrationUser: user.userName },
     ...(obj.calibrationDate) && { calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') },
     ...(obj.calibrationDate && obj.calibrationComment) && { calibrationComment: obj.calibrationComment },
@@ -269,7 +273,7 @@ export default function ImpInstruments() {
         importStatus={importStatus}
       />
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Instruments" width=" ">
-        <ImportModelError allRowErrors={allRowErrors} errorList={[]} />
+        <ImportInstrumentError allRowErrors={allRowErrors} errorList={[]} />
       </ModalAlert>
       {showTable && <DisplayGrid rows={rows} cols={cols} />}
     </>
