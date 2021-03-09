@@ -229,6 +229,10 @@ export default function ImpModels() {
         }
         setImportStatus('Import');
       },
+      handleError: (err) => {
+        toast.error(err);
+        resetUpload();
+      },
     });
   };
 
