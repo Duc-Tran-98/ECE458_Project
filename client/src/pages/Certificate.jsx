@@ -4,6 +4,8 @@ import {
 } from '@react-pdf/renderer';
 import PropTypes from 'prop-types';
 import GetCalibHistory from '../queries/GetCalibHistory';
+import { idealCurrents } from '../utils/LoadBank';
+import { testString } from '../utils/TestData';
 
 const strftime = require('strftime');
 
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   tableCol: {
-    width: '25%',
+    width: '12.5%',
     borderStyle: 'solid',
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -92,7 +94,7 @@ const styles = StyleSheet.create({
   tableCell: {
     margin: 'auto',
     marginTop: 5,
-    fontSize: 10,
+    fontSize: 8,
   },
 });
 
@@ -128,8 +130,8 @@ function MyCertificate({ calibEvent }) {
     : `https://hpt.hopto.org/data/${calibEvent?.fileLocation}`;
   const evidenceFile = calibEvent ? urlPath : '';
   const evidenceFileType = calibEvent ? getURLExtension(evidenceFile) : '';
-  // const loadBankData = calibEvent?.loadBankData;
-  const loadBankData = true;
+  const loadBankData = calibEvent?.loadBankData;
+  const loadBankJSON = JSON.parse(loadBankData);
 
   console.log(evidenceFileType);
   console.log(evidenceFile);
@@ -149,36 +151,150 @@ function MyCertificate({ calibEvent }) {
     </View>
   ) : (null);
 
+  console.log(JSON.parse(testString));
+
+  // eslint-disable-next-line max-len
+  const loadLevels = ['No Load', '1 x 100A', '2 x 100A', '3 x 100A', '4 x 100A', '5 x 100A', '6 x 100A', '7 x 100A', '8 x 100A', '9 x 100A', '10 x 100A', '10 x 100A + 1 x 20A', '10 x 100A + 2 x 20A', '10 x 100A + 3 x 20A', '10 x 100A + 4 x 20A', '10 x 100A + 5 x 20A', '10 x 100A + 5 x 20A + 1 x 1A', '10 x 100A + 5 x 20A + 2 x 1A', '10 x 100A + 5 x 20A + 3 x 1A', '10 x 100A + 5 x 20A + 4 x 1A', '10 x 100A + 5 x 20A + 5 x 1A', '10 x 100A + 5 x 20A + 6 x 1A', '10 x 100A + 5 x 20A + 7 x 1A', '10 x 100A + 5 x 20A + 8 x 1A', '10 x 100A + 5 x 20A + 9 x 1A', '10 x 100A + 5 x 20A + 10 x 1A', '10 x 100A + 5 x 20A + 11 x 1A', '10 x 100A + 5 x 20A + 12 x 1A', '10 x 100A + 5 x 20A + 13 x 1A', '10 x 100A + 5 x 20A + 14 x 1A', '10 x 100A + 5 x 20A + 15 x 1A', '10 x 100A + 5 x 20A + 16 x 1A', '10 x 100A + 5 x 20A + 17 x 1A', '10 x 100A + 5 x 20A + 18 x 1A', '10 x 100A + 5 x 20A + 19 x 1A', '10 x 100A + 5 x 20A + 20 x 1A'];
+
+  const row = (p, i) => (
+    <View style={styles.tableRow}>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{loadLevels[i]}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{p.currentReadings[i].cr}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{p.currentReadings[i].ca}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{idealCurrents[i]}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{p.currentReadings[i].crError}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{p.currentReadings[i].crOK ? 'OK' : 'NOT OK'}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{p.currentReadings[i].caError}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{p.currentReadings[i].caOK ? 'OK' : 'NOT OK'}</Text>
+      </View>
+    </View>
+  );
+
+  function fillTable() {
+    const infoList = [];
+    // const keys = Object.keys(data);
+    // for (let i = 0; i < keys.length; i += 1) {
+    //   const key = keys[i];
+    //   const val = data[key];
+    //   console.log(key);
+    //   infoList.push(row(val));
+    // }
+
+    for (let i = 0; i < 36; i += 1) {
+      for (let j = 0; j < 36; j += 1) {
+        if (i === loadBankJSON.currentReadings[j].id) {
+          infoList.push(row(loadBankJSON, i));
+          break;
+        }
+      }
+    }
+
+    return infoList;
+  }
+
   const displayLoadBank = (loadBankData) ? (
     <View style={styles.table}>
       <View style={styles.tableRow}>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>Product</Text>
+          <Text style={styles.tableCell}>Load Level</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>Type</Text>
+          <Text style={styles.tableCell}>Current Reported [A]</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>Period</Text>
+          <Text style={styles.tableCell}>Current Actual [A]</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>Price</Text>
+          <Text style={styles.tableCell}>Ideal Current [A]</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>CR Error [%]</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>CR ok?</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>CA Error [%]</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>CA ok?</Text>
         </View>
       </View>
+      {fillTable()}
+    </View>
+  ) : (null);
+
+  const displayLoadBankVoltage = (loadBankData) ? (
+    <View style={styles.table}>
       <View style={styles.tableRow}>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>React-PDF</Text>
+          <Text style={styles.tableCell} />
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>3 User </Text>
+          <Text style={styles.tableCell}>Voltage Reported [V]</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>2019-02-20 - 2020-02-19</Text>
+          <Text style={styles.tableCell}>Voltage Actual [V]</Text>
         </View>
         <View style={styles.tableCol}>
-          <Text style={styles.tableCell}>5€</Text>
+          <Text style={styles.tableCell}>Test Voltage [V]</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>VR Error [%]</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>VR ok?</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>VA Error [%]</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>VA ok?</Text>
         </View>
       </View>
+
+      <View style={styles.tableRow}>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>Voltages with all blanks on:</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vr}</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.va}</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>48</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vrError}</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vrOk ? 'OK' : 'NOT OK'}</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vaError}</Text>
+        </View>
+        <View style={styles.tableCol}>
+          <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vaOk ? 'OK' : 'NOT OK'}</Text>
+        </View>
+      </View>
+
     </View>
   ) : (null);
 
@@ -271,9 +387,16 @@ function MyCertificate({ calibEvent }) {
           </View>
         </View>
       </Page>
-      <Page style={styles.page}>
-        {displayLoadBank}
-      </Page>
+      {(loadBankData) && (
+        <>
+          <Page style={styles.page}>
+            {displayLoadBank}
+          </Page>
+          <Page style={styles.page}>
+            {displayLoadBankVoltage}
+          </Page>
+        </>
+      )}
     </Document>
   );
 }
