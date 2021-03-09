@@ -72,11 +72,7 @@ export default function ImpInstruments() {
   const renderTable = (instruments) => {
     const filteredData = instruments.map((obj) => ({
       id: String(obj.vendor + obj.modelNumber),
-      vendor: String(obj.vendor),
-      modelNumber: String(obj.modelNumber),
-      description: String(obj.description),
-      ...(obj.comment) && { comment: String(obj.comment) },
-      ...(obj.calibrationFrequency !== 'N/A') && { calibrationFrequency: parseInt(obj.calibrationFrequency, 10) },
+      ...obj,
     }));
     setRow(filteredData);
     setShowTable(true);
@@ -116,7 +112,6 @@ export default function ImpInstruments() {
         </div>
       ),
     },
-    { field: 'comment', headerName: 'Comment', width: 250 },
     { field: 'calibrationUser', headerName: 'Calib-User', width: 150 },
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
