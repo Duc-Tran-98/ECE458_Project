@@ -166,6 +166,10 @@ class BulkDataAPI extends DataSource {
               if (assetTag) {
                 await this.store.instruments.findOne({
                   where: { assetTag },
+                  include: {
+                    all: true,
+                  },
+                  transaction: t,
                 }, { transaction: t }).then(
                   (instrument) => {
                     if (instrument) {
@@ -178,13 +182,23 @@ class BulkDataAPI extends DataSource {
               } else {
                 newAssetTag = Math.floor(Math.random() * 900000) + 100000;
                 // eslint-disable-next-line max-len
-                let instrumentCheck = await this.store.instruments.findOne({ where: { assetTag: newAssetTag } }, { transaction: t });
+                let instrumentCheck = await this.store.instruments.findOne({
+                  where: { assetTag: newAssetTag },
+                  include: {
+                    all: true,
+                  },
+                  transaction: t,
+                }, { transaction: t });
                 while (instrumentCheck != null) {
                   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
                   // eslint-disable-next-line no-await-in-loop
-                  instrumentCheck = await this.store.instrument.findOne(
-                    { where: { newAssetTag } }, { transaction: t },
-                  );
+                  instrumentCheck = await this.store.instruments.findOne({
+                    where: { assetTag: newAssetTag },
+                    include: {
+                      all: true,
+                    },
+                    transaction: t,
+                  }, { transaction: t });
                 }
               }
               if (response.success) {

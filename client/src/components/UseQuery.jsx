@@ -50,6 +50,7 @@ export async function QueryAndThen({
       : res.data.data[queryName]))
     .catch((err) => {
       console.error(err);
+      console.error(err.response);
     });
 }
 

@@ -26,7 +26,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
   ];
 
   const getData = async () => {
-    await GetModelsForExport().then((res) => {
+    await GetModelsForExport({ filterOptions }).then((res) => {
       console.log(res);
       csvData = res;
     });
@@ -35,7 +35,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
 
   const filterTransactionData = (r) => {
     const filteredData = [];
-    r.forEach((row) => {
+    r.models.forEach((row) => {
       const updatedRow = {
         vendor: row.vendor.replace(/"/g, '""'),
         modelNumber: row.modelNumber.replace(/"/g, '""'),
@@ -47,6 +47,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
       };
       filteredData.push(updatedRow);
     });
+    console.log(filteredData);
     return filteredData;
   };
 
