@@ -57,7 +57,6 @@ export default function CustomUpload({
       resetUpload();
       return;
     }
-    console.log(data);
 
     // Validate headers next
     const row = data[0].data;
@@ -72,7 +71,6 @@ export default function CustomUpload({
 
     // Headers validated, handle import
     setShow(true);
-    console.log(data);
     setFileInfo(extractData(data));
   };
 
