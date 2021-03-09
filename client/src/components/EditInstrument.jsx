@@ -13,6 +13,7 @@ export default function EditInstrument({
   initVendor,
   initModelNumber,
   initSerialNumber,
+  initCalibrationFrequency,
   id,
   initAssetTag,
   description,
@@ -28,6 +29,7 @@ export default function EditInstrument({
     handleDelete: PropTypes.func,
     footer: PropTypes.node,
     initAssetTag: PropTypes.number.isRequired,
+    initCalibrationFrequency: PropTypes.number.isRequired,
   };
   EditInstrument.defaultProps = {
     handleDelete: null,
@@ -43,25 +45,23 @@ export default function EditInstrument({
     categories: [],
     comment: '',
     id,
-    calibrationFrequency: 0,
+    calibrationFrequency: initCalibrationFrequency,
     assetTag: initAssetTag,
   });
 
   const handleFindInstrument = (response) => {
-    const categories = response.instrumentCategories.map((item) => item.name);
-    let { comment, calibrationFrequency } = response;
-    comment = comment || '';
-    calibrationFrequency = calibrationFrequency || '';
+    console.log(response);
+    const categories = response?.instrumentCategories.map((item) => item.name);
+    let comment = response?.comment || '';
     setFormState({
-      ...formState, comment, calibrationFrequency, categories,
+      ...formState, comment, categories,
     });
   };
 
   useEffect(() => {
-    // TODO: add api to get assetTag
-    const { modelNumber, vendor, serialNumber } = formState;
+    // TODO: fix find instrument as the response is null
     FindInstrument({
-      modelNumber, vendor, serialNumber, handleResponse: handleFindInstrument,
+      modelNumber: initModelNumber, vendor: initVendor, serialNumber: initSerialNumber, handleResponse: handleFindInstrument,
     });
   }, []); // empty dependency array, only run once on mount
 
