@@ -4,9 +4,12 @@ import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import GetModelsForExport from '../queries/GetModelsForExport';
 
-const ExportModels = ({ setLoading }) => {
+// eslint-disable-next-line no-unused-vars
+const ExportModels = ({ setLoading, filterOptions }) => {
   ExportModels.propTypes = {
     setLoading: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    filterOptions: PropTypes.object.isRequired,
   };
 
   const [transactionData, setTransactionData] = useState([]);

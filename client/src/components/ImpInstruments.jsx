@@ -62,9 +62,9 @@ export default function ImpInstruments() {
 
   const IMPORT_INSTRUMENTS = gql`
     mutation ImportInstruments (
-      $filteredData: [InstrumentInput]!
+      $instruments: [InstrumentInput]
     ) {
-      bulkImportInstruments(instruments: $filteredData)
+      bulkImportInstruments(instruments: $instruments)
     }
     `;
   const query = print(IMPORT_INSTRUMENTS);

@@ -110,6 +110,8 @@ class BulkDataAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const t = await this.store.db.transaction();
+    console.log('importing instruments');
+    console.log(instruments);
 
     try {
       // Then, we do some calls passing this transaction as an option:
