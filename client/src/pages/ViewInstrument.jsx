@@ -170,6 +170,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     window.sessionStorage.setItem('modelDescription', description);
     window.sessionStorage.setItem('vendor', vendor);
     window.sessionStorage.setItem('calibrationDate', calibHist[0].date);
+    window.sessionStorage.setItem('id', id);
     window.sessionStorage.setItem(
       'expirationDate',
       new Date(calibHist[0].date).addDays(calibFrequency),

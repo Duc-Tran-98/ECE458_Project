@@ -2,6 +2,7 @@ import React from 'react';
 import {
   PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
 } from '@react-pdf/renderer';
+import GetCalibHistory from '../queries/GetCalibHistory';
 
 const strftime = require('strftime');
 
@@ -67,6 +68,14 @@ const styles = StyleSheet.create({
     width: '70%',
     height: 'auto',
   },
+  table: {
+    display: 'table', width: 'auto', borderStyle: 'solid', borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0,
+  },
+  tableRow: { margin: 'auto', flexDirection: 'row' },
+  tableCol: {
+    width: '25%', borderStyle: 'solid', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0,
+  },
+  tableCell: { margin: 'auto', marginTop: 5, fontSize: 10 },
 });
 
 // Create Document Component
@@ -85,13 +94,29 @@ function MyCertificate() {
   const calibrationDate = window.sessionStorage.getItem('calibrationDate');
   const expirationDate = strftime('%F', new Date(window.sessionStorage.getItem('expirationDate')));
   const comment = window.sessionStorage.getItem('calibComment');
+  const id = window.sessionStorage.getItem('id');
 
   function getURLExtension(url) {
     return url.split(/[#?]/)[0].split('.').pop().trim();
   }
 
-  const evidenceFileURL = 'https://people.duke.edu/~tkb13/courses/ece458/ev2.pdf';
-  const evidenceFileType = getURLExtension(evidenceFileURL);
+  const [calibEvent, setCalibEvent] = React.useState(null);
+  React.useEffect(() => {
+    let active = true;
+    (() => {
+      if (active) {
+        GetCalibHistory({ id, mostRecent: true }).then((data) => setCalibEvent(data));
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  console.log(calibEvent);
+
+  const evidenceFile = 'https://people.duke.edu/~tkb13/courses/ece458/ev2.pdf';
+  const evidenceFileType = getURLExtension(evidenceFile);
 
   return (
     <Document>
@@ -185,20 +210,82 @@ function MyCertificate() {
             <Text style={styles.largeText}>
               {'\n'}
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
-              <Link src={evidenceFileURL}> View Evidence </Link>
+              <Link src={evidenceFile}> View Evidence </Link>
               {'\n'}
             </Text>
             )}
 
             {((evidenceFileType === 'jpg') || (evidenceFileType === 'png') || (evidenceFileType === 'gif')) && (
             <View style={styles.centerView}>
-              <Image style={styles.image} src={evidenceFileURL} />
+              <Image style={styles.image} src={evidenceFile} />
             </View>
             )}
 
-            {/* {(evidenceFileType === 'load_bank') && (
-
-            )} */}
+            {(evidenceFileType === 'load_bank') && (
+              <View style={styles.table}>
+                {' '}
+                {/* TableHeader */}
+                {' '}
+                <View style={styles.tableRow}>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>Product</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>Type</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>Period</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>Price</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                </View>
+                {' '}
+                {/* TableContent */}
+                {' '}
+                <View style={styles.tableRow}>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>React-PDF</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>3 User </Text>
+                    {' '}
+                  </View>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>2019-02-20 - 2020-02-19</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                  <View style={styles.tableCol}>
+                    {' '}
+                    <Text style={styles.tableCell}>5€</Text>
+                    {' '}
+                  </View>
+                  {' '}
+                </View>
+                {' '}
+              </View>
+            )}
 
           </View>
         </View>
