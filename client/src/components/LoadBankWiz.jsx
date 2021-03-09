@@ -43,6 +43,7 @@ export default function LoadBankWiz({
     printerOk: false,
   });
   const [canProgress, setCanProgress] = React.useState(false);
+  const [shouldRestart, setRestart] = React.useState(false);
   const [currentReadings, setCurrentReadings] = React.useState(DEBUG ? devCurrents : defaultCurrents);
   const [voltageReading, setVoltageReading] = React.useState({
     va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
@@ -72,6 +73,8 @@ export default function LoadBankWiz({
     newReadings.vrError = newReadings.va > 0 ? 100 * (Math.abs(newReadings.va - newReadings.vr) / newReadings.va) : 100;
     newReadings.vrOk = newReadings.vrError < 1;
     setVoltageReading(newReadings);
+    console.log(!newReadings.vaOk || !newReadings.vrOk);
+    setRestart(!newReadings.vaOk || !newReadings.vrOk);
   };
   const handleFinish = () => {
     const {
@@ -238,6 +241,7 @@ export default function LoadBankWiz({
     entry[0].crError = calcCRError(step);
     entry[0].crOk = entry[0].crError < 3;
     setCurrentReadings(newReadings.concat(entry));
+    setRestart(!entry[0].caOk || !entry[0].crOk);
   };
   const canAdvanceLoadStep = (step) => { // when user can go to next step in load steps
     if (step >= 0 && step < 36) { // 36 is the last load step
@@ -676,6 +680,8 @@ export default function LoadBankWiz({
               getStepContent={getLoadStepContent}
               canAdvance={() => true}
               // TODO: CHange me back canAdvance={canAdvanceLoadStep}
+              forceReset={shouldRestart}
+              handleRestart={() => setRestart(false)}
               finishMsg="You're finished with the load steps"
             />
           </div>

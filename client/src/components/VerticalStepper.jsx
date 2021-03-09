@@ -54,6 +54,8 @@ export default function VerticalLinearStepper({
   canAdvance,
   showResetBtn,
   finishMsg,
+  forceReset,
+  handleRestart,
 }) {
   VerticalLinearStepper.propTypes = {
     getSteps: PropTypes.func.isRequired,
@@ -62,11 +64,15 @@ export default function VerticalLinearStepper({
     canAdvance: PropTypes.func,
     showResetBtn: PropTypes.bool,
     finishMsg: PropTypes.string,
+    forceReset: PropTypes.bool,
+    handleRestart: PropTypes.func,
   };
   VerticalLinearStepper.defaultProps = {
     showResetBtn: false,
     canAdvance: () => true,
     finishMsg: "All steps completed - you're finished",
+    forceReset: false,
+    handleRestart: () => undefined,
   };
   // const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -103,6 +109,32 @@ export default function VerticalLinearStepper({
 
   const canClickNext = canAdvance(activeStep);
 
+  const nextOrResetBtn = forceReset ? (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        if (typeof handleRestart !== 'undefined') {
+          handleRestart();
+        }
+        handleReset();
+      }}
+      className="btn"
+    >
+      Restart
+    </Button>
+  ) : (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleNext}
+      className="btn"
+      disabled={!canClickNext}
+    >
+      {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+    </Button>
+  );
+
   return (
     <div>
       {canShow && (
@@ -126,15 +158,8 @@ export default function VerticalLinearStepper({
                       Back
                     </Button>
                     <span className="mx-2" />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleNext}
-                      className="btn"
-                      disabled={!canClickNext}
-                    >
-                      {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                    </Button>
+                    {nextOrResetBtn}
+
                   </div>
                 </StepContent>
               </Step>
