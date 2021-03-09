@@ -34,7 +34,9 @@ export default function LoadBankWiz({
     user: user.userName,
     comment: '',
     voltMeter: null,
+    voltMeterOk: true,
     shuntMeter: null,
+    shuntMeterOk: true,
     visualCheckOk: false,
     connectedToDC: false,
     voltageCutoffOk: false,
@@ -131,7 +133,9 @@ export default function LoadBankWiz({
       comment: '',
       user: user.userName,
       voltMeter: null,
+      voltMeterOk: true,
       shuntMeter: null,
+      shuntMeterOk: true,
       visualCheckOk: false,
       connectedToDC: false,
       voltageCutoffOk: false,
@@ -140,10 +144,21 @@ export default function LoadBankWiz({
       printerOk: false,
     });
   };
+  const validateCalibrationDate = ({ date, calibrationFrequency }) => {
+    if (date) {
+      const todayToo = new Date();
+      const calibDate = new Date(date);
+      // today - calibDate <= calibration Frequency
+      return (Math.round((todayToo.getTime() - calibDate.getTime()) / (1000 * 3600 * 24)) <= calibrationFrequency);
+    }
+    return false;
+  };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
       case 1:
-        return formState.voltMeter !== null && formState.shuntMeter !== null;
+        return (
+          formState.voltMeterOk && formState.shuntMeterOk && formState.voltMeter !== null && formState.shuntMeter !== null
+        );
       case 2:
         return formState.visualCheckOk;
       case 3:
@@ -312,7 +327,6 @@ export default function LoadBankWiz({
                       }}
                       isInvalid={touched.vr && voltageReading.va < 43.2}
                     />
-                    { /* TODO: Force restart of entire process */ }
                     <Form.Control.Feedback type="invalid">
                       Too much sag. Check DC source and redo calibration
                     </Form.Control.Feedback>
@@ -593,12 +607,15 @@ export default function LoadBankWiz({
                     queryName="getInstrumentsWithFilter"
                     getVariables={() => ({ description: 'voltmeter' })}
                     // eslint-disable-next-line no-unused-vars
-                    onInputChange={(_e, v) => setFormState({ ...formState, voltMeter: v })}
+                    onInputChange={(_e, v) => {
+                      const voltMeterOk = validateCalibrationDate({ date: v?.recentCalibration[0]?.date, calibrationFrequency: v.calibrationFrequency });
+                      setFormState({ ...formState, voltMeter: v, voltMeterOk });
+                    }}
                     label="Select a voltmeter"
                     getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
                     getOptionSelected={(option, value) => (option.assetTag === value.assetTag && option.vendor)
                         === value.vendor && option.modelNumber === value.modelNumber}
-                    isInvalid={false} // TODO: MAKE SURE VOLTMETER IS CALIBRATED BEFORE MOVING ON
+                    isInvalid={!formState.voltMeterOk}
                     invalidMsg="That voltmeter is out of calibration!"
                     value={formState.voltMeter}
                   />
@@ -624,16 +641,22 @@ export default function LoadBankWiz({
                           }
                         }
                       }
-                    `)} // TODO: Make sure selection also shows asset tag and passes it to backend
+                    `)}
                     queryName="getInstrumentsWithFilter"
                     getVariables={() => ({ description: 'current shunt meter' })}
                     // eslint-disable-next-line no-unused-vars
-                    onInputChange={(_e, v) => setFormState({ ...formState, shuntMeter: v })}
+                    onInputChange={(_e, v) => {
+                      const shuntMeterOk = validateCalibrationDate({
+                        date: v?.recentCalibration[0]?.date,
+                        calibrationFrequency: v.calibrationFrequency,
+                      });
+                      setFormState({ ...formState, shuntMeter: v, shuntMeterOk });
+                    }}
                     label="Select a shunt meter"
                     getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
                     getOptionSelected={(option, value) => (option.assetTag === value.assetTag && option.vendor)
                         === value.vendor && option.modelNumber === value.modelNumber}
-                    isInvalid={false} // TODO: MAKE SURE SHUNT METER IS CALIBRATED BEFORE MOVING ON
+                    isInvalid={!formState.shuntMeterOk}
                     invalidMsg="That current shunt meter is out of calibration!"
                     value={formState.shuntMeter}
                   />

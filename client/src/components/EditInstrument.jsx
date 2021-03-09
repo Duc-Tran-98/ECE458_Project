@@ -94,7 +94,6 @@ export default function EditInstrument({
         toast.error(response.message);
       }
     };
-    // TODO: update api to include assetTag for edit instrument
     assetTag = parseInt(assetTag, 10);
     EditInstrumentQuery({
       modelNumber,
