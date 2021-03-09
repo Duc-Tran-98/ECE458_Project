@@ -29,7 +29,7 @@ export default function DisplayGrid({
         rows={rows}
         columns={cols}
         pageSize={10}
-        checkboxSelection
+        checkboxSelection={false}
         showToolbar
         locateText={{
           toolbarDensity: 'Size',
@@ -106,6 +106,8 @@ export function ServerPaginationGrid({
   onPageSizeChange,
   rowCount,
   headerElement,
+  // eslint-disable-next-line no-unused-vars
+  filterOptions,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -123,12 +125,15 @@ export function ServerPaginationGrid({
     onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
     rowCount: PropTypes.number.isRequired, // number of items from URL
     headerElement: PropTypes.node, // what to display in header beside filter options
+    // eslint-disable-next-line react/forbid-prop-types
+    filterOptions: PropTypes.object,
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
     headers: null,
     filename: null,
     filterRowForCSV: null,
+    filterOptions: null,
   };
   paginationContainer = React.useRef(null);
   const [rows, setRows] = React.useState([]);

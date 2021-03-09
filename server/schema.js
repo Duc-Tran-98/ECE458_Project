@@ -46,6 +46,9 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): Instrument
+    getInstrumentByAssetTag(
+      assetTag: Int!
+    ): Instrument
     getInstrumentsWithFilter(
       vendor: String
       modelNumber: String
@@ -115,7 +118,7 @@ const typeDefs = gql`
   type Instrument {
     vendor: String!
     modelNumber: String!
-    serialNumber: String!
+    serialNumber: String
     modelReference: Int!
     calibrationFrequency: Int
     comment: String
@@ -185,17 +188,21 @@ const typeDefs = gql`
     modelNumber: String!
     description: String!
     comment: String
+    categories: [String]
+    loadBankSupport: Boolean!
     calibrationFrequency: Int
   }
 
   input InstrumentInput {
     vendor: String!
     modelNumber: String!
-    serialNumber: String!
+    serialNumber: String
+    assetTag: Int
     comment: String
     calibrationUser: String
     calibrationDate: String
     calibrationComment: String
+    categories: [String]
   }
 
   input CalibrationEventInput {
@@ -303,6 +310,12 @@ const typeDefs = gql`
     # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
     bulkImportData(
       models: [ModelInput]
+      instruments: [InstrumentInput]
+    ): String!
+    bulkImportModels(
+      models: [ModelInput]
+    ): String!
+    bulkImportInstruments(
       instruments: [InstrumentInput]
     ): String!
     addCalibrationEventById(

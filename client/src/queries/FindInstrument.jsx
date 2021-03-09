@@ -1,28 +1,29 @@
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
-import Query from '../components/UseQuery';
+// eslint-disable-next-line no-unused-vars
+import Query, { QueryAndThen } from '../components/UseQuery';
 
 export default function FindInstrument({
-  modelNumber, vendor, serialNumber, handleResponse,
+  assetTag, handleResponse,
 }) {
   FindInstrument.propTypes = {
-    modelNumber: PropTypes.string.isRequired,
-    vendor: PropTypes.string.isRequired,
-    serialNumber: PropTypes.string.isRequired,
+    // modelNumber: PropTypes.string.isRequired,
+    // vendor: PropTypes.string.isRequired,
+    // serialNumber: PropTypes.string.isRequired,
+    assetTag: PropTypes.number.isRequired,
     handleResponse: PropTypes.func.isRequired,
   };
   const FIND_INSTRUMENT = gql`
         query FindInst(
-            $modelNumber: String!
-            $vendor: String!
-            $serialNumber: String!
+            $assetTag: Int!
         ) {
-            getInstrument(
-            modelNumber: $modelNumber
-            vendor: $vendor
-            serialNumber: $serialNumber
+            getInstrumentByAssetTag(
+              assetTag: $assetTag
             ) {
+              modelNumber
+              vendor
+              serialNumber
               assetTag
               calibrationFrequency
               comment
@@ -33,9 +34,10 @@ export default function FindInstrument({
         }
     `;
   const query = print(FIND_INSTRUMENT);
-  const queryName = 'getInstrument';
-  const getVariables = () => ({ modelNumber, vendor, serialNumber });
+  const queryName = 'getInstrumentByAssetTag';
+  const getVariables = () => ({ assetTag });
   Query({
     query, queryName, getVariables, handleResponse,
   });
+  console.log('queried');
 }
