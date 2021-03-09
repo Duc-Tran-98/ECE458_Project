@@ -155,6 +155,13 @@ export default function ImpInstruments() {
     const today = moment();
     return moment(calibrationDate).isAfter(today);
   };
+  const validAssetTag = (assetTag) => {
+    if (assetTag) {
+      const assetInt = parseInt(assetTag, 10);
+      return assetInt >= 100000 && assetInt <= 999999;
+    }
+    return true; // blank asset tag is okay too
+  };
 
   const validateRow = (row) => {
     const invalidKeys = [];
@@ -178,9 +185,10 @@ export default function ImpInstruments() {
       const invalidEntries = validateRow(row);
       const isDuplicateAssetTag = checkDuplicateAssetTag(fileInfo, index, row.assetTag);
       const invalidCalibrationDate = validateCalibrationDate(row.calibrationDate);
+      const invalidAssetTag = !validAssetTag(row.assetTag);
 
       // If any errors exist, create errors object
-      if (missingKeys || invalidEntries || isDuplicateInstrument || isDuplicateAssetTag || invalidCalibrationDate) {
+      if (missingKeys || invalidEntries || isDuplicateInstrument || isDuplicateAssetTag || invalidCalibrationDate || invalidAssetTag) {
         const rowError = {
           data: row,
           row: index + 2,
@@ -189,6 +197,7 @@ export default function ImpInstruments() {
           ...(isDuplicateInstrument) && { isDuplicateInstrument },
           ...(isDuplicateAssetTag) && { isDuplicateAssetTag },
           ...(invalidCalibrationDate) && { invalidCalibrationDate },
+          ...(invalidAssetTag) && { invalidAssetTag },
         };
         importRowErrors.push(rowError);
       }
@@ -213,21 +222,18 @@ export default function ImpInstruments() {
     modelNumber: String(obj.modelNumber),
     categories: obj.instrumentCategories,
     serialNumber: obj.serialNumber,
-    assetTag: Number.isNaN(obj.assetTag) ? null : parseInt(obj.assetTag, 10),
-    ...(obj.serialNumber) && { serialNumber: String(obj.serialNumber) },
-    ...(obj.calibrationDate) && { calibrationUser: user.userName },
-    ...(obj.calibrationDate) && { calibrationDate: moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') },
-    ...(obj.calibrationDate && obj.calibrationComment) && { calibrationComment: obj.calibrationComment },
+    comment: obj.comment ? String(obj.comment) : null,
+    assetTag: obj.assetTag ? parseInt(obj.assetTag, 10) : null,
+    calibrationDate: obj.calibrationDate ? moment(obj.calibrationDate, 'MM/DD/YYYY').format('YYYY-MM-DD') : null,
+    calibrationUser: obj.calibrationDate ? user.userName : null,
+    calibrationComment: obj.calibrationDate && obj.calibrationComment ? String(obj.calibrationComment) : null,
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
     console.log('Handling import with fileInfo: ');
-    console.log('fileinfo');
     console.log(fileInfo);
-    // const models = trimEmptyLines(fileInfo);
     const instruments = filterData(fileInfo);
     console.log('filtered data into instruments: ');
-    console.log(instruments);
     console.log(instruments);
     instruments.forEach((el) => {
       if (el.assetTag !== null && typeof el.assetTag !== 'number') console.log(el.assetTag);
