@@ -23,6 +23,15 @@ export default function ImpInstruments() {
     setAllRowErrors([]);
   };
 
+  const resetState = () => {
+    setImportStatus('Import');
+    // setShowTable(false);
+  };
+
+  const hideTable = () => {
+    setShowTable(false);
+  };
+
   const requiredHeaders = [
     { display: 'Vendor', value: 'vendor' },
     { display: 'Model-Number', value: 'modelNumber' },
@@ -71,8 +80,6 @@ export default function ImpInstruments() {
       id: Math.random(),
       ...obj,
     }));
-    console.log('rendering table with data: ');
-    console.log(filteredData);
     setRow(filteredData);
     setShowTable(true);
   };
@@ -209,8 +216,6 @@ export default function ImpInstruments() {
   const validateFile = (fileInfo) => {
     const importRowErrors = getImportErrors(fileInfo);
     if (importRowErrors) {
-      console.log('Errors in file validation: ');
-      console.log(importRowErrors);
       setAllRowErrors(importRowErrors);
       setShow(true);
       return false;
@@ -232,16 +237,9 @@ export default function ImpInstruments() {
 
   const handleImport = (fileInfo, resetUpload) => {
     const instruments = filterData(fileInfo);
-    console.log('filtered data into instruments: ');
-    console.log(instruments);
-    instruments.forEach((el) => {
-      if (el.assetTag !== null && typeof el.assetTag !== 'number') console.log(el.assetTag);
-      if (typeof el.vendor !== 'string') console.log(el.vendor);
-      if (typeof el.modelNumber !== 'string') console.log(el.modelNumber);
-    });
     setImportStatus('Validating');
     if (!validateFile(instruments)) {
-      setImportStatus('Import');
+      resetState();
       return;
     }
 
@@ -252,7 +250,7 @@ export default function ImpInstruments() {
       queryName,
       getVariables,
       handleResponse: (response) => {
-        console.log(response);
+        // console.log(response);
         if (response.success) {
           toast.success(`Successfully imported ${instruments.length} instruments!`);
           renderTable(instruments);
@@ -260,10 +258,11 @@ export default function ImpInstruments() {
         } else {
           toast.error(response.message);
         }
-        setImportStatus('Import');
+        resetState();
       },
       handleError: () => {
         toast.error('Please try again');
+        resetState();
         resetUpload();
       },
     });
@@ -278,6 +277,7 @@ export default function ImpInstruments() {
         uploadLabel={uploadLabel}
         handleImport={handleImport}
         importStatus={importStatus}
+        hideTable={hideTable}
       />
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Instruments" width=" ">
         <ImportInstrumentError allRowErrors={allRowErrors} errorList={[]} />
