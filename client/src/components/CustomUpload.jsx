@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function CustomUpload({
-  requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus,
+  requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus, hideTable,
 }) {
   CustomUpload.propTypes = {
     requiredHeaders: PropTypes.array.isRequired,
@@ -16,6 +16,7 @@ export default function CustomUpload({
     uploadLabel: PropTypes.string.isRequired,
     handleImport: PropTypes.func.isRequired,
     importStatus: PropTypes.string.isRequired,
+    hideTable: PropTypes.func.isRequired,
   };
 
   const [fileInfo, setFileInfo] = useState([]);
@@ -47,11 +48,10 @@ export default function CustomUpload({
   const extractData = (data) => data.map((row) => row.data);
 
   const handleOnFileLoad = (data) => {
-    console.log('Loaded file with data: ');
-    console.log(data);
+    hideTable();
     // Validate non empty file
     if (data.length === 0) {
-      toast.error('Please submit a non empty file', {
+      toast.error('Please submit a non empty UTF-8 CSV file', {
         toastId: 1,
       });
       resetUpload();
@@ -74,11 +74,15 @@ export default function CustomUpload({
     setFileInfo(extractData(data));
   };
 
+  // TODO: What can cause an error here?
   const handleOnError = (err, file, inputElem, reason) => {
     console.log(err);
     console.log(file);
     console.log(inputElem);
     console.log(reason);
+    toast.error('Sorry, something went wrong, please try again', {
+      toastId: 4,
+    });
   };
 
   const handleOnRemoveFile = () => {};
@@ -92,7 +96,6 @@ export default function CustomUpload({
   };
 
   const submitFileContents = () => {
-    console.log(fileInfo);
     handleImport(fileInfo, resetUpload);
   };
 

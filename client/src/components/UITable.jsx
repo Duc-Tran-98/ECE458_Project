@@ -4,13 +4,18 @@ import { DataGrid, GridToolbar, GridOverlay } from '@material-ui/data-grid';
 // import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
-import { useState, useRef, useEffect } from 'react';
+import {
+  useState, useRef, useEffect, useContext,
+} from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { CSVLink } from 'react-csv';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
+import UserContext from './UserContext';
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
@@ -139,6 +144,8 @@ export function ServerPaginationGrid({
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
+  const user = useContext(UserContext);
+  const history = useHistory();
 
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
@@ -324,6 +331,17 @@ export function ServerPaginationGrid({
               </li>
             </ul>
           </div>
+          {user.isAdmin && (
+          <button
+            type="button"
+            className="btn ms-3"
+            onClick={() => {
+              history.push('/import');
+            }}
+          >
+            Import
+          </button>
+          )}
           {handleExport && (
             <>
               {loadingExport && <LinearProgress color="secondary" />}

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
@@ -35,21 +36,13 @@ function CreateInstrumentPage({ onCreation }) {
     }
     setCalibHistory(newHistory);
   };
-  const formState = {
-    // This state is for an instrument
-    modelNumber: '',
-    vendor: '',
-    comment: '',
-    serialNumber: '',
-    calibrationFrequency: 0, // TODO: update calibration frequency based on model selection
-    description: '', // TODO: update description based on model selection
-    categories: [],
-    assetTag: 0, // TODO: let user know that this field is not required
-  };
+
+  const [calibrationFrequency, setcalibrationFrequency] = React.useState(0);
+  // TODO: let user know that this asset tag/serial number is not required
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
-    if (formState.calibrationFrequency > 0) {
+    if (calibrationFrequency > 0) {
       const newHistory = calibHistory;
       newHistory.push({
         user: user.userName,
@@ -74,7 +67,12 @@ function CreateInstrumentPage({ onCreation }) {
     // This is to submit all the data
     let {
       // eslint-disable-next-line prefer-const
-      modelNumber, vendor, assetTag, comment, serialNumber, categories,
+      modelNumber,
+      vendor,
+      assetTag,
+      comment,
+      serialNumber,
+      categories,
     } = values;
     // check validation here in backend?
     if (typeof assetTag === 'string') {
@@ -96,7 +94,7 @@ function CreateInstrumentPage({ onCreation }) {
         const validEvents = calibHistory.filter(
           (entry) => entry.user.length > 0,
         ); // Collect valid entries
-        if (validEvents.length > 0 && formState.calibrationFrequency > 0) {
+        if (validEvents.length > 0 && calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
           // AddCalibEvent({
           //   events: validEvents,
@@ -121,17 +119,6 @@ function CreateInstrumentPage({ onCreation }) {
       }
     });
   };
-
-  const {
-    modelNumber,
-    vendor,
-    serialNumber,
-    comment,
-    calibrationFrequency,
-    categories,
-    description,
-    assetTag,
-  } = formState;
   const footer = calibrationFrequency !== 0 ? (
     <>
       <div className="d-flex justify-content-center my-3">
@@ -154,15 +141,16 @@ function CreateInstrumentPage({ onCreation }) {
     <>
       <ToastContainer />
       <InstrumentForm
-        modelNumber={modelNumber}
-        vendor={vendor}
-        comment={comment}
-        serialNumber={serialNumber}
-        categories={categories}
-        description={description}
+        modelNumber=""
+        vendor=""
+        comment=""
+        serialNumber=""
+        categories={[]}
+        description=""
         calibrationFrequency={calibrationFrequency}
-        assetTag={assetTag}
+        assetTag={0}
         handleFormSubmit={handleSubmit}
+        updateCalibrationFrequency={(value) => setcalibrationFrequency(value)}
         type="create"
       />
       {footer}
