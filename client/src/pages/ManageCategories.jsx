@@ -32,8 +32,6 @@ function ManageCategories() {
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [category, setCategory] = React.useState('');
-  const [responseMsg, setResponseMsg] = React.useState('');
-  const [responseStatus, setResponseStatus] = React.useState(true);
   const [showDelete, setShowDelete] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
@@ -138,24 +136,16 @@ function ManageCategories() {
   }
 
   const closeDeleteModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
     setShowDelete(false);
     console.log('close');
     await updateRow(key);
   };
   const closeEditModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
     setShowEdit(false);
-    console.log('close');
     await updateRow(key);
   };
   const closeCreateModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
     setShowCreate(false);
-    console.log('close');
     await updateRow(key);
   };
   const handleResponse = (response) => {
@@ -171,10 +161,8 @@ function ManageCategories() {
     setShowCreate(false);
     setShowEdit(false);
     setShowDelete(false);
-    // setResponseMsg(response.message);
-    // setResponseStatus(response.success);
+    updateRow(key);
     setLoading(false);
-    console.log(response);
   };
   const handleDelete = () => {
     setLoading(true);
@@ -213,27 +201,22 @@ function ManageCategories() {
         width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
-          )}
-          <div className="d-flex justify-content-center">
+          <div className="justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleDelete}>
+                <div className="row text-center m-3" style={{ width: '100%' }}>
+                  <h5>{`Confirm delete category: ${category}`}</h5>
+                </div>
+                <span className="row m-3">
+                  <button className="btn mt-3" type="button" onClick={handleDelete}>
                     Yes
                   </button>
-                </div>
-                <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeDeleteModal}>
+                  <button className="btn mt-3" type="button" onClick={closeDeleteModal}>
                     No
                   </button>
-                </div>
+                </span>
               </>
             )}
           </div>
@@ -246,29 +229,26 @@ function ManageCategories() {
         width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`Change name of category: ${category}`}</div>
-          )}
-          <div className="d-flex justify-content-center">
+          <div className="justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input
-                  id="editCat"
-                  value={newCategory}
-                  onChange={(e) => {
-                    if (!e.target.value.includes(' ')) {
-                      setNewCategory(e.target.value);
-                    }
-                  }}
-                />
-                <span className="mx-3" />
-                <div className="mt-3">
+                <div className="row text-center m-3" style={{ width: '100%' }}>
+                  <h5>{`Change name of category: ${category}`}</h5>
+                </div>
+                <div className="mt-3 text-center">
+                  <input
+                    id="editCat"
+                    value={newCategory}
+                    onChange={(e) => {
+                      if (!e.target.value.includes(' ')) {
+                        setNewCategory(e.target.value);
+                      }
+                    }}
+                  />
                   <button
-                    className="btn "
+                    className="btn m-4"
                     type="button"
                     onClick={() => {
                       handleEdit((document.getElementById('editCat').value));
@@ -289,17 +269,13 @@ function ManageCategories() {
         width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">Create new category</div>
-          )}
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
                 <input
+                  className="m-2"
                   id="cat"
                   value={newCategory}
                   onChange={(e) => {
@@ -307,6 +283,7 @@ function ManageCategories() {
                       setNewCategory(e.target.value);
                     }
                   }}
+                  placeholder="Enter category name"
                 />
                 <span className="mx-3" />
                 <div className="mt-3">
