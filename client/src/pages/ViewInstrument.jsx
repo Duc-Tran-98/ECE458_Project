@@ -18,6 +18,10 @@ import EditInstrument from '../components/EditInstrument';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
 
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4001'
+  : '/express';
+
 export default function DetailedInstrumentView({ onDelete }) {
   DetailedInstrumentView.propTypes = {
     onDelete: PropTypes.func.isRequired,
@@ -139,7 +143,9 @@ export default function DetailedInstrumentView({ onDelete }) {
     // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     const newHistory = [entry];
     if (entry.file) {
-      await axios.post('http://localhost:4001/api/upload', entry.file, {
+      const endpoint = '/api/upload';
+      const path = `${route}${endpoint}`;
+      await axios.post(path, entry.file, {
         // receive two    parameter endpoint url ,form data
       }).then((res) => { // then print response status
         // eslint-disable-next-line no-param-reassign

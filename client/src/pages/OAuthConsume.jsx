@@ -4,13 +4,15 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-// const jwt_decode = require('jwt-decode');
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import OAuthSignOn from '../queries/OAuthSignOn';
 import ExpressQuery from '../queries/ExpressQuery';
 
-// TODO: Wire route based on dev/production (nginx proxy, see examples)
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4001'
+  : '/express';
+
 export default function OAuthConsume({ handleLogin }) {
   OAuthConsume.propTypes = {
     handleLogin: PropTypes.func.isRequired,
@@ -56,14 +58,16 @@ export default function OAuthConsume({ handleLogin }) {
     const authCode = getURLCode();
 
     // Axios request to express server to handle token
-    axios.post('http://localhost:4001/api/oauthConsume', {
+    const endpoint = '/api/oauthConsume';
+    const path = `${route}${endpoint}`;
+    axios.post(path, {
       code: authCode,
     })
       .then((res) => {
         const accessToken = res.data.result.access_token;
         const idToken = parseIdToken(res.data.result.id_token);
         ExpressQuery({
-          route: `/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
+          endpoint: `/api/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
         });
 
         const netId = idToken.sub;

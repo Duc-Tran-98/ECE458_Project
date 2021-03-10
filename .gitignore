@@ -105,3 +105,6 @@ dist
 
 # DS Store for Macs
 .DS_Store
+
+# ignore any env files
+*.env

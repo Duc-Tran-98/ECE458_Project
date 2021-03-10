@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 // eslint-disable-next-line import/prefer-default-export
 export const CustomInput = ({
   // eslint-disable-next-line react/prop-types
-  controlId, className, label, name, type, required, value, onChange, disabled, isInvalid, error,
+  controlId, className, label, name, type, required, value, onChange, disabled, isInvalid, error, placeHolder,
 }) => (
   <>
     <Form.Group controlId={controlId}>
@@ -17,6 +17,7 @@ export const CustomInput = ({
         onChange={onChange}
         disabled={disabled}
         isInvalid={isInvalid}
+        placeholder={placeHolder}
       />
       <Form.Control.Feedback type="invalid">
         {error}
