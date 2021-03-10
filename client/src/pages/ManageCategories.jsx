@@ -7,8 +7,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
-import GetModelCategories, { CountModelCategories } from '../queries/GetModelCategories';
-import GetInstrumentCategories, { CountInstrumentCategories } from '../queries/GetInstrumentCategories';
+import GetModelCategories, { CountModelCategories, CountModelsAttached } from '../queries/GetModelCategories';
+import GetInstrumentCategories, { CountInstrumentCategories, CountInstrumentsAttached } from '../queries/GetInstrumentCategories';
 import DeleteModelCategory from '../queries/DeleteModelCategory';
 import DeleteInstrumentCategory from '../queries/DeleteInstrumentCategory';
 import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
@@ -37,6 +37,7 @@ function ManageCategories() {
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [num, setNum] = React.useState(0);
 
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
@@ -51,6 +52,17 @@ function ManageCategories() {
   const cellHandler = (e) => {
     setCategory(e.row.name);
   };
+
+  const getNumAttached = async () => {
+    if (key === 'model') {
+      const count = await CountModelsAttached({ name: category });
+      setNum(count);
+    } else {
+      const count = await CountInstrumentsAttached({ name: category });
+      setNum(count);
+    }
+  };
+
   const cols = [
     {
       field: 'id',
@@ -78,7 +90,6 @@ function ManageCategories() {
                 type="button"
                 className="btn"
                 onClick={() => {
-                  console.log('edit cat');
                   setShowEdit(true);
                 }}
               >
@@ -101,8 +112,8 @@ function ManageCategories() {
               <button
                 type="button"
                 className="btn"
-                onClick={() => {
-                  console.log('delete cat');
+                onClick={async () => {
+                  await getNumAttached();
                   setShowDelete(true);
                 }}
               >
@@ -116,19 +127,16 @@ function ManageCategories() {
   ];
 
   async function updateRow(k) {
-    console.log('update');
     let searchString;
     setRowCount(0);
     if (k === 'model') {
       await CountModelCategories().then((val) => {
         setRowCount(val);
-        console.log(val);
         searchString = `?page=${1}&limit=${25}&count=${val}`;
       });
     } else {
       await CountInstrumentCategories().then((val) => {
         setRowCount(val);
-        console.log(val);
         searchString = `?page=${1}&limit=${25}&count=${val}`;
       });
     }
@@ -139,32 +147,27 @@ function ManageCategories() {
     setResponseMsg('');
     setResponseStatus(false);
     setShowDelete(false);
-    console.log('close');
     await updateRow(key);
   };
   const closeEditModal = async () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowEdit(false);
-    console.log('close');
     await updateRow(key);
   };
   const closeCreateModal = async () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowCreate(false);
-    console.log('close');
     await updateRow(key);
   };
   const handleResponse = (response) => {
     setResponseMsg(response.message);
     setResponseStatus(response.success);
     setLoading(false);
-    console.log(response);
   };
   const handleDelete = () => {
     setLoading(true);
-    console.log('delete');
     if (key === 'model') {
       DeleteModelCategory({ name: category, handleResponse });
     } else {
@@ -173,7 +176,6 @@ function ManageCategories() {
   };
   const handleEdit = (catName) => {
     setLoading(true);
-    console.log('edit');
     if (key === 'model') {
       EditModelCategory({ currentName: category, updatedName: catName, handleResponse });
     } else {
@@ -198,7 +200,10 @@ function ManageCategories() {
       >
         <>
           {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
+            <div>
+              <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
+              <div className="h4 text-center my-3">{`This category is attached to ${num} ${key}${num === 1 ? '' : 's'} `}</div>
+            </div>
           )}
           <div className="d-flex justify-content-center">
             {loading ? (

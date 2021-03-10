@@ -474,6 +474,24 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     return await this.store.modelCategories.count();
   }
+
+  async countModelsAttachedToCategory({ name }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let response = 0;
+    await this.getModelCategory({ name }).then(async (result) => {
+      if (result) {
+        const modelCategoryId = result.dataValues.id;
+        const attached = await this.store.modelCategoryRelationships.count({
+          where: { modelCategoryId },
+        });
+        response = attached;
+      } else {
+        console.log('category deos not exist');
+      }
+    });
+    return response;
+  }
 }
 
 module.exports = ModelAPI;

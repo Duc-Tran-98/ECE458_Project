@@ -668,6 +668,24 @@ class InstrumentAPI extends DataSource {
     this.store = storeModel;
     return await this.store.instrumentCategories.count();
   }
+
+  async countInstrumentsAttachedToCategory({ name }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let response = 0;
+    await this.getInstrumentCategory({ name }).then(async (result) => {
+      if (result) {
+        const instrumentCategoryId = result.dataValues.id;
+        const attached = await this.store.instrumentCategoryRelationships.count({
+          where: { instrumentCategoryId },
+        });
+        response = attached;
+      } else {
+        console.log('category deos not exist');
+      }
+    });
+    return response;
+  }
 }
 
 module.exports = InstrumentAPI;
