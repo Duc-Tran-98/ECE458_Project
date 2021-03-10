@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function CustomUpload({
-  requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus,
+  requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus, hideTable,
 }) {
   CustomUpload.propTypes = {
     requiredHeaders: PropTypes.array.isRequired,
@@ -16,6 +16,7 @@ export default function CustomUpload({
     uploadLabel: PropTypes.string.isRequired,
     handleImport: PropTypes.func.isRequired,
     importStatus: PropTypes.string.isRequired,
+    hideTable: PropTypes.func.isRequired,
   };
 
   const [fileInfo, setFileInfo] = useState([]);
@@ -24,6 +25,7 @@ export default function CustomUpload({
   const buttonRef = createRef();
 
   const resetUpload = () => {
+    hideTable();
     setReset(true);
     setReset(false);
     setShow(false);
@@ -47,6 +49,7 @@ export default function CustomUpload({
   const extractData = (data) => data.map((row) => row.data);
 
   const handleOnFileLoad = (data) => {
+    hideTable();
     console.log('Loaded file with data: ');
     console.log(data);
     // Validate non empty file

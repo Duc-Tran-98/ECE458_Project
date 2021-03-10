@@ -23,6 +23,15 @@ export default function ImpInstruments() {
     setAllRowErrors([]);
   };
 
+  const resetState = () => {
+    setImportStatus('Import');
+    // setShowTable(false);
+  };
+
+  const hideTable = () => {
+    setShowTable(false);
+  };
+
   const requiredHeaders = [
     { display: 'Vendor', value: 'vendor' },
     { display: 'Model-Number', value: 'modelNumber' },
@@ -241,7 +250,7 @@ export default function ImpInstruments() {
     });
     setImportStatus('Validating');
     if (!validateFile(instruments)) {
-      setImportStatus('Import');
+      resetState();
       return;
     }
 
@@ -260,10 +269,11 @@ export default function ImpInstruments() {
         } else {
           toast.error(response.message);
         }
-        setImportStatus('Import');
+        resetState();
       },
       handleError: () => {
         toast.error('Please try again');
+        resetState();
         resetUpload();
       },
     });
@@ -278,6 +288,7 @@ export default function ImpInstruments() {
         uploadLabel={uploadLabel}
         handleImport={handleImport}
         importStatus={importStatus}
+        hideTable={hideTable}
       />
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Instruments" width=" ">
         <ImportInstrumentError allRowErrors={allRowErrors} errorList={[]} />

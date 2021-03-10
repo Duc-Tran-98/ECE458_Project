@@ -21,6 +21,15 @@ export default function ImpModels() {
     setAllRowErrors([]);
   };
 
+  const resetState = () => {
+    setImportStatus('Import');
+    // setShowTable(false);
+  };
+
+  const hideTable = () => {
+    setShowTable(false);
+  };
+
   const requiredHeaders = [
     { display: 'Vendor', value: 'vendor' },
     { display: 'Model-Number', value: 'modelNumber' },
@@ -218,7 +227,7 @@ export default function ImpModels() {
     console.log(fileInfo);
     setImportStatus('Validating');
     if (!validateFile(fileInfo)) {
-      setImportStatus('Import');
+      resetState();
       return;
     }
 
@@ -244,12 +253,12 @@ export default function ImpModels() {
             toastId: 1,
           });
         }
-        setImportStatus('Import');
+        resetState();
       },
       handleError: () => {
         toast.error('Please try again');
         resetUpload();
-        setImportStatus('Import');
+        resetState();
       },
     });
   };
@@ -263,6 +272,7 @@ export default function ImpModels() {
         uploadLabel={uploadLabel}
         handleImport={handleImport}
         importStatus={importStatus}
+        hideTable={hideTable}
       />
       <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models" width=" ">
         <ImportModelError allRowErrors={allRowErrors} errorList={[]} />
