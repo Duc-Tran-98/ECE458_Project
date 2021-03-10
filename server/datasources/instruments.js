@@ -127,6 +127,9 @@ class InstrumentAPI extends DataSource {
     let instruments = await this.store.instruments.findAndCountAll({
       include: includeData,
       where: filters,
+      order: [
+        ['assetTag', 'ASC'],
+      ],
       limit,
       offset,
     });
