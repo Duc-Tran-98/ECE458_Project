@@ -162,6 +162,8 @@ class ModelAPI extends DataSource {
   async getModelsWithFilter({
     vendor, modelNumber, description, categories, limit = null, offset = null,
   }) {
+    console.log('******************* MODEL CONTEXT *******************');
+    console.log(this.context);
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { models: [], total: 0 };
