@@ -10,8 +10,9 @@ body {
   border: 1px solid black;
 }
 
-.delete-btn{
+#root .btn.btn-danger{
   background: #fc2311;
+  color: white;
 }
 
 .delete-container {
