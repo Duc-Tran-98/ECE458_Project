@@ -36,7 +36,7 @@ services:
       - "/usr/src/app/node_modules"
       - assets:/usr/src/app/uploads
     env_file: #tell the backend to use the .env file in the root directory
-      - "./.env"
+      - "./root.env"
     environment:
       NODE_ENV: "production"
     networks:
