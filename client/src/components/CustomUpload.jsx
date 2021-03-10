@@ -25,7 +25,6 @@ export default function CustomUpload({
   const buttonRef = createRef();
 
   const resetUpload = () => {
-    hideTable();
     setReset(true);
     setReset(false);
     setShow(false);
