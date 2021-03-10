@@ -18,6 +18,7 @@ import EditInstrumentCategory from '../queries/EditInstrumentCategory';
 
 function ManageCategories() {
   const history = useHistory();
+  const navLink = document.getElementById('modelCatNavLink');
   const queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   let startTab;
@@ -38,16 +39,6 @@ function ManageCategories() {
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  history.listen((location, action) => {
-    urlParams = new URLSearchParams(location.search);
-    const lim = parseInt(urlParams.get('limit'), 10);
-    const pg = parseInt(urlParams.get('page'), 10);
-    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
-      // if user clicks on models nav link or goes back
-      setInitLimit(lim);
-      setInitPage(pg);
-    }
-  });
   const cellHandler = (e) => {
     setCategory(e.row.name);
   };
@@ -107,46 +98,99 @@ function ManageCategories() {
     },
   ];
 
-  async function updateRow(k) {
+  function updateRow(k, replace = false) {
     console.log('update');
     let searchString;
-    setRowCount(0);
+    setInitPage(1);
+    setInitLimit(25);
     if (k === 'model') {
-      await CountModelCategories().then((val) => {
+      CountModelCategories().then((val) => {
         setRowCount(val);
-        console.log(val);
-        searchString = `?page=${1}&limit=${25}&count=${val}`;
+        searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
+        if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
+          console.log(`updating url to /${k}Categories${searchString}`);
+          if (replace) {
+            history.replace(`/${k}Categories${searchString}`);
+          } else {
+            history.push(`/${k}Categories${searchString}`);
+          }
+        }
       });
     } else {
-      await CountInstrumentCategories().then((val) => {
+      CountInstrumentCategories().then((val) => {
         setRowCount(val);
         console.log(val);
-        searchString = `?page=${1}&limit=${25}&count=${val}`;
+        searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
+        if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
+          console.log(`updating url to /${k}Categories${searchString}`);
+          if (replace) {
+            history.replace(`/${k}Categories${searchString}`);
+          } else {
+            history.push(`/${k}Categories${searchString}`);
+          }
+        }
       });
     }
-    history.push(`/${key}Categories${searchString}`);
   }
 
-  const closeDeleteModal = async () => {
+  if (navLink !== null) {
+    navLink.onclick = () => {
+      updateRow('model');
+      setKey('model');
+    };
+  }
+
+  history.listen((location, action) => {
+    let active = true;
+
+    (() => {
+      if (!active) {
+        return;
+      }
+      urlParams = new URLSearchParams(location.search);
+      const lim = parseInt(urlParams.get('limit'), 10);
+      const pg = parseInt(urlParams.get('page'), 10);
+      const count = parseInt(urlParams.get('count'), 10);
+      if (action === 'POP') {
+        setRowCount(count);
+        setInitLimit(lim);
+        setInitPage(pg);
+        // console.log('was a pop');
+        if (window.location.pathname.startsWith('/model')) {
+          setKey('model');
+          // console.log('setting start tab = model');
+        } else {
+          setKey('instrument');
+          //  console.log('setting start tab = instrument');
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  });
+
+  const closeDeleteModal = () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowDelete(false);
     console.log('close');
-    await updateRow(key);
+    updateRow(key, true);
   };
-  const closeEditModal = async () => {
+  const closeEditModal = () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowEdit(false);
     console.log('close');
-    await updateRow(key);
+    updateRow(key, true);
   };
-  const closeCreateModal = async () => {
+  const closeCreateModal = () => {
     setResponseMsg('');
     setResponseStatus(false);
     setShowCreate(false);
     console.log('close');
-    await updateRow(key);
+    updateRow(key, true);
   };
   const handleResponse = (response) => {
     setResponseMsg(response.message);
@@ -286,11 +330,9 @@ function ManageCategories() {
       <Tabs
         id="tabs"
         activeKey={key}
-        onSelect={async (k) => {
-          await updateRow(k);
+        onSelect={(k) => {
+          updateRow(k);
           setKey(k);
-          setInitLimit(25);
-          setInitPage(1);
         }}
         unmountOnExit
       >
@@ -311,6 +353,9 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log(
+                  `page change model changing url to /modelCategories${searchString}`,
+                );
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -319,6 +364,7 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log('page size change model changing url');
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -344,6 +390,9 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log(
+                  `page change instrument changing url to /instrumentCategories${searchString}`,
+                );
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -352,6 +401,7 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log('page size change instrument changing url');
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
