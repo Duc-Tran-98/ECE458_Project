@@ -1,7 +1,9 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import { DataGrid, GridToolbar, GridOverlay } from '@material-ui/data-grid';
-// import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
+import {
+  DataGrid, GridOverlay, ColumnsToolbarButton, DensitySelector,
+} from '@material-ui/data-grid';
+
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
 import {
@@ -113,6 +115,7 @@ export function ServerPaginationGrid({
   headerElement,
   // eslint-disable-next-line no-unused-vars
   filterOptions,
+  showToolBar,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -132,6 +135,7 @@ export function ServerPaginationGrid({
     headerElement: PropTypes.node, // what to display in header beside filter options
     // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object,
+    showToolBar: PropTypes.bool.isRequired,
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -274,13 +278,20 @@ export function ServerPaginationGrid({
           onSelectionChange={(newSelection) => {
             setChecked(newSelection.rowIds);
           }}
-          showToolbar
           hideFooterSelectedRowCount
           components={{
-            Toolbar: GridToolbar,
+            Toolbar: () => (
+              showToolBar ? (
+                <>
+                  <ColumnsToolbarButton />
+                  <DensitySelector />
+                </>
+              ) : null
+            ),
             LoadingOverlay: CustomLoadingOverlay,
             Pagination: CustomPagination,
           }}
+          disableColumnMenu
         />
       </div>
       <div className="row bg-offset rounded py-2 mx-auto">
