@@ -10,6 +10,10 @@ body {
   border: 1px solid black;
 }
 
+.delete-btn{
+  background: #fc2311;
+}
+
 .delete-container {
   width: 80%;
   /*border-radius: 25px;*/
