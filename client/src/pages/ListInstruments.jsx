@@ -419,6 +419,7 @@ export default function ListInstruments() {
       setInitPage(page);
     }
   };
+  console.log(filterOptions);
 
   return (
     <>
@@ -465,32 +466,35 @@ export default function ListInstruments() {
           serialNumber: filterSerialNumber,
           assetTag,
         }).then((response) => {
-          // console.log('fetched data');
-          response.instruments.forEach((element) => {
-            if (element !== null) {
-              element.categories = element.modelCategories.concat(element.instrumentCategories);
-              element.calibrationStatus = element.calibrationFrequency === null
+          console.log(response);
+          if (response !== null) {
+            response.instruments.forEach((element) => {
+              if (element !== null) {
+                element.categories = element.modelCategories.concat(element.instrumentCategories);
+                element.calibrationStatus = element.calibrationFrequency === null
                 || element.calibrationFrequency === 0
-                ? 'N/A'
-                : 'Out of Calibration';
-              element.recentCalDate = 'N/A';
-              if (
-                element.calibrationFrequency
+                  ? 'N/A'
+                  : 'Out of Calibration';
+                element.recentCalDate = 'N/A';
+                if (
+                  element.calibrationFrequency
                   && element.recentCalibration
                   && element.recentCalibration[0]
-              ) {
+                ) {
                 // eslint-disable-next-line prefer-destructuring
-                element.calibrationStatus = new Date(
-                  element.recentCalibration[0].date,
-                )
-                  .addDays(element.calibrationFrequency)
-                  .toISOString()
-                  .split('T')[0];
-                element.recentCalDate = element.recentCalibration[0].date;
+                  element.calibrationStatus = new Date(
+                    element.recentCalibration[0].date,
+                  )
+                    .addDays(element.calibrationFrequency)
+                    .toISOString()
+                    .split('T')[0];
+                  element.recentCalDate = element.recentCalibration[0].date;
+                }
               }
-            }
-          });
-          return response.instruments;
+            });
+            return response.instruments;
+          }
+          return [];
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
