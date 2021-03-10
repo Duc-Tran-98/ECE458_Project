@@ -134,6 +134,7 @@ function NavBar({
               <NavLink
                 className="nav-link"
                 to={`/modelCategories?page=1&limit=25&count=${modelCatCount}`}
+                id="modelCatNavLink"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
