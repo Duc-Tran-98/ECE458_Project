@@ -10,6 +10,10 @@ import jwt_decode from 'jwt-decode';
 import OAuthSignOn from '../queries/OAuthSignOn';
 import ExpressQuery from '../queries/ExpressQuery';
 
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4001'
+  : '/api';
+
 // TODO: Wire route based on dev/production (nginx proxy, see examples)
 export default function OAuthConsume({ handleLogin }) {
   OAuthConsume.propTypes = {
@@ -56,7 +60,8 @@ export default function OAuthConsume({ handleLogin }) {
     const authCode = getURLCode();
 
     // Axios request to express server to handle token
-    axios.post('http://localhost:4001/api/oauthConsume', {
+    const endpoint = '/api/oauthConsume';
+    axios.post(`${route}${endpoint}`, {
       code: authCode,
     })
       .then((res) => {
