@@ -210,7 +210,7 @@ export default function ImpModels() {
     categories: obj.categories,
     loadBankSupport: Boolean(typeof (obj.loadBankSupport) === 'string' && (obj.loadBankSupport.toLowerCase() === 'y' || obj.loadBankSupport.toLowerCase() === 'yes')),
     comment: String(obj.comment),
-    calibrationFrequency: obj.calibrationFrequency == 'N/A' ? null : parseInt(obj.calibrationFrequency, 10),
+    calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
