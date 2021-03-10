@@ -167,36 +167,7 @@ class ModelAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { models: [], total: 0 };
-    let includeData;
-    // if (categories) {
-    //   // includeData = [
-    //   //   {
-    //   //     model: this.store.modelCategories,
-    //   //     as: 'categories',
-    //   //     through: 'modelCategoryRelationships',
-    //   //     where: {
-    //   //       name: categories,
-    //   //     },
-    //   //   },
-    //   // ];
-    //   includeData = [
-    //     {
-    //       model: this.store.modelCategoryRelationships,
-    //       as: 'mtmcr',
-    //       separate: true,
-    //       include: [
-    //         {
-    //           model: this.store.modelCategories,
-    //           as: 'mcrtmc',
-    //           where: {
-    //             name: categories,
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   ];
-    // } else {
-    includeData = [
+    const includeData = [
       {
         model: this.store.modelCategoryRelationships,
         as: 'mtmcr',
@@ -242,14 +213,7 @@ class ModelAPI extends DataSource {
     response.models = models.rows;
     response.total = models.count;
     models = models.rows;
-    // console.log(await models[0].get());
-    // const modelsWithData = [];
-    // for (let i = 0; i < models.length; i += 1) {
-    //   const data = await models[i].get();
-    //   // console.log(data);
-    //   modelsWithData.push(data);
-    // }
-    // models = modelsWithData;
+
     if (categories) {
       models = await this.store.models.findAndCountAll({
         include: includeData,
