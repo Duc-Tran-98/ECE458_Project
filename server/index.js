@@ -78,8 +78,9 @@ app.use(cors());
 app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
 const expressPort = 4001;
+const whichRoute = process.env.NODE_ENV.includes('dev') ? '/api' : '/express/api';
 
-app.post('/api/oauthConsume', (req, res) => {
+app.post(`${whichRoute}/oauthConsume`, (req, res) => {
   const { code } = req.body;
   const authString = Buffer.from(
     `${oauthClientId}:${oauthClientSecret}`,
@@ -113,7 +114,7 @@ app.post('/api/oauthConsume', (req, res) => {
     });
 });
 
-app.get('/api/userinfo', (req, res) => {
+app.get(`${whichRoute}/userinfo`, (req, res) => {
   const url = 'https://oauth.oit.duke.edu/oidc/userinfo';
   const { accessToken } = req.query;
 
@@ -171,7 +172,7 @@ const upload = multer({
   fileFilter: filter,
 });
 
-app.post('/api/upload', upload.any(), (req, res, next) => {
+app.post(`${whichRoute}/upload`, upload.any(), (req, res, next) => {
   // req.file is the `avatar` file
   // req.body will hold the text fields, if there were any
   res.send({
@@ -180,9 +181,9 @@ app.post('/api/upload', upload.any(), (req, res, next) => {
   });
 });
 
-app.post('/api/uploadExcel', (req, res) => {
+app.post(`${whichRoute}/uploadExcel`, (req, res) => {
   // Do some things
   res.send('Hello World');
 });
 
-app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}`));
+app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
