@@ -199,7 +199,7 @@ function ManageCategories() {
     setShowCreate(false);
     setShowEdit(false);
     setShowDelete(false);
-    updateRow(key);
+    updateRow(key, true);
     setLoading(false);
   };
   const handleDelete = () => {
