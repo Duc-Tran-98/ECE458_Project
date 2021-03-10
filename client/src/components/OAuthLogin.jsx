@@ -14,7 +14,8 @@ export default function OAuthLogin() {
   };
 
   const submitAuthCodeRequest = (authCodeRequest) => {
-    window.location.href = authCodeRequest;
+    console.log(authCodeRequest);
+    // window.location.href = authCodeRequest;
   };
 
   const handleOAuth = () => {
