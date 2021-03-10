@@ -67,7 +67,7 @@ export default function OAuthConsume({ handleLogin }) {
         const accessToken = res.data.result.access_token;
         const idToken = parseIdToken(res.data.result.id_token);
         ExpressQuery({
-          endpoint: `/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
+          endpoint: `/api/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
         });
 
         const netId = idToken.sub;
