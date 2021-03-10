@@ -4,7 +4,6 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-// const jwt_decode = require('jwt-decode');
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import OAuthSignOn from '../queries/OAuthSignOn';
@@ -14,7 +13,6 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
   : '/api';
 
-// TODO: Wire route based on dev/production (nginx proxy, see examples)
 export default function OAuthConsume({ handleLogin }) {
   OAuthConsume.propTypes = {
     handleLogin: PropTypes.func.isRequired,

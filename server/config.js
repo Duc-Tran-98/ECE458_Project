@@ -1,6 +1,10 @@
 // This class is just for reducing duplicated code
 const dotenv = require('dotenv');
 
+const redirectURI = process.env.NODE_ENV.includes('dev')
+  ? process.env.OAUTH_REDIRECT_URI_DEV
+  : process.env.OAUTH_REDIRECT_URI_PROD;
+
 dotenv.config();
 module.exports = {
   host: process.env.SQL_HOST,
@@ -15,5 +19,5 @@ module.exports = {
   adminPassword: process.env.ADMIN_PASSWORD,
   oauthClientId: process.env.OAUTH_CLIENT_ID,
   oauthClientSecret: process.env.OAUTH_CLIENT_SECRET,
-  oauthRedirectURI: process.env.OAUTH_REDIRECT_URI,
+  oauthRedirectURI: redirectURI,
 };
