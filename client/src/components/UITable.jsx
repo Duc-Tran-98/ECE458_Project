@@ -116,6 +116,7 @@ export function ServerPaginationGrid({
   // eslint-disable-next-line no-unused-vars
   filterOptions,
   showToolBar,
+  showImport,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -136,6 +137,7 @@ export function ServerPaginationGrid({
     // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object,
     showToolBar: PropTypes.bool.isRequired,
+    showImport: PropTypes.bool.isRequired,
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -342,7 +344,7 @@ export function ServerPaginationGrid({
               </li>
             </ul>
           </div>
-          {user.isAdmin && (
+          {user.isAdmin && showImport && (
           <button
             type="button"
             className="btn ms-3"
