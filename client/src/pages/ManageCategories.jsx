@@ -161,13 +161,16 @@ function ManageCategories() {
   const handleResponse = (response) => {
     if (response.success) {
       toast.success(response.message, {
-        toastId: 50,
+        toastId: Math.random(),
       });
     } else {
       toast.error(response.message, {
-        toastId: 42,
+        toastId: Math.random(),
       });
     }
+    setShowCreate(false);
+    setShowEdit(false);
+    setShowDelete(false);
     // setResponseMsg(response.message);
     // setResponseStatus(response.success);
     setLoading(false);
@@ -253,7 +256,15 @@ function ManageCategories() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input id="editCat" />
+                <input
+                  id="editCat"
+                  value={newCategory}
+                  onChange={(e) => {
+                    if (!e.target.value.includes(' ')) {
+                      setNewCategory(e.target.value);
+                    }
+                  }}
+                />
                 <span className="mx-3" />
                 <div className="mt-3">
                   <button
@@ -357,6 +368,7 @@ function ManageCategories() {
               }
             }}
             fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+            showToolBar={false}
           />
         </Tab>
         <Tab eventKey="instrument" title="Instrument Categories">
