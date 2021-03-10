@@ -172,10 +172,12 @@ export default function DetailedInstrumentView({ onDelete }) {
   // This code is for setting window variables for certificate
   if (calibFrequency > 0 && calibHist.length > 0) {
     window.sessionStorage.setItem('serialNumber', serialNumber);
+    window.sessionStorage.setItem('assetTag', assetTag);
     window.sessionStorage.setItem('modelNumber', modelNumber);
     window.sessionStorage.setItem('modelDescription', description);
     window.sessionStorage.setItem('vendor', vendor);
     window.sessionStorage.setItem('calibrationDate', calibHist[0].date);
+    window.sessionStorage.setItem('id', id);
     window.sessionStorage.setItem(
       'expirationDate',
       new Date(calibHist[0].date).addDays(calibFrequency),

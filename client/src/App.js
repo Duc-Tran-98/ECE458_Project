@@ -22,22 +22,42 @@ import OAuthConsume from './pages/OAuthConsume';
 import UserInfo from './pages/UserInfo';
 import 'react-toastify/dist/ReactToastify.css';
 import './css/customToast.css';
+import { setAuthHeader } from './components/UseQuery';
+// import { gql } from "@apollo/client";
+// import { print } from "graphql";
 
 function App() {
+  let jwt = '';
+  const handlePageRefresh = async () => {
+    window.sessionStorage.setItem('jwt', jwt);
+    console.log('handlePage refresh');
+  };
+  React.useEffect(() => {
+    window.addEventListener('unload', handlePageRefresh);
+    return () => {
+      window.removeEventListener('unload', handlePageRefresh);
+      handlePageRefresh();
+    };
+  }, []);
   const [loggedIn, setLoggedIn] = useState(false);
   const [updateCount, setUpdateCount] = useState(false);
   const modifyCount = () => { // anything that modifies count (add/delete) should call this
     setUpdateCount(true);
     setUpdateCount(false);
   };
+  const handleLogin = (token) => {
+    setLoggedIn(true);
+    jwt = token;
+    setAuthHeader(token);
+  };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) { // If previously logged in and refreshed page
-      setLoggedIn(true); // loggedIn goes back to false, so we set it back to true
+      handleLogin(window.sessionStorage.getItem('jwt'));
+      window.sessionStorage.removeItem('jwt');
+    } else if (window.sessionStorage.getItem('jwt') && !loggedIn) {
+      window.sessionStorage.removeItem('jwt');
     }
   }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
-  const handleLogin = () => {
-    setLoggedIn(true);
-  };
   const handleSignOut = () => {
     setLoggedIn(false);
     window.sessionStorage.clear();
