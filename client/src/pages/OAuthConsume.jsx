@@ -11,7 +11,7 @@ import ExpressQuery from '../queries/ExpressQuery';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
-  : '/api';
+  : '/express';
 
 export default function OAuthConsume({ handleLogin }) {
   OAuthConsume.propTypes = {
