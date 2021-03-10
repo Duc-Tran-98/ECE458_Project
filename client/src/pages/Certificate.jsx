@@ -130,7 +130,7 @@ function MyCertificate({ calibEvent }) {
   const evidenceFile = calibEvent ? urlPath : '';
   const evidenceFileType = calibEvent ? getURLExtension(evidenceFile) : '';
   const loadBankData = calibEvent?.loadBankData;
-  const loadBankJSON = JSON.parse(loadBankData);
+  const loadBankJSON = loadBankData ? JSON.parse(loadBankData) : (null);
 
   console.log(evidenceFileType);
   console.log(evidenceFile);
