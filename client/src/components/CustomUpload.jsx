@@ -51,7 +51,7 @@ export default function CustomUpload({
     hideTable();
     // Validate non empty file
     if (data.length === 0) {
-      toast.error('Please submit a non empty file', {
+      toast.error('Please submit a non empty UTF-8 CSV file', {
         toastId: 1,
       });
       resetUpload();
