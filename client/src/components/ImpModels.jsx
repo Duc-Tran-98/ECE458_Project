@@ -79,7 +79,6 @@ export default function ImpModels() {
   const isNA = (calibrationFrequency) => {
     if (typeof (calibrationFrequency) === 'string') {
       const lower = calibrationFrequency.toLowerCase();
-      console.log(`lowerCase calibFreq: ${lower}`);
       return lower == 'n/a' || lower == 'na';
     }
     return false;
@@ -95,7 +94,6 @@ export default function ImpModels() {
     }));
     setRow(filteredData);
     setShowTable(true);
-    console.log(filteredData);
   };
 
   const cols = [
@@ -203,8 +201,6 @@ export default function ImpModels() {
   const validateFile = (fileInfo) => {
     const importRowErrors = getImportErrors(fileInfo);
     if (importRowErrors) {
-      console.log('Errors in file validation: ');
-      console.log(importRowErrors);
       setAllRowErrors(importRowErrors);
       setShow(true);
       return false;
@@ -223,8 +219,6 @@ export default function ImpModels() {
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
-    console.log('Handling import with fileInfo: ');
-    console.log(fileInfo);
     setImportStatus('Validating');
     if (!validateFile(fileInfo)) {
       resetState();
@@ -233,15 +227,13 @@ export default function ImpModels() {
 
     // File has been validated, now push to database
     const models = filterData(fileInfo);
-    console.log('filtered data: ');
-    console.log(models);
     const getVariables = () => ({ models });
     Query({
       query,
       queryName,
       getVariables,
       handleResponse: (response) => {
-        console.log(response);
+        // console.log(response);
         if (response.success) {
           toast.success(`Successfully imported ${models.length} models!`, {
             toastId: 1,

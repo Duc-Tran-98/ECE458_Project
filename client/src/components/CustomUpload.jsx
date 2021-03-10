@@ -49,8 +49,6 @@ export default function CustomUpload({
 
   const handleOnFileLoad = (data) => {
     hideTable();
-    console.log('Loaded file with data: ');
-    console.log(data);
     // Validate non empty file
     if (data.length === 0) {
       toast.error('Please submit a non empty file', {
@@ -76,11 +74,15 @@ export default function CustomUpload({
     setFileInfo(extractData(data));
   };
 
+  // TODO: What can cause an error here?
   const handleOnError = (err, file, inputElem, reason) => {
     console.log(err);
     console.log(file);
     console.log(inputElem);
     console.log(reason);
+    toast.error('Sorry, something went wrong, please try again', {
+      toastId: 4,
+    });
   };
 
   const handleOnRemoveFile = () => {};
@@ -94,7 +96,6 @@ export default function CustomUpload({
   };
 
   const submitFileContents = () => {
-    console.log(fileInfo);
     handleImport(fileInfo, resetUpload);
   };
 
