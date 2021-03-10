@@ -24,7 +24,7 @@ services:
     volumes:
       - my-db:/var/lib/mysql
     env_file: 
-      - "./.env"
+      - "./root.env"
 
   backend:
     stdin_open: true
@@ -45,8 +45,10 @@ services:
     volumes:
       - "./server/:/usr/src/app"
       - assets:/usr/src/app/uploads
+    environment:
+      NODE_ENV: "dev"
     env_file: #tell the backend to use the .env file in the root directory
-      - "./.env"
+      - "./root.env"
 
   frontend:
     stdin_open: true
@@ -67,7 +69,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     env_file:
-      - ".env"
+      - "./root.env"
 volumes:
   my-db: #docker stores our db for us so our data is persistent
   assets:

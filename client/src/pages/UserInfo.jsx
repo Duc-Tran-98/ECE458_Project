@@ -10,8 +10,9 @@ import '../css/customToast.css';
 export default function UserInfo() {
   const user = useContext(UserContext);
   const {
-    firstName, lastName,
+    firstName, lastName, userName,
   } = user;
+  const netIDUser = userName.includes('@duke.edu');
   console.log(user);
 
   const fullName = `${firstName} ${lastName}`;
@@ -44,7 +45,7 @@ export default function UserInfo() {
       <div className="row border-bottom border-dark">
         <ProfileInfo />
       </div>
-      <PasswordForm handleSubmitPassword={handleSubmitPassword} />
+      {!netIDUser && <PasswordForm handleSubmitPassword={handleSubmitPassword} />}
     </>
   );
 }
