@@ -158,9 +158,10 @@ const storage = multer.diskStorage({
 const filter = function (req, file, cb) {
   // accept image only
   // if (1 === 2) {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf|xlsx)$/)) {
-    return cb(new Error('Only files of the format JPG, PNG, GIF, PDF, or XLSX are allowed!'), false);
-  }
+  // if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf|xlsx)$/)) {
+  // eslint-disable-next-line max-len
+  //   return cb(new Error('Only files of the format JPG, PNG, GIF, PDF, or XLSX are allowed!'), false);
+  // }
   return cb(null, true);
 };
 

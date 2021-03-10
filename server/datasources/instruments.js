@@ -1,5 +1,7 @@
+/* eslint-disable max-len */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
+const { responsePathAsArray } = require('graphql');
 const SQL = require('sequelize');
 
 function validateInstrument({
@@ -66,6 +68,14 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { instruments: [], total: 0 };
+
+    // let instruments = await this.store.instruments.findAndCountAll({
+    //   attributes: ['id'],
+    //   limit,
+    //   offset,
+    // });
+    // let tags = assetTags.map((item) => item.dataValues.assetTag);
+
     // eslint-disable-next-line prefer-const
     let checkModelCategories;
     let checkInstrumentCategories;
@@ -79,6 +89,18 @@ class InstrumentAPI extends DataSource {
         where: {
           name: modelCategories,
         },
+        subQuery: false,
+        // model: this.store.modelCategoryRelationships,
+        // separate: true,
+        // as: 'inToModCatRel',
+        // include: [
+        //   {
+        //     model: this.store.modelCategories,
+        //     where: {
+        //       name: modelCategories,
+        //     },
+        //   },
+        // ],
       });
       checkModelCategories = modelCategories;
     } else {
@@ -86,6 +108,15 @@ class InstrumentAPI extends DataSource {
         model: this.store.modelCategories,
         as: 'modelCategories',
         through: 'modelCategoryRelationships',
+        subQuery: false,
+        // as: 'inToModCatRel',
+        // model: this.store.modelCategoryRelationships,
+        // separate: true,
+        // include: [
+        //   {
+        //     model: this.store.modelCategories,
+        //   },
+        // ],
       });
       checkModelCategories = [];
     }
@@ -95,6 +126,7 @@ class InstrumentAPI extends DataSource {
         model: this.store.instrumentCategories,
         as: 'instrumentCategories',
         through: 'instrumentCategoryRelationships',
+        subQuery: false,
         where: {
           name: instrumentCategories,
         },
@@ -105,6 +137,7 @@ class InstrumentAPI extends DataSource {
         model: this.store.instrumentCategories,
         as: 'instrumentCategories',
         through: 'instrumentCategoryRelationships',
+        subQuery: false,
       });
       checkInstrumentCategories = [];
     }
@@ -130,12 +163,13 @@ class InstrumentAPI extends DataSource {
       order: [
         ['assetTag', 'ASC'],
       ],
+      subQuery: false,
       limit,
       offset,
     });
     response.instruments = instruments.rows;
-    response.total = instruments.count;
-    instruments = instruments.rows;
+    response.total = instruments.rows.length;
+    instruments = response.instruments;
     if (modelCategories || instrumentCategories) {
       const instrumentsWithCategories = [];
       const checker = (arr, target) => target.every((v) => arr.includes(v));
@@ -151,7 +185,66 @@ class InstrumentAPI extends DataSource {
       }
       response.instruments = instrumentsWithCategories;
       response.total = instrumentsWithCategories.length;
+      // response.nextPage = limit;
     }
+    // let lastResponseTotal = response.total;
+
+    // let newOffset = offset;
+    // while (lastResponseTotal > 0 && response.total < limit) {
+    //   newOffset += limit;
+    //   // eslint-disable-next-line no-await-in-loop
+    //   instruments = await this.store.instruments.findAndCountAll({
+    //     include: includeData,
+    //     where: filters,
+    //     order: [
+    //       ['assetTag', 'ASC'],
+    //     ],
+    //     subQuery: false,
+    //     limit,
+    //     offset: newOffset,
+    //   });
+    //   response.instruments = [...response.instruments, ...instruments.rows];
+    //   response.total += instruments.count;
+    //   lastResponseTotal = instruments.count;
+    //   instruments = response.instruments;
+    //   if (modelCategories || instrumentCategories) {
+    //     const instrumentsWithCategories = [];
+    //     const checker = (arr, target) => target.every((v) => arr.includes(v));
+    //     for (let i = 0; i < instruments.length; i += 1) {
+    //       const hasModelCategories = instruments[i].dataValues.modelCategories.map((a) => a.name);
+    //       if (checker(hasModelCategories, checkModelCategories)) {
+    //       // eslint-disable-next-line max-len
+    //         const hasInstrumentCategories = instruments[i].dataValues.instrumentCategories.map((a) => a.name);
+    //         if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
+    //           instrumentsWithCategories.push(instruments[i]);
+    //         }
+    //       }
+    //     }
+    //     response.instruments = instrumentsWithCategories;
+    //     response.total = instrumentsWithCategories.length;
+    //   }
+    // }
+    // if (response.total > limit) {
+    //   // response.total = response.instruments.length;
+    //   response.instruments = response.instruments.slice(0, limit + 1);
+    //   response.total = response.instruments.length;
+    //   response.nextPage = newOffset + limit;
+    // }
+
+    // const tags = response.instruments.map((item) => item.assetTag);
+    // const nextOff = await this.store.instruments.count({
+    //   include: includeData,
+    //   where: {
+    //     assetTag: tags,
+    //   },
+    //   order: [
+    //     ['assetTag', 'ASC'],
+    //   ],
+    //   subQuery: false,
+    //   limit,
+    //   offset,
+    // });
+    // response.nextPage = nextOff + offset;
     return response;
   }
 

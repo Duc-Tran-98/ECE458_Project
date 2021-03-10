@@ -168,26 +168,48 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const response = { models: [], total: 0 };
     let includeData;
-    if (categories) {
-      includeData = [
-        {
-          model: this.store.modelCategories,
-          as: 'categories',
-          through: 'modelCategoryRelationships',
-          where: {
-            name: categories,
+    // if (categories) {
+    //   // includeData = [
+    //   //   {
+    //   //     model: this.store.modelCategories,
+    //   //     as: 'categories',
+    //   //     through: 'modelCategoryRelationships',
+    //   //     where: {
+    //   //       name: categories,
+    //   //     },
+    //   //   },
+    //   // ];
+    //   includeData = [
+    //     {
+    //       model: this.store.modelCategoryRelationships,
+    //       as: 'mtmcr',
+    //       separate: true,
+    //       include: [
+    //         {
+    //           model: this.store.modelCategories,
+    //           as: 'mcrtmc',
+    //           where: {
+    //             name: categories,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   ];
+    // } else {
+    includeData = [
+      {
+        model: this.store.modelCategoryRelationships,
+        as: 'mtmcr',
+        separate: true,
+        include: [
+          {
+            model: this.store.modelCategories,
+            as: 'mcrtmc',
           },
-        },
-      ];
-    } else {
-      includeData = [
-        {
-          model: this.store.modelCategories,
-          as: 'categories',
-          through: 'modelCategoryRelationships',
-        },
-      ];
-    }
+        ],
+      },
+    ];
+    // }
 
     // eslint-disable-next-line prefer-const
     let filters = [];
@@ -200,22 +222,72 @@ class ModelAPI extends DataSource {
       where: filters,
       limit,
       offset,
+      subQuery: false,
     });
+    for (let j = 0; j < models.rows.length; j += 1) {
+      const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
+      let cats = [];
+      for (let i = 0; i < mtmcr.length; i += 1) {
+        cats = [...cats, mtmcr[i].mcrtmc.dataValues.name];
+      }
+      // eslint-disable-next-line prefer-const
+      let modelWithCats = { arr: [] };
+      for (let i = 0; i < cats.length; i += 1) {
+        modelWithCats.arr.push({
+          name: cats[i],
+        });
+      }
+      models.rows[j].categories = modelWithCats.arr;
+    }
     response.models = models.rows;
     response.total = models.count;
     models = models.rows;
+    // console.log(await models[0].get());
+    // const modelsWithData = [];
+    // for (let i = 0; i < models.length; i += 1) {
+    //   const data = await models[i].get();
+    //   // console.log(data);
+    //   modelsWithData.push(data);
+    // }
+    // models = modelsWithData;
     if (categories) {
+      models = await this.store.models.findAndCountAll({
+        include: includeData,
+        where: filters,
+        subQuery: false,
+      });
+      for (let j = 0; j < models.rows.length; j += 1) {
+        const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
+        let cats = [];
+        for (let i = 0; i < mtmcr.length; i += 1) {
+          cats = [...cats, mtmcr[i].mcrtmc.dataValues.name];
+        }
+        // eslint-disable-next-line prefer-const
+        let modelWithCats = { arr: [] };
+        for (let i = 0; i < cats.length; i += 1) {
+          modelWithCats.arr.push({
+            name: cats[i],
+          });
+        }
+        models.rows[j].categories = modelWithCats.arr;
+      }
+      response.models = models.rows;
+      response.total = models.count;
+      models = models.rows;
       // eslint-disable-next-line prefer-const
       let modelsWithCategories = [];
       const checker = (arr, target) => target.every((v) => arr.includes(v));
       for (let i = 0; i < models.length; i += 1) {
-        const hasCategories = models[i].dataValues.categories.map((a) => a.name);
+        const hasCategories = models[i].categories.map((a) => a.name);
         if (checker(hasCategories, categories)) {
           modelsWithCategories.push(models[i]);
         }
       }
-      response.models = modelsWithCategories;
       response.total = modelsWithCategories.length;
+      if (response.total > limit) {
+        modelsWithCategories = modelsWithCategories.splice(offset, offset + limit);
+      }
+      response.models = modelsWithCategories;
     }
     return response;
   }
