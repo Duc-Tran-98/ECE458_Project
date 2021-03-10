@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Tabs, Tab } from 'react-bootstrap';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastContainer, toast } from 'react-toastify';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
@@ -37,6 +38,7 @@ function ManageCategories() {
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [newCategory, setNewCategory] = React.useState('');
 
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
@@ -157,8 +159,17 @@ function ManageCategories() {
     await updateRow(key);
   };
   const handleResponse = (response) => {
-    setResponseMsg(response.message);
-    setResponseStatus(response.success);
+    if (response.success) {
+      toast.success(response.message, {
+        toastId: 50,
+      });
+    } else {
+      toast.error(response.message, {
+        toastId: 42,
+      });
+    }
+    // setResponseMsg(response.message);
+    // setResponseStatus(response.success);
     setLoading(false);
     console.log(response);
   };
@@ -191,10 +202,12 @@ function ManageCategories() {
 
   return (
     <>
+      <ToastContainer />
       <ModalAlert
         show={showDelete}
         handleClose={closeDeleteModal}
-        title="DELETE CATEGORY"
+        title="Delete Category"
+        width=" "
       >
         <>
           {responseMsg.length === 0 && (
@@ -226,7 +239,8 @@ function ManageCategories() {
       <ModalAlert
         show={showEdit}
         handleClose={closeEditModal}
-        title="EDIT CATEGORY"
+        title="Edit Category"
+        width=" "
       >
         <>
           {responseMsg.length === 0 && (
@@ -260,7 +274,8 @@ function ManageCategories() {
       <ModalAlert
         show={showCreate}
         handleClose={closeCreateModal}
-        title="ADD CATEGORY"
+        title="Add Category"
+        width=" "
       >
         <>
           {responseMsg.length === 0 && (
@@ -273,13 +288,22 @@ function ManageCategories() {
               <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input id="cat" />
+                <input
+                  id="cat"
+                  value={newCategory}
+                  onChange={(e) => {
+                    if (!e.target.value.includes(' ')) {
+                      setNewCategory(e.target.value);
+                    }
+                  }}
+                />
                 <span className="mx-3" />
                 <div className="mt-3">
                   <button
                     className="btn "
                     type="button"
                     onClick={() => {
+                      setNewCategory('');
                       handleCreate((document.getElementById('cat').value));
                     }}
                   >
@@ -366,6 +390,7 @@ function ManageCategories() {
               }
             }}
             fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then((response) => response)}
+            showToolBar={false}
           />
         </Tab>
       </Tabs>
