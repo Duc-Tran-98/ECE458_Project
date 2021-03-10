@@ -16,6 +16,7 @@ export default function SearchBar({
   initModelCategories,
   initInstrumentCategories,
   initSerialNumber,
+  initAssetTag,
 }) {
   SearchBar.propTypes = {
     forModelSearch: PropTypes.bool.isRequired, // what kind of search bar
@@ -28,6 +29,7 @@ export default function SearchBar({
     // eslint-disable-next-line react/forbid-prop-types
     initInstrumentCategories: PropTypes.array,
     initSerialNumber: PropTypes.string,
+    initAssetTag: PropTypes.number,
   };
   SearchBar.defaultProps = {
     initVendors: null,
@@ -36,6 +38,7 @@ export default function SearchBar({
     initModelCategories: [],
     initInstrumentCategories: [],
     initSerialNumber: null,
+    initAssetTag: null,
   };
   const actualCategories = initModelCategories === null ? [] : initModelCategories;
   const formatInsCats = initInstrumentCategories === null ? [] : initInstrumentCategories;
@@ -47,7 +50,7 @@ export default function SearchBar({
   );
   const [instrumentCategories, setInstrumentCategories] = React.useState(formatInsCats);
   const [serialNumber, setSerialNumber] = React.useState(initSerialNumber);
-  const [assetTag, setAssetTag] = React.useState(null); // TODO: make asset tags work for filtering
+  const [assetTag, setAssetTag] = React.useState(initAssetTag); // TODO: make asset tags work for filtering
   React.useEffect(() => {
     let active = true;
 
@@ -79,6 +82,20 @@ export default function SearchBar({
       active = false;
     };
   }, [initVendors]);
+  React.useEffect(() => {
+    let active = true;
+
+    (() => {
+      if (active) {
+        const formattedAssetTag = initAssetTag !== null ? { assetTag: initAssetTag } : null;
+        setAssetTag(formattedAssetTag);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initAssetTag]);
   React.useEffect(() => {
     let active = true;
 
@@ -129,7 +146,6 @@ export default function SearchBar({
 
     (() => {
       if (active) {
-        console.log(`new serial number = ${initSerialNumber}`);
         const formattedSerialNumber = initSerialNumber !== null ? { serialNumber: initSerialNumber } : null;
         setSerialNumber(formattedSerialNumber);
       }
@@ -158,6 +174,7 @@ export default function SearchBar({
           getOptionSelected={(option, value) => option.vendor === value.vendor}
           value={vendors}
           isComboBox
+          isInvalid={false}
         />
       </div>
       <div className="m-2 w-25 my-auto pt-1">
@@ -176,6 +193,7 @@ export default function SearchBar({
           getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
           value={modelNumbers}
           isComboBox
+          isInvalid={false}
         />
       </div>
       <div className="m-2 w-25 my-auto pt-1">
@@ -196,6 +214,7 @@ export default function SearchBar({
           getOptionSelected={() => undefined}
           multiple
           multipleValues={modelCategories}
+          isInvalid={false}
         />
       </div>
       <div className="m-2 w-25 my-auto pt-1">
@@ -214,6 +233,7 @@ export default function SearchBar({
           getOptionSelected={(option, value) => option.description === value.description}
           value={descriptions}
           isComboBox
+          isInvalid={false}
         />
       </div>
       {/* {dropdownMenu} */}
@@ -221,12 +241,13 @@ export default function SearchBar({
         className="btn my-auto mx-2"
         type="button"
         onClick={() => onSearch({
-          vendors: vendors?.vendor,
-          modelNumbers: modelNumbers?.modelNumber,
-          descriptions: descriptions?.description,
+          vendors: vendors?.vendor || null,
+          modelNumbers: modelNumbers?.modelNumber || null,
+          descriptions: descriptions?.description || null,
           modelCategories,
           instrumentCategories,
-          filterSerialNumber: serialNumber?.serialNumber,
+          filterSerialNumber: serialNumber?.serialNumber || null,
+          assetTag: assetTag?.assetTag || null,
         })}
       >
         <SearchIcon />
@@ -258,6 +279,7 @@ export default function SearchBar({
               getOptionSelected={(option, value) => option.serialNumber === value.serialNumber}
               isComboBox
               value={serialNumber}
+              isInvalid={false}
             />
           </div>
           <div className="m-2 w-25 my-auto pt-1">
@@ -265,17 +287,18 @@ export default function SearchBar({
               query={print(gql`
                 query getSerialNumbs {
                   getAllInstruments {
-                    id
+                    assetTag
                   }
                 }
               `)}
               queryName="getAllInstruments"
               onInputChange={(_e, v) => setAssetTag(v)}
               label="Filter by Asset Tag"
-              getOptionLabel={(option) => `${option.id}`}
-              getOptionSelected={(option, value) => option.id === value.id}
+              getOptionLabel={(option) => `${option.assetTag}`}
+              getOptionSelected={(option, value) => option.assetTag === value.assetTag}
               isComboBox
               value={assetTag}
+              isInvalid={false}
             />
           </div>
           <div className="m-2 w-25 my-auto pt-1">
@@ -294,6 +317,7 @@ export default function SearchBar({
               getOptionSelected={() => undefined}
               multiple
               multipleValues={instrumentCategories}
+              isInvalid={false}
             />
           </div>
           {/* This is for matching the spacing of the above row */}

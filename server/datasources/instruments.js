@@ -61,7 +61,7 @@ class InstrumentAPI extends DataSource {
 
   async getInstrumentsWithFilter({
     // eslint-disable-next-line max-len
-    vendor, modelNumber, description, serialNumber, modelCategories, instrumentCategories, limit = null, offset = null,
+    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -444,24 +444,13 @@ class InstrumentAPI extends DataSource {
               },
             );
           } else {
-            // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-            // // eslint-disable-next-line max-len
+            newAssetTag = Math.floor(Math.random() * 900000) + 100000;
             // eslint-disable-next-line max-len
-            // let instrumentCheck = await this.store.instruments.findOne({ where: { assetTag: newAssetTag } });
-            // while (instrumentCheck != null) {
-            //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-            //   // eslint-disable-next-line no-await-in-loop
-            //   instrumentCheck = await this.store.instrument.findOne({ where: { newAssetTag } });
-            // }
-            const assetTags = await this.store.instruments.findAll({
-              attributes: ['assetTag'],
-            });
-            const tags = assetTags.map((item) => item.dataValues.assetTag);
-            for (let i = 100000; i < 1000000; i += 1) {
-              if (!tags.includes(i)) {
-                newAssetTag = i;
-                break;
-              }
+            let instrumentCheck = await this.store.instruments.findOne({ where: { assetTag: newAssetTag } });
+            while (instrumentCheck != null) {
+              newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
+              // eslint-disable-next-line no-await-in-loop
+              instrumentCheck = await this.store.instrument.findOne({ where: { newAssetTag } });
             }
           }
           if (response.success) {

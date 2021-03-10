@@ -25,7 +25,7 @@ export const UserProvider = ({ children }) => {
       const queryName = 'getUser';
       const GET_USER_QUERY = gql`
         query GetUserQuery($userName: String!) {
-          getUser(userName: $userName){
+          getUser(userName: $userName) {
             firstName
             lastName
             email
@@ -52,7 +52,7 @@ export const UserProvider = ({ children }) => {
         handleResponse, // This will get user information
       });
     }
-  });
+  }, [window.sessionStorage.getItem('token')]);
   return (
     <UserContext.Provider value={user}>
       {children}

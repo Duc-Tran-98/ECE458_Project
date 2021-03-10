@@ -5,7 +5,12 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4000'
   : '/api';
 
-const Query = ({
+export function setAuthHeader(token) { // This is to let backend know request are coming from the user who logged in via our website
+  axios.defaults.headers.post.authorization = token || '';
+  console.log(`set auth header = ${token}`);
+}
+
+const Query = ({ // TODO: MAKE SURE REQUEST ARE SECURED WITH TOKEN
   query, queryName, getVariables, handleResponse, handleError,
 }) => {
   Query.propTypes = {
