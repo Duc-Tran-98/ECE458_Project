@@ -18,7 +18,8 @@ export default function OAuthLogin() {
   };
 
   const handleOAuth = () => {
-    console.log('Handling OAuth login');
+    console.log('Handling OAuth login with process env: ');
+    console.log(process.env);
 
     // Get Auth Code
     const authCodeRequest = getAuthCodeRequest();
