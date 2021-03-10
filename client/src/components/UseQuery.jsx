@@ -7,7 +7,7 @@ const route = process.env.NODE_ENV.includes('dev')
 
 export function setAuthHeader(token) { // This is to let backend know request are coming from the user who logged in via our website
   axios.defaults.headers.post.authorization = token || '';
-  console.log(`set auth header = ${token}`);
+  // console.log(`set auth header = ${token}`);
 }
 
 const Query = ({ // TODO: MAKE SURE REQUEST ARE SECURED WITH TOKEN
