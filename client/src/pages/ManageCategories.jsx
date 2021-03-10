@@ -71,22 +71,18 @@ function ManageCategories() {
       width: 120,
       disableColumnMenu: true,
       renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="Edit category">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  console.log('edit cat');
-                  setShowEdit(true);
-                }}
-              >
-                Edit
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
+        <MouseOverPopover message="Edit category">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              console.log('edit cat');
+              setShowEdit(true);
+            }}
+          >
+            Edit
+          </button>
+        </MouseOverPopover>
       ),
     },
     {
@@ -95,22 +91,18 @@ function ManageCategories() {
       width: 120,
       disableColumnMenu: true,
       renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="Delete category">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  console.log('delete cat');
-                  setShowDelete(true);
-                }}
-              >
-                Delete
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
+        <MouseOverPopover message="Delete category">
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={() => {
+              console.log('delete cat');
+              setShowDelete(true);
+            }}
+          >
+            Delete
+          </button>
+        </MouseOverPopover>
       ),
     },
   ];
@@ -194,7 +186,7 @@ function ManageCategories() {
       <ModalAlert
         show={showDelete}
         handleClose={closeDeleteModal}
-        title="DELETE CATEGORY"
+        title="Delete Category"
       >
         <>
           {responseMsg.length === 0 && (
@@ -226,7 +218,7 @@ function ManageCategories() {
       <ModalAlert
         show={showEdit}
         handleClose={closeEditModal}
-        title="EDIT CATEGORY"
+        title="Edit Category"
       >
         <>
           {responseMsg.length === 0 && (
@@ -260,7 +252,7 @@ function ManageCategories() {
       <ModalAlert
         show={showCreate}
         handleClose={closeCreateModal}
-        title="ADD CATEGORY"
+        title="Add Category"
       >
         <>
           {responseMsg.length === 0 && (

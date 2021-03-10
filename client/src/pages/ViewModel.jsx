@@ -75,7 +75,7 @@ export default function DetailedModelView({ onDelete }) {
   };
   return (
     <>
-      <ModalAlert show={show} handleClose={closeModal} title="Delte Model">
+      <ModalAlert show={show} handleClose={closeModal} title="Delete Model">
         <>
           {responseMsg.length === 0 && (
             <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
@@ -88,7 +88,7 @@ export default function DetailedModelView({ onDelete }) {
             ) : (
               <>
                 <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleDelete}>
+                  <button className="btn" type="button" onClick={handleDelete}>
                     Yes
                   </button>
                 </div>
