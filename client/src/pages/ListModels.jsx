@@ -7,7 +7,7 @@ minor feature that would be cool is spinners while the modal alert loads;
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllModels from '../queries/GetAllModels';
+import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
@@ -146,7 +146,7 @@ function ListModels() {
       headerName: 'Categories',
       width: 350,
       renderCell: (params) => (
-        <ul className="d-flex flex-row overflow-auto pt-2">
+        <ul className="d-flex flex-row overflow-auto ">
           {params.value.map((element) => (
             <li
               key={element.name}
@@ -230,7 +230,7 @@ function ListModels() {
       );
       // console.log(JSON.parse(Buffer.from(filters, 'base64').toString('ascii')));
     }
-    console.log(`vendors ${!vendors} modelNumbs ${!modelNumbers} desc ${!descriptions} cat ${(categories === null || categories?.length === 0)}`);
+    // console.log(`vendors ${!vendors} modelNumbs ${!modelNumbers} desc ${!descriptions} cat ${(categories === null || categories?.length === 0)}`);
   };
 
   const onSearch = ({
@@ -241,24 +241,44 @@ function ListModels() {
       actualCategories.push(element.name);
     });
     actualCategories = actualCategories.length > 0 ? actualCategories : null;
-    GetAllModels({
-      limit: 1,
-      offset: 0,
-      modelNumber: modelNumbers,
-      description: descriptions,
-      vendor: vendors,
-      categories: actualCategories,
-    }).then((response) => {
-      setRowCount(response.total);
-      setInitPage(1);
-      updateUrlWithFilter({
-        vendors,
-        modelNumbers,
-        descriptions,
-        categories: actualCategories,
-        total: response.total,
+    if (
+      !vendors
+      && (modelCategories === null || modelCategories?.length === 0)
+      && !modelNumbers
+      && !descriptions
+    ) {
+      CountAllModels().then((val) => {
+        setRowCount(val);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          categories: actualCategories,
+          total: val,
+        });
       });
-    });
+    } else {
+      GetAllModels({
+        limit: 1,
+        offset: 0,
+        modelNumber: modelNumbers,
+        description: descriptions,
+        vendor: vendors,
+        categories: actualCategories,
+      }).then((response) => {
+        setRowCount(response.total);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          categories: actualCategories,
+          total: response.total,
+        });
+      });
+    }
+
     setFilterOptions({
       vendors,
       modelNumbers,

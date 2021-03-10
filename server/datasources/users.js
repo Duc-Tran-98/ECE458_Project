@@ -1,6 +1,7 @@
 // This file deals with what methods a user model should have
 const { DataSource } = require('apollo-datasource');
 const bcrypt = require('bcryptjs');
+const { createSigner } = require('fast-jwt');
 
 function validateUser({
   firstName, lastName, password, email,
@@ -41,15 +42,22 @@ class UserAPI extends DataSource {
    * to a user in the db
    */
   async login({ userName, password }) {
-    const response = { success: false, message: '' };
+    const response = { success: false, message: '', jwt: '' };
     await this.findUser({ userName }).then((value) => {
       if (!value) {
         response.message = 'Wrong username/password';
       } else {
+        // 1 day = 8.64e7 ms
+        const signSync = createSigner({
+          key: 'secret',
+          expiresIn: 8.64e7,
+          sub: value.id.toString(),
+        });
         response.success = bcrypt.compareSync(password, value.password);
         response.message = response.success
           ? 'Logged in'
           : 'Wrong username/password';
+        response.jwt = response.success ? signSync({ userName }) : '';
       }
     });
     return JSON.stringify(response);

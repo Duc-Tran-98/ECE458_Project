@@ -6,6 +6,7 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
 import AsyncSuggest from './AsyncSuggest';
@@ -75,8 +76,38 @@ export default function LoadBankWiz({
     newReadings.vrError = newReadings.va > 0 ? 100 * (Math.abs(newReadings.va - newReadings.vr) / newReadings.va) : 100;
     newReadings.vrOk = newReadings.vrError < 1;
     setVoltageReading(newReadings);
-    console.log(!newReadings.vaOk || !newReadings.vrOk);
+    // console.log(!newReadings.vaOk || !newReadings.vrOk);
     setRestart(!newReadings.vaOk || !newReadings.vrOk);
+  };
+  const handleRestart = (bool = true) => {
+    setRestart(false);
+    if (bool) {
+      setFormState({
+        modelNumber: initModelNumber,
+        vendor: initVendor,
+        serialNumber: initSerialNumber,
+        assetTag: initAssetTag,
+        date: today,
+        comment: '',
+        user: user.userName,
+        voltMeter: null,
+        voltMeterOk: true,
+        shuntMeter: null,
+        shuntMeterOk: true,
+        visualCheckOk: false,
+        connectedToDC: false,
+        voltageCutoffOk: false,
+        alarmOk: false,
+        recordedDataOk: false,
+        printerOk: false,
+      });
+    }
+    setVoltageReading(
+      {
+        va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
+      },
+    );
+    setCurrentReadings(DEBUG ? devCurrents : defaultCurrents);
   };
   const handleFinish = () => {
     const {
@@ -121,28 +152,14 @@ export default function LoadBankWiz({
         loadBankData,
       }),
       handleResponse: (response) => {
-        console.log(response);
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
       },
     });
-    setFormState({
-      modelNumber: initModelNumber,
-      vendor: initVendor,
-      serialNumber: initSerialNumber,
-      assetTag: initAssetTag,
-      date: today,
-      comment: '',
-      user: user.userName,
-      voltMeter: null,
-      voltMeterOk: true,
-      shuntMeter: null,
-      shuntMeterOk: true,
-      visualCheckOk: false,
-      connectedToDC: false,
-      voltageCutoffOk: false,
-      alarmOk: false,
-      recordedDataOk: false,
-      printerOk: false,
-    });
+    handleRestart();
   };
   const validateCalibrationDate = ({ date, calibrationFrequency }) => {
     if (date) {
@@ -718,7 +735,7 @@ export default function LoadBankWiz({
           <div className="d-flex flex-column my-1">
             <div className="d-flex flex-row mx-3">
               Turn on load steps one at time (10 steps of 100A, 5 steps of 20A,
-              20 steps of 1A). Then record current displayed on load bank and
+              20 steps of 1A). Then record the current displayed on load bank and the
               current measured from shunt for each load step. Continue until all
               load steps are on. Lastly, record voltage displayed on load bank
               and voltage measured via DMM.
@@ -730,7 +747,7 @@ export default function LoadBankWiz({
               canAdvance={() => true}
               // TODO: CHange me back canAdvance={canAdvanceLoadStep}
               forceReset={shouldRestart}
-              handleRestart={() => setRestart(false)}
+              handleRestart={() => handleRestart(false)}
               finishMsg="You're finished with the load steps"
             />
           </div>

@@ -153,7 +153,7 @@ export default function DetailedModelView({ onDelete }) {
                     <span>
                       Serial #:
                       {' '}
-                      {entry.serialNumber}
+                      {entry.serialNumber || 'N/A'}
                     </span>
                     <span>
                       Asset Tag:
