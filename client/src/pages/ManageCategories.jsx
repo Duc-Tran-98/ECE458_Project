@@ -193,22 +193,29 @@ function ManageCategories() {
         width=" "
       >
         <>
-          <div className="justify-content-center">
+          <div className="d-flex flex-row text-center m-3">
+            <h5>{`Confirm delete category: ${category}`}</h5>
+          </div>
+          <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
             ) : (
               <>
-                <div className="row text-center m-3" style={{ width: '100%' }}>
-                  <h5>{`Confirm delete category: ${category}`}</h5>
-                </div>
-                <span className="row m-3">
-                  <button className="btn mt-3" type="button" onClick={handleDelete}>
-                    Yes
-                  </button>
-                  <button className="btn mt-3" type="button" onClick={closeDeleteModal}>
-                    No
-                  </button>
-                </span>
+                <button
+                  className="btn mt-2"
+                  type="button"
+                  onClick={handleDelete}
+                >
+                  Yes
+                </button>
+                <span className="mx-3" />
+                <button
+                  className="btn mt-2"
+                  type="button"
+                  onClick={closeDeleteModal}
+                >
+                  No
+                </button>
               </>
             )}
           </div>
@@ -221,29 +228,35 @@ function ManageCategories() {
         width=" "
       >
         <>
-          <div className="justify-content-center">
+          <div className="d-flex flex-row text-center m-3">
+            <h5>{`Change name of category: ${category}`}</h5>
+          </div>
+          <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
             ) : (
               <>
-                <div className="row text-center m-3" style={{ width: '100%' }}>
-                  <h5>{`Change name of category: ${category}`}</h5>
-                </div>
-                <div className="mt-3 text-center">
+                <div className="row">
                   <input
                     id="editCat"
                     value={newCategory}
+                    className="m-2 col-auto my-auto"
                     onChange={(e) => {
                       if (!e.target.value.includes(' ')) {
                         setNewCategory(e.target.value);
                       }
                     }}
+                    onKeyDown={(e) => {
+                      if (e.code === 'Enter' && newCategory.length > 0) {
+                        handleEdit(document.getElementById('editCat').value);
+                      }
+                    }}
                   />
                   <button
-                    className="btn m-4"
+                    className="btn m-3 col"
                     type="button"
                     onClick={() => {
-                      handleEdit((document.getElementById('editCat').value));
+                      handleEdit(document.getElementById('editCat').value);
                     }}
                   >
                     Save
@@ -265,9 +278,9 @@ function ManageCategories() {
             {loading ? (
               <CircularProgress />
             ) : (
-              <>
+              <div className="row">
                 <input
-                  className="m-2"
+                  className="m-2 col-auto my-auto"
                   id="cat"
                   value={newCategory}
                   onChange={(e) => {
@@ -275,22 +288,27 @@ function ManageCategories() {
                       setNewCategory(e.target.value);
                     }
                   }}
+                  onKeyDown={(e) => {
+                    if (e.code === 'Enter' && newCategory.length > 0) {
+                      setNewCategory('');
+                      handleCreate(document.getElementById('cat').value);
+                    }
+                  }}
                   placeholder="Enter category name"
                 />
-                <span className="mx-3" />
-                <div className="mt-3">
+                <div className="col">
                   <button
                     className="btn "
                     type="button"
                     onClick={() => {
                       setNewCategory('');
-                      handleCreate((document.getElementById('cat').value));
+                      handleCreate(document.getElementById('cat').value);
                     }}
                   >
                     Save
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </>
@@ -312,7 +330,11 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                <button
+                  className="btn  m-2"
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                >
                   Create Model Category
                 </button>
               </div>
@@ -346,7 +368,11 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                <button
+                  className="btn  m-2"
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                >
                   Create Instrument Category
                 </button>
               </div>
@@ -370,12 +396,13 @@ function ManageCategories() {
                 setInitPage(page);
               }
             }}
-            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then((response) => response)}
+            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
+              (response) => response,
+            )}
             showToolBar={false}
           />
         </Tab>
       </Tabs>
-
     </>
   );
 }
