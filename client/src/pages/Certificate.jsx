@@ -135,7 +135,7 @@ function MyCertificate({ calibEvent }) {
   console.log(evidenceFileType);
   console.log(evidenceFile);
 
-  const displayLink = (((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx'))) ? (
+  const displayLink = (((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx') || (evidenceFileType === 'gif'))) ? (
     <Text style={styles.largeText}>
       {'\n'}
       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
@@ -144,7 +144,7 @@ function MyCertificate({ calibEvent }) {
     </Text>
   ) : (null);
 
-  const displayImage = ((evidenceFileType === 'jpeg') || (evidenceFileType === 'jpg') || (evidenceFileType === 'png') || (evidenceFileType === 'gif')) ? (
+  const displayImage = ((evidenceFileType === 'jpeg') || (evidenceFileType === 'jpg') || (evidenceFileType === 'png')) ? (
     <View style={styles.centerView}>
       <Image style={styles.image} src={evidenceFile} />
     </View>
