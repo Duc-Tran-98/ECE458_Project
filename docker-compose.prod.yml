@@ -12,7 +12,7 @@ services:
     volumes:
       - my-db:/var/lib/mysql
     env_file: 
-      - "./.env"
+      - "./root.env"
     networks:
       - app-network
   # Backend
@@ -21,7 +21,7 @@ services:
     stdin_open: true
     tty: true
     env_file:
-      - "./.env"
+      - "./root.env"
     container_name: backend
     build:
       context: ./server/
@@ -58,7 +58,7 @@ services:
     links:
       - backend
     env_file:
-      - ".env"
+      - "react.env"
     networks:
       - app-network
 # Volumes
