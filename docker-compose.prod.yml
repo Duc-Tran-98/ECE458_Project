@@ -5,16 +5,14 @@ services:
     container_name: mysql
     image: mysql:5.7.33
     restart: always
-    env_file:
-      - "./.env"
-    environment:
-      - MYSQL_ROOT_PASSWORD #get password from .env file in same directory
     expose:
       # Opens port 3306 on the container
       - 3306
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+    env_file: 
+      - "./.env"
     networks:
       - app-network
   # Backend
@@ -37,6 +35,8 @@ services:
       - "./server/:/usr/src/app"
       - "/usr/src/app/node_modules"
       - assets:/usr/src/app/uploads
+    env_file: #tell the backend to use the .env file in the root directory
+      - "./.env"
     networks:
       - app-network
   # Frontend
@@ -57,6 +57,8 @@ services:
       - 443:443
     links:
       - backend
+    env_file:
+      - ".env"
     networks:
       - app-network
 # Volumes
