@@ -67,7 +67,6 @@ export default function EditInstrument({
   };
 
   useEffect(() => {
-    // TODO: add api to get assetTag
     let { assetTag } = formState;
     assetTag = parseInt(assetTag, 10);
     FindInstrument({
