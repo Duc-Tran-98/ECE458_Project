@@ -155,7 +155,7 @@ function App() {
             </Route>
             <Route path="/import">
               {loggedIn ? (
-                <BulkImport />
+                <BulkImport modifyCount={modifyCount} />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}

@@ -117,6 +117,7 @@ export default function UsersTable() {
           }
         }}
         fetchData={(limit, offset) => GetAllUsers({ limit, offset }).then((response) => response)}
+        showToolBar={false}
       />
     </>
   );

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Tabs, Tab } from 'react-bootstrap';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastContainer, toast } from 'react-toastify';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
@@ -31,12 +32,11 @@ function ManageCategories() {
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [category, setCategory] = React.useState('');
-  const [responseMsg, setResponseMsg] = React.useState('');
-  const [responseStatus, setResponseStatus] = React.useState(true);
   const [showDelete, setShowDelete] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [newCategory, setNewCategory] = React.useState('');
 
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
@@ -128,31 +128,33 @@ function ManageCategories() {
   }
 
   const closeDeleteModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
     setShowDelete(false);
     console.log('close');
     await updateRow(key);
   };
   const closeEditModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
     setShowEdit(false);
-    console.log('close');
     await updateRow(key);
   };
   const closeCreateModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
     setShowCreate(false);
-    console.log('close');
     await updateRow(key);
   };
   const handleResponse = (response) => {
-    setResponseMsg(response.message);
-    setResponseStatus(response.success);
+    if (response.success) {
+      toast.success(response.message, {
+        toastId: Math.random(),
+      });
+    } else {
+      toast.error(response.message, {
+        toastId: Math.random(),
+      });
+    }
+    setShowCreate(false);
+    setShowEdit(false);
+    setShowDelete(false);
+    updateRow(key);
     setLoading(false);
-    console.log(response);
   };
   const handleDelete = () => {
     setLoading(true);
@@ -183,33 +185,37 @@ function ManageCategories() {
 
   return (
     <>
+      <ToastContainer />
       <ModalAlert
         show={showDelete}
         handleClose={closeDeleteModal}
         title="Delete Category"
+        width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
-          )}
+          <div className="d-flex flex-row text-center m-3">
+            <h5>{`Confirm delete category: ${category}`}</h5>
+          </div>
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleDelete}>
-                    Yes
-                  </button>
-                </div>
+                <button
+                  className="btn mt-2"
+                  type="button"
+                  onClick={handleDelete}
+                >
+                  Yes
+                </button>
                 <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeDeleteModal}>
-                    No
-                  </button>
-                </div>
+                <button
+                  className="btn mt-2"
+                  type="button"
+                  onClick={closeDeleteModal}
+                >
+                  No
+                </button>
               </>
             )}
           </div>
@@ -219,26 +225,38 @@ function ManageCategories() {
         show={showEdit}
         handleClose={closeEditModal}
         title="Edit Category"
+        width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`Change name of category: ${category}`}</div>
-          )}
+          <div className="d-flex flex-row text-center m-3">
+            <h5>{`Change name of category: ${category}`}</h5>
+          </div>
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input id="editCat" />
-                <span className="mx-3" />
-                <div className="mt-3">
+                <div className="row">
+                  <input
+                    id="editCat"
+                    value={newCategory}
+                    className="m-2 col-auto my-auto"
+                    onChange={(e) => {
+                      if (!e.target.value.includes(' ')) {
+                        setNewCategory(e.target.value);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.code === 'Enter' && newCategory.length > 0) {
+                        handleEdit(document.getElementById('editCat').value);
+                      }
+                    }}
+                  />
                   <button
-                    className="btn "
+                    className="btn m-3 col"
                     type="button"
                     onClick={() => {
-                      handleEdit((document.getElementById('editCat').value));
+                      handleEdit(document.getElementById('editCat').value);
                     }}
                   >
                     Save
@@ -253,32 +271,44 @@ function ManageCategories() {
         show={showCreate}
         handleClose={closeCreateModal}
         title="Add Category"
+        width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">Create new category</div>
-          )}
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
-              <>
-                <input id="cat" />
-                <span className="mx-3" />
-                <div className="mt-3">
+              <div className="row">
+                <input
+                  className="m-2 col-auto my-auto"
+                  id="cat"
+                  value={newCategory}
+                  onChange={(e) => {
+                    if (!e.target.value.includes(' ')) {
+                      setNewCategory(e.target.value);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.code === 'Enter' && newCategory.length > 0) {
+                      setNewCategory('');
+                      handleCreate(document.getElementById('cat').value);
+                    }
+                  }}
+                  placeholder="Enter category name"
+                />
+                <div className="col">
                   <button
                     className="btn "
                     type="button"
                     onClick={() => {
-                      handleCreate((document.getElementById('cat').value));
+                      setNewCategory('');
+                      handleCreate(document.getElementById('cat').value);
                     }}
                   >
                     Save
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </>
@@ -300,7 +330,11 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                <button
+                  className="btn  m-2"
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                >
                   Create Model Category
                 </button>
               </div>
@@ -325,6 +359,7 @@ function ManageCategories() {
               }
             }}
             fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+            showToolBar={false}
           />
         </Tab>
         <Tab eventKey="instrument" title="Instrument Categories">
@@ -333,7 +368,11 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                <button
+                  className="btn  m-2"
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                >
                   Create Instrument Category
                 </button>
               </div>
@@ -357,11 +396,13 @@ function ManageCategories() {
                 setInitPage(page);
               }
             }}
-            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then((response) => response)}
+            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
+              (response) => response,
+            )}
+            showToolBar={false}
           />
         </Tab>
       </Tabs>
-
     </>
   );
 }
