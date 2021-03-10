@@ -60,7 +60,6 @@ export default function OAuthConsume({ handleLogin }) {
     // Axios request to express server to handle token
     const endpoint = '/api/oauthConsume';
     const path = `${route}${endpoint}`;
-    console.log(`sending oauth to path: ${path}`);
     axios.post(path, {
       code: authCode,
     })
@@ -68,7 +67,7 @@ export default function OAuthConsume({ handleLogin }) {
         const accessToken = res.data.result.access_token;
         const idToken = parseIdToken(res.data.result.id_token);
         ExpressQuery({
-          route: `/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
+          endpoint: `/userinfo?accessToken=${accessToken}`, method: 'get', queryJSON: { }, handleResponse: handleUserInfoResponse,
         });
 
         const netId = idToken.sub;
