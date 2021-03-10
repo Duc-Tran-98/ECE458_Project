@@ -1,11 +1,14 @@
 // This class is just for reducing duplicated code
 const dotenv = require('dotenv');
 
+dotenv.config();
+
+console.log('process.env: ');
+console.log(JSON.stringify(process.env));
 const redirectURI = process.env.NODE_ENV.includes('dev')
   ? process.env.OAUTH_REDIRECT_URI_DEV
   : process.env.OAUTH_REDIRECT_URI_PROD;
 
-dotenv.config();
 module.exports = {
   host: process.env.SQL_HOST,
   port: process.env.SQL_PORT,

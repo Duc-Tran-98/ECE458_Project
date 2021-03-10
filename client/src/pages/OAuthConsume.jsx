@@ -59,7 +59,9 @@ export default function OAuthConsume({ handleLogin }) {
 
     // Axios request to express server to handle token
     const endpoint = '/api/oauthConsume';
-    axios.post(`${route}${endpoint}`, {
+    const path = `${route}${endpoint}`;
+    console.log(`sending oauth to path: ${path}`);
+    axios.post(path, {
       code: authCode,
     })
       .then((res) => {

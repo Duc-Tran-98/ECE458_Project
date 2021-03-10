@@ -45,6 +45,8 @@ services:
     volumes:
       - "./server/:/usr/src/app"
       - assets:/usr/src/app/uploads
+    environment:
+      NODE_ENV: "dev"
     env_file: #tell the backend to use the .env file in the root directory
       - "./root.env"
 
@@ -67,7 +69,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     env_file:
-      - "react.env"
+      - "client/react.env"
 volumes:
   my-db: #docker stores our db for us so our data is persistent
   assets:

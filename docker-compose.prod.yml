@@ -37,6 +37,8 @@ services:
       - assets:/usr/src/app/uploads
     env_file: #tell the backend to use the .env file in the root directory
       - "./.env"
+    environment:
+      NODE_ENV: "production"
     networks:
       - app-network
   # Frontend
@@ -58,7 +60,7 @@ services:
     links:
       - backend
     env_file:
-      - "react.env"
+      - "client/react.env"
     networks:
       - app-network
 # Volumes
