@@ -1,11 +1,16 @@
 import React from 'react';
 
 import { ToastContainer } from 'react-toastify';
+import PropTypes from 'prop-types';
 import ImpModels from '../components/ImpModels';
 import ImpInstruments from '../components/ImpInstruments';
 import ImportTemplates from '../components/ImportTemplates';
 
-export default function BulkImport() {
+export default function BulkImport({ modifyCount }) {
+  BulkImport.propTypes = {
+    modifyCount: PropTypes.func.isRequired,
+  };
+
   return (
     <div className="text-center mx-3 my-3">
       <ToastContainer />
@@ -18,8 +23,8 @@ export default function BulkImport() {
         below.
       </p>
       <ImportTemplates />
-      <ImpModels />
-      <ImpInstruments />
+      <ImpModels modifyCount={modifyCount} />
+      <ImpInstruments modifyCount={modifyCount} />
     </div>
   );
 }
