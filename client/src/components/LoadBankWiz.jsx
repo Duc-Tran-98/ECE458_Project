@@ -13,7 +13,7 @@ import AsyncSuggest from './AsyncSuggest';
 import { defaultCurrents, idealCurrents, devCurrents } from '../utils/LoadBank';
 import Query from './UseQuery';
 
-const DEBUG = true;
+const DEBUG = process.env.NODE_ENV.includes('dev');
 
 export default function LoadBankWiz({
   initModelNumber, initVendor, initSerialNumber, initAssetTag,
