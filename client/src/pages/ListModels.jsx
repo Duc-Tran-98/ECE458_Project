@@ -354,6 +354,7 @@ function ListModels() {
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
+        showImport
       />
     </>
   );

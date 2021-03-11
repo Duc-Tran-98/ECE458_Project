@@ -408,6 +408,7 @@ function ManageCategories() {
             }}
             fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
             showToolBar={false}
+            showImport={false}
           />
         </Tab>
         <Tab eventKey="instrument" title="Instrument Categories">
@@ -452,6 +453,7 @@ function ManageCategories() {
               (response) => response,
             )}
             showToolBar={false}
+            showImport={false}
           />
         </Tab>
       </Tabs>
