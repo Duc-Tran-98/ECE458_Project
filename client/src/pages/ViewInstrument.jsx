@@ -264,7 +264,7 @@ export default function DetailedInstrumentView({ onDelete }) {
       <ModalAlert
         show={showDeleteModal}
         handleClose={closeModal}
-        title="Delte Instrument"
+        title="Delete Instrument"
       >
         <>
           {responseMsg.length === 0 && (
@@ -278,7 +278,7 @@ export default function DetailedInstrumentView({ onDelete }) {
             ) : (
               <>
                 <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleDelete}>
+                  <button className="btn" type="button" onClick={handleDelete}>
                     Yes
                   </button>
                 </div>

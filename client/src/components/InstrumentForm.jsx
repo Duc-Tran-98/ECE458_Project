@@ -288,7 +288,7 @@ export default function InstrumentForm({
                 <CustomButton
                   onClick={handleDelete}
                   divClass="col"
-                  buttonClass="btn text-nowrap"
+                  buttonClass="btn btn-danger text-nowrap my-auto"
                   buttonLabel="Delete Instrument"
                 />
                 {isSubmitting ? (

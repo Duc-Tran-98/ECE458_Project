@@ -44,6 +44,7 @@ services:
       - mysql
     volumes:
       - "./server/:/usr/src/app"
+      - "/usr/src/app/node_modules"
       - assets:/usr/src/app/uploads
     environment:
       NODE_ENV: "dev"

@@ -500,6 +500,8 @@ export default function ListInstruments() {
         headers={headers}
         filterOptions={filterOptions}
         filename="instruments.csv"
+        showToolBar
+        showImport
       />
     </>
   );

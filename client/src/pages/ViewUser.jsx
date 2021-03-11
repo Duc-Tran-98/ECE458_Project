@@ -77,7 +77,7 @@ export default function ViewUser({ onDelete }) {
   };
   return (
     <>
-      <ModalAlert show={show} handleClose={closeModal} title="DELETE USER">
+      <ModalAlert show={show} handleClose={closeModal} title="Delete User">
         <>
           {responseMsg.length === 0 && (
             <div className="h4 text-center my-3">{`You are about to delete user ${formState.userName}. Are you sure?`}</div>
@@ -90,7 +90,7 @@ export default function ViewUser({ onDelete }) {
             ) : (
               <>
                 <div className="mt-3">
-                  <button className="btn " type="button" onClick={deleteUser}>
+                  <button className="btn" type="button" onClick={deleteUser}>
                     Yes
                   </button>
                 </div>

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Tabs, Tab } from 'react-bootstrap';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { ToastContainer, toast } from 'react-toastify';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
@@ -18,6 +19,7 @@ import EditInstrumentCategory from '../queries/EditInstrumentCategory';
 
 function ManageCategories() {
   const history = useHistory();
+  const navLink = document.getElementById('modelCatNavLink');
   const queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   let startTab;
@@ -31,24 +33,13 @@ function ManageCategories() {
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [category, setCategory] = React.useState('');
-  const [responseMsg, setResponseMsg] = React.useState('');
-  const [responseStatus, setResponseStatus] = React.useState(true);
   const [showDelete, setShowDelete] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [num, setNum] = React.useState(0);
+  const [newCategory, setNewCategory] = React.useState('');
 
-  history.listen((location, action) => {
-    urlParams = new URLSearchParams(location.search);
-    const lim = parseInt(urlParams.get('limit'), 10);
-    const pg = parseInt(urlParams.get('page'), 10);
-    if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
-      // if user clicks on models nav link or goes back
-      setInitLimit(lim);
-      setInitPage(pg);
-    }
-  });
   const cellHandler = (e) => {
     setCategory(e.row.name);
   };
@@ -83,21 +74,18 @@ function ManageCategories() {
       width: 120,
       disableColumnMenu: true,
       renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="Edit category">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  setShowEdit(true);
-                }}
-              >
-                Edit
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
+        <MouseOverPopover message="Edit category">
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              console.log('edit cat');
+              setShowEdit(true);
+            }}
+          >
+            Edit
+          </button>
+        </MouseOverPopover>
       ),
     },
     {
@@ -106,64 +94,125 @@ function ManageCategories() {
       width: 120,
       disableColumnMenu: true,
       renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="Delete category">
-              <button
-                type="button"
-                className="btn"
-                onClick={async () => {
-                  await getNumAttached();
-                  setShowDelete(true);
-                }}
-              >
-                Delete
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
+        <MouseOverPopover message="Delete category">
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={async () => {
+              await getNumAttached();
+              console.log('delete cat');
+              setShowDelete(true);
+            }}
+          >
+            Delete
+          </button>
+        </MouseOverPopover>
       ),
     },
   ];
 
-  async function updateRow(k) {
+  function updateRow(k, replace = false) {
+    console.log('update');
     let searchString;
-    setRowCount(0);
+    setInitPage(1);
+    setInitLimit(25);
     if (k === 'model') {
-      await CountModelCategories().then((val) => {
+      CountModelCategories().then((val) => {
         setRowCount(val);
-        searchString = `?page=${1}&limit=${25}&count=${val}`;
+        searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
+        if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
+          console.log(`updating url to /${k}Categories${searchString}`);
+          if (replace) {
+            history.replace(`/${k}Categories${searchString}`);
+          } else {
+            history.push(`/${k}Categories${searchString}`);
+          }
+        }
       });
     } else {
-      await CountInstrumentCategories().then((val) => {
+      CountInstrumentCategories().then((val) => {
         setRowCount(val);
-        searchString = `?page=${1}&limit=${25}&count=${val}`;
+        console.log(val);
+        searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
+        if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
+          console.log(`updating url to /${k}Categories${searchString}`);
+          if (replace) {
+            history.replace(`/${k}Categories${searchString}`);
+          } else {
+            history.push(`/${k}Categories${searchString}`);
+          }
+        }
       });
     }
-    history.push(`/${key}Categories${searchString}`);
   }
 
-  const closeDeleteModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
+  if (navLink !== null) {
+    navLink.onclick = () => {
+      updateRow('model');
+      setKey('model');
+    };
+  }
+
+  history.listen((location, action) => {
+    let active = true;
+
+    (() => {
+      if (!active) {
+        return;
+      }
+      urlParams = new URLSearchParams(location.search);
+      const lim = parseInt(urlParams.get('limit'), 10);
+      const pg = parseInt(urlParams.get('page'), 10);
+      const count = parseInt(urlParams.get('count'), 10);
+      if (action === 'POP') {
+        setRowCount(count);
+        setInitLimit(lim);
+        setInitPage(pg);
+        // console.log('was a pop');
+        if (window.location.pathname.startsWith('/model')) {
+          setKey('model');
+          // console.log('setting start tab = model');
+        } else {
+          setKey('instrument');
+          //  console.log('setting start tab = instrument');
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  });
+
+  const closeDeleteModal = () => {
     setShowDelete(false);
-    await updateRow(key);
+    console.log('close');
+    updateRow(key, true);
   };
-  const closeEditModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
+  const closeEditModal = () => {
     setShowEdit(false);
-    await updateRow(key);
+    console.log('close');
+    updateRow(key, true);
   };
-  const closeCreateModal = async () => {
-    setResponseMsg('');
-    setResponseStatus(false);
+  const closeCreateModal = () => {
     setShowCreate(false);
-    await updateRow(key);
+    console.log('close');
+    updateRow(key, true);
   };
   const handleResponse = (response) => {
-    setResponseMsg(response.message);
-    setResponseStatus(response.success);
+    if (response.success) {
+      toast.success(response.message, {
+        toastId: Math.random(),
+      });
+    } else {
+      toast.error(response.message, {
+        toastId: Math.random(),
+      });
+    }
+    setShowCreate(false);
+    setShowEdit(false);
+    setShowDelete(false);
+    updateRow(key, true);
     setLoading(false);
   };
   const handleDelete = () => {
@@ -193,13 +242,15 @@ function ManageCategories() {
 
   return (
     <>
+      <ToastContainer />
       <ModalAlert
         show={showDelete}
         handleClose={closeDeleteModal}
-        title="DELETE CATEGORY"
+        title="Delete Category"
+        width=" "
       >
         <>
-          {responseMsg.length === 0 && (
+          {showDelete.length === 0 && (
             <div>
               <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
               <div className="h4 text-center my-3">{`This category is attached to ${num} ${key}${num === 1 ? '' : 's'} `}</div>
@@ -208,21 +259,23 @@ function ManageCategories() {
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={handleDelete}>
-                    Yes
-                  </button>
-                </div>
+                <button
+                  className="btn mt-2"
+                  type="button"
+                  onClick={handleDelete}
+                >
+                  Yes
+                </button>
                 <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeDeleteModal}>
-                    No
-                  </button>
-                </div>
+                <button
+                  className="btn mt-2"
+                  type="button"
+                  onClick={closeDeleteModal}
+                >
+                  No
+                </button>
               </>
             )}
           </div>
@@ -231,27 +284,39 @@ function ManageCategories() {
       <ModalAlert
         show={showEdit}
         handleClose={closeEditModal}
-        title="EDIT CATEGORY"
+        title="Edit Category"
+        width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`Change name of category: ${category}`}</div>
-          )}
+          <div className="d-flex flex-row text-center m-3">
+            <h5>{`Change name of category: ${category}`}</h5>
+          </div>
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
               <>
-                <input id="editCat" />
-                <span className="mx-3" />
-                <div className="mt-3">
+                <div className="row">
+                  <input
+                    id="editCat"
+                    value={newCategory}
+                    className="m-2 col-auto my-auto"
+                    onChange={(e) => {
+                      if (!e.target.value.includes(' ')) {
+                        setNewCategory(e.target.value);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.code === 'Enter' && newCategory.length > 0) {
+                        handleEdit(document.getElementById('editCat').value);
+                      }
+                    }}
+                  />
                   <button
-                    className="btn "
+                    className="btn m-3 col"
                     type="button"
                     onClick={() => {
-                      handleEdit((document.getElementById('editCat').value));
+                      handleEdit(document.getElementById('editCat').value);
                     }}
                   >
                     Save
@@ -265,33 +330,45 @@ function ManageCategories() {
       <ModalAlert
         show={showCreate}
         handleClose={closeCreateModal}
-        title="ADD CATEGORY"
+        title="Add Category"
+        width=" "
       >
         <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">Create new category</div>
-          )}
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
             ) : (
-              <>
-                <input id="cat" />
-                <span className="mx-3" />
-                <div className="mt-3">
+              <div className="row">
+                <input
+                  className="m-2 col-auto my-auto"
+                  id="cat"
+                  value={newCategory}
+                  onChange={(e) => {
+                    if (!e.target.value.includes(' ')) {
+                      setNewCategory(e.target.value);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.code === 'Enter' && newCategory.length > 0) {
+                      setNewCategory('');
+                      handleCreate(document.getElementById('cat').value);
+                    }
+                  }}
+                  placeholder="Enter category name"
+                />
+                <div className="col">
                   <button
                     className="btn "
                     type="button"
                     onClick={() => {
-                      handleCreate((document.getElementById('cat').value));
+                      setNewCategory('');
+                      handleCreate(document.getElementById('cat').value);
                     }}
                   >
                     Save
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </>
@@ -299,11 +376,9 @@ function ManageCategories() {
       <Tabs
         id="tabs"
         activeKey={key}
-        onSelect={async (k) => {
-          await updateRow(k);
+        onSelect={(k) => {
+          updateRow(k);
           setKey(k);
-          setInitLimit(25);
-          setInitPage(1);
         }}
         unmountOnExit
       >
@@ -313,7 +388,11 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                <button
+                  className="btn  m-2"
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                >
                   Create Model Category
                 </button>
               </div>
@@ -324,6 +403,9 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log(
+                  `page change model changing url to /modelCategories${searchString}`,
+                );
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -332,12 +414,15 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log('page size change model changing url');
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
               }
             }}
             fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+            showToolBar={false}
+            showImport={false}
           />
         </Tab>
         <Tab eventKey="instrument" title="Instrument Categories">
@@ -346,7 +431,11 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button className="btn  m-2" type="button" onClick={() => setShowCreate(true)}>
+                <button
+                  className="btn  m-2"
+                  type="button"
+                  onClick={() => setShowCreate(true)}
+                >
                   Create Instrument Category
                 </button>
               </div>
@@ -357,6 +446,9 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log(
+                  `page change instrument changing url to /instrumentCategories${searchString}`,
+                );
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -365,16 +457,20 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
+                console.log('page size change instrument changing url');
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
               }
             }}
-            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then((response) => response)}
+            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
+              (response) => response,
+            )}
+            showToolBar={false}
+            showImport={false}
           />
         </Tab>
       </Tabs>
-
     </>
   );
 }

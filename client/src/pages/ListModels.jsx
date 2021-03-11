@@ -162,7 +162,6 @@ function ListModels() {
       field: 'view',
       headerName: 'View',
       width: 120,
-      disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
           <div className="col mt-1">
@@ -354,6 +353,8 @@ function ListModels() {
         headers={headers}
         filename="models.csv"
         filterOptions={filterOptions}
+        showToolBar
+        showImport
       />
     </>
   );
