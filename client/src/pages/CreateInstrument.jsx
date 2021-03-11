@@ -2,6 +2,7 @@
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
 import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import InstrumentForm from '../components/InstrumentForm';
@@ -17,6 +18,8 @@ function CreateInstrumentPage({ onCreation }) {
   CreateInstrumentPage.propTypes = {
     onCreation: PropTypes.func.isRequired,
   };
+  const endpoint = '/api/upload';
+  const path = `${route}${endpoint}`;
   const user = useContext(UserContext);
   const [calibHist, setCalibHist] = useState([
     {
@@ -101,39 +104,38 @@ function CreateInstrumentPage({ onCreation }) {
     }).then((response) => {
       if (response.success) {
         toast.success(response.message);
-        setcalibrationFrequency(0);
         resetForm();
+        assetTag = parseInt(response.assetTag, 10);
         // If we successfully added new instrument
         const validEvents = calibHist;
         if (validEvents.length > 0 && calibrationFrequency > 0) {
-          // If there are valid entries, add them to DB
-          // AddCalibEvent({
-          //   events: validEvents,
-          //   modelNumber,
-          //   vendor,
-          //   serialNumber,
-          //   categories,
-          //   handleResponse: () => undefined,
-          // });
-          assetTag = parseInt(response.assetTag, 10);
-
-          AddCalibEventByAssetTag({
-            events: validEvents,
-            assetTag,
-            handleResponse: () => {
-              setCalibHist([
-                {
-                  user: user.userName,
-                  date: new Date().toISOString().split('T')[0],
-                  comment: '',
-                  id: 0,
-                  viewOnly: false,
-                },
-              ]);
-              setNextId(1);
-            },
+          validEvents.forEach(async (entry) => {
+            const events = [entry];
+            if (entry.file) {
+              await axios
+                .post(path, entry.file, {
+                  // receive two    parameter endpoint url ,form data
+                })
+                .then((res) => {
+                  // then print response status
+                  // eslint-disable-next-line no-param-reassign
+                  events[0].fileLocation = res.data.assetName;
+                  // eslint-disable-next-line no-param-reassign
+                  events[0].fileName = res.data.fileName;
+                  AddCalibEventByAssetTag({
+                    events,
+                    assetTag,
+                    handleResponse: (r) => toast.success(r.message),
+                  });
+                })
+                .catch((err) => {
+                  console.log(err.message);
+                  toast.error(`Could not upload file for event on ${entry.date}`);
+                });
+            }
           });
         }
+        setcalibrationFrequency(0);
         onCreation();
       } else {
         toast.error(response.message);
