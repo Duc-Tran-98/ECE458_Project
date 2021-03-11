@@ -8,12 +8,17 @@ import InstrumentForm from '../components/InstrumentForm';
 import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 
+// eslint-disable-next-line no-unused-vars
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4001'
+  : '/express';
+
 function CreateInstrumentPage({ onCreation }) {
   CreateInstrumentPage.propTypes = {
     onCreation: PropTypes.func.isRequired,
   };
   const user = useContext(UserContext);
-  const [calibHistory, setCalibHistory] = useState([
+  const [calibHist, setCalibHist] = useState([
     {
       user: user.userName,
       date: new Date().toISOString().split('T')[0],
@@ -24,26 +29,33 @@ function CreateInstrumentPage({ onCreation }) {
   ]); // calibhistory is the array of calibration events.
   const onChangeCalibRow = (e, entry) => {
     // This method deals with updating a particular calibration event
-    const newHistory = [...calibHistory];
+    const newHistory = [...calibHist];
     const index = newHistory.indexOf(entry);
     newHistory[index] = { ...entry };
     if (e.target.name === 'user') {
       newHistory[index].user = e.target.value;
     } else if (e.target.name === 'date') {
       newHistory[index].date = e.target.value;
+    } else if (e.target.name === 'fileInput') {
+      if (e.target.remove === true) {
+        newHistory[index].file = null;
+      } else {
+        const data = new FormData();
+        data.append('file', e.target.files[0]);
+        newHistory[index].file = data;
+      }
     } else {
       newHistory[index].comment = e.target.value;
     }
-    setCalibHistory(newHistory);
+    setCalibHist(newHistory);
   };
 
   const [calibrationFrequency, setcalibrationFrequency] = React.useState(0);
-  // TODO: let user know that this asset tag/serial number is not required
   const [nextId, setNextId] = useState(1); // This is for assining unique ids to our array
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
     if (calibrationFrequency > 0) {
-      const newHistory = calibHistory;
+      const newHistory = calibHist;
       newHistory.push({
         user: user.userName,
         date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
@@ -52,13 +64,13 @@ function CreateInstrumentPage({ onCreation }) {
         viewOnly: false,
       });
       setNextId(nextId + 1);
-      setCalibHistory(newHistory);
+      setCalibHist(newHistory);
     }
   };
   const deleteRow = (rowId) => {
     // This is for deleting an entry from array
-    const newHistory = calibHistory.filter((item) => item.id !== rowId);
-    setCalibHistory(newHistory);
+    const newHistory = calibHist.filter((item) => item.id !== rowId);
+    setCalibHist(newHistory);
   };
 
   const handleSubmit = (values, resetForm) => {
@@ -91,9 +103,7 @@ function CreateInstrumentPage({ onCreation }) {
         toast.success(response.message);
         resetForm();
         // If we successfully added new instrument
-        const validEvents = calibHistory.filter(
-          (entry) => entry.user.length > 0,
-        ); // Collect valid entries
+        const validEvents = calibHist;
         if (validEvents.length > 0 && calibrationFrequency > 0) {
           // If there are valid entries, add them to DB
           // AddCalibEvent({
@@ -104,12 +114,11 @@ function CreateInstrumentPage({ onCreation }) {
           //   categories,
           //   handleResponse: () => undefined,
           // });
-          assetTag = parseInt(assetTag, 10);
+          assetTag = parseInt(response.assetTag, 10);
 
           AddCalibEventByAssetTag({
             events: validEvents,
             assetTag,
-            categories,
             handleResponse: () => undefined,
           });
         }
@@ -127,7 +136,7 @@ function CreateInstrumentPage({ onCreation }) {
         </button>
       </div>
       <CalibrationTable
-        rows={calibHistory}
+        rows={calibHist}
         deleteRow={deleteRow}
         onChangeCalibRow={onChangeCalibRow}
       />
