@@ -8,8 +8,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
-import GetModelCategories, { CountModelCategories } from '../queries/GetModelCategories';
-import GetInstrumentCategories, { CountInstrumentCategories } from '../queries/GetInstrumentCategories';
+import GetModelCategories, { CountModelCategories, CountModelsAttached } from '../queries/GetModelCategories';
+import GetInstrumentCategories, { CountInstrumentCategories, CountInstrumentsAttached } from '../queries/GetInstrumentCategories';
 import DeleteModelCategory from '../queries/DeleteModelCategory';
 import DeleteInstrumentCategory from '../queries/DeleteInstrumentCategory';
 import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
@@ -37,11 +37,23 @@ function ManageCategories() {
   const [showEdit, setShowEdit] = React.useState(false);
   const [showCreate, setShowCreate] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [num, setNum] = React.useState(0);
   const [newCategory, setNewCategory] = React.useState('');
 
   const cellHandler = (e) => {
     setCategory(e.row.name);
   };
+
+  const getNumAttached = async () => {
+    if (key === 'model') {
+      const count = await CountModelsAttached({ name: category });
+      setNum(count);
+    } else {
+      const count = await CountInstrumentsAttached({ name: category });
+      setNum(count);
+    }
+  };
+
   const cols = [
     {
       field: 'id',
@@ -67,7 +79,6 @@ function ManageCategories() {
             type="button"
             className="btn"
             onClick={() => {
-              console.log('edit cat');
               setShowEdit(true);
             }}
           >
@@ -86,8 +97,8 @@ function ManageCategories() {
           <button
             type="button"
             className="btn btn-danger"
-            onClick={() => {
-              console.log('delete cat');
+            onClick={async () => {
+              await getNumAttached();
               setShowDelete(true);
             }}
           >
@@ -99,7 +110,6 @@ function ManageCategories() {
   ];
 
   function updateRow(k, replace = false) {
-    console.log('update');
     let searchString;
     setInitPage(1);
     setInitLimit(25);
@@ -108,7 +118,6 @@ function ManageCategories() {
         setRowCount(val);
         searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
         if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
-          console.log(`updating url to /${k}Categories${searchString}`);
           if (replace) {
             history.replace(`/${k}Categories${searchString}`);
           } else {
@@ -119,10 +128,8 @@ function ManageCategories() {
     } else {
       CountInstrumentCategories().then((val) => {
         setRowCount(val);
-        console.log(val);
         searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
         if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
-          console.log(`updating url to /${k}Categories${searchString}`);
           if (replace) {
             history.replace(`/${k}Categories${searchString}`);
           } else {
@@ -173,17 +180,14 @@ function ManageCategories() {
 
   const closeDeleteModal = () => {
     setShowDelete(false);
-    console.log('close');
     updateRow(key, true);
   };
   const closeEditModal = () => {
     setShowEdit(false);
-    console.log('close');
     updateRow(key, true);
   };
   const closeCreateModal = () => {
     setShowCreate(false);
-    console.log('close');
     updateRow(key, true);
   };
   const handleResponse = (response) => {
@@ -204,7 +208,6 @@ function ManageCategories() {
   };
   const handleDelete = () => {
     setLoading(true);
-    console.log('delete');
     if (key === 'model') {
       DeleteModelCategory({ name: category, handleResponse });
     } else {
@@ -213,7 +216,6 @@ function ManageCategories() {
   };
   const handleEdit = (catName) => {
     setLoading(true);
-    console.log('edit');
     if (key === 'model') {
       EditModelCategory({ currentName: category, updatedName: catName, handleResponse });
     } else {
@@ -239,9 +241,12 @@ function ManageCategories() {
         width=" "
       >
         <>
-          <div className="d-flex flex-row text-center m-3">
-            <h5>{`Confirm delete category: ${category}`}</h5>
-          </div>
+          {showDelete && (
+            <div>
+              <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
+              <div className="h4 text-center my-3">{`This category is attached to ${num} ${key}${num === 1 ? '' : 's'} `}</div>
+            </div>
+          )}
           <div className="d-flex justify-content-center">
             {loading ? (
               <CircularProgress />
@@ -389,9 +394,6 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log(
-                  `page change model changing url to /modelCategories${searchString}`,
-                );
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -400,7 +402,6 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log('page size change model changing url');
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -432,9 +433,6 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log(
-                  `page change instrument changing url to /instrumentCategories${searchString}`,
-                );
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -443,7 +441,6 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log('page size change instrument changing url');
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);

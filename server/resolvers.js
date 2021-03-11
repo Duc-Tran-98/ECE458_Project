@@ -15,6 +15,9 @@ module.exports = {
 
     countModelCategories: async (_, __, { dataSources }) => await dataSources.modelAPI.countModelCategories(),
     countInstrumentCategories: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countInstrumentCategories(),
+    countModelsAttachedToCategory: (_, { name }, { dataSources }) => dataSources.modelAPI.countModelsAttachedToCategory({ name }),
+    countInstrumentsAttachedToCategory: (_, { name }, { dataSources }) => dataSources.instrumentAPI.countInstrumentsAttachedToCategory({ name }),
+
     // Model Queries
     countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
     // eslint-disable-next-line max-len

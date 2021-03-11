@@ -31,7 +31,6 @@ function App() {
   const history = useHistory();
   const handlePageRefresh = async () => {
     window.sessionStorage.setItem('jwt', jwt);
-    // console.log('handlePage refresh');
   };
   React.useEffect(() => {
     window.addEventListener('unload', handlePageRefresh);
@@ -65,7 +64,7 @@ function App() {
     history.push('/');
   };
   return (
-    <UserProvider>
+    <UserProvider loggedIn={loggedIn}>
       <header className="sticky-top text-light" style={{ zIndex: 100 }}>
         <NavBar
           title="HPC IMS"

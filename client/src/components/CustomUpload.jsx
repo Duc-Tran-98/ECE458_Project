@@ -159,10 +159,10 @@ export default function CustomUpload({
               {importStatus === 'Import'
                 ? (
                   <Button
-                    className="m-2"
+                    className="btn btn-danger"
                     type="submit"
                     onClick={handleRemoveFile}
-                    style={{ background: '#fc2311', borderRadius: 5 }}
+                    // style={{ background: '#fc2311', borderRadius: 5 }}
                   >
                     Remove
                   </Button>

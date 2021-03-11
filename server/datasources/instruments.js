@@ -1,5 +1,7 @@
+/* eslint-disable max-len */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
+const { responsePathAsArray } = require('graphql');
 const SQL = require('sequelize');
 
 function validateInstrument({
@@ -66,89 +68,195 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { instruments: [], total: 0 };
-    // eslint-disable-next-line prefer-const
-    let checkModelCategories;
-    let checkInstrumentCategories;
-    // eslint-disable-next-line prefer-const
-    let includeData = [];
-    if (modelCategories) {
-      includeData.push({
-        model: this.store.modelCategories,
-        as: 'modelCategories',
-        through: 'modelCategoryRelationships',
-        where: {
-          name: modelCategories,
-        },
-      });
-      checkModelCategories = modelCategories;
-    } else {
-      includeData.push({
-        model: this.store.modelCategories,
-        as: 'modelCategories',
-        through: 'modelCategoryRelationships',
-      });
-      checkModelCategories = [];
-    }
 
-    if (instrumentCategories) {
-      includeData.push({
-        model: this.store.instrumentCategories,
-        as: 'instrumentCategories',
-        through: 'instrumentCategoryRelationships',
-        where: {
-          name: instrumentCategories,
-        },
-      });
-      checkInstrumentCategories = instrumentCategories;
-    } else {
-      includeData.push({
-        model: this.store.instrumentCategories,
-        as: 'instrumentCategories',
-        through: 'instrumentCategoryRelationships',
-      });
-      checkInstrumentCategories = [];
-    }
-
-    includeData.push({
-      model: this.store.calibrationEvents,
-      as: 'recentCalibration',
-      limit: 1,
-      order: [['date', 'DESC']],
-    });
-
-    // eslint-disable-next-line prefer-const
-    let filters = [];
-    if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
-    if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
-    if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
-    if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
-    if (assetTag) filters.push({ assetTag });
-
-    let instruments = await this.store.instruments.findAndCountAll({
-      include: includeData,
-      where: filters,
-      limit,
-      offset,
-    });
-    response.instruments = instruments.rows;
-    response.total = instruments.count;
-    instruments = instruments.rows;
     if (modelCategories || instrumentCategories) {
-      const instrumentsWithCategories = [];
-      const checker = (arr, target) => target.every((v) => arr.includes(v));
-      for (let i = 0; i < instruments.length; i += 1) {
-        const hasModelCategories = instruments[i].dataValues.modelCategories.map((a) => a.name);
-        if (checker(hasModelCategories, checkModelCategories)) {
-          // eslint-disable-next-line max-len
-          const hasInstrumentCategories = instruments[i].dataValues.instrumentCategories.map((a) => a.name);
-          if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
-            instrumentsWithCategories.push(instruments[i]);
+      let checkModelCategories;
+      let checkInstrumentCategories;
+      // eslint-disable-next-line prefer-const
+      let includeData = [];
+      if (modelCategories) {
+        includeData.push({
+          model: this.store.modelCategories,
+          as: 'modelCategories',
+          through: 'modelCategoryRelationships',
+          where: {
+            name: modelCategories,
+          },
+        });
+        checkModelCategories = modelCategories;
+      } else {
+        includeData.push({
+          model: this.store.modelCategories,
+          as: 'modelCategories',
+          through: 'modelCategoryRelationships',
+        });
+        checkModelCategories = [];
+      }
+
+      if (instrumentCategories) {
+        includeData.push({
+          model: this.store.instrumentCategories,
+          as: 'instrumentCategories',
+          through: 'instrumentCategoryRelationships',
+          where: {
+            name: instrumentCategories,
+          },
+        });
+        checkInstrumentCategories = instrumentCategories;
+      } else {
+        includeData.push({
+          model: this.store.instrumentCategories,
+          as: 'instrumentCategories',
+          through: 'instrumentCategoryRelationships',
+        });
+        checkInstrumentCategories = [];
+      }
+
+      includeData.push({
+        model: this.store.calibrationEvents,
+        as: 'recentCalibration',
+        limit: 1,
+        order: [['date', 'DESC']],
+      });
+
+      // eslint-disable-next-line prefer-const
+      let filters = [];
+      if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+      if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+      if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
+      if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+      if (assetTag) filters.push({ assetTag });
+
+      let instruments = await this.store.instruments.findAndCountAll({
+        include: includeData,
+        where: filters,
+        order: [
+          ['assetTag', 'ASC'],
+        ],
+      });
+      response.instruments = instruments.rows;
+      response.total = instruments.count;
+      instruments = instruments.rows;
+      if (modelCategories || instrumentCategories) {
+        let instrumentsWithCategories = [];
+        const checker = (arr, target) => target.every((v) => arr.includes(v));
+        for (let i = 0; i < instruments.length; i += 1) {
+          const hasModelCategories = instruments[i].dataValues.modelCategories.map((a) => a.name);
+          if (checker(hasModelCategories, checkModelCategories)) {
+            // eslint-disable-next-line max-len
+            const hasInstrumentCategories = instruments[i].dataValues.instrumentCategories.map((a) => a.name);
+            if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
+              instrumentsWithCategories.push(instruments[i]);
+            }
           }
         }
+        response.total = instrumentsWithCategories.length;
+        if (limit > 0 && response.total > limit) {
+          // eslint-disable-next-line no-param-reassign
+          if (offset === null) offset = 0;
+          instrumentsWithCategories = instrumentsWithCategories.slice(offset, offset + limit);
+        }
+        response.instruments = instrumentsWithCategories;
       }
-      response.instruments = instrumentsWithCategories;
-      response.total = instrumentsWithCategories.length;
+    } else {
+    // eslint-disable-next-line prefer-const
+      let includeData = [];
+      includeData.push({
+        subQuery: false,
+        model: this.store.modelCategoryRelationships,
+        separate: true,
+        as: 'itmcr',
+        include: [
+          {
+            model: this.store.modelCategories,
+            as: 'mcrtmc',
+          },
+        ],
+      });
+
+      includeData.push({
+        subQuery: false,
+        model: this.store.instrumentCategoryRelationships,
+        separate: true,
+        as: 'iticr',
+        include: [
+          {
+            model: this.store.instrumentCategories,
+            as: 'icrtic',
+          },
+        ],
+      });
+
+      includeData.push({
+        model: this.store.calibrationEvents,
+        as: 'recentCalibration',
+        limit: 1,
+        order: [['date', 'DESC']],
+      });
+
+      // eslint-disable-next-line prefer-const
+      let filters = [];
+      if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+      if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+      if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
+      if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+      if (assetTag) filters.push({ assetTag });
+
+      let lim = limit;
+      let off = offset;
+      if (modelCategories || instrumentCategories) {
+      // eslint-disable-next-line no-param-reassign
+        lim = null;
+        // eslint-disable-next-line no-param-reassign
+        off = null;
+      }
+      let instruments = await this.store.instruments.findAndCountAll({
+        include: includeData,
+        where: filters,
+        order: [
+          ['assetTag', 'ASC'],
+        ],
+        subQuery: false,
+        limit: lim,
+        offset: off,
+      });
+      for (let j = 0; j < instruments.rows.length; j += 1) {
+        const itmcr = instruments.rows[j].itmcr.map((a) => a.dataValues);
+        let cats = [];
+        for (let i = 0; i < itmcr.length; i += 1) {
+          cats = [...cats, itmcr[i].mcrtmc.dataValues.name];
+        }
+        // eslint-disable-next-line prefer-const
+        let instWithCats = { arr: [] };
+        for (let i = 0; i < cats.length; i += 1) {
+          instWithCats.arr.push({
+            name: cats[i],
+          });
+        }
+        instruments.rows[j].modelCategories = instWithCats.arr;
+      }
+
+      for (let j = 0; j < instruments.rows.length; j += 1) {
+        const iticr = instruments.rows[j].iticr.map((a) => a.dataValues);
+        let cats = [];
+        for (let i = 0; i < iticr.length; i += 1) {
+          cats = [...cats, iticr[i].icrtic.dataValues.name];
+        }
+        // eslint-disable-next-line prefer-const
+        let instWithCats = { arr: [] };
+        for (let i = 0; i < cats.length; i += 1) {
+          instWithCats.arr.push({
+            name: cats[i],
+          });
+        }
+        instruments.rows[j].instrumentCategories = instWithCats.arr;
+      }
+
+      response.instruments = instruments.rows;
+      response.total = instruments.count;
+      instruments = response.instruments;
     }
+
     return response;
   }
 
@@ -405,7 +513,7 @@ class InstrumentAPI extends DataSource {
   async addInstrument({
     modelNumber, vendor, assetTag = null, serialNumber, comment, categories = [],
   }) {
-    const response = { message: '', success: true };
+    const response = { message: '', success: true, assetTag: 0 };
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment, assetTag,
     });
@@ -454,6 +562,7 @@ class InstrumentAPI extends DataSource {
             }
           }
           if (response.success) {
+            response.assetTag = newAssetTag;
             const modelReference = model.dataValues.id;
             const {
               description,
@@ -664,6 +773,24 @@ class InstrumentAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     return await this.store.instrumentCategories.count();
+  }
+
+  async countInstrumentsAttachedToCategory({ name }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    let response = 0;
+    await this.getInstrumentCategory({ name }).then(async (result) => {
+      if (result) {
+        const instrumentCategoryId = result.dataValues.id;
+        const attached = await this.store.instrumentCategoryRelationships.count({
+          where: { instrumentCategoryId },
+        });
+        response = attached;
+      } else {
+        console.log('category deos not exist');
+      }
+    });
+    return response;
   }
 }
 

@@ -7,9 +7,10 @@ import Query from './UseQuery';
 
 const UserContext = React.createContext({});
 
-export const UserProvider = ({ children }) => {
+export const UserProvider = ({ children, loggedIn }) => {
   UserProvider.propTypes = {
     children: PropTypes.node.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
   };
   const [user, setUserState] = useState({
     isLoggedIn: false,
@@ -19,8 +20,20 @@ export const UserProvider = ({ children }) => {
     lastName: '',
     email: '',
   });
+  let token = window.sessionStorage.getItem('token');
+
   useEffect(() => {
-    if (window.sessionStorage.getItem('token') && !user.isLoggedIn) {
+    token = window.sessionStorage.getItem('token');
+    if (token === null) {
+      setUserState({
+        isLoggedIn: false,
+        isAdmin: false,
+        userName: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+      });
+    } else {
       // If user logged in
       const queryName = 'getUser';
       const GET_USER_QUERY = gql`
@@ -36,7 +49,7 @@ export const UserProvider = ({ children }) => {
       `;
       const getVariables = () => ({
         userName: Buffer.from(
-          window.sessionStorage.getItem('token'),
+          token,
           'base64',
         ).toString('ascii'),
       });
@@ -52,7 +65,7 @@ export const UserProvider = ({ children }) => {
         handleResponse, // This will get user information
       });
     }
-  }, [window.sessionStorage.getItem('token')]);
+  }, [loggedIn]);
   return (
     <UserContext.Provider value={user}>
       {children}

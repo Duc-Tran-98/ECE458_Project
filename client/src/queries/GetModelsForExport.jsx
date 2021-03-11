@@ -35,7 +35,6 @@ export default async function GetModelsForExport({ filterOptions }) {
       }
     }
   `;
-  console.log(filterOptions);
   const query = print(GET_MODELS_QUERY);
   const queryName = 'getModelsWithFilter';
   const vendor = typeof filterOptions.vendors === 'undefined' ? null : filterOptions.vendors;

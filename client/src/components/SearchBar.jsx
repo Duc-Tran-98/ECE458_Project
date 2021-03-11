@@ -50,7 +50,7 @@ export default function SearchBar({
   );
   const [instrumentCategories, setInstrumentCategories] = React.useState(formatInsCats);
   const [serialNumber, setSerialNumber] = React.useState(initSerialNumber);
-  const [assetTag, setAssetTag] = React.useState(initAssetTag); // TODO: make asset tags work for filtering
+  const [assetTag, setAssetTag] = React.useState(initAssetTag);
   React.useEffect(() => {
     let active = true;
 
@@ -272,6 +272,7 @@ export default function SearchBar({
                   }
                 }
               `)}
+              filterRes={(entry) => entry.serialNumber.length > 0}
               queryName="getAllInstruments"
               onInputChange={(_e, v) => setSerialNumber(v)}
               label="Filter by Serial Number"

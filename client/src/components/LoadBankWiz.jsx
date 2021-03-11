@@ -13,7 +13,7 @@ import AsyncSuggest from './AsyncSuggest';
 import { defaultCurrents, idealCurrents, devCurrents } from '../utils/LoadBank';
 import Query from './UseQuery';
 
-const DEBUG = true;
+const DEBUG = process.env.NODE_ENV.includes('dev');
 
 export default function LoadBankWiz({
   initModelNumber, initVendor, initSerialNumber, initAssetTag,
@@ -76,7 +76,6 @@ export default function LoadBankWiz({
     newReadings.vrError = newReadings.va > 0 ? 100 * (Math.abs(newReadings.va - newReadings.vr) / newReadings.va) : 100;
     newReadings.vrOk = newReadings.vrError < 1;
     setVoltageReading(newReadings);
-    // console.log(!newReadings.vaOk || !newReadings.vrOk);
     setRestart(!newReadings.vaOk || !newReadings.vrOk);
   };
   const handleRestart = (bool = true) => {
@@ -269,7 +268,7 @@ export default function LoadBankWiz({
       entry[0].cr = e.target.valueAsNumber;
     }
     entry[0].caError = calcCAError(step);
-    entry[0].caOk = entry[0].caError < 3;
+    entry[0].caOk = entry[0].caError < 5;
     entry[0].crError = calcCRError(step);
     entry[0].crOk = entry[0].crError < 3;
     setCurrentReadings(newReadings.concat(entry));
@@ -744,8 +743,7 @@ export default function LoadBankWiz({
               onFinish={() => setCanProgress(true)}
               getSteps={getLoadSteps}
               getStepContent={getLoadStepContent}
-              canAdvance={() => true}
-              // TODO: CHange me back canAdvance={canAdvanceLoadStep}
+              canAdvance={canAdvanceLoadStep}
               forceReset={shouldRestart}
               handleRestart={() => handleRestart(false)}
               finishMsg="You're finished with the load steps"

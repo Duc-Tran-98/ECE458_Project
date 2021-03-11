@@ -238,7 +238,6 @@ export default function ImpModels({ modifyCount }) {
       queryName,
       getVariables,
       handleResponse: (response) => {
-        // console.log(response);
         if (response.success) {
           modifyCount();
           toast.success(`Successfully imported ${models.length} models!`, {
@@ -254,7 +253,7 @@ export default function ImpModels({ modifyCount }) {
         resetState();
       },
       handleError: () => {
-        toast.error('Please try again');
+        toast.error('Sorry, process took longer than expected. Please check back in a few minutes.');
         resetUpload();
         resetState();
       },

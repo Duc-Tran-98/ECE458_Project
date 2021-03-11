@@ -39,5 +39,4 @@ export default function FindInstrument({
   Query({
     query, queryName, getVariables, handleResponse,
   });
-  console.log('queried');
 }

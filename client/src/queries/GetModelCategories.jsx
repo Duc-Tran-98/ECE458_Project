@@ -20,7 +20,7 @@ export default async function GetModelCategories({ limit, offset }) {
   const queryName = 'getAllModelCategories';
   const getVariables = () => ({ limit, offset });
   const response = await QueryAndThen({ query, queryName, getVariables });
-  console.log(response);
+  // console.log(response);
   return response;
 }
 
@@ -32,5 +32,17 @@ export async function CountModelCategories() {
     `);
   const queryName = 'countModelCategories';
   const response = await QueryAndThen({ query, queryName });
+  return response;
+}
+
+export async function CountModelsAttached({ name }) {
+  const query = print(gql`
+        query Count($name: String!){
+          countModelsAttachedToCategory(name: $name)
+        }
+    `);
+  const getVariables = () => ({ name });
+  const queryName = 'countModelsAttachedToCategory';
+  const response = await QueryAndThen({ query, queryName, getVariables });
   return response;
 }

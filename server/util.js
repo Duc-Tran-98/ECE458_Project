@@ -323,6 +323,81 @@ module.exports.createStore = async () => {
     targetKey: 'id',
   });
 
+  models.hasMany(modelCategoryRelationships, {
+    as: 'mtmcr',
+    foreignKey: 'modelId', // B.a_id
+    sourceKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  modelCategoryRelationships.belongsTo(models, {
+    as: 'mcrtm',
+    foreignKey: 'modelId', // B.a_id
+    targetKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  modelCategories.hasMany(modelCategoryRelationships, {
+    as: 'mctmcr',
+    foreignKey: 'modelCategoryId', // B.a_id
+    sourceKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  modelCategoryRelationships.belongsTo(modelCategories, {
+    as: 'mcrtmc',
+    foreignKey: 'modelCategoryId', // B.a_id
+    targetKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  instruments.hasMany(instrumentCategoryRelationships, {
+    as: 'iticr',
+    foreignKey: 'instrumentId', // B.a_id
+    sourceKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  instrumentCategoryRelationships.belongsTo(instruments, {
+    as: 'icrti',
+    foreignKey: 'instrumentId', // B.a_id
+    targetKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  instrumentCategories.hasMany(instrumentCategoryRelationships, {
+    as: 'icticr',
+    foreignKey: 'instrumentCategoryId', // B.a_id
+    sourceKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  instrumentCategoryRelationships.belongsTo(instrumentCategories, {
+    as: 'icrtic',
+    foreignKey: 'instrumentCategoryId', // B.a_id
+    targetKey: 'id', // the A.id
+    constraints: false,
+  });
+
+  instruments.hasMany(modelCategoryRelationships, {
+    as: 'itmcr',
+    foreignKey: 'modelId', // B.a_id
+    sourceKey: 'modelReference', // the A.id
+    constraints: false,
+  });
+
+  modelCategoryRelationships.belongsTo(instruments, {
+    as: 'mcrti',
+    foreignKey: 'modelId', // B.a_id
+    targetKey: 'modelReference', // the A.id
+    constraints: false,
+  });
+
+  // instruments.hasMany(instrumentCategoryRelationships);
+  // instrumentCategoryRelationships.belongsTo(instruments);
+  // instrumentCategories.hasMany(instrumentCategoryRelationships);
+  // instrumentCategoryRelationships.belongsTo(instrumentCategories);
+
   instruments.belongsToMany(modelCategories, {
     as: 'modelCategories',
     through: {
@@ -343,6 +418,18 @@ module.exports.createStore = async () => {
     foreignKey: 'modelCategoryId',
     constraints: false,
   });
+  // instruments.hasMany(modelCategoryRelationships, {
+  //   // as: 'inToModCatRel',
+  //   sourceKey: 'modelReference',
+  //   foreignKey: 'modelId',
+  //   constraints: false,
+  // });
+  // modelCategoryRelationships.belongsTo(instruments, {
+  //   // as: 'modCatRelToIn',
+  //   foreignKey: 'modelId',
+  //   targetKey: 'modelReference',
+  //   constraints: false,
+  // });
 
   const calibrationEvents = db.define(
     'calibrationEvents',
