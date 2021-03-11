@@ -13,6 +13,7 @@ import { useHistory } from 'react-router-dom';
 
 import { CSVLink } from 'react-csv';
 import Pagination from '@material-ui/lab/Pagination';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
@@ -357,7 +358,7 @@ export function ServerPaginationGrid({
           )}
           {handleExport && (
             <>
-              {loadingExport && <LinearProgress color="secondary" />}
+              {loadingExport && <CircularProgress />}
               {filename && filename.includes('model') && (
                 <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
               )}

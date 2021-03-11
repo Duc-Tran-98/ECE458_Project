@@ -127,9 +127,7 @@ export default function SignUp({ onCreation }) {
                   {errors.lastName}
                 </Form.Control.Feedback>
               </Form.Group>
-              {/* TODO:
-                Prepend "@" to username
-                Add validation based on username exists */}
+              {/* TODO: Add validation based on username exists */}
               <Form.Group controlId="userName" className="col mt-3">
                 <Form.Label className="h4">Username</Form.Label>
                 <InputGroup className="mb-2">
