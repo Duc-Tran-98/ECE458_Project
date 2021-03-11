@@ -11,7 +11,7 @@ const filter = createFilterOptions();
 
 export default function AsyncSuggest({
   query,
-  queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid, invalidMsg, validMsg, multiple, multipleValues, isComboBox, getVariables,
+  queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid, invalidMsg, validMsg, multiple, multipleValues, isComboBox, getVariables, filterRes,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -31,6 +31,7 @@ export default function AsyncSuggest({
     multiple: PropTypes.bool, // whether or not user should be able to select mutliple
     isComboBox: PropTypes.bool, // whether or not display should be textfield input or combo box
     getVariables: PropTypes.func, // pass variables to queries
+    filterRes: PropTypes.func, // how to filter response
   };
   AsyncSuggest.defaultProps = {
     value: null,
@@ -41,6 +42,7 @@ export default function AsyncSuggest({
     getVariables: () => undefined,
     invalidMsg: `Please ${label}`,
     validMsg: 'Looks Good',
+    filterRes: null,
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
@@ -54,11 +56,16 @@ export default function AsyncSuggest({
     (async () => {
       const response = await QueryAndThen({ query, queryName, getVariables });
       if (active) {
+        // console.log(response);
         if (queryName === 'getInstrumentsWithFilter') {
-          // console.log(response);
           setOptions(response.instruments);
         } else {
-          setOptions(response);
+          let copyRes = response;
+          if (filterRes) {
+            // eslint-disable-next-line no-unused-vars
+            copyRes = copyRes.filter((entry) => filterRes(entry));
+          }
+          setOptions(copyRes);
         }
         setFetched(true);
       }
