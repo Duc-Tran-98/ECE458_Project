@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import Query from './UseQuery';
+import UserContext from './UserContext';
 
 export default function UserForm({
   onSubmit, changeHandler, formState, onChangeCheckbox,
@@ -156,10 +158,11 @@ export function EditUserForm({
     onChangeCheckbox: () => undefined,
     onDeleteClick: () => undefined,
   };
+  const user = useContext(UserContext);
   const history = useHistory();
+  const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
   const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn';
   const [loading, setLoading] = React.useState(false);
-  const [responseMsg, setResponseMsg] = React.useState('Save Changes');
   const onSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -176,23 +179,23 @@ export function EditUserForm({
       }),
       handleResponse: (response) => {
         setLoading(false);
-        setResponseMsg(response.message);
         if (response.success) {
+          toast.success('Successfully updated permissions');
           const { state } = history.location;
           history.replace(
             `/viewUser/?userName=${formState.userName}&isAdmin=${
               formState.isAdmin
             }`, state,
           );
-          setTimeout(() => {
-            setResponseMsg('Save Changes');
-          }, 1000);
+        } else {
+          toast.error(response.message);
         }
       },
     });
   };
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
+      <ToastContainer />
       <div className="row mx-3">
         <div className="col mt-3">
           <label htmlFor="validationCustomUsername" className="h4">
@@ -213,7 +216,6 @@ export function EditUserForm({
               value={formState.userName}
               disabled
             />
-            <div className="invalid-feedback">Please choose a username.</div>
           </div>
         </div>
         <div className="col mt-3">
@@ -228,7 +230,7 @@ export function EditUserForm({
               name="isAdmin"
               checked={formState.isAdmin}
               onChange={onChangeCheckbox}
-              disabled={formState.userName === 'admin'}
+              disabled={disabledButtons}
             />
             <div className="col">
               <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
@@ -240,13 +242,13 @@ export function EditUserForm({
         {loading ? (
           <CircularProgress />
         ) : (
-          <button className={buttonStyle} type="submit">
-            {responseMsg}
+          <button className={buttonStyle} type="submit" disabled={disabledButtons}>
+            Save Changes
           </button>
         )}
 
         <span className="mx-2" />
-        <button className={formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn btn-danger'} type="button" onClick={onDeleteClick}>
+        <button className="btn btn-danger" type="button" onClick={onDeleteClick} disabled={disabledButtons}>
           Delete User
         </button>
       </div>

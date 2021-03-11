@@ -141,6 +141,7 @@ export default function ListInstruments() {
       field: 'categories',
       headerName: 'Categories',
       width: 350,
+      hide: true,
       renderCell: (params) => (
         <ul className="d-flex flex-row overflow-auto pt-2">
           {params.value.map((element) => (
