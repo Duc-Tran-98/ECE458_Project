@@ -167,57 +167,86 @@ class ModelAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const response = { models: [], total: 0 };
-    const includeData = [
-      {
-        model: this.store.modelCategoryRelationships,
-        as: 'mtmcr',
-        separate: true,
-        include: [
+    if (categories) {
+      let includeData;
+      if (categories) {
+        includeData = [
           {
             model: this.store.modelCategories,
-            as: 'mcrtmc',
+            as: 'categories',
+            through: 'modelCategoryRelationships',
+            where: {
+              name: categories,
+            },
           },
-        ],
-      },
-    ];
-    // }
-
-    // eslint-disable-next-line prefer-const
-    let filters = [];
-    if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
-    if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
-    if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
-
-    let models = await this.store.models.findAndCountAll({
-      include: includeData,
-      where: filters,
-      limit,
-      offset,
-      subQuery: false,
-    });
-    for (let j = 0; j < models.rows.length; j += 1) {
-      const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
-      let cats = [];
-      for (let i = 0; i < mtmcr.length; i += 1) {
-        cats = [...cats, mtmcr[i].mcrtmc.dataValues.name];
+        ];
+      } else {
+        includeData = [
+          {
+            model: this.store.modelCategories,
+            as: 'categories',
+            through: 'modelCategoryRelationships',
+          },
+        ];
       }
+
       // eslint-disable-next-line prefer-const
-      let modelWithCats = { arr: [] };
-      for (let i = 0; i < cats.length; i += 1) {
-        modelWithCats.arr.push({
-          name: cats[i],
-        });
-      }
-      models.rows[j].categories = modelWithCats.arr;
-    }
-    response.models = models.rows;
-    response.total = models.count;
-    models = models.rows;
+      let filters = [];
+      if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+      if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+      if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
 
-    if (categories) {
-      models = await this.store.models.findAndCountAll({
+      let models = await this.store.models.findAndCountAll({
         include: includeData,
         where: filters,
+      });
+      response.models = models.rows;
+      response.total = models.count;
+      models = models.rows;
+
+      // eslint-disable-next-line prefer-const
+      let modelsWithCategories = [];
+      const checker = (arr, target) => target.every((v) => arr.includes(v));
+      for (let i = 0; i < models.length; i += 1) {
+        const hasCategories = models[i].dataValues.categories.map((a) => a.name);
+        if (checker(hasCategories, categories)) {
+          modelsWithCategories.push(models[i]);
+        }
+      }
+      response.total = modelsWithCategories.length;
+      if (limit > 0 && response.total > limit) {
+        // eslint-disable-next-line no-param-reassign
+        if (offset === null) offset = 0;
+        modelsWithCategories = modelsWithCategories.slice(offset, offset + limit);
+      }
+      response.models = modelsWithCategories;
+    } else {
+      const includeData = [
+        {
+          model: this.store.modelCategoryRelationships,
+          as: 'mtmcr',
+          separate: true,
+          include: [
+            {
+              model: this.store.modelCategories,
+              as: 'mcrtmc',
+            },
+          ],
+        },
+      ];
+      // }
+
+      // eslint-disable-next-line prefer-const
+      let filters = [];
+      if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
+      if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
+      if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
+
+      let models = await this.store.models.findAndCountAll({
+        include: includeData,
+        where: filters,
+        limit,
+        offset,
         subQuery: false,
       });
       for (let j = 0; j < models.rows.length; j += 1) {
@@ -238,20 +267,49 @@ class ModelAPI extends DataSource {
       response.models = models.rows;
       response.total = models.count;
       models = models.rows;
-      // eslint-disable-next-line prefer-const
-      let modelsWithCategories = [];
-      const checker = (arr, target) => target.every((v) => arr.includes(v));
-      for (let i = 0; i < models.length; i += 1) {
-        const hasCategories = models[i].categories.map((a) => a.name);
-        if (checker(hasCategories, categories)) {
-          modelsWithCategories.push(models[i]);
+
+      if (categories) {
+        models = await this.store.models.findAndCountAll({
+          include: includeData,
+          where: filters,
+          subQuery: false,
+        });
+        for (let j = 0; j < models.rows.length; j += 1) {
+          const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
+          let cats = [];
+          for (let i = 0; i < mtmcr.length; i += 1) {
+            cats = [...cats, mtmcr[i].mcrtmc.dataValues.name];
+          }
+          // eslint-disable-next-line prefer-const
+          let modelWithCats = { arr: [] };
+          for (let i = 0; i < cats.length; i += 1) {
+            modelWithCats.arr.push({
+              name: cats[i],
+            });
+          }
+          models.rows[j].categories = modelWithCats.arr;
         }
+        response.models = models.rows;
+        response.total = models.count;
+        models = models.rows;
+        // eslint-disable-next-line prefer-const
+        let modelsWithCategories = [];
+        const checker = (arr, target) => target.every((v) => arr.has(v));
+        for (let i = 0; i < models.length; i += 1) {
+          const set = new Set();
+          models[i].categories.map((a) => set.add(a.name));
+          if (checker(set, categories)) {
+            modelsWithCategories.push(models[i]);
+          }
+        }
+        response.total = modelsWithCategories.length;
+        if (limit > 0 && response.total > limit) {
+        // eslint-disable-next-line no-param-reassign
+          if (offset === null) offset = 0;
+          modelsWithCategories = modelsWithCategories.slice(offset, offset + limit);
+        }
+        response.models = modelsWithCategories;
       }
-      response.total = modelsWithCategories.length;
-      if (response.total > limit) {
-        modelsWithCategories = modelsWithCategories.splice(offset, offset + limit);
-      }
-      response.models = modelsWithCategories;
     }
     return response;
   }
