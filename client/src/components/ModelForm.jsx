@@ -151,7 +151,9 @@ export default function ModelForm({
                     query={query}
                     queryName={queryName}
                     onInputChange={(e, v) => {
-                      setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
+                      if (v !== null) {
+                        setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
+                      }
                     }}
                     label="Choose a vendor"
                     getOptionSelected={formatSelected}
@@ -276,7 +278,7 @@ export default function ModelForm({
           {showFooter && (
             <div className="d-flex justify-content-center my-3">
               <div className="row">
-                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Model" />
+                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" />
                 {isSubmitting
                   ? <CircularProgress />
                   : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}

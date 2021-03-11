@@ -10,7 +10,8 @@ import { QueryAndThen } from './UseQuery';
 const filter = createFilterOptions();
 
 export default function AsyncSuggest({
-  query, queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid, multiple, multipleValues, isComboBox,
+  query,
+  queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid, invalidMsg, validMsg, multiple, multipleValues, isComboBox, getVariables,
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -25,8 +26,11 @@ export default function AsyncSuggest({
     multipleValues: PropTypes.array,
     allowAdditions: PropTypes.bool, // Whether or not user should be able to create new input
     isInvalid: PropTypes.bool.isRequired,
+    invalidMsg: PropTypes.string, // invalid msg to be displayed if invalid input
+    validMsg: PropTypes.string, // valid msg to be dsiplayed if valid input
     multiple: PropTypes.bool, // whether or not user should be able to select mutliple
     isComboBox: PropTypes.bool, // whether or not display should be textfield input or combo box
+    getVariables: PropTypes.func, // pass variables to queries
   };
   AsyncSuggest.defaultProps = {
     value: null,
@@ -34,19 +38,29 @@ export default function AsyncSuggest({
     multiple: false,
     multipleValues: null,
     isComboBox: false,
+    getVariables: () => undefined,
+    invalidMsg: `Please ${label}`,
+    validMsg: 'Looks Good',
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
-  const loading = open && availableOptions.length === 0;
+  const [fetched, setFetched] = React.useState(false);
+  const loading = open && !fetched;
   React.useEffect(() => {
     let active = true;
     if (!loading) {
       return undefined;
     }
     (async () => {
-      const response = await QueryAndThen({ query, queryName });
+      const response = await QueryAndThen({ query, queryName, getVariables });
       if (active) {
-        setOptions(response);
+        if (queryName === 'getInstrumentsWithFilter') {
+          // console.log(response);
+          setOptions(response.instruments);
+        } else {
+          setOptions(response);
+        }
+        setFetched(true);
       }
     })();
     return () => {
@@ -60,6 +74,7 @@ export default function AsyncSuggest({
       if (active) {
         if (!open) {
           setOptions([]);
+          setFetched(false);
         }
       }
     })();
@@ -83,12 +98,10 @@ export default function AsyncSuggest({
         />
         <>{loading ? <LinearProgress /> : null}</>
         <Form.Control.Feedback type="invalid">
-          Please
-          {' '}
-          {`${label}`}
+          {invalidMsg}
         </Form.Control.Feedback>
         <Form.Control.Feedback type="valid">
-          Looks good!
+          {validMsg}
         </Form.Control.Feedback>
       </div>
     )

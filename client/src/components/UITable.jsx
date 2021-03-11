@@ -1,16 +1,23 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
-import { DataGrid, GridToolbar, GridOverlay } from '@material-ui/data-grid';
-// import { GridToolbar, FilterToolbarButton, ColumnsToolbarButton, DensitySelector, } from '@material-ui/data-grid';
+import {
+  DataGrid, GridOverlay, ColumnsToolbarButton, DensitySelector,
+} from '@material-ui/data-grid';
+
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
-import { useState, useRef, useEffect } from 'react';
+import {
+  useState, useRef, useEffect, useContext,
+} from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { CSVLink } from 'react-csv';
 import Pagination from '@material-ui/lab/Pagination';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
+import UserContext from './UserContext';
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
@@ -29,7 +36,7 @@ export default function DisplayGrid({
         rows={rows}
         columns={cols}
         pageSize={10}
-        checkboxSelection
+        checkboxSelection={false}
         showToolbar
         locateText={{
           toolbarDensity: 'Size',
@@ -106,6 +113,10 @@ export function ServerPaginationGrid({
   onPageSizeChange,
   rowCount,
   headerElement,
+  // eslint-disable-next-line no-unused-vars
+  filterOptions,
+  showToolBar,
+  showImport,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -123,17 +134,24 @@ export function ServerPaginationGrid({
     onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
     rowCount: PropTypes.number.isRequired, // number of items from URL
     headerElement: PropTypes.node, // what to display in header beside filter options
+    // eslint-disable-next-line react/forbid-prop-types
+    filterOptions: PropTypes.object,
+    showToolBar: PropTypes.bool.isRequired,
+    showImport: PropTypes.bool.isRequired,
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
     headers: null,
     filename: null,
     filterRowForCSV: null,
+    filterOptions: null,
   };
   paginationContainer = React.useRef(null);
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
+  const user = useContext(UserContext);
+  const history = useHistory();
 
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
@@ -262,13 +280,20 @@ export function ServerPaginationGrid({
           onSelectionChange={(newSelection) => {
             setChecked(newSelection.rowIds);
           }}
-          showToolbar
           hideFooterSelectedRowCount
           components={{
-            Toolbar: GridToolbar,
+            Toolbar: () => (
+              showToolBar ? (
+                <>
+                  <ColumnsToolbarButton />
+                  <DensitySelector />
+                </>
+              ) : null
+            ),
             LoadingOverlay: CustomLoadingOverlay,
             Pagination: CustomPagination,
           }}
+          disableColumnMenu
         />
       </div>
       <div className="row bg-offset rounded py-2 mx-auto">
@@ -319,14 +344,25 @@ export function ServerPaginationGrid({
               </li>
             </ul>
           </div>
+          {user.isAdmin && showImport && (
+          <button
+            type="button"
+            className="btn ms-3"
+            onClick={() => {
+              history.push('/import');
+            }}
+          >
+            Import
+          </button>
+          )}
           {handleExport && (
             <>
               {loadingExport && <LinearProgress color="secondary" />}
               {filename && filename.includes('model') && (
-                <ExportModels setLoading={setLoadingExport} />
+                <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
               )}
               {filename && filename.includes('instrument') && (
-                <ExportInstruments setLoading={setLoadingExport} />
+                <ExportInstruments setLoading={setLoadingExport} filterOptions={filterOptions} />
               )}
             </>
           )}

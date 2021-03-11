@@ -9,7 +9,7 @@ import ModalHeader from 'react-bootstrap/ModalHeader';
 import PropTypes from 'prop-types';
 
 function ModalAlert({
-  handleClose, show, title, children, footer,
+  handleClose, show, title, children, footer, width,
 }) {
   ModalAlert.propTypes = {
     handleClose: PropTypes.func.isRequired,
@@ -17,10 +17,12 @@ function ModalAlert({
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     footer: PropTypes.node,
+    width: PropTypes.string,
   };
 
   ModalAlert.defaultProps = {
     footer: null,
+    width: 'modal-100w',
   };
 
   return (
@@ -30,9 +32,11 @@ function ModalAlert({
         onHide={handleClose}
         animation={false}
         contentClassName="bg-theme rounded"
-        dialogClassName="d-flex justify-content-center modal-100w"
+        // dialogClassName="d-flex justify-content-center modal-100w"
+        dialogClassName={`d-flex justify-content-center ${width}`}
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static"
       >
         <ModalHeader>
           <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>

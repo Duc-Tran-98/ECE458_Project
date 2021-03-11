@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const endpoint = process.env.NODE_ENV.includes('dev')
-  ? 'http://localhost:4001/api'
-  : '/api';
+const route = process.env.NODE_ENV.includes('dev')
+  ? 'http://localhost:4001'
+  : '/express';
 
 export default function ExpressQuery({
-  route, method, queryJSON, handleResponse,
+  endpoint, method, queryJSON, handleResponse,
 }) {
-  const url = `${endpoint}${route}`;
+  const url = `${route}${endpoint}`;
   axios({
     url,
     method,

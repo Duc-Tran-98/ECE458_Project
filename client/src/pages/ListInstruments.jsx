@@ -1,10 +1,9 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-unused-expressions */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllInstruments from '../queries/GetAllInstruments';
+import GetAllInstruments, { CountInstruments } from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
@@ -19,14 +18,13 @@ Date.prototype.addDays = function (days) { // This allows you to add days to a d
 export default function ListInstruments() {
   const history = useHistory();
   const user = React.useContext(UserContext);
-  const [modelNumber, setModelNumber] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [assetTag, setAssetTag] = useState(0);
-  const [serialNumber, setSerialNumber] = useState('');
-  const [calibrationFrequency, setcalibrationFrequency] = useState(0);
-  // eslint-disable-next-line no-unused-vars
-  const [description, setDescription] = useState('');
-  const [id, setId] = useState('');
+  // const [modelNumber, setModelNumber] = useState('');
+  // const [vendor, setVendor] = useState('');
+  // const [assetTag, setAssetTag] = useState(0);
+  // const [serialNumber, setSerialNumber] = useState('');
+  // const [calibrationFrequency, setcalibrationFrequency] = useState(0);
+  // const [description, setDescription] = useState('');
+  //  const [id, setId] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const [rowCount, setRowCount] = useState(parseInt(urlParams.get('count'), 10));
@@ -49,6 +47,7 @@ export default function ListInstruments() {
     modelCategories: selectedFilters ? selectedFilters.modelCategories : null,
     instrumentCategories: selectedFilters ? selectedFilters.instrumentCategories : null,
     filterSerialNumber: selectedFilters ? selectedFilters.filterSerialNumber : null,
+    assetTag: selectedFilters ? selectedFilters.assetTag : null,
   });
   const navLink = document.getElementById('instrumentNavLink');
   const getAndSetUrlVals = () => {
@@ -71,8 +70,9 @@ export default function ListInstruments() {
         || filterOptions.modelCategories !== null
         || filterOptions.instrumentCategories !== null
         || filterOptions.filterSerialNumber !== null
+        || filterOptions.assetTag !== null
       ) {
-        console.log('clearing filters');
+        // console.log('clearing filters');
         setFilterOptions({
           vendors: null,
           modelNumbers: null,
@@ -80,6 +80,7 @@ export default function ListInstruments() {
           modelCategories: null,
           instrumentCategories: null,
           filterSerialNumber: null,
+          assetTag: null,
         });
       }
       setTimeout(() => {
@@ -87,7 +88,7 @@ export default function ListInstruments() {
       }, 50);
     };
   }
-  console.log(navLink);
+  // console.log(navLink);
   history.listen((location, action) => {
     if (action === 'POP') {
       // if user clicks on models nav link or goes back
@@ -97,15 +98,23 @@ export default function ListInstruments() {
   });
   const cellHandler = (e) => {
     if (e.field === 'view') {
-      setModelNumber(e.row.modelNumber);
-      setVendor(e.row.vendor);
-      setAssetTag(e.row.assetTag);
-      setId(e.row.id);
-      setSerialNumber(e.row.serialNumber);
-      setDescription(e.row.description);
-      if (e.row.calibrationFrequency !== null) {
-        setcalibrationFrequency(e.row.calibrationFrequency);
-      }
+      const state = { previousUrl: window.location.href };
+      const {
+        modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency,
+      } = e.row;
+      history.push(
+        `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency || 0}`,
+        state,
+      );
+      // setModelNumber(e.row.modelNumber);
+      // setVendor(e.row.vendor);
+      // setAssetTag(e.row.assetTag);
+      // setId(e.row.id);
+      // setSerialNumber(e.row.serialNumber);
+      // setDescription(e.row.description);
+      // if (e.row.calibrationFrequency !== null) {
+      //   setcalibrationFrequency(e.row.calibrationFrequency);
+      // }
     }
   };
   const genDaysLeft = (date) => {
@@ -128,6 +137,23 @@ export default function ListInstruments() {
     { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
     { field: 'description', headerName: 'Description', width: 225 },
     { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
+    {
+      field: 'categories',
+      headerName: 'Categories',
+      width: 350,
+      renderCell: (params) => (
+        <ul className="d-flex flex-row overflow-auto pt-2">
+          {params.value.map((element) => (
+            <li
+              key={element.name}
+              className="list-group-item list-group-item-secondary"
+            >
+              {element.name}
+            </li>
+          ))}
+        </ul>
+      ),
+    },
     {
       field: 'comment',
       headerName: 'Comment',
@@ -225,20 +251,13 @@ export default function ListInstruments() {
               <button
                 type="button"
                 className="btn "
-                onClick={() => {
-                  const state = { previousUrl: window.location.href };
-                  history.push(
-                    `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
-                    state,
-                  );
-                }}
               >
                 View
               </button>
             </MouseOverPopover>
           </div>
         </div>
-      ), // TODO: put asset tag in url?
+      ),
     },
   ];
 
@@ -266,7 +285,7 @@ export default function ListInstruments() {
   ];
 
   const updateUrlWithFilter = ({
-    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, total, filterSerialNumber,
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, total, filterSerialNumber, assetTag,
   }) => {
     const formatedInstrumentCategories = instrumentCategories !== null ? instrumentCategories : null;
     const formatedModelCategories = modelCategories !== null ? modelCategories : null;
@@ -278,6 +297,7 @@ export default function ListInstruments() {
         instrumentCategories: formatedInstrumentCategories,
         modelCategories: formatedModelCategories,
         filterSerialNumber,
+        assetTag,
       }),
       'ascii',
     ).toString('base64');
@@ -288,6 +308,7 @@ export default function ListInstruments() {
       && (!modelNumbers)
       && (!descriptions)
       && (!filterSerialNumber)
+      && (!assetTag)
     ) {
       history.push(`/viewInstruments?page=1&limit=${initLimit}&count=${total}`);
     } else {
@@ -298,7 +319,7 @@ export default function ListInstruments() {
   };
 
   const onSearch = ({
-    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber,
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   }) => {
     //  console.log('searching...');
     let formatedModelCategories = [];
@@ -312,28 +333,55 @@ export default function ListInstruments() {
     // console.log(modelCategories);
     formatedInstrumentCategories = formatedInstrumentCategories.length > 0 ? formatedInstrumentCategories : null;
     formatedModelCategories = formatedModelCategories.length > 0 ? formatedModelCategories : null;
-    GetAllInstruments({
-      limit: 1,
-      offset: 0,
-      modelNumber: modelNumbers,
-      description: descriptions,
-      vendor: vendors,
-      modelCategories: formatedModelCategories,
-      instrumentCategories: formatedInstrumentCategories,
-      serialNumber: filterSerialNumber,
-    }).then((response) => {
-      setRowCount(response.total);
-      setInitPage(1);
-      updateUrlWithFilter({
-        vendors,
-        modelNumbers,
-        descriptions,
+    if (
+      !vendors
+      && (modelCategories === null || modelCategories?.length === 0)
+      && (instrumentCategories === null || instrumentCategories?.length === 0)
+      && !modelNumbers
+      && !descriptions
+      && !filterSerialNumber
+      && !assetTag
+    ) {
+      CountInstruments().then((val) => {
+        setRowCount(val);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          modelCategories: formatedModelCategories,
+          instrumentCategories: formatedInstrumentCategories,
+          total: val,
+          filterSerialNumber,
+          assetTag,
+        });
+      });
+    } else {
+      GetAllInstruments({
+        limit: 1,
+        offset: 0,
+        modelNumber: modelNumbers,
+        description: descriptions,
+        vendor: vendors,
         modelCategories: formatedModelCategories,
         instrumentCategories: formatedInstrumentCategories,
-        total: response.total,
-        filterSerialNumber,
+        serialNumber: filterSerialNumber,
+        assetTag,
+      }).then((response) => {
+        setRowCount(response.total);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          modelCategories: formatedModelCategories,
+          instrumentCategories: formatedInstrumentCategories,
+          total: response.total,
+          filterSerialNumber,
+          assetTag,
+        });
       });
-    });
+    }
     setFilterOptions({
       vendors,
       modelNumbers,
@@ -341,10 +389,11 @@ export default function ListInstruments() {
       modelCategories: formatedModelCategories,
       instrumentCategories: formatedInstrumentCategories,
       filterSerialNumber,
+      assetTag,
     });
   };
   const {
-    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber,
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   } = filterOptions;
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
@@ -355,6 +404,7 @@ export default function ListInstruments() {
         modelCategories,
         instrumentCategories,
         filterSerialNumber,
+        assetTag,
       }),
       'ascii',
     ).toString('base64');
@@ -369,6 +419,7 @@ export default function ListInstruments() {
       setInitPage(page);
     }
   };
+  console.log(filterOptions);
 
   return (
     <>
@@ -391,6 +442,7 @@ export default function ListInstruments() {
               initModelCategories={filterOptions.modelCategories}
               initInstrumentCategories={filterOptions.instrumentCategories}
               initSerialNumber={filterOptions.filterSerialNumber}
+              initAssetTag={filterOptions.assetTag}
             />
           </div>
         )}
@@ -412,37 +464,44 @@ export default function ListInstruments() {
           modelCategories,
           instrumentCategories,
           serialNumber: filterSerialNumber,
-          assetTag: null,
+          assetTag,
         }).then((response) => {
-          // console.log('fetched data');
-          response.instruments.forEach((element) => {
-            if (element !== null) {
-              element.calibrationStatus = element.calibrationFrequency === null
+          console.log(response);
+          if (response !== null) {
+            response.instruments.forEach((element) => {
+              if (element !== null) {
+                element.categories = element.modelCategories.concat(element.instrumentCategories);
+                element.calibrationStatus = element.calibrationFrequency === null
                 || element.calibrationFrequency === 0
-                ? 'N/A'
-                : 'Out of Calibration';
-              element.recentCalDate = 'N/A';
-              if (
-                element.calibrationFrequency
+                  ? 'N/A'
+                  : 'Out of Calibration';
+                element.recentCalDate = 'N/A';
+                if (
+                  element.calibrationFrequency
                   && element.recentCalibration
                   && element.recentCalibration[0]
-              ) {
+                ) {
                 // eslint-disable-next-line prefer-destructuring
-                element.calibrationStatus = new Date(
-                  element.recentCalibration[0].date,
-                )
-                  .addDays(element.calibrationFrequency)
-                  .toISOString()
-                  .split('T')[0];
-                element.recentCalDate = element.recentCalibration[0].date;
+                  element.calibrationStatus = new Date(
+                    element.recentCalibration[0].date,
+                  )
+                    .addDays(element.calibrationFrequency)
+                    .toISOString()
+                    .split('T')[0];
+                  element.recentCalDate = element.recentCalibration[0].date;
+                }
               }
-            }
-          });
-          return response.instruments;
+            });
+            return response.instruments;
+          }
+          return [];
         })}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
+        filterOptions={filterOptions}
         filename="instruments.csv"
+        showToolBar
+        showImport
       />
     </>
   );

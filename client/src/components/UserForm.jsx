@@ -246,7 +246,7 @@ export function EditUserForm({
         )}
 
         <span className="mx-2" />
-        <button className={buttonStyle} type="button" onClick={onDeleteClick}>
+        <button className={formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn btn-danger'} type="button" onClick={onDeleteClick}>
           Delete User
         </button>
       </div>

@@ -164,7 +164,7 @@ class CalibrationEventAPI extends DataSource {
     comment,
     loadBankData,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     const validation = validateEvent(comment);
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -190,6 +190,7 @@ class CalibrationEventAPI extends DataSource {
           loadBankData,
         });
         response.message = `Added new calibration event to instrument tag: ${assetTag}!`;
+        response.success = true;
       } else {
         response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
       }

@@ -7,7 +7,7 @@ minor feature that would be cool is spinners while the modal alert loads;
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllModels from '../queries/GetAllModels';
+import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
@@ -15,9 +15,9 @@ import UserContext from '../components/UserContext';
 function ListModels() {
   const history = useHistory();
   const user = React.useContext(UserContext);
-  const [modelNumber, setModelNumber] = useState('');
-  const [vendor, setVendor] = useState('');
-  const [description, setDescription] = useState('');
+  // const [modelNumber, setModelNumber] = useState('');
+  // const [vendor, setVendor] = useState('');
+  // const [description, setDescription] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const initRowCount = parseInt(urlParams.get('count'), 10);
@@ -87,24 +87,28 @@ function ListModels() {
 
   const cellHandler = (e) => {
     if (e.field === 'view') {
-      setDescription(e.row.description);
-      setModelNumber(e.row.modelNumber);
-      setVendor(e.row.vendor);
+      const state = { previousUrl: window.location.href };
+      const { modelNumber, vendor, description } = e.row;
+      history.push(
+        `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+        state,
+      );
+      // setDescription(e.row.description);
+      // setModelNumber(e.row.modelNumber);
+      // setVendor(e.row.vendor);
     }
   };
   const cols = [
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 400 },
+    { field: 'description', headerName: 'Description', width: 350 },
     {
       field: 'comment',
       headerName: 'Comment',
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
+        <div className="overflow-auto">{params.value}</div>
       ),
     },
     {
@@ -114,7 +118,7 @@ function ListModels() {
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
-            {(params.value === 0 || params.value === null) ? (
+            {params.value === 0 || params.value === null ? (
               <MouseOverPopover message="Model not calibratable">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -138,10 +142,26 @@ function ListModels() {
       ),
     },
     {
+      field: 'categories',
+      headerName: 'Categories',
+      width: 350,
+      renderCell: (params) => (
+        <ul className="d-flex flex-row overflow-auto ">
+          {params.value.map((element) => (
+            <li
+              key={element.name}
+              className="list-group-item list-group-item-secondary"
+            >
+              {element.name}
+            </li>
+          ))}
+        </ul>
+      ),
+    },
+    {
       field: 'view',
       headerName: 'View',
       width: 120,
-      disableColumnMenu: true,
       renderCell: () => (
         <div className="row">
           <div className="col mt-1">
@@ -149,13 +169,6 @@ function ListModels() {
               <button
                 type="button"
                 className="btn "
-                onClick={() => {
-                  const state = { previousUrl: window.location.href };
-                  history.push(
-                    `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-                    state,
-                  );
-                }}
               >
                 View
               </button>
@@ -216,7 +229,7 @@ function ListModels() {
       );
       // console.log(JSON.parse(Buffer.from(filters, 'base64').toString('ascii')));
     }
-    console.log(`vendors ${!vendors} modelNumbs ${!modelNumbers} desc ${!descriptions} cat ${(categories === null || categories?.length === 0)}`);
+    // console.log(`vendors ${!vendors} modelNumbs ${!modelNumbers} desc ${!descriptions} cat ${(categories === null || categories?.length === 0)}`);
   };
 
   const onSearch = ({
@@ -227,24 +240,44 @@ function ListModels() {
       actualCategories.push(element.name);
     });
     actualCategories = actualCategories.length > 0 ? actualCategories : null;
-    GetAllModels({
-      limit: 1,
-      offset: 0,
-      modelNumber: modelNumbers,
-      description: descriptions,
-      vendor: vendors,
-      categories: actualCategories,
-    }).then((response) => {
-      setRowCount(response.total);
-      setInitPage(1);
-      updateUrlWithFilter({
-        vendors,
-        modelNumbers,
-        descriptions,
-        categories: actualCategories,
-        total: response.total,
+    if (
+      !vendors
+      && (modelCategories === null || modelCategories?.length === 0)
+      && !modelNumbers
+      && !descriptions
+    ) {
+      CountAllModels().then((val) => {
+        setRowCount(val);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          categories: actualCategories,
+          total: val,
+        });
       });
-    });
+    } else {
+      GetAllModels({
+        limit: 1,
+        offset: 0,
+        modelNumber: modelNumbers,
+        description: descriptions,
+        vendor: vendors,
+        categories: actualCategories,
+      }).then((response) => {
+        setRowCount(response.total);
+        setInitPage(1);
+        updateUrlWithFilter({
+          vendors,
+          modelNumbers,
+          descriptions,
+          categories: actualCategories,
+          total: response.total,
+        });
+      });
+    }
+
     setFilterOptions({
       vendors,
       modelNumbers,
@@ -319,6 +352,9 @@ function ListModels() {
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"
+        filterOptions={filterOptions}
+        showToolBar
+        showImport
       />
     </>
   );

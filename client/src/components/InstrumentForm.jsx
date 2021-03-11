@@ -70,6 +70,7 @@ export default function InstrumentForm({
   type,
   handleDelete,
   footer,
+  updateCalibrationFrequency,
 }) {
   InstrumentForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -85,6 +86,7 @@ export default function InstrumentForm({
     type: PropTypes.string.isRequired,
     handleDelete: PropTypes.func,
     footer: PropTypes.node,
+    updateCalibrationFrequency: PropTypes.func,
 
   };
   InstrumentForm.defaultProps = {
@@ -92,13 +94,14 @@ export default function InstrumentForm({
     viewOnly: false,
     description: '',
     calibrationFrequency: 0,
+    updateCalibrationFrequency: () => undefined,
   };
   const disabled = !(typeof viewOnly === 'undefined' || !viewOnly);
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && user.isAdmin;
-
+  console.log(categories);
   return (
     <Formik
       initialValues={{
@@ -129,14 +132,13 @@ export default function InstrumentForm({
         errors,
         // touched,
       }) => (
-        <Form
-          noValidate
-          onSubmit={handleSubmit}
-        >
+        <Form noValidate onSubmit={handleSubmit}>
           <div className="row mx-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center">Model Selection</Form.Label>
+                <Form.Label className="h4 text-center">
+                  Model Selection
+                </Form.Label>
                 {viewOnly ? (
                   // TODO: Can you edit this during change?
                   <Form.Control
@@ -153,22 +155,30 @@ export default function InstrumentForm({
                       onInputChange={(e, v) => {
                         setFieldValue('vendor', v.vendor);
                         setFieldValue('modelNumber', v.modelNumber);
+                        console.log(v);
+                        setFieldValue(
+                          'calibrationFrequency',
+                          v.calibrationFrequency,
+                        );
+                        updateCalibrationFrequency(v.calibrationFrequency || 0);
+                        setFieldValue('description', v.description);
                       }}
                       label="Choose a model"
                       getOptionSelected={formatSelected}
                       getOptionLabel={formatOption}
-                      value={{ modelNumber: values.modelNumber, vendor: values.vendor }}
-                      isInvalid={!!errors.vendor && !!errors.modelNumber}
+                      value={{
+                        modelNumber: values.modelNumber,
+                        vendor: values.vendor,
+                      }}
+                      isInvalid={false}
                     />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.vendor}
-                    </Form.Control.Feedback>
                   </>
                 )}
               </Form.Group>
             </div>
             <div className="col mt-3">
               <CustomInput
+                placeHolder="This field is optional"
                 controlId="formAssetTag"
                 className="h4"
                 label="Asset Tag"
@@ -192,7 +202,7 @@ export default function InstrumentForm({
                 <Form.Control
                   type="text"
                   name="calibrationFrequency"
-                  value={calibrationFrequency}
+                  value={values.calibrationFrequency}
                   disabled
                 />
               </Form.Group>
@@ -205,7 +215,7 @@ export default function InstrumentForm({
                 <Form.Control
                   type="text"
                   name="modelDescription"
-                  value={description}
+                  value={values.description}
                   disabled
                 />
               </Form.Group>
@@ -213,6 +223,7 @@ export default function InstrumentForm({
             {/* TODO: What are problems with serial number? */}
             <div className="col mt-3">
               <CustomInput
+                placeHolder="This field is optional"
                 controlId="formSerialNumber"
                 className="h4"
                 label="Serial Number"
@@ -253,7 +264,7 @@ export default function InstrumentForm({
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
                 }}
-                tags={categories}
+                tags={values.categories}
                 dis={disabled}
                 models={false}
                 isInvalid={false}
@@ -261,19 +272,35 @@ export default function InstrumentForm({
             </div>
           </div>
           {type === 'create' && (
-          <div className="d-flex justify-content-center my-3">
-            {isSubmitting
-              ? <CircularProgress />
-              : <Button type="submit" onClick={handleSubmit}>Add Instrument</Button>}
-          </div>
+            <div className="d-flex justify-content-center my-3">
+              {isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <Button type="submit" onClick={handleSubmit}>
+                  Add Instrument
+                </Button>
+              )}
+            </div>
           )}
           {showFooter && (
             <div className="d-flex justify-content-center my-3">
               <div className="row">
-                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn" buttonLabel="Delete Instrument" />
-                {isSubmitting
-                  ? <CircularProgress />
-                  : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}
+                <CustomButton
+                  onClick={handleDelete}
+                  divClass="col"
+                  buttonClass="btn btn-danger text-nowrap my-auto"
+                  buttonLabel="Delete Instrument"
+                />
+                {isSubmitting ? (
+                  <CircularProgress />
+                ) : (
+                  <CustomButton
+                    onClick={handleSubmit}
+                    divClass="col"
+                    buttonClass="btn text-nowrap"
+                    buttonLabel="Save Changes"
+                  />
+                )}
                 {footer}
               </div>
             </div>

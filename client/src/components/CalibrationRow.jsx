@@ -91,7 +91,7 @@ export default function CalibrationRow({
             </Form.Group>
           </div>
           <div className="col-4 mt-3">
-            <Form.Group controlId="formDate">
+            <Form.Group>
               <Form.Label className="h4">Date</Form.Label>
               <Form.Control
                 name="date"
@@ -133,7 +133,7 @@ export default function CalibrationRow({
                     className="invisible position-absolute top-0 start-0"
                     id={`inputFile-${id}`}
                     onInput={(e) => {
-                      console.log(e);
+                      // console.log(e);
                       if (e.target.files[0]) {
                         setFileNameDisplay('');
                         const removeIfCurrent = {

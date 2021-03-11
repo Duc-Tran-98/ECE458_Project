@@ -1,12 +1,12 @@
 // This is the actual backend server;
 const { ApolloServer } = require('apollo-server');
 // const { ApolloServer } = require('apollo-server-express');
-const isEmail = require('isemail');
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 // const bodyParser = require('body-parser');
+const { createVerifier } = require('fast-jwt');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
 const ModelAPI = require('./datasources/models');
@@ -37,13 +37,27 @@ const server = new ApolloServer({
   context: async ({ req }) => {
     // simple auth check on every request
     const auth = (req.headers && req.headers.authorization) || '';
-    const email = Buffer.from(auth, 'base64').toString('ascii');
-    if (!isEmail.validate(email)) return { user: null };
-    // find a user by their email
-    const users = await store.users.findOrCreate({ where: { email } });
-    const user = (users && users[0]) || null;
-    return { user: { ...user.dataValues } };
+    console.log('********************* AUTH *************************');
+    console.log(auth);
+    const verifyWithPromise = createVerifier({ key: async () => 'secret' });
+    return verifyWithPromise(auth).then((value) => {
+      console.log('************************ VALUE ************************');
+      console.log(value);
+      return { user: value };
+    }).catch((err) => {
+      console.error(err);
+      return { user: null };
+    });
   },
+  /*
+  sections === {
+    header: { alg: 'HS512', typ: 'JWT' },
+    payload: { a: 1, b: 2, c: 3, iat: 1579521212 },
+    signature:
+    'mIcxteEVjbh2MnKQ3EQlojZojGSyA/guqRBYHQURcfnCSSBTT2OShF8lo9/ogjAv+5oECgmCur/cDWB7x3X53g==',
+    input: 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhIjoxLCJiIjoyLCJjIjozLCJpYXQiOjE1Nzk1MjEyMTJ9'
+  }
+*/
   // Additional constructor options
   typeDefs,
   resolvers,
@@ -64,8 +78,9 @@ app.use(cors());
 app.use(express.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
 const expressPort = 4001;
+const whichRoute = process.env.NODE_ENV.includes('dev') ? '/api' : '/express/api';
 
-app.post('/api/oauthConsume', (req, res) => {
+app.post(`${whichRoute}/oauthConsume`, (req, res) => {
   const { code } = req.body;
   const authString = Buffer.from(
     `${oauthClientId}:${oauthClientSecret}`,
@@ -99,7 +114,7 @@ app.post('/api/oauthConsume', (req, res) => {
     });
 });
 
-app.get('/api/userinfo', (req, res) => {
+app.get(`${whichRoute}/userinfo`, (req, res) => {
   const url = 'https://oauth.oit.duke.edu/oidc/userinfo';
   const { accessToken } = req.query;
 
@@ -157,7 +172,7 @@ const upload = multer({
   fileFilter: filter,
 });
 
-app.post('/api/upload', upload.any(), (req, res, next) => {
+app.post(`${whichRoute}/upload`, upload.any(), (req, res, next) => {
   // req.file is the `avatar` file
   // req.body will hold the text fields, if there were any
   res.send({
@@ -166,9 +181,9 @@ app.post('/api/upload', upload.any(), (req, res, next) => {
   });
 });
 
-app.post('/api/uploadExcel', (req, res) => {
+app.post(`${whichRoute}/uploadExcel`, (req, res) => {
   // Do some things
   res.send('Hello World');
 });
 
-app.listen({ port: expressPort }, () => console.log(`🚀 Server ready at http://localhost:${expressPort}`));
+app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));

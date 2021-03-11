@@ -55,7 +55,7 @@ const Login = ({ handleLogin }) => {
           'token',
           Buffer.from(userName, 'ascii').toString('base64'),
         );
-        handleLogin();
+        handleLogin(response.jwt);
       } else {
         toast.error('You have entered an incorrect username/password');
       }

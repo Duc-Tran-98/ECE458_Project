@@ -10,6 +10,11 @@ body {
   border: 1px solid black;
 }
 
+#root .btn.btn-danger{
+  background: #fc2311;
+  color: white;
+}
+
 .delete-container {
   width: 80%;
   /*border-radius: 25px;*/
@@ -96,6 +101,20 @@ label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLab
   /* Multiple combo box label when label is shurnk */
   padding-top: 3px;
 }
+span.MuiTypography-root.MuiStepLabel-label.MuiTypography-body2.MuiTypography-displayBlock{
+  /* Label styling for vertical stepper */
+  font-weight: bold;
+  font-size: large;
+}
+div.MuiPaper-root.MuiStepper-root.MuiStepper-vertical{
+  /*  Styling vertical stepper root container */
+  background: #e5e5e5;
+}
+div.MuiPaper-root.MuiPaper-elevation0{
+   /*  Styling vertical stepper root container */
+  background: #e5e5e5;
+}
+
 .tags-input {
   display: flex;
   align-items: flex-start;
