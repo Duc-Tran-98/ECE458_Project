@@ -69,7 +69,7 @@ class UserAPI extends DataSource {
   async oauthLogin({ netId, firstName, lastName }) {
     const email = `${netId}@duke.edu`;
     const userName = `${netId}@duke.edu`;
-    const isAdmin = true;
+    const isAdmin = false;
 
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
