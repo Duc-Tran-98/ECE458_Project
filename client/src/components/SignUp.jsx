@@ -155,7 +155,7 @@ export default function SignUp({ onCreation }) {
                   value={values.email}
                   placeholder="example@duke.edu"
                   onChange={handleChange}
-                  isInvalid={!!errors.email}
+                  isInvalid={touched.email && !!errors.email}
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.email}
