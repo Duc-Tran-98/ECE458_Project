@@ -77,6 +77,8 @@ const typeDefs = gql`
     getAllInstrumentCategories(limit: Int, offset: Int): [Category]
     countModelCategories: Int!
     countInstrumentCategories: Int!
+    countModelsAttachedToCategory(name: String!): Int!
+    countInstrumentsAttachedToCategory(name: String!): Int!
   }
 
   type User {

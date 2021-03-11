@@ -20,7 +20,6 @@ export default async function GetInstrumentCategories({ limit, offset }) {
   const queryName = 'getAllInstrumentCategories';
   const getVariables = () => ({ limit, offset });
   const response = await QueryAndThen({ query, queryName, getVariables });
-  console.log(response);
   return response;
 }
 
@@ -32,5 +31,17 @@ export async function CountInstrumentCategories() {
     `);
   const queryName = 'countInstrumentCategories';
   const response = await QueryAndThen({ query, queryName });
+  return response;
+}
+
+export async function CountInstrumentsAttached({ name }) {
+  const query = print(gql`
+        query Count($name: String!){
+          countInstrumentsAttachedToCategory(name: $name)
+        }
+    `);
+  const getVariables = () => ({ name });
+  const queryName = 'countInstrumentsAttachedToCategory';
+  const response = await QueryAndThen({ query, queryName, getVariables });
   return response;
 }

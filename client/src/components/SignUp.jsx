@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -126,25 +127,28 @@ export default function SignUp({ onCreation }) {
                   {errors.lastName}
                 </Form.Control.Feedback>
               </Form.Group>
-              {/* TODO:
-                Prepend "@" to username
-                Add validation based on username exists */}
+              {/* TODO: Add validation based on username exists */}
               <Form.Group controlId="userName" className="col mt-3">
                 <Form.Label className="h4">Username</Form.Label>
-                <Form.Control
-                  name="userName"
-                  value={values.userName}
-                  placeholder="Username"
-                  onChange={(e) => {
-                    if (!e.target.value.includes('@')) {
-                      handleChange(e);
-                    }
-                  }}
-                  isInvalid={touched.userName && !!errors.userName}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.userName}
-                </Form.Control.Feedback>
+                <InputGroup className="mb-2">
+                  <InputGroup.Prepend>
+                    <InputGroup.Text>@</InputGroup.Text>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    name="userName"
+                    value={values.userName}
+                    placeholder="Username"
+                    onChange={(e) => {
+                      if (!e.target.value.includes('@')) {
+                        handleChange(e);
+                      }
+                    }}
+                    isInvalid={touched.userName && !!errors.userName}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.userName}
+                  </Form.Control.Feedback>
+                </InputGroup>
               </Form.Group>
             </div>
             <div className="row mx-3 border-top border-dark">
@@ -155,7 +159,7 @@ export default function SignUp({ onCreation }) {
                   value={values.email}
                   placeholder="example@duke.edu"
                   onChange={handleChange}
-                  isInvalid={!!errors.email}
+                  isInvalid={touched.email && !!errors.email}
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.email}
