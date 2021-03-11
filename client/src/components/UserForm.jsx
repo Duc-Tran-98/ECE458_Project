@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
@@ -6,6 +6,7 @@ import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import Query from './UseQuery';
+import UserContext from './UserContext';
 
 export default function UserForm({
   onSubmit, changeHandler, formState, onChangeCheckbox,
@@ -157,6 +158,7 @@ export function EditUserForm({
     onChangeCheckbox: () => undefined,
     onDeleteClick: () => undefined,
   };
+  const user = useContext(UserContext);
   const history = useHistory();
   const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn';
   const [loading, setLoading] = React.useState(false);
@@ -228,7 +230,7 @@ export function EditUserForm({
               name="isAdmin"
               checked={formState.isAdmin}
               onChange={onChangeCheckbox}
-              disabled={formState.userName === 'admin'}
+              disabled={formState.userName === 'admin' || formState.userName === user.userName}
             />
             <div className="col">
               <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
@@ -240,13 +242,13 @@ export function EditUserForm({
         {loading ? (
           <CircularProgress />
         ) : (
-          <button className={buttonStyle} type="submit">
+          <button className={buttonStyle} type="submit" disabled={formState.userName === user.userName}>
             Save Changes
           </button>
         )}
 
         <span className="mx-2" />
-        <button className={formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn btn-danger'} type="button" onClick={onDeleteClick}>
+        <button className={formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn btn-danger'} type="button" onClick={onDeleteClick} disabled={formState.userName === user.userName}>
           Delete User
         </button>
       </div>
