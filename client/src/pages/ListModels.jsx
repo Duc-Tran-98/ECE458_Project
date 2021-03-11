@@ -25,7 +25,7 @@ function ListModels() {
   const [rowCount, setRowCount] = useState(initRowCount);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
-  const urlFilter = urlParams.get('filters');
+  let urlFilter = urlParams.get('filters');
   let selectedFilters = null;
   if (urlFilter) {
     selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
@@ -37,52 +37,39 @@ function ListModels() {
     descriptions: selectedFilters ? selectedFilters.descriptions : null,
     categories: selectedFilters ? selectedFilters.categories : null,
   });
-  const navLink = document.getElementById('modelNavLink');
-  const getAndSetUrlVals = () => {
-    const urlVals = new URLSearchParams(window.location.search);
+  // const navLink = document.getElementById('modelNavLink');
+  const getAndSetUrlVals = (search = null) => {
+    const urlVals = new URLSearchParams(search || window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
     const total = parseInt(urlVals.get('count'), 10);
+    urlFilter = urlVals.get('filters');
     setInitLimit(lim);
     setInitPage(pg);
     // console.log(`total = ${total}`);
     setRowCount(total);
-  };
-  if (navLink !== null) {
-    navLink.onclick = () => {
-      // console.log('clicked');
-      if (
-        filterOptions.vendors !== null
-        || filterOptions.modelNumbers !== null
-        || filterOptions.descriptions !== null
-        || filterOptions.categories !== null
-      ) {
-        // console.log('clearing filters');
-        // console.log(
-        //   `vendors: ${filterOptions.vendors.length !== 0} descriptions: ${
-        //     filterOptions.descriptions.length !== 0
-        //   } modelNumbers: ${
-        //     filterOptions.modelNumbers.length !== 0
-        //   } categories: ${filterOptions.categories !== null}`,
-        // );
-        setFilterOptions({
-          vendors: null,
-          modelNumbers: null,
-          descriptions: null,
-          categories: null,
-        });
-      }
-      setTimeout(() => {
-        getAndSetUrlVals();
-      }, 50);
-    };
-  }
-  history.listen((location, action) => {
-    if (action === 'POP') {
-      // if user clicks on models nav link or goes back
-      getAndSetUrlVals();
-      // console.log('popped!');
+    if (urlFilter) {
+      selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
+      // console.log(selectedFilters);
+      // console.log(selectedFilters);
+    } else {
+      selectedFilters = null;
     }
+    setFilterOptions({
+      vendors: selectedFilters ? selectedFilters.vendors : null,
+      modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
+      descriptions: selectedFilters ? selectedFilters.descriptions : null,
+      categories: selectedFilters ? selectedFilters.categories : null,
+    });
+  };
+  // eslint-disable-next-line no-unused-vars
+  history.listen((location, action) => {
+    let active = true;
+    (() => {
+      if (!active) return;
+      getAndSetUrlVals(location.search);
+    })();
+    return () => { active = false; };
   });
 
   const cellHandler = (e) => {
@@ -216,20 +203,21 @@ function ListModels() {
       }),
       'ascii',
     ).toString('base64');
+    let route = '';
     if (
       (!vendors)
       && (categories === null || categories?.length === 0)
       && (!modelNumbers)
       && (!descriptions)
     ) {
-      history.push(`/viewModels?page=1&limit=${initLimit}&count=${total}`);
+      route = `/viewModels?page=1&limit=${initLimit}&count=${total}`;
+      history.push(route);
     } else {
+      route = `/viewModels?page=1&limit=${initLimit}&count=${total}&filters=${filters}`;
       history.push(
-        `/viewModels?page=1&limit=${initLimit}&count=${total}&filters=${filters}`,
+        route,
       );
-      // console.log(JSON.parse(Buffer.from(filters, 'base64').toString('ascii')));
     }
-    // console.log(`vendors ${!vendors} modelNumbs ${!modelNumbers} desc ${!descriptions} cat ${(categories === null || categories?.length === 0)}`);
   };
 
   const onSearch = ({
@@ -247,8 +235,8 @@ function ListModels() {
       && !descriptions
     ) {
       CountAllModels().then((val) => {
-        setRowCount(val);
-        setInitPage(1);
+        // setRowCount(val);
+        //  setInitPage(1);
         updateUrlWithFilter({
           vendors,
           modelNumbers,
@@ -266,8 +254,8 @@ function ListModels() {
         vendor: vendors,
         categories: actualCategories,
       }).then((response) => {
-        setRowCount(response.total);
-        setInitPage(1);
+        // setRowCount(response.total);
+        // setInitPage(1);
         updateUrlWithFilter({
           vendors,
           modelNumbers,
@@ -277,13 +265,6 @@ function ListModels() {
         });
       });
     }
-
-    setFilterOptions({
-      vendors,
-      modelNumbers,
-      descriptions,
-      categories: actualCategories,
-    });
   };
   const {
     vendors, modelNumbers, descriptions, categories,
