@@ -89,7 +89,7 @@ const TagsInput = (props) => {
         <input
           type="text"
           // onKeyUp={(event) => (event.key === 'Enter' ? addTags(event) : null)}
-          placeholder="Select Categories"
+          placeholder={dis ? '' : 'Select Categories'}
           className="form-control"
           disabled={dis}
         />
@@ -98,7 +98,7 @@ const TagsInput = (props) => {
           query={query}
           queryName={queryName}
           onInputChange={onInputChange}
-          label="Select Categories"
+          label={dis ? '' : 'Select Categories'}
           getOptionSelected={formatSelected}
           getOptionLabel={formatOption}
           allowAdditions={false}
