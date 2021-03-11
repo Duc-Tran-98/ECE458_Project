@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 import Query from './UseQuery';
 
 export default function UserForm({
@@ -159,7 +160,6 @@ export function EditUserForm({
   const history = useHistory();
   const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn';
   const [loading, setLoading] = React.useState(false);
-  const [responseMsg, setResponseMsg] = React.useState('Save Changes');
   const onSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -176,23 +176,23 @@ export function EditUserForm({
       }),
       handleResponse: (response) => {
         setLoading(false);
-        setResponseMsg(response.message);
         if (response.success) {
+          toast.success('Successfully updated permissions');
           const { state } = history.location;
           history.replace(
             `/viewUser/?userName=${formState.userName}&isAdmin=${
               formState.isAdmin
             }`, state,
           );
-          setTimeout(() => {
-            setResponseMsg('Save Changes');
-          }, 1000);
+        } else {
+          toast.error(response.message);
         }
       },
     });
   };
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
+      <ToastContainer />
       <div className="row mx-3">
         <div className="col mt-3">
           <label htmlFor="validationCustomUsername" className="h4">
@@ -241,7 +241,7 @@ export function EditUserForm({
           <CircularProgress />
         ) : (
           <button className={buttonStyle} type="submit">
-            {responseMsg}
+            Save Changes
           </button>
         )}
 
