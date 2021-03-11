@@ -160,6 +160,7 @@ export function EditUserForm({
   };
   const user = useContext(UserContext);
   const history = useHistory();
+  const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
   const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn';
   const [loading, setLoading] = React.useState(false);
   const onSubmit = (e) => {
@@ -215,7 +216,6 @@ export function EditUserForm({
               value={formState.userName}
               disabled
             />
-            <div className="invalid-feedback">Please choose a username.</div>
           </div>
         </div>
         <div className="col mt-3">
@@ -230,7 +230,7 @@ export function EditUserForm({
               name="isAdmin"
               checked={formState.isAdmin}
               onChange={onChangeCheckbox}
-              disabled={formState.userName === 'admin' || formState.userName === user.userName}
+              disabled={disabledButtons}
             />
             <div className="col">
               <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
@@ -242,13 +242,13 @@ export function EditUserForm({
         {loading ? (
           <CircularProgress />
         ) : (
-          <button className={buttonStyle} type="submit" disabled={formState.userName === user.userName}>
+          <button className={buttonStyle} type="submit" disabled={disabledButtons}>
             Save Changes
           </button>
         )}
 
         <span className="mx-2" />
-        <button className={formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn btn-danger'} type="button" onClick={onDeleteClick} disabled={formState.userName === user.userName}>
+        <button className="btn btn-danger" type="button" onClick={onDeleteClick} disabled={disabledButtons}>
           Delete User
         </button>
       </div>
