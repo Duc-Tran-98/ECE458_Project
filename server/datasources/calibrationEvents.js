@@ -149,7 +149,7 @@ class CalibrationEventAPI extends DataSource {
           fileLocation,
           fileName,
         });
-        response.message = `Added new calibration event to instrument tag: ${assetTag}!`;
+        response.message = `Added calibration event on ${date} to instrument ${assetTag}.`;
       } else {
         response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
       }

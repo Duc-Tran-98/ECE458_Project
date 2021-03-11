@@ -405,7 +405,7 @@ class InstrumentAPI extends DataSource {
   async addInstrument({
     modelNumber, vendor, assetTag = null, serialNumber, comment, categories = [],
   }) {
-    const response = { message: '', success: true };
+    const response = { message: '', success: true, assetTag: 0 };
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment, assetTag,
     });
@@ -454,6 +454,7 @@ class InstrumentAPI extends DataSource {
             }
           }
           if (response.success) {
+            response.assetTag = newAssetTag;
             const modelReference = model.dataValues.id;
             const {
               description,
