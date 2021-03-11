@@ -72,7 +72,6 @@ export default function FormTest() {
         initialValues={initialValues}
         validationSchema={schema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          console.log('Submitting Formik form');
           setTimeout(() => {
             alert(JSON.stringify(values, null, 2));
             resetForm();

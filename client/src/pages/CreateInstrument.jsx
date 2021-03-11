@@ -77,8 +77,6 @@ function CreateInstrumentPage({ onCreation }) {
   };
 
   const handleSubmit = (values, resetForm) => {
-    // console.log('Creating instrument with values: ');
-    // console.log(values);
     // This is to submit all the data
     let {
       // eslint-disable-next-line prefer-const

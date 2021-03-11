@@ -52,11 +52,7 @@ export default function SignUp({ onCreation }) {
       userName,
       isAdmin,
     } = values;
-    console.log('handling signup with values: ');
-    console.log(values);
     const handleResponse = (response) => {
-      console.log('signup response: ');
-      console.log(response);
       if (response.success) {
         toast.success(response.message);
         resetForm();

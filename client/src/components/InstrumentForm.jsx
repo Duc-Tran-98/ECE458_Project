@@ -101,7 +101,6 @@ export default function InstrumentForm({
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && user.isAdmin;
-  console.log(categories);
   return (
     <Formik
       initialValues={{
@@ -155,7 +154,6 @@ export default function InstrumentForm({
                       onInputChange={(e, v) => {
                         setFieldValue('vendor', v.vendor);
                         setFieldValue('modelNumber', v.modelNumber);
-                        console.log(v);
                         setFieldValue(
                           'calibrationFrequency',
                           v.calibrationFrequency,
@@ -178,7 +176,7 @@ export default function InstrumentForm({
             </div>
             <div className="col mt-3">
               <CustomInput
-                placeHolder="This field is optional"
+                placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formAssetTag"
                 className="h4"
                 label="Asset Tag"
@@ -223,7 +221,7 @@ export default function InstrumentForm({
             {/* TODO: What are problems with serial number? */}
             <div className="col mt-3">
               <CustomInput
-                placeHolder="This field is optional"
+                placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formSerialNumber"
                 className="h4"
                 label="Serial Number"
@@ -282,29 +280,32 @@ export default function InstrumentForm({
               )}
             </div>
           )}
-          {showFooter && (
-            <div className="d-flex justify-content-center my-3">
-              <div className="row">
-                <CustomButton
-                  onClick={handleDelete}
-                  divClass="col"
-                  buttonClass="btn btn-danger text-nowrap my-auto"
-                  buttonLabel="Delete Instrument"
-                />
-                {isSubmitting ? (
-                  <CircularProgress />
-                ) : (
+
+          <div className="d-flex justify-content-center my-3">
+            <div className="row">
+              {showFooter && (
+                <>
                   <CustomButton
-                    onClick={handleSubmit}
+                    onClick={handleDelete}
                     divClass="col"
-                    buttonClass="btn text-nowrap"
-                    buttonLabel="Save Changes"
+                    buttonClass="btn btn-danger text-nowrap my-auto"
+                    buttonLabel="Delete Instrument"
                   />
-                )}
-                {footer}
-              </div>
+                  {isSubmitting ? (
+                    <CircularProgress />
+                  ) : (
+                    <CustomButton
+                      onClick={handleSubmit}
+                      divClass="col"
+                      buttonClass="btn text-nowrap"
+                      buttonLabel="Save Changes"
+                    />
+                  )}
+                </>
+              )}
+              {footer}
             </div>
-          )}
+          </div>
         </Form>
       )}
     </Formik>

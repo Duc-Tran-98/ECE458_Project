@@ -47,11 +47,9 @@ function ManageCategories() {
   const getNumAttached = async () => {
     if (key === 'model') {
       const count = await CountModelsAttached({ name: category });
-      console.log(count);
       setNum(count);
     } else {
       const count = await CountInstrumentsAttached({ name: category });
-      console.log(count);
       setNum(count);
     }
   };
@@ -81,7 +79,6 @@ function ManageCategories() {
             type="button"
             className="btn"
             onClick={() => {
-              console.log('edit cat');
               setShowEdit(true);
             }}
           >
@@ -102,7 +99,6 @@ function ManageCategories() {
             className="btn btn-danger"
             onClick={async () => {
               await getNumAttached();
-              console.log('delete cat');
               setShowDelete(true);
             }}
           >
@@ -114,7 +110,6 @@ function ManageCategories() {
   ];
 
   function updateRow(k, replace = false) {
-    console.log('update');
     let searchString;
     setInitPage(1);
     setInitLimit(25);
@@ -123,7 +118,6 @@ function ManageCategories() {
         setRowCount(val);
         searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
         if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
-          console.log(`updating url to /${k}Categories${searchString}`);
           if (replace) {
             history.replace(`/${k}Categories${searchString}`);
           } else {
@@ -134,10 +128,8 @@ function ManageCategories() {
     } else {
       CountInstrumentCategories().then((val) => {
         setRowCount(val);
-        console.log(val);
         searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
         if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
-          console.log(`updating url to /${k}Categories${searchString}`);
           if (replace) {
             history.replace(`/${k}Categories${searchString}`);
           } else {
@@ -188,17 +180,14 @@ function ManageCategories() {
 
   const closeDeleteModal = () => {
     setShowDelete(false);
-    console.log('close');
     updateRow(key, true);
   };
   const closeEditModal = () => {
     setShowEdit(false);
-    console.log('close');
     updateRow(key, true);
   };
   const closeCreateModal = () => {
     setShowCreate(false);
-    console.log('close');
     updateRow(key, true);
   };
   const handleResponse = (response) => {
@@ -405,9 +394,6 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log(
-                  `page change model changing url to /modelCategories${searchString}`,
-                );
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -416,7 +402,6 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log('page size change model changing url');
                 history.push(`/modelCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -448,9 +433,6 @@ function ManageCategories() {
             onPageChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log(
-                  `page change instrument changing url to /instrumentCategories${searchString}`,
-                );
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);
@@ -459,7 +441,6 @@ function ManageCategories() {
             onPageSizeChange={(page, limit) => {
               const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
               if (window.location.search !== searchString) {
-                console.log('page size change instrument changing url');
                 history.push(`/instrumentCategories${searchString}`);
                 setInitLimit(limit);
                 setInitPage(page);

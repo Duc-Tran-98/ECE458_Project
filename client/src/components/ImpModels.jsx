@@ -238,7 +238,6 @@ export default function ImpModels({ modifyCount }) {
       queryName,
       getVariables,
       handleResponse: (response) => {
-        // console.log(response);
         if (response.success) {
           modifyCount();
           toast.success(`Successfully imported ${models.length} models!`, {

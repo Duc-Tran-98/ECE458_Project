@@ -255,7 +255,6 @@ export default function ImpInstruments({ modifyCount }) {
       queryName,
       getVariables,
       handleResponse: (response) => {
-        // console.log(response);
         if (response.success) {
           modifyCount();
           toast.success(`Successfully imported ${instruments.length} instruments!`);

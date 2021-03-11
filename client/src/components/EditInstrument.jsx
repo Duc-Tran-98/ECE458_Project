@@ -83,8 +83,6 @@ export default function EditInstrument({
   };
 
   const handleSubmit = (values) => {
-    // console.log('EditInstrument handling submit with values: ');
-    // console.log(values);
     let {
       comment,
       modelNumber,

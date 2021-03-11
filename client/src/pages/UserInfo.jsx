@@ -13,25 +13,20 @@ export default function UserInfo() {
     firstName, lastName, userName,
   } = user;
   const netIDUser = userName.includes('@duke.edu');
-  console.log(user);
 
   const fullName = `${firstName} ${lastName}`;
 
   const handleSubmitPassword = (values, resetForm) => {
     const { currentPassword, newPassword } = values;
-    console.log(`handleSubmitPassword with current: ${currentPassword}\tnew: ${newPassword}`);
     ChangePassword({
       userName: user.userName,
       oldPassword: currentPassword,
       newPassword,
       handleResponse: (response) => {
-        console.log('Handling changePassword response');
-        console.log(response);
         if (response.success) {
           toast.success(response.message);
           resetForm();
         } else {
-          console.log(response);
           toast.error(response.message);
         }
       },

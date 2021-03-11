@@ -21,7 +21,6 @@ export default function OAuthConsume({ handleLogin }) {
   const [netID, setNetID] = useState('');
 
   function parseIdToken(token) {
-    console.log(token);
     const idToken = jwt_decode(token);
     return idToken;
   }
@@ -33,8 +32,6 @@ export default function OAuthConsume({ handleLogin }) {
   };
 
   const handleOAuthSignOn = (response) => {
-    console.log('Handling OAuth Sign On');
-    console.log(response);
     window.sessionStorage.setItem(
       'token',
       Buffer.from(response.userName, 'ascii').toString('base64'),
@@ -45,9 +42,8 @@ export default function OAuthConsume({ handleLogin }) {
 
   const handleUserInfoResponse = (response) => {
     const {
-      dukeNetID, given_name, family_name, sub,
+      dukeNetID, given_name, family_name,
     } = response.data.result;
-    console.log(`dukeID: ${dukeNetID}, given_name: ${given_name}, family_name: ${family_name}, sub: ${sub}`);
 
     OAuthSignOn({
       netId: dukeNetID, firstName: given_name, lastName: family_name, handleResponse: handleOAuthSignOn,
