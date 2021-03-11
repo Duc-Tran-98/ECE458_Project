@@ -74,8 +74,8 @@ function CreateInstrumentPage({ onCreation }) {
   };
 
   const handleSubmit = (values, resetForm) => {
-    console.log('Creating instrument with values: ');
-    console.log(values);
+    // console.log('Creating instrument with values: ');
+    // console.log(values);
     // This is to submit all the data
     let {
       // eslint-disable-next-line prefer-const
@@ -101,6 +101,7 @@ function CreateInstrumentPage({ onCreation }) {
     }).then((response) => {
       if (response.success) {
         toast.success(response.message);
+        setcalibrationFrequency(0);
         resetForm();
         // If we successfully added new instrument
         const validEvents = calibHist;
@@ -119,7 +120,18 @@ function CreateInstrumentPage({ onCreation }) {
           AddCalibEventByAssetTag({
             events: validEvents,
             assetTag,
-            handleResponse: () => undefined,
+            handleResponse: () => {
+              setCalibHist([
+                {
+                  user: user.userName,
+                  date: new Date().toISOString().split('T')[0],
+                  comment: '',
+                  id: 0,
+                  viewOnly: false,
+                },
+              ]);
+              setNextId(1);
+            },
           });
         }
         onCreation();
