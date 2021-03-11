@@ -85,6 +85,13 @@ function ListModels() {
       // setVendor(e.row.vendor);
     }
   };
+  const categoriesList = (categories) => {
+    const catArr = [];
+    categories.value.forEach((element) => {
+      catArr.push(element.name);
+    });
+    return catArr.join(', ');
+  };
   const cols = [
     { field: 'vendor', headerName: 'Vendor', width: 150 },
     { field: 'modelNumber', headerName: 'Model Number', width: 150 },
@@ -133,16 +140,7 @@ function ListModels() {
       headerName: 'Categories',
       width: 350,
       renderCell: (params) => (
-        <ul className="d-flex flex-row overflow-auto ">
-          {params.value.map((element) => (
-            <li
-              key={element.name}
-              className="list-group-item list-group-item-secondary"
-            >
-              {element.name}
-            </li>
-          ))}
-        </ul>
+        <div className="overflow-auto">{categoriesList(params)}</div>
       ),
     },
     {

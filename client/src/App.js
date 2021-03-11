@@ -31,7 +31,6 @@ function App() {
   const history = useHistory();
   const handlePageRefresh = async () => {
     window.sessionStorage.setItem('jwt', jwt);
-    // console.log('handlePage refresh');
   };
   React.useEffect(() => {
     window.addEventListener('unload', handlePageRefresh);

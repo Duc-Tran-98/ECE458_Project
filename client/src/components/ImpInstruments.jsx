@@ -266,7 +266,7 @@ export default function ImpInstruments({ modifyCount }) {
         resetState();
       },
       handleError: () => {
-        toast.error('Please try again');
+        toast.error('Sorry, process took longer than expected. Please check back in a few minutes.');
         resetState();
         resetUpload();
       },
