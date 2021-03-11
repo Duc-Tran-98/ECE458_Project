@@ -47,9 +47,11 @@ function ManageCategories() {
   const getNumAttached = async () => {
     if (key === 'model') {
       const count = await CountModelsAttached({ name: category });
+      console.log(count);
       setNum(count);
     } else {
       const count = await CountInstrumentsAttached({ name: category });
+      console.log(count);
       setNum(count);
     }
   };
@@ -250,7 +252,7 @@ function ManageCategories() {
         width=" "
       >
         <>
-          {showDelete.length === 0 && (
+          {showDelete && (
             <div>
               <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
               <div className="h4 text-center my-3">{`This category is attached to ${num} ${key}${num === 1 ? '' : 's'} `}</div>
