@@ -76,7 +76,6 @@ export default function LoadBankWiz({
     newReadings.vrError = newReadings.va > 0 ? 100 * (Math.abs(newReadings.va - newReadings.vr) / newReadings.va) : 100;
     newReadings.vrOk = newReadings.vrError < 1;
     setVoltageReading(newReadings);
-    // console.log(!newReadings.vaOk || !newReadings.vrOk);
     setRestart(!newReadings.vaOk || !newReadings.vrOk);
   };
   const handleRestart = (bool = true) => {

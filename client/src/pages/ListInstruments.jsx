@@ -38,7 +38,6 @@ export default function ListInstruments() {
     selectedFilters = JSON.parse(
       Buffer.from(urlFilter, 'base64').toString('ascii'),
     );
-    // console.log(selectedFilters);
   }
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
@@ -57,12 +56,10 @@ export default function ListInstruments() {
     const total = parseInt(urlVals.get('count'), 10);
     setInitLimit(lim);
     setInitPage(pg);
-    // console.log(`total = ${total}`);
     setRowCount(total);
   };
   if (navLink !== null) {
     navLink.onclick = () => {
-      // console.log('clicked');
       if (
         filterOptions.vendors !== null
         || filterOptions.modelNumbers !== null
@@ -72,7 +69,6 @@ export default function ListInstruments() {
         || filterOptions.filterSerialNumber !== null
         || filterOptions.assetTag !== null
       ) {
-        // console.log('clearing filters');
         setFilterOptions({
           vendors: null,
           modelNumbers: null,
@@ -88,12 +84,10 @@ export default function ListInstruments() {
       }, 50);
     };
   }
-  // console.log(navLink);
   history.listen((location, action) => {
     if (action === 'POP') {
       // if user clicks on models nav link or goes back
       getAndSetUrlVals();
-      // console.log('popped!');
     }
   });
   const cellHandler = (e) => {
@@ -322,7 +316,6 @@ export default function ListInstruments() {
   const onSearch = ({
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   }) => {
-    //  console.log('searching...');
     let formatedModelCategories = [];
     let formatedInstrumentCategories = [];
     modelCategories?.forEach((element) => {
@@ -331,7 +324,6 @@ export default function ListInstruments() {
     instrumentCategories?.forEach((element) => {
       formatedInstrumentCategories.push(element.name);
     });
-    // console.log(modelCategories);
     formatedInstrumentCategories = formatedInstrumentCategories.length > 0 ? formatedInstrumentCategories : null;
     formatedModelCategories = formatedModelCategories.length > 0 ? formatedModelCategories : null;
     if (
@@ -420,7 +412,6 @@ export default function ListInstruments() {
       setInitPage(page);
     }
   };
-  console.log(filterOptions);
 
   return (
     <>
@@ -467,7 +458,6 @@ export default function ListInstruments() {
           serialNumber: filterSerialNumber,
           assetTag,
         }).then((response) => {
-          console.log(response);
           if (response !== null) {
             response.instruments.forEach((element) => {
               if (element !== null) {

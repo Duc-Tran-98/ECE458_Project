@@ -27,7 +27,6 @@ const ExportModels = ({ setLoading, filterOptions }) => {
 
   const getData = async () => {
     await GetModelsForExport({ filterOptions }).then((res) => {
-      console.log(res);
       csvData = res;
     });
     return csvData;

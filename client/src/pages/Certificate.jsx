@@ -122,8 +122,6 @@ function MyCertificate({ calibEvent }) {
     return url.split(/[#?]/)[0].split('.').pop().trim();
   }
 
-  console.log(calibEvent);
-
   const urlPath = process.env.NODE_ENV.includes('dev')
     ? `http://localhost:3000/data/${calibEvent?.fileLocation}`
     : `https://hpt.hopto.org/data/${calibEvent?.fileLocation}`;
@@ -131,9 +129,6 @@ function MyCertificate({ calibEvent }) {
   const evidenceFileType = calibEvent ? getURLExtension(evidenceFile) : '';
   const loadBankData = calibEvent?.loadBankData;
   const loadBankJSON = loadBankData ? JSON.parse(loadBankData) : (null);
-
-  console.log(evidenceFileType);
-  console.log(evidenceFile);
 
   const displayLink = (((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx') || (evidenceFileType === 'gif'))) ? (
     <Text style={styles.largeText}>
@@ -412,7 +407,6 @@ function Certificate() {
       if (active) {
         GetCalibHistory({ id, mostRecent: true }).then((data) => {
           setCalibEvent(data);
-          console.log(data);
           setHasFetched(true);
         });
       }

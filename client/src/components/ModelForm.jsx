@@ -98,7 +98,6 @@ export default function ModelForm({
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
-  console.log(supportLoadBankCalibration);
   return (
     <Formik
       initialValues={{

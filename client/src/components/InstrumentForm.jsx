@@ -101,7 +101,6 @@ export default function InstrumentForm({
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && user.isAdmin;
-  console.log(categories);
   return (
     <Formik
       initialValues={{
@@ -155,7 +154,6 @@ export default function InstrumentForm({
                       onInputChange={(e, v) => {
                         setFieldValue('vendor', v.vendor);
                         setFieldValue('modelNumber', v.modelNumber);
-                        console.log(v);
                         setFieldValue(
                           'calibrationFrequency',
                           v.calibrationFrequency,

@@ -17,7 +17,6 @@ function CreateModelPage({ onCreation }) {
   const [resetForm, setResetForm] = useState(() => {});
 
   const handleResponse = (response) => {
-    console.log(response);
     if (response.success) {
       toast.success(response.message);
       onCreation();
@@ -29,8 +28,6 @@ function CreateModelPage({ onCreation }) {
 
   const handleSubmit = (values, formReset) => {
     setResetForm(formReset);
-    console.log('Inside CreateModel with values: ');
-    console.log(JSON.stringify(values));
     let { calibrationFrequency } = values;
     if (typeof calibrationFrequency === 'string') {
       // If user increments input, it becomes string so change it back to number

@@ -10,7 +10,6 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
     // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object.isRequired,
   };
-  console.log(filterOptions);
   const [transactionData, setTransactionData] = useState([]);
 
   let csvData = '1,2,3';
@@ -29,7 +28,6 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
 
   const getData = async () => {
     await GetInstrumentsForExport({ filterOptions }).then((res) => {
-      console.log(res);
       csvData = res;
     });
     return csvData;
@@ -65,7 +63,6 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
         setTransactionData(filteredData);
       })
       .catch((e) => {
-        console.log('CAUGHT');
         console.log(e);
       });
     setLoading(false);

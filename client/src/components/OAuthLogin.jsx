@@ -22,7 +22,6 @@ export default function OAuthLogin() {
   const handleOAuth = () => {
     // Get Auth Code
     const authCodeRequest = getAuthCodeRequest();
-    console.log(authCodeRequest);
     submitAuthCodeRequest(authCodeRequest);
   };
 

@@ -55,7 +55,6 @@ export default function AsyncSuggest({
       const response = await QueryAndThen({ query, queryName, getVariables });
       if (active) {
         if (queryName === 'getInstrumentsWithFilter') {
-          // console.log(response);
           setOptions(response.instruments);
         } else {
           setOptions(response);
