@@ -286,8 +286,8 @@ function ListModels() {
     if (window.location.search !== searchString) {
       // If current location != next location, update url
       history.push(`/viewModels${searchString}`);
-      setInitLimit(limit);
-      setInitPage(page);
+      // setInitLimit(limit);
+      // setInitPage(page);
     }
   };
 
