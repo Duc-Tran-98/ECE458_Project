@@ -744,8 +744,7 @@ export default function LoadBankWiz({
               onFinish={() => setCanProgress(true)}
               getSteps={getLoadSteps}
               getStepContent={getLoadStepContent}
-              canAdvance={() => true}
-              // TODO: CHange me back canAdvance={canAdvanceLoadStep}
+              canAdvance={canAdvanceLoadStep}
               forceReset={shouldRestart}
               handleRestart={() => handleRestart(false)}
               finishMsg="You're finished with the load steps"
