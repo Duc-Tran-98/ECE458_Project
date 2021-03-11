@@ -268,7 +268,7 @@ export default function LoadBankWiz({
       entry[0].cr = e.target.valueAsNumber;
     }
     entry[0].caError = calcCAError(step);
-    entry[0].caOk = entry[0].caError < 3;
+    entry[0].caOk = entry[0].caError < 5;
     entry[0].crError = calcCRError(step);
     entry[0].crOk = entry[0].crError < 3;
     setCurrentReadings(newReadings.concat(entry));
