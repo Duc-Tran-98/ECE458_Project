@@ -5,7 +5,7 @@ describe('Test Model Creation and Querying', () => {
   beforeAll(async () => {
     const store = await createStore();
     await store.db.query('SET FOREIGN_KEY_CHECKS = 0');
-    await store.db.sync({ force: true }).then(async () => await store.db.query('SET FOREIGN_KEY_CHECKS = 1'));
+    await store.db.sync({ force: true }).then(async () => await store.db.query('SET FOREIGN_KEY_CHECKS = 1')).catch(() => null);
   });
 
   const testModel = {
