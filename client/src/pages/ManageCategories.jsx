@@ -16,6 +16,7 @@ import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
 import CreateModelCategory from '../queries/CreateModelCategory';
 import EditModelCategory from '../queries/EditModelCategory';
 import EditInstrumentCategory from '../queries/EditInstrumentCategory';
+import UserContext from '../components/UserContext';
 
 function ManageCategories() {
   const history = useHistory();
@@ -39,6 +40,7 @@ function ManageCategories() {
   const [loading, setLoading] = React.useState(false);
   const [num, setNum] = React.useState(0);
   const [newCategory, setNewCategory] = React.useState('');
+  const user = React.useContext(UserContext);
 
   const cellHandler = (e) => {
     setCategory(e.row.name);
@@ -244,7 +246,12 @@ function ManageCategories() {
           {showDelete && (
             <div>
               <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
-              <div className="h4 text-center my-3">{`This category is attached to ${num} ${key}${num === 1 ? '' : 's'} `}</div>
+              <div className="h4 text-center my-3">
+                {`This category is attached to ${num} ${key}${
+                  num === 1 ? '' : 's'
+                } `}
+
+              </div>
             </div>
           )}
           <div className="d-flex justify-content-center">
@@ -379,13 +386,15 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button
-                  className="btn  m-2"
-                  type="button"
-                  onClick={() => setShowCreate(true)}
-                >
-                  Create Model Category
-                </button>
+                {(user.isAdmin || user.modelPermission) && (
+                  <button
+                    className="btn  m-2"
+                    type="button"
+                    onClick={() => setShowCreate(true)}
+                  >
+                    Create Model Category
+                  </button>
+                )}
               </div>
             )}
             cols={cols}
@@ -418,13 +427,15 @@ function ManageCategories() {
             cellHandler={cellHandler}
             headerElement={(
               <div>
-                <button
-                  className="btn  m-2"
-                  type="button"
-                  onClick={() => setShowCreate(true)}
-                >
-                  Create Instrument Category
-                </button>
+                {(user.isAdmin || user.instrumentPermission) && (
+                  <button
+                    className="btn  m-2"
+                    type="button"
+                    onClick={() => setShowCreate(true)}
+                  >
+                    Create Instrument Category
+                  </button>
+                )}
               </div>
             )}
             cols={cols}

@@ -29,6 +29,12 @@ export default function ViewUser({ onDelete }) {
         setFormState({
           ...formState, modelPermission: event.target.checked, instrumentPermission: event.target.checked, calibrationPermission: event.target.checked, isAdmin: event.target.checked,
         });
+      } else if (event.target.name === 'modelPermission') {
+        setFormState({
+          ...formState,
+          modelPermission: event.target.checked,
+          instrumentPermission: event.target.checked,
+        });
       } else {
         setFormState({ ...formState, [event.target.name]: event.target.checked });
       }

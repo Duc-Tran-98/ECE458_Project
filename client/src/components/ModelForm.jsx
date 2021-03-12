@@ -92,7 +92,7 @@ export default function ModelForm({
   };
 
   const user = useContext(UserContext);
-  const showFooter = type === 'edit' && user.isAdmin;
+  const showFooter = type === 'edit' && (user.isAdmin || user.modelPermission);
   const cats = [];
   if (categories) categories.forEach((el) => cats.push(el));
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));

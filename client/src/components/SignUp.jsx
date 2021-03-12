@@ -235,12 +235,12 @@ export default function SignUp({ onCreation }) {
                     type="checkbox"
                     id="instrumentPermissionCheck"
                     name="instrumentPermission"
-                    checked={values.isAdmin || values.instrumentPermission}
+                    checked={values.isAdmin || values.modelPermission || values.instrumentPermission}
                     onChange={handleChange}
                   />
                   <div className="">
                     <strong>
-                      {(values.isAdmin || values.instrumentPermission) ? 'Yes' : 'No'}
+                      {(values.isAdmin || values.modelPermission || values.instrumentPermission) ? 'Yes' : 'No'}
                     </strong>
                   </div>
                 </div>

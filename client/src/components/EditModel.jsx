@@ -125,7 +125,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             handleFormSubmit={handleSubmit}
             validated={false}
             diffSubmit
-            viewOnly={!user.isAdmin}
+            viewOnly={!(user.isAdmin || user.modelPermission)}
             handleDelete={handleDelete}
             type="edit"
           />

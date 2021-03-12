@@ -232,7 +232,7 @@ class UserAPI extends DataSource {
           userName,
           password,
           isAdmin,
-          instrumentPermission: isAdmin || instrumentPermission,
+          instrumentPermission: isAdmin || modelPermission || instrumentPermission,
           modelPermission: isAdmin || modelPermission,
           calibrationPermission: isAdmin || calibrationPermission,
         });

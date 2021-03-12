@@ -140,7 +140,7 @@ function CreateInstrumentPage({ onCreation }) {
       }
     });
   };
-  const footer = calibrationFrequency !== 0 ? (
+  const footer = (calibrationFrequency !== 0 && (user.isAdmin || user.calibrationPermission)) ? (
     <>
       <div className="d-flex justify-content-center my-3">
         <button type="button" className="btn  mx-3" onClick={addRow}>
@@ -154,9 +154,8 @@ function CreateInstrumentPage({ onCreation }) {
       />
     </>
   ) : (
-    <div className="d-flex justify-content-center my-3">
-      <h4>Item Not calibratable</h4>
-    </div>
+    <>
+    </>
   );
   return (
     <>

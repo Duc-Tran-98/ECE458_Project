@@ -48,7 +48,7 @@ function CreateModelPage({ onCreation }) {
   return (
 
     <>
-      {user.isAdmin ? (
+      {(user.isAdmin || user.modelPermission) ? (
         <>
           <ToastContainer />
           <ModelForm
