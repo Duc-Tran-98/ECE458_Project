@@ -2,19 +2,11 @@ const ModelAPI = require('../models');
 const { createStore } = require('../../util');
 
 describe('Test Model Creation and Querying', () => {
-  // const store = await createStore();
-  // console.log(store);
-  // const dataSources = () => ({
-  //   userAPI: new UserAPI({ store }),
-  //   modelAPI: new ModelAPI({ store }),
-  //   instrumentAPI: new InstrumentAPI({ store }),
-  //   calibrationEventAPI: new CalibrationEventAPI({ store }),
-  //   bulkDataAPI: new BulkDataAPI({ store }),
-  // });
-  // beforeAll(async () => {
-  //   const store = await createStore();
-  //   await store.db.sync({ force: true });
-  // });
+  beforeAll(async () => {
+    const store = await createStore();
+    await store.db.query('SET FOREIGN_KEY_CHECKS = 0');
+    await store.db.sync({ force: true }).then(async () => await store.db.query('SET FOREIGN_KEY_CHECKS = 1'));
+  });
 
   const testModel = {
     modelNumber: 'Duke',
