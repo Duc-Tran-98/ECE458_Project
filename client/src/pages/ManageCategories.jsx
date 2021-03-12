@@ -17,6 +17,7 @@ import CreateModelCategory from '../queries/CreateModelCategory';
 import EditModelCategory from '../queries/EditModelCategory';
 import EditInstrumentCategory from '../queries/EditInstrumentCategory';
 import UserContext from '../components/UserContext';
+// TODO: SPLIT UP THIS PAGE INTO MODELS/INSTRUMENTS
 
 function ManageCategories() {
   const history = useHistory();
