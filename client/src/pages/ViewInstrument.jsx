@@ -13,7 +13,6 @@ import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 import ModalAlert from '../components/ModalAlert';
-import GetUser from '../queries/GetUser';
 import EditInstrument from '../components/EditInstrument';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
@@ -156,17 +155,6 @@ export default function DetailedInstrumentView({ onDelete }) {
         console.log(err.message);
       });
     }
-    // If there are valid entries, add them to DB
-    // AddCalibEvent({
-    //   events: newHistory,
-    //   modelNumber,
-    //   vendor,
-    //   serialNumber,
-    //   handleResponse: () => {
-    //     fetchData(entry);
-    //   },
-    // });
-    //  assetTag = parseInt(assetTag, 10);
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag,
@@ -175,27 +163,6 @@ export default function DetailedInstrumentView({ onDelete }) {
       },
     });
   };
-  // This code is for setting window variables for certificate
-  if (calibFrequency > 0 && calibHist.length > 0) {
-    window.sessionStorage.setItem('serialNumber', serialNumber);
-    window.sessionStorage.setItem('assetTag', assetTag);
-    window.sessionStorage.setItem('modelNumber', modelNumber);
-    window.sessionStorage.setItem('modelDescription', description);
-    window.sessionStorage.setItem('vendor', vendor);
-    window.sessionStorage.setItem('calibrationDate', calibHist[0].date);
-    window.sessionStorage.setItem('id', id);
-    window.sessionStorage.setItem(
-      'expirationDate',
-      new Date(calibHist[0].date).addDays(calibFrequency),
-    );
-    window.sessionStorage.setItem('calibComment', calibHist[0].comment);
-    GetUser({ userName: calibHist[0].user }).then((value) => {
-      if (value) {
-        const calibUser = `Username: ${calibHist[0].user}, First name: ${value.firstName}, Last name: ${value.lastName}`;
-        window.sessionStorage.setItem('calibUser', calibUser);
-      }
-    });
-  }
 
   React.useEffect(() => {
     let active = true;
@@ -346,7 +313,7 @@ export default function DetailedInstrumentView({ onDelete }) {
                     className="col"
                     message="View instrument's calibration certificate"
                   >
-                    <Link className="btn  text-nowrap" to="/viewCertificate">
+                    <Link className="btn text-nowrap" to={`/viewCertificate/?serialNumber=${serialNumber || 'N/A'}&assetTag=${assetTag}&modelNumber=${modelNumber}&description=${description}&vendor=${vendor}&id=${id}&calibrationFrequency=${calibFrequency}`}>
                       View Certificate
                     </Link>
                   </MouseOverPopover>

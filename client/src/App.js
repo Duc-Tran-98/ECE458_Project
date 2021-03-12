@@ -29,35 +29,37 @@ import { setAuthHeader } from './components/UseQuery';
 function App() {
   let jwt = '';
   const history = useHistory();
-  const handlePageRefresh = async () => {
-    window.sessionStorage.setItem('jwt', jwt);
+  const handlePageRefresh = async (token) => {
+    window.sessionStorage.setItem('jwt', token);
   };
-  React.useEffect(() => {
-    window.addEventListener('unload', handlePageRefresh);
-    return () => {
-      window.removeEventListener('unload', handlePageRefresh);
-      handlePageRefresh();
-    };
-  }, []);
   const [loggedIn, setLoggedIn] = useState(false);
   const [updateCount, setUpdateCount] = useState(false);
   const modifyCount = () => { // anything that modifies count (add/delete) should call this
     setUpdateCount(true);
     setUpdateCount(false);
   };
-  const handleLogin = (token) => {
+  const handleLogin = async (token) => {
     setLoggedIn(true);
     jwt = token;
     setAuthHeader(token);
+    console.log(`set auth header = ${jwt}`);
   };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) { // If previously logged in and refreshed page
-      handleLogin(window.sessionStorage.getItem('jwt'));
-      window.sessionStorage.removeItem('jwt');
-    } else if (window.sessionStorage.getItem('jwt') && !loggedIn) {
-      window.sessionStorage.removeItem('jwt');
+      jwt = window.sessionStorage.getItem('jwt');
+      handleLogin(jwt).then(() => {
+        if (jwt) {
+          window.sessionStorage.removeItem('jwt');
+        }
+      });
     }
   }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
+  React.useEffect(() => {
+    window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
+    return () => {
+      window.removeEventListener('beforeunload', handlePageRefresh);
+    };
+  }, [jwt]);
   const handleSignOut = () => {
     setLoggedIn(false);
     window.sessionStorage.clear();

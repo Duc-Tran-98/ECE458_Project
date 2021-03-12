@@ -57,7 +57,12 @@ class UserAPI extends DataSource {
         response.message = response.success
           ? 'Logged in'
           : 'Wrong username/password';
-        response.jwt = response.success ? signSync({ userName }) : '';
+        const {
+          isAdmin, modelPermission, instrumentPermission, calibrationPermission,
+        } = value;
+        response.jwt = response.success ? signSync({
+          userName, isAdmin, modelPermission, instrumentPermission, calibrationPermission,
+        }) : '';
       }
     });
     return JSON.stringify(response);
