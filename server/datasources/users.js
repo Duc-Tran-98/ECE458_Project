@@ -87,6 +87,9 @@ class UserAPI extends DataSource {
           userName,
           password,
           isAdmin,
+          modelPermission: false,
+          instrumentPermission: false,
+          calibrationPermission: false,
         });
         response.message = 'Created account for user';
       }
