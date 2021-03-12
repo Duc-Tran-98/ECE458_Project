@@ -1,11 +1,13 @@
 const ModelAPI = require('../models');
 const { createStore } = require('../../util');
 
+let store;
 describe('Test Model Creation and Querying', () => {
   beforeAll(async () => {
-    const store = await createStore();
-    await store.db.query('SET FOREIGN_KEY_CHECKS = 0');
-    await store.db.sync({ force: true }).then(async () => await store.db.query('SET FOREIGN_KEY_CHECKS = 1')).catch(() => null);
+    store = await createStore();
+    await store.db.query('SET FOREIGN_KEY_CHECKS = 0').catch(() => undefined);
+    await store.db.sync({ force: true }).catch(() => undefined);
+    await store.db.query('SET FOREIGN_KEY_CHECKS = 1').catch(() => undefined);
   });
 
   const testModel = {
@@ -18,7 +20,6 @@ describe('Test Model Creation and Querying', () => {
   };
 
   it('Should succeed in creating a new model with valid inputs', async () => {
-    const store = await createStore();
     const modelAPI = new ModelAPI({ store });
 
     const response = await modelAPI.addModel(testModel);
@@ -28,7 +29,6 @@ describe('Test Model Creation and Querying', () => {
     }));
   });
   it('Should fail on trying to create a duplicate model', async () => {
-    const store = await createStore();
     const modelAPI = new ModelAPI({ store });
 
     const response = await modelAPI.addModel(testModel);
@@ -36,5 +36,8 @@ describe('Test Model Creation and Querying', () => {
       message: `Model ${testModel.vendor} ${testModel.modelNumber} already exists!`,
       success: false,
     }));
+  });
+  afterAll(async () => {
+    await store.db.close().catch(() => undefined);
   });
 });
