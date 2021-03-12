@@ -120,12 +120,21 @@ class UserAPI extends DataSource {
     return JSON.stringify(response);
   }
 
-  async editPermissions({ userName, isAdmin }) {
+  async editPermissions({
+    userName, isAdmin, modelPermission,
+    calibrationPermission,
+    instrumentPermission,
+  }) {
     const response = { success: false, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
     if (userName !== 'admin') {
-      this.store.users.update({ isAdmin }, { where: { userName } });
+      this.store.users.update({
+        isAdmin,
+        modelPermission,
+        calibrationPermission,
+        instrumentPermission,
+      }, { where: { userName } });
       response.success = true;
       response.message = `Updated user permissions for user ${userName}`;
     } else {
@@ -196,6 +205,9 @@ class UserAPI extends DataSource {
     userName,
     password,
     isAdmin,
+    instrumentPermission = false,
+    modelPermission = false,
+    calibrationPermission = false,
   }) {
     const response = { message: '', success: false };
     const validation = validateUser({
@@ -217,6 +229,9 @@ class UserAPI extends DataSource {
           userName,
           password,
           isAdmin,
+          instrumentPermission: isAdmin || instrumentPermission,
+          modelPermission: isAdmin || modelPermission,
+          calibrationPermission: isAdmin || calibrationPermission,
         });
         response.message = 'Account Created!';
         response.success = true;

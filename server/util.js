@@ -81,6 +81,18 @@ module.exports.createStore = async () => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      instrumentPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      modelPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      calibrationPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {
@@ -491,6 +503,9 @@ module.exports.createStore = async () => {
       userName: adminUsername,
       password: hash,
       isAdmin: true,
+      calibrationPermission: true,
+      modelPermission: true,
+      instrumentPermission: true,
     });
   }
 

@@ -46,9 +46,7 @@ const typeDefs = gql`
       vendor: String!
       serialNumber: String!
     ): Instrument
-    getInstrumentByAssetTag(
-      assetTag: Int!
-    ): Instrument
+    getInstrumentByAssetTag(assetTag: Int!): Instrument
     getInstrumentsWithFilter(
       vendor: String
       modelNumber: String
@@ -89,6 +87,9 @@ const typeDefs = gql`
     userName: String!
     password: String!
     isAdmin: Boolean!
+    instrumentPermission: Boolean
+    modelPermission: Boolean
+    calibrationPermission: Boolean
   }
 
   type InstrumentScrollFeed {
@@ -236,8 +237,17 @@ const typeDefs = gql`
       userName: String!
       password: String!
       isAdmin: Boolean!
+      instrumentPermission: Boolean
+      modelPermission: Boolean
+      calibrationPermission: Boolean
     ): String!
-    editPermissions(userName: String!, isAdmin: Boolean!): String!
+    editPermissions(
+      userName: String!
+      isAdmin: Boolean!
+      instrumentPermission: Boolean!
+      modelPermission: Boolean!
+      calibrationPermission: Boolean!
+    ): String!
     deleteUser(userName: String!): String!
 
     # Model related Mutations
@@ -317,12 +327,8 @@ const typeDefs = gql`
       models: [ModelInput]
       instruments: [InstrumentInput]
     ): String!
-    bulkImportModels(
-      models: [ModelInput]
-    ): String!
-    bulkImportInstruments(
-      instruments: [InstrumentInput]
-    ): String!
+    bulkImportModels(models: [ModelInput]): String!
+    bulkImportInstruments(instruments: [InstrumentInput]): String!
     addCalibrationEventById(
       calibrationHistoryIdReference: Int!
       date: String!

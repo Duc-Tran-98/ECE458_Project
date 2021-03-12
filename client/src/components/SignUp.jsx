@@ -7,8 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 import UserContext from './UserContext';
 import ErrorPage from '../pages/ErrorPage';

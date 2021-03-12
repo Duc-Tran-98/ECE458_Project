@@ -5,8 +5,6 @@ import CreateModel from '../queries/CreateModel';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
 import ModelForm from '../components/ModelForm';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 function CreateModelPage({ onCreation }) {
   CreateModelPage.propTypes = {
