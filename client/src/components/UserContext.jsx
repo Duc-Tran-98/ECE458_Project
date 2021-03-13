@@ -15,6 +15,9 @@ export const UserProvider = ({ children, loggedIn }) => {
   const [user, setUserState] = useState({
     isLoggedIn: false,
     isAdmin: false,
+    modelPermission: false,
+    calibrationPermission: false,
+    instrumentPermission: false,
     userName: '',
     firstName: '',
     lastName: '',
@@ -32,6 +35,9 @@ export const UserProvider = ({ children, loggedIn }) => {
         firstName: '',
         lastName: '',
         email: '',
+        modelPermission: false,
+        calibrationPermission: false,
+        instrumentPermission: false,
       });
     } else {
       // If user logged in
@@ -44,6 +50,9 @@ export const UserProvider = ({ children, loggedIn }) => {
             email
             isAdmin
             userName
+            modelPermission
+            calibrationPermission
+            instrumentPermission
           }
         }
       `;

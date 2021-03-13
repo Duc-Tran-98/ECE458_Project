@@ -100,7 +100,7 @@ export default function InstrumentForm({
   const formatOption = (option) => `${option.vendor} ${option.modelNumber}`;
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const user = useContext(UserContext);
-  const showFooter = type === 'edit' && user.isAdmin;
+  const showFooter = type === 'edit' && (user.isAdmin || user.instrumentPermission);
   return (
     <Formik
       initialValues={{

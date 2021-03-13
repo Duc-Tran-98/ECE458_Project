@@ -83,11 +83,7 @@ module.exports = {
       vendor,
       serialNumber,
     }),
-    getInstrumentByAssetTag: async (
-      _,
-      { assetTag },
-      { dataSources },
-    ) => await dataSources.instrumentAPI.getInstrumentByAssetTag({
+    getInstrumentByAssetTag: async (_, { assetTag }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentByAssetTag({
       assetTag,
     }),
     getInstrumentsWithFilter: async (
@@ -161,22 +157,10 @@ module.exports = {
       instruments,
       // calibrationEvents,
     }),
-    bulkImportModels: async (
-      _,
-      {
-        models,
-      },
-      { dataSources },
-    ) => await dataSources.bulkDataAPI.bulkImportModels({
+    bulkImportModels: async (_, { models }, { dataSources }) => await dataSources.bulkDataAPI.bulkImportModels({
       models,
     }),
-    bulkImportInstruments: async (
-      _,
-      {
-        instruments,
-      },
-      { dataSources },
-    ) => await dataSources.bulkDataAPI.bulkImportInstruments({
+    bulkImportInstruments: async (_, { instruments }, { dataSources }) => await dataSources.bulkDataAPI.bulkImportInstruments({
       instruments,
     }),
     // eslint-disable-next-line max-len
@@ -184,7 +168,14 @@ module.exports = {
     editModel: async (
       _,
       {
-        id, modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, categories,
+        id,
+        modelNumber,
+        vendor,
+        description,
+        comment,
+        calibrationFrequency,
+        supportLoadBankCalibration,
+        categories,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
@@ -200,7 +191,13 @@ module.exports = {
     addModel: async (
       _,
       {
-        modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, categories,
+        modelNumber,
+        vendor,
+        description,
+        comment,
+        calibrationFrequency,
+        supportLoadBankCalibration,
+        categories,
       },
       { dataSources },
     ) => {
@@ -252,7 +249,14 @@ module.exports = {
     addCalibrationEvent: async (
       _,
       {
-        modelNumber, vendor, serialNumber, user, date, comment, fileLocation, fileName,
+        modelNumber,
+        vendor,
+        serialNumber,
+        user,
+        date,
+        comment,
+        fileLocation,
+        fileName,
       },
       { dataSources },
     ) => {
@@ -377,7 +381,15 @@ module.exports = {
     signup: async (
       _,
       {
-        lastName, email, password, firstName, userName, isAdmin,
+        lastName,
+        email,
+        password,
+        firstName,
+        userName,
+        isAdmin,
+        instrumentPermission,
+        modelPermission,
+        calibrationPermission,
       },
       { dataSources },
     ) => {
@@ -391,10 +403,29 @@ module.exports = {
         userName,
         password: hash,
         isAdmin,
+        instrumentPermission,
+        modelPermission,
+        calibrationPermission,
       });
       return response;
     },
-    editPermissions: async (_, { userName, isAdmin }, { dataSources }) => await dataSources.userAPI.editPermissions({ userName, isAdmin }),
+    editPermissions: async (
+      _,
+      {
+        userName,
+        isAdmin,
+        modelPermission,
+        calibrationPermission,
+        instrumentPermission,
+      },
+      { dataSources },
+    ) => await dataSources.userAPI.editPermissions({
+      userName,
+      isAdmin,
+      modelPermission,
+      calibrationPermission,
+      instrumentPermission,
+    }),
     deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (_, { name }, { dataSources }) => {
       const response = await dataSources.modelAPI.addModelCategory({

@@ -8,8 +8,6 @@ import PropTypes from 'prop-types';
 import { EditUserForm } from '../components/UserForm';
 import ModalAlert from '../components/ModalAlert';
 import Query from '../components/UseQuery';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 export default function ViewUser({ onDelete }) {
   ViewUser.propTypes = {
@@ -20,11 +18,26 @@ export default function ViewUser({ onDelete }) {
   const [formState, setFormState] = React.useState({
     userName: urlParams.get('userName'),
     isAdmin: urlParams.get('isAdmin') === 'true',
+    modelPermission: urlParams.get('modelPermission') === 'true',
+    instrumentPermission: urlParams.get('instrumentPermission') === 'true',
+    calibrationPermission: urlParams.get('calibrationPermission') === 'true',
   });
 
   const onChangeCheckbox = (event) => {
     if (formState.userName !== 'admin') {
-      setFormState({ ...formState, isAdmin: event.target.checked });
+      if (event.target.name === 'isAdmin') { // isAdmin check changed
+        setFormState({
+          ...formState, modelPermission: event.target.checked, instrumentPermission: event.target.checked, calibrationPermission: event.target.checked, isAdmin: event.target.checked,
+        });
+      } else if (event.target.name === 'modelPermission') {
+        setFormState({
+          ...formState,
+          modelPermission: event.target.checked,
+          instrumentPermission: event.target.checked,
+        });
+      } else {
+        setFormState({ ...formState, [event.target.name]: event.target.checked });
+      }
     }
   };
   const [show, setShow] = React.useState(false);

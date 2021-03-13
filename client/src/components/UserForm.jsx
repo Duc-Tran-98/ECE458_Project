@@ -166,16 +166,28 @@ export function EditUserForm({
   const onSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    const {
+      userName, isAdmin, modelPermission, instrumentPermission, calibrationPermission,
+    } = formState;
     Query({
       query: print(gql`
-           mutation ChangePermissions($userName: String!, $isAdmin: Boolean!) {
-             editPermissions(userName: $userName, isAdmin: $isAdmin)
+           mutation ChangePermissions(
+            $userName: String!, 
+            $isAdmin: Boolean!, 
+            $instrumentPermission: Boolean!
+            $modelPermission: Boolean!
+            $calibrationPermission: Boolean!
+            ) {
+             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission)
            }
          `),
       queryName: 'editPermissions',
       getVariables: () => ({
-        userName: formState.userName,
-        isAdmin: formState.isAdmin,
+        userName,
+        isAdmin,
+        modelPermission,
+        instrumentPermission,
+        calibrationPermission,
       }),
       handleResponse: (response) => {
         setLoading(false);
@@ -183,9 +195,8 @@ export function EditUserForm({
           toast.success('Successfully updated permissions');
           const { state } = history.location;
           history.replace(
-            `/viewUser/?userName=${formState.userName}&isAdmin=${
-              formState.isAdmin
-            }`, state,
+            `/viewUser/?userName=${userName}&isAdmin=${isAdmin}&modelPermission=${modelPermission}&instrumentPermission=${instrumentPermission}&calibrationPermission=${calibrationPermission}`,
+            state,
           );
         } else {
           toast.error(response.message);
@@ -196,8 +207,8 @@ export function EditUserForm({
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
       <ToastContainer />
-      <div className="row mx-3">
-        <div className="col mt-3">
+      <div className="mx-3">
+        <div className="row mt-3">
           <label htmlFor="validationCustomUsername" className="h4">
             Username
           </label>
@@ -218,22 +229,88 @@ export function EditUserForm({
             />
           </div>
         </div>
-        <div className="col mt-3">
-          <div className="form-check form-switch mt-4">
-            <label className="form-check-label h4 col" htmlFor="adminCheck">
-              Admin user?
-            </label>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="adminCheck"
-              name="isAdmin"
-              checked={formState.isAdmin}
-              onChange={onChangeCheckbox}
-              disabled={disabledButtons}
-            />
-            <div className="col">
-              <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
+        <div className="d-flex flex-row mx-auto">
+          <div className="d-flex flex-column mx-auto">
+            <div className="form-check form-switch mt-3">
+              <label className="form-check-label h4" htmlFor="adminCheck">
+                Admin user?
+              </label>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="adminCheck"
+                name="isAdmin"
+                checked={formState.isAdmin}
+                onChange={onChangeCheckbox}
+                disabled={disabledButtons}
+              />
+              <div className="">
+                <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
+              </div>
+            </div>
+            <div className="form-check form-switch mt-3">
+              <label
+                className="form-check-label h4"
+                htmlFor="modelPermissionCheck"
+              >
+                Model Permissions?
+              </label>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="modelPermissionCheck"
+                name="modelPermission"
+                checked={formState.modelPermission}
+                onChange={onChangeCheckbox}
+                disabled={disabledButtons}
+              />
+              <div className="">
+                <strong>{formState.modelPermission ? 'Yes' : 'No'}</strong>
+              </div>
+            </div>
+          </div>
+          <div className="d-flex flex-column mx-auto">
+            <div className="form-check form-switch mt-3">
+              <label
+                className="form-check-label h4"
+                htmlFor="instrumentPermissionCheck"
+              >
+                Instrument Permissions?
+              </label>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="instrumentPermissionCheck"
+                name="instrumentPermission"
+                checked={formState.instrumentPermission}
+                onChange={onChangeCheckbox}
+                disabled={disabledButtons}
+              />
+              <div className="">
+                <strong>{formState.instrumentPermission ? 'Yes' : 'No'}</strong>
+              </div>
+            </div>
+            <div className="form-check form-switch mt-3">
+              <label
+                className="form-check-label h4"
+                htmlFor="calibrationPermissionCheck"
+              >
+                Calibration Permissions?
+              </label>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="calibrationPermissionCheck"
+                name="calibrationPermission"
+                checked={formState.calibrationPermission}
+                onChange={onChangeCheckbox}
+                disabled={disabledButtons}
+              />
+              <div className="">
+                <strong>
+                  {formState.calibrationPermission ? 'Yes' : 'No'}
+                </strong>
+              </div>
             </div>
           </div>
         </div>
@@ -242,13 +319,22 @@ export function EditUserForm({
         {loading ? (
           <CircularProgress />
         ) : (
-          <button className={buttonStyle} type="submit" disabled={disabledButtons}>
+          <button
+            className={buttonStyle}
+            type="submit"
+            disabled={disabledButtons}
+          >
             Save Changes
           </button>
         )}
 
         <span className="mx-2" />
-        <button className="btn btn-danger" type="button" onClick={onDeleteClick} disabled={disabledButtons}>
+        <button
+          className="btn btn-danger"
+          type="button"
+          onClick={onDeleteClick}
+          disabled={disabledButtons}
+        >
           Delete User
         </button>
       </div>

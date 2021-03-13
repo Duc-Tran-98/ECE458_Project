@@ -7,25 +7,21 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 import UserContext from './UserContext';
 import ErrorPage from '../pages/ErrorPage';
 
 // TODO: Add isAdmin
 const schema = Yup.object({
-  firstName: Yup.string()
-    .required('Please enter First Name'),
-  lastName: Yup.string()
-    .required('Please enter Last Name'),
-  userName: Yup.string()
-    .required('Please enter Username'),
-  email: Yup.string().email()
-    .required('Please enter email'),
-  password: Yup.string()
-    .required('Please enter password'),
+  firstName: Yup.string().required('Please enter First Name'),
+  lastName: Yup.string().required('Please enter Last Name'),
+  userName: Yup.string().required('Please enter Username'),
+  email: Yup.string().email().required('Please enter email'),
+  password: Yup.string().required('Please enter password'),
   isAdmin: Yup.bool(),
+  modelPermission: Yup.bool(),
+  instrumentPermission: Yup.bool(),
+  calibrationPermission: Yup.bool(),
 });
 
 const initialValues = {
@@ -35,6 +31,9 @@ const initialValues = {
   lastName: '',
   userName: '',
   isAdmin: false,
+  modelPermission: false,
+  instrumentPermission: false,
+  calibrationPermission: false,
 };
 
 export default function SignUp({ onCreation }) {
@@ -51,6 +50,9 @@ export default function SignUp({ onCreation }) {
       password,
       userName,
       isAdmin,
+      modelPermission,
+      instrumentPermission,
+      calibrationPermission,
     } = values;
     const handleResponse = (response) => {
       if (response.success) {
@@ -62,7 +64,16 @@ export default function SignUp({ onCreation }) {
       }
     };
     CreateUser({
-      firstName, lastName, email, password, userName, isAdmin, handleResponse,
+      firstName,
+      lastName,
+      email,
+      password,
+      userName,
+      isAdmin,
+      modelPermission,
+      instrumentPermission,
+      calibrationPermission,
+      handleResponse,
     });
   };
 
@@ -92,10 +103,7 @@ export default function SignUp({ onCreation }) {
           touched,
           isSubmitting,
         }) => (
-          <Form
-            noValidate
-            onSubmit={handleSubmit}
-          >
+          <Form noValidate onSubmit={handleSubmit}>
             <div className="row mx-3" style={{ marginBottom: '20px' }}>
               <Form.Group controlId="firstName" className="col mt-3">
                 <Form.Label className="h4">First Name</Form.Label>
@@ -175,31 +183,98 @@ export default function SignUp({ onCreation }) {
                   {errors.password}
                 </Form.Control.Feedback>
               </Form.Group>
-              <div className="form-check form-switch mt-4 col">
-                <label className="form-check-label h4 col" htmlFor="adminCheck">
-                  Admin user?
-                </label>
-
-                <input
-                  className="form-check-input mt-2"
-                  type="checkbox"
-                  id="adminCheck"
-                  name="isAdmin"
-                  value={values.isAdmin}
-                  onChange={handleChange}
-                />
-                <div className="col">
-                  <strong>{values.isAdmin ? 'Yes' : 'No'}</strong>
+            </div>
+            <div className="d-flex flex-row mx-auto">
+              <div className="d-flex flex-column mx-auto">
+                <div className="form-check form-switch mt-3">
+                  <label className="form-check-label h4" htmlFor="adminCheck">
+                    Admin user?
+                  </label>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="adminCheck"
+                    name="isAdmin"
+                    checked={values.isAdmin}
+                    onChange={handleChange}
+                  />
+                  <div className="">
+                    <strong>{values.isAdmin ? 'Yes' : 'No'}</strong>
+                  </div>
+                </div>
+                <div className="form-check form-switch mt-3">
+                  <label
+                    className="form-check-label h4"
+                    htmlFor="modelPermissionCheck"
+                  >
+                    Model Permissions?
+                  </label>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="modelPermissionCheck"
+                    name="modelPermission"
+                    checked={values.isAdmin || values.modelPermission}
+                    onChange={handleChange}
+                  />
+                  <div className="">
+                    <strong>{(values.isAdmin || values.modelPermission) ? 'Yes' : 'No'}</strong>
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex flex-column mx-auto">
+                <div className="form-check form-switch mt-3">
+                  <label
+                    className="form-check-label h4"
+                    htmlFor="instrumentPermissionCheck"
+                  >
+                    Instrument Permissions?
+                  </label>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="instrumentPermissionCheck"
+                    name="instrumentPermission"
+                    checked={values.isAdmin || values.modelPermission || values.instrumentPermission}
+                    onChange={handleChange}
+                  />
+                  <div className="">
+                    <strong>
+                      {(values.isAdmin || values.modelPermission || values.instrumentPermission) ? 'Yes' : 'No'}
+                    </strong>
+                  </div>
+                </div>
+                <div className="form-check form-switch mt-3">
+                  <label
+                    className="form-check-label h4"
+                    htmlFor="calibrationPermissionCheck"
+                  >
+                    Calibration Permissions?
+                  </label>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="calibrationPermissionCheck"
+                    name="calibrationPermission"
+                    checked={values.isAdmin || values.calibrationPermission}
+                    onChange={handleChange}
+                  />
+                  <div className="">
+                    <strong>
+                      {(values.isAdmin || values.calibrationPermission) ? 'Yes' : 'No'}
+                    </strong>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="d-flex justify-content-center my-3">
-              {isSubmitting ? <CircularProgress />
-                : (
-                  <button className="btn btn-dark" type="submit">
-                    Register
-                  </button>
-                )}
+              {isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <button className="btn btn-dark" type="submit">
+                  Register
+                </button>
+              )}
             </div>
           </Form>
         )}
