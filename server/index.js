@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // This is the actual backend server;
 const { ApolloServer } = require('apollo-server');
 // const { ApolloServer } = require('apollo-server-express');
@@ -37,17 +38,9 @@ const server = new ApolloServer({
   context: async ({ req }) => {
     // simple auth check on every request
     const auth = (req.headers && req.headers.authorization) || '';
-    console.log('********************* AUTH *************************');
-    console.log(auth);
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
-    return verifyWithPromise(auth).then((value) => {
-      console.log('************************ VALUE ************************');
-      console.log(value);
-      return { user: value };
-    }).catch((err) => {
-      console.error(err);
-      return { user: null };
-    });
+    const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null));
+    return { user };
   },
   /*
   sections === {
