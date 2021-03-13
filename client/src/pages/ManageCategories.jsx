@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Tabs, Tab } from 'react-bootstrap';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import MouseOverPopover from '../components/PopOver';
@@ -16,10 +15,14 @@ import CreateInstrumentCategory from '../queries/CreateInstrumentCategory';
 import CreateModelCategory from '../queries/CreateModelCategory';
 import EditModelCategory from '../queries/EditModelCategory';
 import EditInstrumentCategory from '../queries/EditInstrumentCategory';
+import UserContext from '../components/UserContext';
+// TODO: SPLIT UP THIS PAGE INTO MODELS/INSTRUMENTS
 
-function ManageCategories() {
+function ManageCategories({ modifyCount }) {
+  ManageCategories.propTypes = {
+    modifyCount: PropTypes.func.isRequired,
+  };
   const history = useHistory();
-  const navLink = document.getElementById('modelCatNavLink');
   const queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   let startTab;
@@ -39,6 +42,7 @@ function ManageCategories() {
   const [loading, setLoading] = React.useState(false);
   const [num, setNum] = React.useState(0);
   const [newCategory, setNewCategory] = React.useState('');
+  const user = React.useContext(UserContext);
 
   const cellHandler = (e) => {
     setCategory(e.row.name);
@@ -111,11 +115,8 @@ function ManageCategories() {
 
   function updateRow(k, replace = false) {
     let searchString;
-    setInitPage(1);
-    setInitLimit(25);
     if (k === 'model') {
       CountModelCategories().then((val) => {
-        setRowCount(val);
         searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
         if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
           if (replace) {
@@ -127,7 +128,6 @@ function ManageCategories() {
       });
     } else {
       CountInstrumentCategories().then((val) => {
-        setRowCount(val);
         searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
         if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
           if (replace) {
@@ -140,14 +140,7 @@ function ManageCategories() {
     }
   }
 
-  if (navLink !== null) {
-    navLink.onclick = () => {
-      updateRow('model');
-      setKey('model');
-    };
-  }
-
-  history.listen((location, action) => {
+  history.listen((location) => {
     let active = true;
 
     (() => {
@@ -158,18 +151,23 @@ function ManageCategories() {
       const lim = parseInt(urlParams.get('limit'), 10);
       const pg = parseInt(urlParams.get('page'), 10);
       const count = parseInt(urlParams.get('count'), 10);
-      if (action === 'POP') {
+      if (count !== rowCount) {
         setRowCount(count);
+      }
+      if (lim !== initLimit) {
         setInitLimit(lim);
+      }
+      if (pg !== initPage) {
         setInitPage(pg);
-        // console.log('was a pop');
-        if (window.location.pathname.startsWith('/model')) {
-          setKey('model');
-          // console.log('setting start tab = model');
-        } else {
-          setKey('instrument');
-          //  console.log('setting start tab = instrument');
-        }
+      }
+
+      // console.log('was a pop');
+      if (location.pathname.startsWith('/model')) {
+        setKey('model');
+        // console.log('setting start tab = model');
+      } else {
+        setKey('instrument');
+        //  console.log('setting start tab = instrument');
       }
     })();
 
@@ -192,6 +190,7 @@ function ManageCategories() {
   };
   const handleResponse = (response) => {
     if (response.success) {
+      modifyCount();
       toast.success(response.message, {
         toastId: Math.random(),
       });
@@ -243,8 +242,12 @@ function ManageCategories() {
         <>
           {showDelete && (
             <div>
-              <div className="h4 text-center my-3">{`You are about to delete category ${category}. Are you sure?`}</div>
-              <div className="h4 text-center my-3">{`This category is attached to ${num} ${key}${num === 1 ? '' : 's'} `}</div>
+              <div className="h4 text-center my-3">
+                {`You are about to delete category ${category}. This category is attached to ${num} ${key}${
+                  num === 1 ? '' : 's'
+                }. Are you sure?`}
+
+              </div>
             </div>
           )}
           <div className="d-flex justify-content-center">
@@ -364,21 +367,13 @@ function ManageCategories() {
           </div>
         </>
       </ModalAlert>
-      <Tabs
-        id="tabs"
-        activeKey={key}
-        onSelect={(k) => {
-          updateRow(k);
-          setKey(k);
-        }}
-        unmountOnExit
-      >
-        <Tab eventKey="model" title="Model Categories">
-          <ServerPaginationGrid
-            rowCount={rowCount}
-            cellHandler={cellHandler}
-            headerElement={(
-              <div>
+      {key === 'model' && (
+        <ServerPaginationGrid
+          rowCount={rowCount}
+          cellHandler={cellHandler}
+          headerElement={(
+            <div>
+              {(user.isAdmin || user.modelPermission) && (
                 <button
                   className="btn  m-2"
                   type="button"
@@ -386,38 +381,36 @@ function ManageCategories() {
                 >
                   Create Model Category
                 </button>
-              </div>
-            )}
-            cols={cols}
-            initPage={initPage}
-            initLimit={initLimit}
-            onPageChange={(page, limit) => {
-              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-              if (window.location.search !== searchString) {
-                history.push(`/modelCategories${searchString}`);
-                setInitLimit(limit);
-                setInitPage(page);
-              }
-            }}
-            onPageSizeChange={(page, limit) => {
-              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-              if (window.location.search !== searchString) {
-                history.push(`/modelCategories${searchString}`);
-                setInitLimit(limit);
-                setInitPage(page);
-              }
-            }}
-            fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
-            showToolBar={false}
-            showImport={false}
-          />
-        </Tab>
-        <Tab eventKey="instrument" title="Instrument Categories">
-          <ServerPaginationGrid
-            rowCount={rowCount}
-            cellHandler={cellHandler}
-            headerElement={(
-              <div>
+              )}
+            </div>
+          )}
+          cols={cols}
+          initPage={initPage}
+          initLimit={initLimit}
+          onPageChange={(page, limit) => {
+            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            if (window.location.search !== searchString) {
+              history.push(`/modelCategories${searchString}`);
+            }
+          }}
+          onPageSizeChange={(page, limit) => {
+            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            if (window.location.search !== searchString) {
+              history.push(`/modelCategories${searchString}`);
+            }
+          }}
+          fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+          showToolBar={false}
+          showImport={false}
+        />
+      )}
+      {key === 'instrument' && (
+        <ServerPaginationGrid
+          rowCount={rowCount}
+          cellHandler={cellHandler}
+          headerElement={(
+            <div>
+              {(user.isAdmin || user.instrumentPermission) && (
                 <button
                   className="btn  m-2"
                   type="button"
@@ -425,35 +418,31 @@ function ManageCategories() {
                 >
                   Create Instrument Category
                 </button>
-              </div>
-            )}
-            cols={cols}
-            initPage={initPage}
-            initLimit={initLimit}
-            onPageChange={(page, limit) => {
-              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-              if (window.location.search !== searchString) {
-                history.push(`/instrumentCategories${searchString}`);
-                setInitLimit(limit);
-                setInitPage(page);
-              }
-            }}
-            onPageSizeChange={(page, limit) => {
-              const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
-              if (window.location.search !== searchString) {
-                history.push(`/instrumentCategories${searchString}`);
-                setInitLimit(limit);
-                setInitPage(page);
-              }
-            }}
-            fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
-              (response) => response,
-            )}
-            showToolBar={false}
-            showImport={false}
-          />
-        </Tab>
-      </Tabs>
+              )}
+            </div>
+          )}
+          cols={cols}
+          initPage={initPage}
+          initLimit={initLimit}
+          onPageChange={(page, limit) => {
+            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            if (window.location.search !== searchString) {
+              history.push(`/instrumentCategories${searchString}`);
+            }
+          }}
+          onPageSizeChange={(page, limit) => {
+            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            if (window.location.search !== searchString) {
+              history.push(`/instrumentCategories${searchString}`);
+            }
+          }}
+          fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
+            (response) => response,
+          )}
+          showToolBar={false}
+          showImport={false}
+        />
+      )}
     </>
   );
 }

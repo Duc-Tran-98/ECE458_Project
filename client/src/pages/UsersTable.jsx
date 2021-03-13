@@ -11,8 +11,6 @@ export default function UsersTable() {
   const rowCount = parseInt(urlParams.get('count'), 10);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
-  const [userName, setUserName] = React.useState('');
-  const [isAdmin, setIsAdmin] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
@@ -50,7 +48,22 @@ export default function UsersTable() {
     {
       field: 'isAdmin',
       headerName: 'Admin',
-      width: 200,
+      width: 100,
+    },
+    {
+      field: 'modelPermission',
+      headerName: 'Model Permission',
+      width: 175,
+    },
+    {
+      field: 'instrumentPermission',
+      headerName: 'Instrument Permission',
+      width: 175,
+    },
+    {
+      field: 'calibrationPermission',
+      headerName: 'Calibration Permission',
+      width: 180,
     },
     {
       field: 'view',
@@ -61,17 +74,7 @@ export default function UsersTable() {
         <div className="row">
           <div className="col mt-1">
             <MouseOverPopover message="View User">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  const state = { previousUrl: window.location.href };
-                  history.push(
-                    `/viewUser/?userName=${userName}&isAdmin=${isAdmin}`,
-                    state,
-                  );
-                }}
-              >
+              <button type="button" className="btn">
                 View
               </button>
             </MouseOverPopover>
@@ -86,8 +89,11 @@ export default function UsersTable() {
         rowCount={rowCount}
         cellHandler={(e) => {
           if (e.field === 'view') {
-            setUserName(e.row.userName);
-            setIsAdmin(e.row.isAdmin);
+            const state = { previousUrl: window.location.href };
+            history.push(
+              `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
+              state,
+            );
           }
         }}
         headerElement={(

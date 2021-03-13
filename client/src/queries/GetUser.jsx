@@ -40,6 +40,9 @@ export function GetAllUsers({ limit, offset }) {
         userName
         isAdmin
         id
+        modelPermission
+        calibrationPermission
+        instrumentPermission
       }
     }
   `;

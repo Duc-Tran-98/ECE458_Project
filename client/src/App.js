@@ -73,7 +73,10 @@ function App() {
           updateCount={updateCount}
         />
       </header>
-      <main className="d-flex justify-content-center my-5" style={{ zIndex: 0 }}>
+      <main
+        className="d-flex justify-content-center my-5"
+        style={{ zIndex: 0 }}
+      >
         <div className="bg-theme rounded">
           <Switch>
             <Route path="/test">
@@ -83,11 +86,7 @@ function App() {
               {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewUsers">
-              {loggedIn ? (
-                <UsersTable />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/addUser">
               {loggedIn ? (
@@ -118,11 +117,7 @@ function App() {
               )}
             </Route>
             <Route path="/viewModels">
-              {loggedIn ? (
-                <ListModels />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <ListModels /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewInstruments">
               {loggedIn ? (
@@ -146,11 +141,7 @@ function App() {
               )}
             </Route>
             <Route path="/viewCertificate">
-              {loggedIn ? (
-                <Certificate />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <Certificate /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/import">
               {loggedIn ? (
@@ -161,14 +152,14 @@ function App() {
             </Route>
             <Route path="/modelCategories">
               {loggedIn ? (
-                <ManageCategories />
+                <ManageCategories modifyCount={modifyCount} />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
             </Route>
             <Route path="/instrumentCategories">
               {loggedIn ? (
-                <ManageCategories />
+                <ManageCategories modifyCount={modifyCount} />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
@@ -177,11 +168,7 @@ function App() {
               <OAuthConsume handleLogin={handleLogin} />
             </Route>
             <Route path="/userInfo">
-              {loggedIn ? (
-                <UserInfo />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <UserInfo /> : <Login handleLogin={handleLogin} />}
             </Route>
           </Switch>
         </div>

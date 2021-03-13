@@ -395,7 +395,7 @@ export default function ListInstruments() {
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {user.isAdmin && (
+            {(user.isAdmin || user.instrumentPermission) && (
               <Link className="btn m-2 my-auto text-nowrap" to="/addInstrument">
                 Create Instrument
               </Link>
