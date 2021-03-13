@@ -534,6 +534,7 @@ class InstrumentAPI extends DataSource {
               async (instrument) => {
                 if (instrument) {
                   response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
+                  response.assetTag = -1;
                   response.success = false;
                 }
               },
@@ -545,9 +546,11 @@ class InstrumentAPI extends DataSource {
               (instrument) => {
                 if (instrument) {
                   response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists`;
+                  response.assetTag = -1;
                   response.success = false;
                 } else {
                   newAssetTag = assetTag;
+                  response.assetTag = newAssetTag;
                 }
               },
             );
@@ -562,7 +565,6 @@ class InstrumentAPI extends DataSource {
             }
           }
           if (response.success) {
-            response.assetTag = newAssetTag;
             const modelReference = model.dataValues.id;
             const {
               description,
@@ -592,10 +594,12 @@ class InstrumentAPI extends DataSource {
               });
             });
             response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            response.assetTag = newAssetTag;
             response.success = true;
           }
         } else {
           response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
+          response.assetTag = -1;
           response.success = false;
         }
       });

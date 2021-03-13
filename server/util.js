@@ -40,7 +40,7 @@ module.exports.createStore = async () => {
       collate: 'utf8mb4_unicode_ci',
     },
     // eslint-disable-next-line no-console
-    logging: console.log,
+    logging: undefined,
     database,
   });
 
@@ -129,11 +129,11 @@ module.exports.createStore = async () => {
         type: SQL.STRING(2000),
         allowNull: true,
       },
-      calibrationFrequency: SQL.INTEGER,
       supportLoadBankCalibration: {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
     {
