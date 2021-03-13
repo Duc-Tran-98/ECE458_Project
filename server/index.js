@@ -39,8 +39,18 @@ const server = new ApolloServer({
     // simple auth check on every request
     const auth = (req.headers && req.headers.authorization) || '';
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
-    const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null));
-    return { user };
+    const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
+    if (user) { // if decode ok
+      const storeModel = await store;
+      const userVals = await storeModel.users.findAll({ where: { userName: user.userName } }).then((val) => {
+        if (val && val[0]) { // look up user and return their info
+          return val[0].dataValues;
+        }
+        return null; // return null if user no longer exists
+      });
+      return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
+    }
+    return { user: null };
   },
   /*
   sections === {

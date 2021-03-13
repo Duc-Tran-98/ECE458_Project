@@ -50,29 +50,10 @@ class ModelAPI extends DataSource {
     this.context = config.context;
   }
 
-  async getUser() {
-    const { user } = this.context;
-    console.log('user is');
-    console.log(user);
-    if (user !== null) {
-      const exist = await this.store.users.findAll({ where: { userName: user.userName } })
-        .then((val) => {
-          if (val && val[0]) {
-            console.log('value = ');
-            console.log(val[0].dataValues);
-            return val[0].dataValues;
-          }
-          return null;
-        });
-      return exist;
-    }
-    return null; // user === null means someone tried to access page without logging in
-  }
-
   async countAllModels() {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return 0;
     }
@@ -85,8 +66,9 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     const model = await this.getModel({ modelNumber, vendor });
@@ -117,8 +99,9 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     const validation = validateModel({
@@ -178,7 +161,7 @@ class ModelAPI extends DataSource {
   async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return [];
     }
@@ -200,7 +183,7 @@ class ModelAPI extends DataSource {
     const response = { models: [], total: 0 };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return response;
     }
@@ -354,7 +337,7 @@ class ModelAPI extends DataSource {
   async getAllModelsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return [];
     }
@@ -365,7 +348,7 @@ class ModelAPI extends DataSource {
   async getAllModelsWithVendor({ vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return [];
     }
@@ -376,7 +359,7 @@ class ModelAPI extends DataSource {
   async getUniqueVendors() {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return [];
     }
@@ -387,7 +370,7 @@ class ModelAPI extends DataSource {
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return null;
     }
@@ -417,8 +400,9 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     const validation = validateModel({
@@ -459,8 +443,9 @@ class ModelAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     await this.getModelCategory({ name }).then((value) => {
@@ -481,8 +466,9 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     await this.getModelCategory({ name }).then((value) => {
@@ -515,8 +501,9 @@ class ModelAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     let name = currentName;
@@ -550,8 +537,9 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
@@ -582,8 +570,9 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
+      response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
@@ -625,7 +614,7 @@ class ModelAPI extends DataSource {
   async getModelCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return null;
     }
@@ -641,7 +630,7 @@ class ModelAPI extends DataSource {
   async getAllModelCategories({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return [];
     }
@@ -651,7 +640,7 @@ class ModelAPI extends DataSource {
   async countModelCategories() {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return 0;
     }
@@ -661,7 +650,7 @@ class ModelAPI extends DataSource {
   async countModelsAttachedToCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const user = await this.getUser();
+    const { user } = this.context;
     if (!user) {
       return 0;
     }
