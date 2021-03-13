@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
@@ -232,7 +232,6 @@ function ManageCategories({ modifyCount }) {
 
   return (
     <>
-      <ToastContainer />
       <ModalAlert
         show={showDelete}
         handleClose={closeDeleteModal}

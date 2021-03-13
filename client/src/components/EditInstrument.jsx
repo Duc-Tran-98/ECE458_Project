@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import InstrumentForm from './InstrumentForm';
 import UserContext from './UserContext';
 import EditInstrumentQuery from '../queries/EditInstrument';
@@ -128,7 +128,6 @@ export default function EditInstrument({
     <>
       {completeFetch && (
       <>
-        <ToastContainer />
         <InstrumentForm
           modelNumber={modelNumber}
           vendor={vendor}

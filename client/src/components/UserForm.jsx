@@ -4,7 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Query from './UseQuery';
 import UserContext from './UserContext';
 
@@ -206,7 +206,6 @@ export function EditUserForm({
   };
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
-      <ToastContainer />
       <div className="mx-3">
         <div className="row mt-3">
           <label htmlFor="validationCustomUsername" className="h4">
