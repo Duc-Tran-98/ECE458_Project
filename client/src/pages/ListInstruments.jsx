@@ -52,8 +52,6 @@ export default function ListInstruments() {
     setRowCount(total);
     if (urlFilter) {
       selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
-      // console.log(selectedFilters);
-      // console.log(selectedFilters);
     } else {
       selectedFilters = null;
     }

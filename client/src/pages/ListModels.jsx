@@ -29,7 +29,6 @@ function ListModels() {
   let selectedFilters = null;
   if (urlFilter) {
     selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
-    // console.log(selectedFilters);
   }
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
@@ -37,7 +36,6 @@ function ListModels() {
     descriptions: selectedFilters ? selectedFilters.descriptions : null,
     categories: selectedFilters ? selectedFilters.categories : null,
   });
-  // const navLink = document.getElementById('modelNavLink');
   const getAndSetUrlVals = (search = null) => {
     const urlVals = new URLSearchParams(search || window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
@@ -46,12 +44,9 @@ function ListModels() {
     urlFilter = urlVals.get('filters');
     setInitLimit(lim);
     setInitPage(pg);
-    // console.log(`total = ${total}`);
     setRowCount(total);
     if (urlFilter) {
       selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
-      // console.log(selectedFilters);
-      // console.log(selectedFilters);
     } else {
       selectedFilters = null;
     }
@@ -80,9 +75,6 @@ function ListModels() {
         `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
         state,
       );
-      // setDescription(e.row.description);
-      // setModelNumber(e.row.modelNumber);
-      // setVendor(e.row.vendor);
     }
   };
   const categoriesList = (categories) => {

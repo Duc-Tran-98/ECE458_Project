@@ -161,13 +161,10 @@ function ManageCategories({ modifyCount }) {
         setInitPage(pg);
       }
 
-      // console.log('was a pop');
       if (location.pathname.startsWith('/model')) {
         setKey('model');
-        // console.log('setting start tab = model');
       } else {
         setKey('instrument');
-        //  console.log('setting start tab = instrument');
       }
     })();
 
