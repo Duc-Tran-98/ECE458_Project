@@ -103,6 +103,7 @@ function ListModels() {
     {
       field: 'calibrationFrequency',
       headerName: 'Calib Freq',
+      description: 'Calibration Frequency',
       width: 120,
       renderCell: (params) => (
         <div className="row">

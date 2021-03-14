@@ -147,6 +147,7 @@ export default function ListInstruments() {
     {
       field: 'recentCalDate',
       headerName: 'Calib Date',
+      description: 'Calibration Date',
       width: 140,
       type: 'date',
     },
@@ -162,6 +163,7 @@ export default function ListInstruments() {
     {
       field: 'calibrationStatus',
       headerName: 'Calib Exp',
+      description: 'Calibration Expiration',
       width: 120,
       type: 'date',
       renderCell: (params) => (

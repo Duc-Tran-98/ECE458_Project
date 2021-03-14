@@ -3,7 +3,8 @@ import * as React from 'react';
 import {
   DataGrid, GridOverlay, ColumnsToolbarButton, DensitySelector,
 } from '@material-ui/data-grid';
-// import { XGrid } from '@material-ui/x-grid';
+// eslint-disable-next-line no-unused-vars
+import { XGrid } from '@material-ui/x-grid';
 
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
