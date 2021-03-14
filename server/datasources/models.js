@@ -53,10 +53,6 @@ class ModelAPI extends DataSource {
   async countAllModels() {
     const storeModel = await this.store;
     this.store = storeModel;
-    const { user } = this.context;
-    if (!user) {
-      return 0;
-    }
     let total = await this.store.models.findAndCountAll();
     total = total.count;
     return total;
@@ -67,7 +63,7 @@ class ModelAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const { user } = this.context;
-    if (!user) {
+    if (!user.modelPermission) {
       response.message = 'ERROR: User does not exist!';
       return JSON.stringify(response);
     }

@@ -1,6 +1,7 @@
+/* eslint-disable no-useless-concat */
 /* eslint-disable max-len */
 // This is the actual backend server;
-const { ApolloServer } = require('apollo-server');
+const { ApolloServer, AuthenticationError } = require('apollo-server');
 // const { ApolloServer } = require('apollo-server-express');
 const axios = require('axios');
 const express = require('express');
@@ -37,30 +38,26 @@ const dataSources = () => ({
 const server = new ApolloServer({
   context: async ({ req }) => {
     // simple auth check on every request
-    const auth = (req.headers && req.headers.authorization) || '';
+    const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
     const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
-    if (user) { // if decode ok
-      const storeModel = await store;
-      const userVals = await storeModel.users.findAll({ where: { userName: user.userName } }).then((val) => {
-        if (val && val[0]) { // look up user and return their info
-          return val[0].dataValues;
-        }
-        return null; // return null if user no longer exists
-      });
-      return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
+    if (
+      !user // jwt DNE || malformed
+      && !(req.body.query === 'mutation LoginMutation($password: String!, $userName: String!) {\n' + '  login(password: $password, userName: $userName)\n'
+    + '}\n')) { // and query !== login, then that's invalid access
+      console.log('invalid access');
+      throw new AuthenticationError('you must be logged in');
     }
-    return { user: null };
+    // if decode ok
+    const storeModel = await store;
+    const userVals = await storeModel.users.findAll({ where: { userName: user?.userName || req.body?.variables?.userName } }).then((val) => {
+      if (val && val[0]) { // look up user and return their info
+        return val[0].dataValues;
+      }
+      return null; // return null if user no longer exists
+    });
+    return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
   },
-  /*
-  sections === {
-    header: { alg: 'HS512', typ: 'JWT' },
-    payload: { a: 1, b: 2, c: 3, iat: 1579521212 },
-    signature:
-    'mIcxteEVjbh2MnKQ3EQlojZojGSyA/guqRBYHQURcfnCSSBTT2OShF8lo9/ogjAv+5oECgmCur/cDWB7x3X53g==',
-    input: 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhIjoxLCJiIjoyLCJjIjozLCJpYXQiOjE1Nzk1MjEyMTJ9'
-  }
-*/
   // Additional constructor options
   typeDefs,
   resolvers,

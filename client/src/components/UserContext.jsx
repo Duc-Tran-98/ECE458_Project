@@ -45,7 +45,9 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
             // res !== undefined => user still exsits, so let's check if
             // their permissions change
             res.isLoggedIn = true;
-            if (JSON.stringify(res) !== JSON.stringify(initVal)) {
+            const hasChanged = JSON.stringify(res) !== JSON.stringify(initVal);
+            // console.log(hasChanged);
+            if (hasChanged) {
               // initVal and newly polled val don't match
               setUserState(res); // update state
               clearInterval(intervalId); // stop old polling
@@ -74,15 +76,17 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
       });
     } else {
       // If user logged in
-      GetUser({
-        userName: Buffer.from(token, 'base64').toString('ascii'),
-        includeAll: true,
-      }).then((val) => {
-        // eslint-disable-next-line no-param-reassign
-        val.isLoggedIn = true;
-        setUserState(val);
-        startPolling(val);
-      });
+      setTimeout(() => {
+        GetUser({
+          userName: Buffer.from(token, 'base64').toString('ascii'),
+          includeAll: true,
+        }).then((val) => {
+          // eslint-disable-next-line no-param-reassign
+          val.isLoggedIn = true;
+          setUserState(val);
+          startPolling(val);
+        });
+      }, 20);
     }
   }, [loggedIn]);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
