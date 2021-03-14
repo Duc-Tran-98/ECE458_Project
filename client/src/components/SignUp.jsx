@@ -7,6 +7,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
+import { GetAllUsers } from '../queries/GetUser';
 
 import UserContext from './UserContext';
 import ErrorPage from '../pages/ErrorPage';
@@ -40,7 +41,23 @@ export default function SignUp({ onCreation }) {
   SignUp.propTypes = {
     onCreation: PropTypes.func.isRequired,
   };
+  const [allUserNames, setAllUserNames] = React.useState(['admin']);
   const user = useContext(UserContext);
+  GetAllUsers({ limit: 100, offset: 0 }).then((response) => {
+    const parsedUsernames = response.map((element) => element.userName);
+    setAllUserNames(parsedUsernames);
+  });
+
+  // eslint-disable-next-line no-unused-vars
+  const checkUserNameExists = (userName, setFieldError) => {
+    console.log('checking if username exists');
+    if (allUserNames.includes(userName)) {
+      console.log('Found userName collsion! Setting error');
+      setFieldError('userName', 'Username already exists');
+      return true;
+    }
+    return false;
+  };
 
   const handleSignup = (values, resetForm) => {
     const {
@@ -102,6 +119,7 @@ export default function SignUp({ onCreation }) {
           values,
           touched,
           isSubmitting,
+          // setFieldError,
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <div className="row mx-3" style={{ marginBottom: '20px' }}>
@@ -147,7 +165,13 @@ export default function SignUp({ onCreation }) {
                         handleChange(e);
                       }
                     }}
-                    isInvalid={touched.userName && !!errors.userName}
+                    // isInvalid={() => checkUserNameExists(values.userName, setFieldError)}
+                    isInvalid={() => (touched.userName && !!errors.userName)}
+                      // if (allUserNames.includes(values.userName)) {
+                      //   console.log('Username already exists');
+                      //   setFieldError('userName', 'Username already exists');
+                      //   return true;
+                      // }
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.userName}

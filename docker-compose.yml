@@ -30,8 +30,8 @@ services:
     image: databack/mysql-backup
     restart: always
     volumes:
-      - ./backup/db_backups:/db
-      # - ./backup/pre-backup:/scripts.d/pre-backup
+      - ./backup/db_backups:/db # TODO: Remove this volume, only for debugging purposes
+      # - ./backup/pre-backup:/scripts.d/pre-backup (TODO: Copy these over a different way)
       # - ./backup/post-backup:/scripts.d/post-backup (TODO: Can have this scp over to another server)
     env_file: 
       - "./root.env"
