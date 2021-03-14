@@ -73,17 +73,12 @@ function ListModels() {
   });
 
   const cellHandler = (e) => {
-    if (e.field === 'view') {
-      const state = { previousUrl: window.location.href };
-      const { modelNumber, vendor, description } = e.row;
-      history.push(
-        `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-        state,
-      );
-      // setDescription(e.row.description);
-      // setModelNumber(e.row.modelNumber);
-      // setVendor(e.row.vendor);
-    }
+    const state = { previousUrl: window.location.href };
+    const { modelNumber, vendor, description } = e.row;
+    history.push(
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      state,
+    );
   };
   const categoriesList = (categories) => {
     const catArr = [];
@@ -107,8 +102,8 @@ function ListModels() {
     },
     {
       field: 'calibrationFrequency',
-      headerName: 'Calibration Frequency',
-      width: 195,
+      headerName: 'Calib Freq',
+      width: 120,
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
@@ -141,25 +136,6 @@ function ListModels() {
       width: 350,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
-      ),
-    },
-    {
-      field: 'view',
-      headerName: 'View',
-      width: 120,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="View Model">
-              <button
-                type="button"
-                className="btn "
-              >
-                View
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
       ),
     },
   ];

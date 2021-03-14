@@ -3,6 +3,7 @@ import * as React from 'react';
 import {
   DataGrid, GridOverlay, ColumnsToolbarButton, DensitySelector,
 } from '@material-ui/data-grid';
+// import { XGrid } from '@material-ui/x-grid';
 
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
@@ -277,6 +278,7 @@ export function ServerPaginationGrid({
               cellHandler(e);
             }
           }}
+          onCellHover={() => { document.body.style.cursor = 'pointer'; }}
           autoHeight
           onSelectionChange={(newSelection) => {
             setChecked(newSelection.rowIds);
