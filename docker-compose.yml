@@ -25,6 +25,16 @@ services:
       - my-db:/var/lib/mysql
     env_file: 
       - "./root.env"
+  backup:
+    container_name: backup
+    image: databack/mysql-backup
+    restart: always
+    volumes:
+      - ./backup/db_backups:/db
+      # - ./backup/pre-backup:/scripts.d/pre-backup
+      # - ./backup/post-backup:/scripts.d/post-backup (TODO: Can have this scp over to another server)
+    env_file: 
+      - "./root.env"
 
   backend:
     stdin_open: true
