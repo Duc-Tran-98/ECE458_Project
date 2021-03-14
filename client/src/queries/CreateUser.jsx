@@ -10,6 +10,9 @@ export default function CreateUser({
   password,
   userName,
   isAdmin,
+  modelPermission,
+  instrumentPermission,
+  calibrationPermission,
   handleResponse,
 }) {
   CreateUser.propTypes = {
@@ -20,6 +23,9 @@ export default function CreateUser({
     userName: PropTypes.string.isRequired,
     isAdmin: PropTypes.bool.isRequired,
     handleResponse: PropTypes.func.isRequired,
+    modelPermission: PropTypes.bool.isRequired,
+    instrumentPermission: PropTypes.bool.isRequired,
+    calibrationPermission: PropTypes.bool.isRequired,
   };
   const SIGNUP_MUTATION = gql`
     mutation SignupMutation(
@@ -29,6 +35,9 @@ export default function CreateUser({
       $lastName: String!
       $userName: String!
       $isAdmin: Boolean!
+      $modelPermission: Boolean!
+      $instrumentPermission: Boolean!
+      $calibrationPermission: Boolean!
     ) {
       signup(
         email: $email
@@ -37,6 +46,9 @@ export default function CreateUser({
         lastName: $lastName
         userName: $userName
         isAdmin: $isAdmin
+        modelPermission: $modelPermission
+        instrumentPermission: $instrumentPermission
+        calibrationPermission: $calibrationPermission
       )
     }
   `;
@@ -47,10 +59,16 @@ export default function CreateUser({
     password,
     userName,
     isAdmin,
+    modelPermission,
+    instrumentPermission,
+    calibrationPermission,
   });
   const query = print(SIGNUP_MUTATION);
   const queryName = 'signup';
   Query({
-    query, queryName, getVariables, handleResponse,
+    query,
+    queryName,
+    getVariables,
+    handleResponse,
   });
 }

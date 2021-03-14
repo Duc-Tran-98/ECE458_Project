@@ -135,7 +135,7 @@ export default function EditInstrument({
           comment={comment}
           serialNumber={serialNumber}
           categories={categories}
-          viewOnly={!user.isAdmin}
+          viewOnly={!(user.isAdmin || user.instrumentPermission)}
           description={description}
           calibrationFrequency={calibrationFrequency}
           assetTag={assetTag}

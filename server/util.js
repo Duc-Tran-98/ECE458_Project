@@ -40,7 +40,7 @@ module.exports.createStore = async () => {
       collate: 'utf8mb4_unicode_ci',
     },
     // eslint-disable-next-line no-console
-    logging: console.log,
+    logging: undefined,
     database,
   });
 
@@ -81,6 +81,18 @@ module.exports.createStore = async () => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      instrumentPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      modelPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      calibrationPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {
@@ -117,11 +129,11 @@ module.exports.createStore = async () => {
         type: SQL.STRING(2000),
         allowNull: true,
       },
-      calibrationFrequency: SQL.INTEGER,
       supportLoadBankCalibration: {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
     {
@@ -491,6 +503,9 @@ module.exports.createStore = async () => {
       userName: adminUsername,
       password: hash,
       isAdmin: true,
+      calibrationPermission: true,
+      modelPermission: true,
+      instrumentPermission: true,
     });
   }
 

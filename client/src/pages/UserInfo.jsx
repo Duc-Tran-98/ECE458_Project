@@ -4,8 +4,6 @@ import UserContext from '../components/UserContext';
 import PasswordForm from '../components/PasswordForm';
 import ProfileInfo from '../components/ProfileInfo';
 import ChangePassword from '../queries/ChangePassword';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 export default function UserInfo() {
   const user = useContext(UserContext);

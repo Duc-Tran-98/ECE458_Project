@@ -6,8 +6,6 @@ import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
 import EditModelQuery from '../queries/EditModel';
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
 
 export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
   EditModel.propTypes = {
@@ -127,7 +125,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             handleFormSubmit={handleSubmit}
             validated={false}
             diffSubmit
-            viewOnly={!user.isAdmin}
+            viewOnly={!(user.isAdmin || user.modelPermission)}
             handleDelete={handleDelete}
             type="edit"
           />

@@ -5,9 +5,6 @@ import { Formik } from 'formik';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
 
-import 'react-toastify/dist/ReactToastify.css';
-import '../css/customToast.css';
-
 const schema = Yup.object({
   currentPassword: Yup.string()
     .required('Please enter current password'),

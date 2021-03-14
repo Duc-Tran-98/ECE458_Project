@@ -239,24 +239,36 @@ export default function DetailedInstrumentView({ onDelete }) {
 
   const genCalibButtons = supportsLoadBankWiz ? (
     <div className="d-flex flex-row">
-      <MouseOverPopover message="Add new calibration event">
-        <button type="button" className="btn " onClick={addRow}>
-          Add Calibration
-        </button>
-      </MouseOverPopover>
-      <span className="mx-2" />
-      <MouseOverPopover message="Add calibration event via our Load Bank Wizard">
-        <button type="button" className="btn " onClick={() => setShowWiz(true)}>
-          Add Load Bank Calibration
-        </button>
-      </MouseOverPopover>
+      {(user.isAdmin || user.calibrationPermission) && (
+        <>
+          <MouseOverPopover message="Add new calibration event">
+            <button type="button" className="btn " onClick={addRow}>
+              Add Calibration
+            </button>
+          </MouseOverPopover>
+          <span className="mx-2" />
+          <MouseOverPopover message="Add calibration event via our Load Bank Wizard">
+            <button
+              type="button"
+              className="btn "
+              onClick={() => setShowWiz(true)}
+            >
+              Add Load Bank Calibration
+            </button>
+          </MouseOverPopover>
+        </>
+      )}
     </div>
   ) : (
-    <MouseOverPopover message="Add new calibration event">
-      <button type="button" className="btn " onClick={addRow}>
-        Add Calibration
-      </button>
-    </MouseOverPopover>
+    <>
+      {(user.isAdmin || user.calibrationPermission) && (
+        <MouseOverPopover message="Add new calibration event">
+          <button type="button" className="btn " onClick={addRow}>
+            Add Calibration
+          </button>
+        </MouseOverPopover>
+      )}
+    </>
   );
 
   return (

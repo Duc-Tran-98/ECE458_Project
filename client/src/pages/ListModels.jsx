@@ -289,7 +289,7 @@ function ListModels() {
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {user.isAdmin && (
+            {(user.isAdmin || user.modelPermission) && (
               <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
                 Create Model
               </Link>
