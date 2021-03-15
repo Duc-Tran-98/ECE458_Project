@@ -1,9 +1,10 @@
 import React from 'react';
+import GenerateBarcodes from '../components/GenerateBarcodes';
 
 export default function ComponentTest() {
   return (
     <div>
-      <a href="../data/special/barcodes.pdf" download="barcodes.pdf">Download attachment</a>
+      <GenerateBarcodes filterOptions={null} />
     </div>
   );
 }

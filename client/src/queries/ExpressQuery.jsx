@@ -5,13 +5,14 @@ const route = process.env.NODE_ENV.includes('dev')
   : '/express';
 
 export default function ExpressQuery({
-  endpoint, method, queryJSON, handleResponse,
+  endpoint, method, queryJSON, handleResponse, responseType,
 }) {
   const url = `${route}${endpoint}`;
   axios({
     url,
     method,
     data: queryJSON,
+    responseType,
   })
     .then((response) => {
       handleResponse(response);
