@@ -83,25 +83,14 @@ export default function ListInstruments() {
     };
   });
   const cellHandler = (e) => {
-    if (e.field === 'view') {
-      const state = { previousUrl: window.location.href };
-      const {
-        modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency,
-      } = e.row;
-      history.push(
-        `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency || 0}`,
-        state,
-      );
-      // setModelNumber(e.row.modelNumber);
-      // setVendor(e.row.vendor);
-      // setAssetTag(e.row.assetTag);
-      // setId(e.row.id);
-      // setSerialNumber(e.row.serialNumber);
-      // setDescription(e.row.description);
-      // if (e.row.calibrationFrequency !== null) {
-      //   setcalibrationFrequency(e.row.calibrationFrequency);
-      // }
-    }
+    const state = { previousUrl: window.location.href };
+    const {
+      modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency,
+    } = e.row;
+    history.push(
+      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency || 0}`,
+      state,
+    );
   };
   const genDaysLeft = (date) => {
     const today = new Date();
@@ -117,6 +106,13 @@ export default function ListInstruments() {
     }
     return 'text-danger';
   };
+  const generateCalibrationMessage = (date) => {
+    const daysLeft = genDaysLeft(date);
+    if (daysLeft === 0) { return 'Calibration due today!'; }
+    if (daysLeft === 1) { return 'Calibration due tomorrow!'; }
+    if (daysLeft < 0) { return `Calibration EXPIRED by ${daysLeft} days!`; }
+    return `Calibration due in ${daysLeft} days`;
+  };
   const categoriesList = (categories) => {
     const catArr = [];
     categories.value.forEach((element) => {
@@ -124,17 +120,30 @@ export default function ListInstruments() {
     });
     return catArr.join(', ');
   };
+  const headerClass = 'h5'; // TODO: UPdate me to bold (why not apply "fw-bold?")
   const cols = [
-    { field: 'vendor', headerName: 'Vendor', width: 150 },
-    { field: 'modelNumber', headerName: 'Model Number', width: 150 },
-    { field: 'assetTag', headerName: 'Asset Tag', width: 150 },
-    { field: 'description', headerName: 'Description', width: 225 },
-    { field: 'serialNumber', headerName: 'Serial Number', width: 150 },
+    {
+      field: 'vendor', headerName: 'Vendor', width: 120, description: 'Vendor', headerClassName: headerClass,
+    },
+    {
+      field: 'modelNumber', headerName: 'Model Number', width: 140, description: 'Model Number', headerClassName: headerClass,
+    },
+    {
+      field: 'assetTag', headerName: 'Asset Tag', width: 100, description: 'Asset Tag', headerClassName: headerClass,
+    },
+    {
+      field: 'description', headerName: 'Description', width: 225, description: 'Description', headerClassName: headerClass,
+    },
+    {
+      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number', headerClassName: headerClass,
+    },
     {
       field: 'categories',
       headerName: 'Categories',
-      width: 350,
-      hide: true,
+      description: 'Categories',
+      headerClassName: headerClass,
+      width: 300,
+      // hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),
@@ -142,7 +151,9 @@ export default function ListInstruments() {
     {
       field: 'comment',
       headerName: 'Comment',
+      description: 'Comment',
       width: 400,
+      headerClassName: headerClass,
       hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
@@ -150,14 +161,18 @@ export default function ListInstruments() {
     },
     {
       field: 'recentCalDate',
-      headerName: 'Calibration Date',
-      width: 175,
+      headerName: 'Calib Date',
+      description: 'Calibration Date',
+      width: 140,
+      headerClassName: headerClass,
       type: 'date',
     },
     {
       field: 'recentCalComment',
       headerName: 'Calibration Comment',
+      description: 'Calibration Comment',
       width: 300,
+      headerClassName: headerClass,
       hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
@@ -165,8 +180,10 @@ export default function ListInstruments() {
     },
     {
       field: 'calibrationStatus',
-      headerName: 'Calibration Expiration',
-      width: 220,
+      headerName: 'Calib Exp',
+      description: 'Calibration Expiration',
+      width: 120,
+      headerClassName: headerClass,
       type: 'date',
       renderCell: (params) => (
         <div className="row">
@@ -210,9 +227,7 @@ export default function ListInstruments() {
               params.value !== 'Out of Calibration' && (
                 <MouseOverPopover
                   className="mb-3"
-                  message={`${genDaysLeft(
-                    params.value,
-                  )} days left till next calibration`}
+                  message={generateCalibrationMessage(params.value)}
                 >
                   <span className={genClassName(genDaysLeft(params.value))}>
                     {params.value}
@@ -220,26 +235,6 @@ export default function ListInstruments() {
                 </MouseOverPopover>
               )
             )}
-          </div>
-        </div>
-      ),
-    },
-    {
-      field: 'view',
-      headerName: 'View',
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="View Instrument">
-              <button
-                type="button"
-                className="btn "
-              >
-                View
-              </button>
-            </MouseOverPopover>
           </div>
         </div>
       ),
