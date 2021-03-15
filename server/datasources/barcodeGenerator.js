@@ -24,7 +24,6 @@ const runBarcode = async ({ data }) => {
     const yVal = 723 - (36 * ySpot);
 
     const assetTag = data[i];
-    const title = `HPT Asset    ${assetTag}`;
     const options = {
       format: 'CODE128C',
       width: 3,
