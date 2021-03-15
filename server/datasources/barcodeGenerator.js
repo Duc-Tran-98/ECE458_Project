@@ -4,7 +4,6 @@ const { createCanvas } = require('canvas');
 const fs = require('fs');
 const { PDFDocument } = require('pdf-lib');
 
-// eslint-disable-next-line no-undef
 const runBarcode = async ({ data }) => {
   // PAGE VALUES
   // TOP LEFT BOX 30 723
@@ -13,8 +12,7 @@ const runBarcode = async ({ data }) => {
 
   const pdfDoc = await PDFDocument.create();
   const canvas = createCanvas();
-  const ctx = canvas.getContext('2d');
-  const blank = await PDFDocument.load(fs.readFileSync('./barcodeData/LabelTemplate.pdf'));
+  const blank = await PDFDocument.load(fs.readFileSync('./templates/LabelTemplate.pdf'));
   let blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
   blankPage.forEach((page) => pdfDoc.addPage(page));
 
@@ -26,22 +24,18 @@ const runBarcode = async ({ data }) => {
     const yVal = 723 - (36 * ySpot);
 
     const assetTag = data[i];
-    console.log(`${assetTag} ${typeof assetTag}`);
     const title = `HPT Asset    ${assetTag}`;
-    console.log(title);
     const options = {
       format: 'CODE128C',
       width: 3,
       height: 30,
       displayValue: false,
-      // marginBottom: 12,
       margin: 0,
     };
     JsBarcode(canvas, assetTag, options);
 
     const img = await pdfDoc.embedPng(canvas.toDataURL());
 
-    // console.log(`${pageNum} ${pages.length}`);
     if (pageNum >= pdfDoc.getPages().length) {
       blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
       blankPage.forEach((el) => pdfDoc.addPage(el));
@@ -63,17 +57,7 @@ const runBarcode = async ({ data }) => {
   }
 
   const pdfBytes = await pdfDoc.save();
-  const newFilePath = './uploads/barcodes.pdf';
-  await fs.writeFileSync(newFilePath, pdfBytes);
-  return true;
+  return pdfBytes;
 };
 
-// const data = [];
-// const length = 5; // user defined length
-
-// for (let i = 0; i < length; i += 1) {
-//   data.push(600000 + i);
-// }
-
-// run(data);
 module.exports = runBarcode;

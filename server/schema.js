@@ -77,7 +77,6 @@ const typeDefs = gql`
     countInstrumentCategories: Int!
     countModelsAttachedToCategory(name: String!): Int!
     countInstrumentsAttachedToCategory(name: String!): Int!
-    getBarcodes(tags: [Int]!): String!
   }
 
   type User {

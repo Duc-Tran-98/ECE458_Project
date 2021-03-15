@@ -197,9 +197,10 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
     // assetTags.push(100000 + i);
   }
   console.log(assetTags);
-  runBarcode(assetTags);
+  const pdf = await runBarcode({ data: assetTags });
   // res.send('helloworld');
-  res.download('./uploads/barcodes.pdf');
+  res.write(pdf, 'binary');
+  res.end(null, 'binary');
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
