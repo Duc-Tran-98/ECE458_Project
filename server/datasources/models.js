@@ -50,6 +50,11 @@ class ModelAPI extends DataSource {
     this.context = config.context;
   }
 
+  checkPermissions() {
+    const { user } = this.context;
+    return user.isAdmin || user.modelPermission;
+  }
+
   async countAllModels() {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -62,11 +67,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user.modelPermission) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const model = await this.getModel({ modelNumber, vendor });
     const modelReference = model.dataValues.id;
     await this.store.instruments.findAll({ where: { modelReference } }).then(async (data) => {
@@ -95,11 +99,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission';
+      return JSON.stringify(response);
+    }
     const validation = validateModel({
       modelNumber, vendor, description, comment,
     });
@@ -396,11 +399,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateModel({
       modelNumber, vendor, description, comment,
     });
@@ -439,11 +441,10 @@ class ModelAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.getModelCategory({ name }).then((value) => {
       if (value) {
         response.message = `ERROR: cannot add model category ${name}, it already exists!`;
@@ -462,11 +463,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.getModelCategory({ name }).then((value) => {
       if (value) {
         this.store.modelCategories.destroy({
@@ -497,11 +497,10 @@ class ModelAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     let name = currentName;
     await this.getModelCategory({ name }).then(async (value) => {
       if (value) {
@@ -533,11 +532,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         const name = category;
@@ -566,11 +564,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   response.message = 'ERROR: User does not exist!';
-    //   return JSON.stringify(response);
-    // }
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission';
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         const name = category;
@@ -636,20 +633,12 @@ class ModelAPI extends DataSource {
   async countModelCategories() {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return 0;
-    // }
     return await this.store.modelCategories.count();
   }
 
   async countModelsAttachedToCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return 0;
-    // }
     let response = 0;
     await this.getModelCategory({ name }).then(async (result) => {
       if (result) {
