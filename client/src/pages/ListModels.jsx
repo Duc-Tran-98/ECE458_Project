@@ -59,14 +59,12 @@ function ListModels() {
   });
 
   const cellHandler = (e) => {
-    if (e.field === 'view') {
-      const state = { previousUrl: window.location.href };
-      const { modelNumber, vendor, description } = e.row;
-      history.push(
-        `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
-        state,
-      );
-    }
+    const state = { previousUrl: window.location.href };
+    const { modelNumber, vendor, description } = e.row;
+    history.push(
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      state,
+    );
   };
   const categoriesList = (categories) => {
     const catArr = [];
@@ -75,23 +73,38 @@ function ListModels() {
     });
     return catArr.join(', ');
   };
+  const headerClass = 'h5';
   const cols = [
-    { field: 'vendor', headerName: 'Vendor', width: 150 },
-    { field: 'modelNumber', headerName: 'Model Number', width: 150 },
-    { field: 'description', headerName: 'Description', width: 350 },
+    {
+      field: 'vendor',
+      headerName: 'Vendor',
+      width: 150,
+      headerClassName: headerClass,
+      description: 'Vendor',
+    },
+    {
+      field: 'modelNumber', headerName: 'Model Number', width: 150, headerClassName: headerClass, description: 'Model Number',
+    },
+    {
+      field: 'description', headerName: 'Description', width: 350, headerClassName: headerClass, description: 'Description',
+    },
     {
       field: 'comment',
       headerName: 'Comment',
+      description: 'Comment',
       width: 400,
       hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
       ),
+      headerClassName: headerClass,
     },
     {
       field: 'calibrationFrequency',
-      headerName: 'Calibration Frequency',
-      width: 195,
+      headerName: 'Calib Freq',
+      description: 'Calibration Frequency',
+      headerClassName: headerClass,
+      width: 120,
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
@@ -121,28 +134,11 @@ function ListModels() {
     {
       field: 'categories',
       headerName: 'Categories',
+      description: 'Categories',
+      headerClassName: headerClass,
       width: 350,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
-      ),
-    },
-    {
-      field: 'view',
-      headerName: 'View',
-      width: 120,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="View Model">
-              <button
-                type="button"
-                className="btn "
-              >
-                View
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
       ),
     },
   ];
