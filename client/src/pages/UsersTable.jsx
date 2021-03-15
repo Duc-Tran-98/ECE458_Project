@@ -1,14 +1,13 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import { GetAllUsers } from '../queries/GetUser';
+import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
 import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
   const history = useHistory();
   const queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
-  const rowCount = parseInt(urlParams.get('count'), 10);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   history.listen((location, action) => {
@@ -86,7 +85,7 @@ export default function UsersTable() {
   return (
     <>
       <ServerPaginationGrid
-        rowCount={rowCount}
+        rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
           if (e.field === 'view') {
             const state = { previousUrl: window.location.href };
@@ -105,7 +104,7 @@ export default function UsersTable() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          const searchString = `?page=${page}&limit=${limit}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -114,7 +113,7 @@ export default function UsersTable() {
           }
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+          const searchString = `?page=${page}&limit=${limit}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
