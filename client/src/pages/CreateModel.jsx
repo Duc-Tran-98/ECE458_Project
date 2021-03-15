@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import CreateModel from '../queries/CreateModel';
 import UserContext from '../components/UserContext';
 import ErrorPage from './ErrorPage';
@@ -50,7 +50,6 @@ function CreateModelPage({ onCreation }) {
     <>
       {(user.isAdmin || user.modelPermission) ? (
         <>
-          <ToastContainer />
           <ModelForm
             handleFormSubmit={handleSubmit}
             type="create"

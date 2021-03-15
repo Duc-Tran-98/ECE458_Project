@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Query from '../components/UseQuery';
 import OAuthLogin from '../components/OAuthLogin';
 
@@ -72,7 +72,6 @@ const Login = ({ handleLogin }) => {
   };
   return (
     <Form className="needs-validation" noValidate onSubmit={submitForm}>
-      <ToastContainer />
       <div className="row mx-3 d-flex justify-content-center">
         <div className="col-6 mt-3">
           <Form.Group controlId="formUsername">

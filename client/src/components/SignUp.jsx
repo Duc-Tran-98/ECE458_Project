@@ -4,7 +4,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
 import { GetAllUsers } from '../queries/GetUser';
@@ -100,7 +100,6 @@ export default function SignUp({ onCreation }) {
 
   return (
     <>
-      <ToastContainer />
       <Formik
         initialValues={initialValues}
         validationSchema={schema}

@@ -37,6 +37,11 @@ class UserAPI extends DataSource {
     this.context = config.context;
   }
 
+  checkPermissions() {
+    const { user } = this.context;
+    return user.isAdmin;
+  }
+
   /**
    * This function takes a userName and password and see if it belongs
    * to a user in the db
@@ -57,7 +62,9 @@ class UserAPI extends DataSource {
         response.message = response.success
           ? 'Logged in'
           : 'Wrong username/password';
-        response.jwt = response.success ? signSync({ userName }) : '';
+        response.jwt = response.success ? signSync({
+          userName,
+        }) : '';
       }
     });
     return JSON.stringify(response);
@@ -131,6 +138,10 @@ class UserAPI extends DataSource {
     const response = { success: false, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     if (userName !== 'admin') {
       this.store.users.update({
         isAdmin,
@@ -150,6 +161,10 @@ class UserAPI extends DataSource {
     const response = { success: false, message: '' };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     if (userName !== 'admin') {
       this.store.users.destroy({ where: { userName } });
       response.success = true;
@@ -216,6 +231,10 @@ class UserAPI extends DataSource {
     const validation = validateUser({
       firstName, lastName, password, email,
     });
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];

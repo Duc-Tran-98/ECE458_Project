@@ -50,6 +50,11 @@ class ModelAPI extends DataSource {
     this.context = config.context;
   }
 
+  checkPermissions() {
+    const { user } = this.context;
+    return user.isAdmin || user.modelPermission;
+  }
+
   async countAllModels() {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -62,6 +67,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const model = await this.getModel({ modelNumber, vendor });
     const modelReference = model.dataValues.id;
     await this.store.instruments.findAll({ where: { modelReference } }).then(async (data) => {
@@ -87,9 +96,13 @@ class ModelAPI extends DataSource {
     supportLoadBankCalibration,
     categories,
   }) {
+    const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
-    const response = { message: '', success: false };
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission';
+      return JSON.stringify(response);
+    }
     const validation = validateModel({
       modelNumber, vendor, description, comment,
     });
@@ -147,6 +160,10 @@ class ModelAPI extends DataSource {
   async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return [];
+    // }
     const models = await this.store.models.findAll({
       limit,
       offset,
@@ -162,11 +179,13 @@ class ModelAPI extends DataSource {
   async getModelsWithFilter({
     vendor, modelNumber, description, categories, limit = null, offset = null,
   }) {
-    console.log('******************* MODEL CONTEXT *******************');
-    console.log(this.context);
+    const response = { models: [], total: 0 };
     const storeModel = await this.store;
     this.store = storeModel;
-    const response = { models: [], total: 0 };
+    // const { user } = this.context;
+    // if (!user) {
+    //   return response;
+    // }
     if (categories) {
       let includeData;
       if (categories) {
@@ -317,6 +336,10 @@ class ModelAPI extends DataSource {
   async getAllModelsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return [];
+    // }
     const models = await this.store.models.findAll({ where: { modelNumber } });
     return models;
   }
@@ -324,6 +347,10 @@ class ModelAPI extends DataSource {
   async getAllModelsWithVendor({ vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return [];
+    // }
     const models = await this.store.models.findAll({ where: { vendor } });
     return models;
   }
@@ -331,6 +358,10 @@ class ModelAPI extends DataSource {
   async getUniqueVendors() {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return [];
+    // }
     const models = await this.store.models.findAll({ attributes: [[SQL.fn('DISTINCT', SQL.col('vendor')), 'vendor']] });
     return models;
   }
@@ -338,6 +369,10 @@ class ModelAPI extends DataSource {
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return null;
+    // }
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
       include: {
@@ -364,6 +399,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateModel({
       modelNumber, vendor, description, comment,
     });
@@ -402,6 +441,10 @@ class ModelAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.getModelCategory({ name }).then((value) => {
       if (value) {
         response.message = `ERROR: cannot add model category ${name}, it already exists!`;
@@ -420,6 +463,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.getModelCategory({ name }).then((value) => {
       if (value) {
         this.store.modelCategories.destroy({
@@ -450,6 +497,10 @@ class ModelAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     let name = currentName;
     await this.getModelCategory({ name }).then(async (value) => {
       if (value) {
@@ -481,6 +532,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         const name = category;
@@ -509,6 +564,10 @@ class ModelAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission';
+      return JSON.stringify(response);
+    }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
         const name = category;
@@ -548,6 +607,10 @@ class ModelAPI extends DataSource {
   async getModelCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return null;
+    // }
     const category = await this.store.modelCategories.findAll({
       where: { name },
     });
@@ -560,6 +623,10 @@ class ModelAPI extends DataSource {
   async getAllModelCategories({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
+    // const { user } = this.context;
+    // if (!user) {
+    //   return [];
+    // }
     return await this.store.modelCategories.findAll({ limit, offset });
   }
 
