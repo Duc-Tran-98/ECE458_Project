@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
-const { responsePathAsArray } = require('graphql');
 const SQL = require('sequelize');
 const runBarcode = require('./barcodeGenerator');
 
@@ -45,6 +44,11 @@ class InstrumentAPI extends DataSource {
    */
   initialize(config) {
     this.context = config.context;
+  }
+
+  checkPermission() {
+    const { user } = this.context;
+    return user.isAdmin || user.instrumentPermission;
   }
 
   async countAllInstruments() {
@@ -420,6 +424,10 @@ class InstrumentAPI extends DataSource {
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment, assetTag,
     });
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
@@ -502,6 +510,10 @@ class InstrumentAPI extends DataSource {
     const response = { message: '', success: false };
     const storeModel = await this.store;
     this.store = storeModel;
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     await this.store.instruments.destroy({ where: { id } });
     await this.store.calibrationEvents.destroy({
       where: { calibrationHistoryIdReference: id },
@@ -518,6 +530,10 @@ class InstrumentAPI extends DataSource {
     const validation = validateInstrument({
       modelNumber, vendor, serialNumber, comment, assetTag,
     });
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
@@ -613,6 +629,10 @@ class InstrumentAPI extends DataSource {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
     }
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrumentCategory({ name }).then((value) => {
@@ -631,6 +651,10 @@ class InstrumentAPI extends DataSource {
 
   async removeInstrumentCategory({ name }) {
     const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrumentCategory({ name }).then((value) => {
@@ -651,6 +675,10 @@ class InstrumentAPI extends DataSource {
 
   async editInstrumentCategory({ currentName, updatedName }) {
     const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
       return JSON.stringify(response);
@@ -688,6 +716,10 @@ class InstrumentAPI extends DataSource {
     vendor, modelNumber, serialNumber, category,
   }) {
     const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
@@ -718,6 +750,10 @@ class InstrumentAPI extends DataSource {
     vendor, modelNumber, serialNumber, category,
   }) {
     const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {

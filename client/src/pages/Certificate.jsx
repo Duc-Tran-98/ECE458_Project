@@ -3,6 +3,7 @@ import {
   PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
 } from '@react-pdf/renderer';
 import PropTypes from 'prop-types';
+import GetUser from '../queries/GetUser';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import { idealCurrents } from '../utils/LoadBank';
 
@@ -98,25 +99,39 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-function MyCertificate({ calibEvent }) {
+function MyCertificate({
+  calibEvent,
+  modelNumber,
+  vendor,
+  assetTag,
+  description,
+  serialNumber,
+  calibFrequency,
+  calibUser,
+}) {
   MyCertificate.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     calibEvent: PropTypes.object.isRequired,
+    modelNumber: PropTypes.string.isRequired,
+    vendor: PropTypes.string.isRequired,
+    serialNumber: PropTypes.string.isRequired,
+    calibUser: PropTypes.string.isRequired,
+    calibFrequency: PropTypes.number.isRequired,
+    assetTag: PropTypes.number.isRequired,
+    description: PropTypes.string.isRequired,
   };
-  const names = window.sessionStorage.getItem('calibUser');
+  const names = calibUser;
   const regex = /(Username:\s)([^,]+)(,\sFirst\sname:\s)([^,]+)(,\sLast\sname:\s)(.*)/g;
   const matches = regex.exec(names);
 
   const name = `${matches[4]} ${matches[6]}`;
   const username = matches[2];
-  const vendor = window.sessionStorage.getItem('vendor');
-  const serial = window.sessionStorage.getItem('serialNumber');
-  const assetTag = window.sessionStorage.getItem('assetTag');
-  const model = window.sessionStorage.getItem('modelNumber');
-  const description = window.sessionStorage.getItem('modelDescription');
-  const calibrationDate = window.sessionStorage.getItem('calibrationDate');
-  const expirationDate = strftime('%F', new Date(window.sessionStorage.getItem('expirationDate')));
-  const comment = window.sessionStorage.getItem('calibComment');
+  const calibrationDate = calibEvent.date;
+  const expirationDate = strftime(
+    '%F',
+    new Date(new Date(calibEvent.date).addDays(calibFrequency)),
+  );
+  const { comment } = calibEvent;
 
   function getURLExtension(url) {
     return url.split(/[#?]/)[0].split('.').pop().trim();
@@ -315,14 +330,14 @@ function MyCertificate({ calibEvent }) {
                 <Text style={styles.largeText}>
                   Model Number:
                   {' '}
-                  {model}
+                  {modelNumber}
                 </Text>
               </View>
               <View style={styles.leftColumn}>
                 <Text style={styles.largeText}>
                   Serial Number:
                   {' '}
-                  {serial}
+                  {serialNumber}
                 </Text>
                 <Text style={styles.largeText}>
                   Asset Tag:
@@ -398,8 +413,18 @@ function Certificate() {
   const [calibEvent, setCalibEvent] = React.useState(null);
   // eslint-disable-next-line no-unused-vars
   const [fetched, setHasFetched] = React.useState(false);
-  let id = window.sessionStorage.getItem('id');
+  const urlParams = new URLSearchParams(window.location.search);
+  const modelNumber = urlParams.get('modelNumber');
+  const vendor = urlParams.get('vendor');
+  let assetTag = urlParams.get('assetTag');
+  assetTag = parseInt(assetTag, 10);
+  const serialNumber = urlParams.get('serialNumber');
+  const description = urlParams.get('description');
+  let calibFrequency = urlParams.get('calibrationFrequency');
+  calibFrequency = parseInt(calibFrequency, 10);
+  let id = urlParams.get('id');
   id = parseInt(id, 10);
+  const [calibUser, setCalibUser] = React.useState('');
 
   React.useEffect(() => {
     let active = true;
@@ -407,7 +432,14 @@ function Certificate() {
       if (active) {
         GetCalibHistory({ id, mostRecent: true }).then((data) => {
           setCalibEvent(data);
-          setHasFetched(true);
+          return data;
+        }).then((data) => {
+          GetUser({ userName: data.user }).then((value) => {
+            if (value) {
+              setCalibUser(`Username: ${data.user}, First name: ${value.firstName}, Last name: ${value.lastName}`);
+            }
+            setHasFetched(true);
+          });
         });
       }
     })();
@@ -419,7 +451,16 @@ function Certificate() {
     <div>
       {fetched && (
         <PDFViewer style={styles.viewer}>
-          <MyCertificate calibEvent={calibEvent} />
+          <MyCertificate
+            calibEvent={calibEvent}
+            modelNumber={modelNumber}
+            calibUser={calibUser}
+            serialNumber={serialNumber}
+            description={description}
+            vendor={vendor}
+            assetTag={assetTag}
+            calibFrequency={calibFrequency}
+          />
         </PDFViewer>
       )}
     </div>

@@ -3,35 +3,17 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
-import { CountAllModels } from '../queries/GetAllModels';
-import { CountInstruments } from '../queries/GetAllInstruments';
-import { CountAllUsers } from '../queries/GetUser';
 import ProfileIcon from './ProfileIcon';
-import { CountModelCategories } from '../queries/GetModelCategories';
-import { CountInstrumentCategories } from '../queries/GetInstrumentCategories';
 
 function NavBar({
-  loggedIn, handleSignOut, title, updateCount,
+  loggedIn, handleSignOut, title,
 }) {
   NavBar.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
     handleSignOut: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    updateCount: PropTypes.bool.isRequired,
   };
   const user = React.useContext(UserContext);
-  const [modelCount, setModelCount] = React.useState('');
-  const [instrumentCount, setInstrumentCount] = React.useState('');
-  const [userCount, setUserCount] = React.useState('');
-  const [modelCatCount, setModelCatCount] = React.useState('');
-  const [instCatCount, setInstCatCount] = React.useState('');
-  React.useEffect(() => {
-    CountAllModels().then((val) => setModelCount(val));
-    CountInstruments().then((val) => setInstrumentCount(val));
-    CountAllUsers().then((val) => setUserCount(val));
-    CountModelCategories().then((val) => setModelCatCount(val));
-    CountInstrumentCategories().then((val) => setInstCatCount(val));
-  }, [updateCount]);
 
   const navContent = loggedIn ? (
     <div className="row" style={{ zIndex: 1, width: '100%' }}>
@@ -91,7 +73,7 @@ function NavBar({
               <li>
                 <NavLink
                   className="dropdown-item"
-                  to={`/viewModels?page=1&limit=25&count=${modelCount}`}
+                  to="/viewModels?page=1&limit=25"
                 >
                   Table
                 </NavLink>
@@ -104,7 +86,7 @@ function NavBar({
                   <li>
                     <NavLink
                       className="dropdown-item"
-                      to={`/modelCategories?page=1&limit=25&count=${modelCatCount}`}
+                      to="/modelCategories?page=1&limit=25"
                     >
                       Categories
                     </NavLink>
@@ -147,7 +129,7 @@ function NavBar({
               <li>
                 <NavLink
                   className="dropdown-item"
-                  to={`/viewInstruments?page=1&limit=25&count=${instrumentCount}`}
+                  to="/viewInstruments?page=1&limit=25"
                 >
                   Table
                 </NavLink>
@@ -160,7 +142,7 @@ function NavBar({
                   <li>
                     <NavLink
                       className="dropdown-item"
-                      to={`/instrumentCategories?page=1&limit=25&count=${instCatCount}`}
+                      to="/instrumentCategories?page=1&limit=25"
                     >
                       Categories
                     </NavLink>
@@ -173,7 +155,7 @@ function NavBar({
             <li className="nav-item">
               <NavLink
                 className="nav-link"
-                to={`/viewUsers?page=1&limit=25&count=${userCount}`}
+                to="/viewUsers?page=1&limit=25"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
