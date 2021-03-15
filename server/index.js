@@ -15,6 +15,7 @@ const CalibrationEventAPI = require('./datasources/calibrationEvents');
 const { createStore, createDB } = require('./util');
 const resolvers = require('./resolvers');
 const BulkDataAPI = require('./datasources/bulkData');
+const runBarcode = require('./datasources/barcodeGenerator');
 
 const { oauthClientId, oauthClientSecret, oauthRedirectURI } = require('./config');
 
@@ -185,6 +186,20 @@ app.post(`${whichRoute}/upload`, upload.any(), (req, res, next) => {
 app.post(`${whichRoute}/uploadExcel`, (req, res) => {
   // Do some things
   res.send('Hello World');
+});
+
+app.get(`${whichRoute}/barcodes`, async (req, res) => {
+  // Do some things
+  console.log(req.query.tags);
+  const assetTags = [];
+  for (let i = 0; i < req.query.tags.length; i += 1) {
+    assetTags.push(parseInt(req.query.tags[i], 10));
+    // assetTags.push(100000 + i);
+  }
+  console.log(assetTags);
+  runBarcode(assetTags);
+  // res.send('helloworld');
+  res.download('./uploads/barcodes.pdf');
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));

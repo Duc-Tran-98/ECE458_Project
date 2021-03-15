@@ -3,6 +3,7 @@
 const { DataSource } = require('apollo-datasource');
 const { responsePathAsArray } = require('graphql');
 const SQL = require('sequelize');
+const runBarcode = require('./barcodeGenerator');
 
 function validateInstrument({
   modelNumber, vendor, serialNumber, comment, assetTag,
@@ -795,6 +796,18 @@ class InstrumentAPI extends DataSource {
       }
     });
     return response;
+  }
+
+  async getBarcodes({ tags }) {
+    const storeModel = await this.store;
+    console.log('getting barcodes graphql');
+    const assetTags = [];
+    for (let i = 0; i < tags.length; i += 1) {
+      assetTags.push(parseInt(tags[i], 10));
+    // assetTags.push(100000 + i);
+    }
+    console.log(assetTags);
+    runBarcode({ data: assetTags });
   }
 }
 

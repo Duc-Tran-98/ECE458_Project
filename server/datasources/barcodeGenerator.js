@@ -4,23 +4,17 @@ const { createCanvas } = require('canvas');
 const fs = require('fs');
 const { PDFDocument } = require('pdf-lib');
 
-const run = async () => {
-  const canvas = createCanvas();
-
+// eslint-disable-next-line no-undef
+const runBarcode = async ({ data }) => {
   // PAGE VALUES
   // TOP LEFT BOX 30 723
   // LABEL SIZE HEIGHT 30 WIDTH 105
   // TO NEXT BOX SIZE HEIGHT 36 WIDTH 148
-  const data = [];
-  const length = 310; // user defined length
-
-  for (let i = 0; i < length; i += 1) {
-    data.push(1);
-  }
 
   const pdfDoc = await PDFDocument.create();
-
-  const blank = await PDFDocument.load(fs.readFileSync('./LabelTemplate.pdf'));
+  const canvas = createCanvas();
+  const ctx = canvas.getContext('2d');
+  const blank = await PDFDocument.load(fs.readFileSync('./barcodeData/LabelTemplate.pdf'));
   let blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
   blankPage.forEach((page) => pdfDoc.addPage(page));
 
@@ -31,17 +25,20 @@ const run = async () => {
     const xVal = 30 + (148 * xSpot);
     const yVal = 723 - (36 * ySpot);
 
-    const assetTag = 100000 + i;
+    const assetTag = data[i];
+    console.log(`${assetTag} ${typeof assetTag}`);
+    const title = `HPT Asset    ${assetTag}`;
+    console.log(title);
     const options = {
       format: 'CODE128C',
-      text: `HPT Asset    ${assetTag}`,
       width: 3,
       height: 30,
-      fontSize: 12,
-      textMargin: 0,
+      displayValue: false,
+      // marginBottom: 12,
       margin: 0,
     };
     JsBarcode(canvas, assetTag, options);
+
     const img = await pdfDoc.embedPng(canvas.toDataURL());
 
     // console.log(`${pageNum} ${pages.length}`);
@@ -54,15 +51,29 @@ const run = async () => {
     let page = pages[pageNum];
     page.drawImage(img, {
       x: xVal,
+      y: yVal + 7,
+      width: 108,
+      height: 22,
+    });
+    page.drawText(`HPT Asset     ${assetTag}`, {
+      x: xVal + 18,
       y: yVal,
-      width: 105,
-      height: 30,
+      size: 7,
     });
   }
 
   const pdfBytes = await pdfDoc.save();
-  const newFilePath = 'output.pdf';
-  fs.writeFileSync(newFilePath, pdfBytes);
+  const newFilePath = './uploads/barcodes.pdf';
+  await fs.writeFileSync(newFilePath, pdfBytes);
+  return true;
 };
 
-run();
+// const data = [];
+// const length = 5; // user defined length
+
+// for (let i = 0; i < length; i += 1) {
+//   data.push(600000 + i);
+// }
+
+// run(data);
+module.exports = runBarcode;

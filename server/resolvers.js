@@ -143,6 +143,7 @@ module.exports = {
       limit,
       offset,
     }),
+    getBarcodes: async (_, { tags }, { dataSources }) => await dataSources.instrumentAPI.getBarcodes({ tags }),
   },
   Mutation: {
     bulkImportData: async (
