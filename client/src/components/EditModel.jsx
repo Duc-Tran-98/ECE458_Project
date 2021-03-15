@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
@@ -113,7 +113,6 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       {completeFetch
       && (
         <>
-          <ToastContainer />
           <ModelForm
             modelNumber={modelNumber}
             vendor={vendor}

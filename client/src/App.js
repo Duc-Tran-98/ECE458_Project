@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import { Switch, Route, useHistory } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import Certificate from './pages/Certificate';
@@ -23,48 +24,53 @@ import UserInfo from './pages/UserInfo';
 import 'react-toastify/dist/ReactToastify.css';
 import './css/customToast.css';
 import { setAuthHeader } from './components/UseQuery';
-// import { gql } from "@apollo/client";
-// import { print } from "graphql";
 
 function App() {
   let jwt = '';
   const history = useHistory();
-  const handlePageRefresh = async () => {
-    window.sessionStorage.setItem('jwt', jwt);
+  const handlePageRefresh = async (token) => {
+    // this will save token in local storage before reloading page
+    window.sessionStorage.setItem('jwt', token);
   };
-  React.useEffect(() => {
-    window.addEventListener('unload', handlePageRefresh);
-    return () => {
-      window.removeEventListener('unload', handlePageRefresh);
-      handlePageRefresh();
-    };
-  }, []);
   const [loggedIn, setLoggedIn] = useState(false);
   const [updateCount, setUpdateCount] = useState(false);
-  const modifyCount = () => { // anything that modifies count (add/delete) should call this
+  const modifyCount = () => {
+    // anything that modifies count (add/delete) should call this
     setUpdateCount(true);
     setUpdateCount(false);
   };
-  const handleLogin = (token) => {
-    setLoggedIn(true);
-    jwt = token;
-    setAuthHeader(token);
-  };
-  React.useEffect(() => {
-    if (window.sessionStorage.getItem('token') && !loggedIn) { // If previously logged in and refreshed page
-      handleLogin(window.sessionStorage.getItem('jwt'));
-      window.sessionStorage.removeItem('jwt');
-    } else if (window.sessionStorage.getItem('jwt') && !loggedIn) {
-      window.sessionStorage.removeItem('jwt');
-    }
-  }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
   const handleSignOut = () => {
-    setLoggedIn(false);
     window.sessionStorage.clear();
     history.push('/');
+    setLoggedIn(false);
   };
+  const handleLogin = async (newJwt) => {
+    setLoggedIn(true);
+    jwt = newJwt;
+    setAuthHeader(newJwt);
+    console.log(`set auth header = ${newJwt}`);
+  };
+  React.useEffect(() => {
+    if (window.sessionStorage.getItem('token') && !loggedIn) {
+      // If previously logged in and refreshed page
+      jwt = window.sessionStorage.getItem('jwt');
+      handleLogin(jwt).then(() => {
+        if (jwt) {
+          window.sessionStorage.removeItem('jwt');
+        }
+      });
+    }
+  }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
+  React.useEffect(() => {
+    // a use effect for jwt to keep it ephemeral
+    window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
+    return () => {
+      window.removeEventListener('beforeunload', handlePageRefresh);
+    };
+  }, [jwt]);
   return (
-    <UserProvider loggedIn={loggedIn}>
+    <UserProvider loggedIn={loggedIn} handleSignOut={handleSignOut}>
+      <ToastContainer />
       <header className="sticky-top text-light" style={{ zIndex: 100 }}>
         <NavBar
           title="HPC IMS"

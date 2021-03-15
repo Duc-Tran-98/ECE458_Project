@@ -35,6 +35,11 @@ class CalibrationEventAPI extends DataSource {
     this.context = config.context;
   }
 
+  checkPermission() {
+    const { user } = this.context;
+    return user.isAdmin || user.calibrationPermission;
+  }
+
   async getAllCalibrationEvents({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -80,6 +85,10 @@ class CalibrationEventAPI extends DataSource {
     fileName,
   }) {
     const response = { message: '' };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateEvent(comment);
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -123,6 +132,10 @@ class CalibrationEventAPI extends DataSource {
     fileName,
   }) {
     const response = { message: '' };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateEvent(comment);
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -165,6 +178,10 @@ class CalibrationEventAPI extends DataSource {
     loadBankData,
   }) {
     const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateEvent(comment);
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -205,6 +222,10 @@ class CalibrationEventAPI extends DataSource {
     comment,
   }) {
     const response = { message: '' };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateEvent(comment);
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -237,6 +258,10 @@ class CalibrationEventAPI extends DataSource {
 
   async deleteCalibrationEvent({ id }) {
     const response = { message: '' };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.calibrationEvents.destroy({ where: { id } });
@@ -252,6 +277,10 @@ class CalibrationEventAPI extends DataSource {
     id,
   }) {
     const response = { message: '' };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
     const validation = validateEvent(comment);
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring

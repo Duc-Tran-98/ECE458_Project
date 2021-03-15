@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import UserContext from '../components/UserContext';
 import PasswordForm from '../components/PasswordForm';
 import ProfileInfo from '../components/ProfileInfo';
@@ -33,7 +33,6 @@ export default function UserInfo() {
 
   return (
     <>
-      <ToastContainer />
       <h1 className="m-4">{`${fullName}'s Profile`}</h1>
       <div className="row border-bottom border-dark">
         <ProfileInfo />

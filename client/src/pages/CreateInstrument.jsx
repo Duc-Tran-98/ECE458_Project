@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
@@ -159,7 +159,6 @@ function CreateInstrumentPage({ onCreation }) {
   );
   return (
     <>
-      <ToastContainer />
       <InstrumentForm
         modelNumber=""
         vendor=""

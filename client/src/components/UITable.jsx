@@ -135,7 +135,7 @@ export function ServerPaginationGrid({
     initLimit: PropTypes.number.isRequired, // rows/page from URL
     onPageChange: PropTypes.func.isRequired, // callback fired when page changes
     onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
-    rowCount: PropTypes.number.isRequired, // number of items from URL
+    rowCount: PropTypes.func.isRequired, // total number of items
     headerElement: PropTypes.node, // what to display in header beside filter options
     // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object,
@@ -153,6 +153,7 @@ export function ServerPaginationGrid({
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
+  const [total, setTotal] = React.useState(0);
   const user = useContext(UserContext);
   const history = useHistory();
 
@@ -173,11 +174,15 @@ export function ServerPaginationGrid({
 
     (async () => {
       setLoading(true);
+      const val = await rowCount();
+      // console.log(val);
+
       const offset = (initPage - 1) * initLimit;
       const newRows = await fetchData(initLimit, offset);
       if (!active) {
         return;
       }
+      setTotal(val);
       setRows(newRows);
       if (window.location.href.includes('/viewInstruments')) {
         setTimeout(() => { // lots of data/queries from this route, so
@@ -261,7 +266,7 @@ export function ServerPaginationGrid({
           pagination
           page={initPage}
           pageSize={initLimit}
-          rowCount={rowCount}
+          rowCount={total}
           paginationMode="server"
           onPageChange={handlePageChange}
           loading={loading}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../css/customToast.css';
 
@@ -14,7 +14,6 @@ export default function ToastTest() {
       <button onClick={notifyLogin} type="submit">Notify Login!</button>
       <button onClick={notifyFailure} type="submit">Notify Error!</button>
       <button onClick={notifySuccess} type="submit">Notify Success!</button>
-      <ToastContainer />
     </div>
   );
 }

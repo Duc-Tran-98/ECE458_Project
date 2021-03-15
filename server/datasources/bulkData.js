@@ -34,6 +34,11 @@ class BulkDataAPI extends DataSource {
 
   async bulkImportModels({ models }) {
     const response = { success: false, message: '' };
+    const { user } = this.context;
+    if (!user.isAdmin || !user.modelPermission) {
+      response.message = 'ERROR: User does not have permission';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     // First, we start a transaction and save it into a variable
@@ -109,6 +114,11 @@ class BulkDataAPI extends DataSource {
 
   async bulkImportInstruments({ instruments }) {
     const response = { success: true, message: '' };
+    const { user } = this.context;
+    if (!user.isAdmin || !user.instrumentPermission) {
+      response.message = 'ERROR: User does not have permission';
+      return JSON.stringify(response);
+    }
     const storeModel = await this.store;
     this.store = storeModel;
     const t = await this.store.db.transaction();

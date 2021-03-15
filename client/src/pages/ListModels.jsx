@@ -3,11 +3,10 @@ This class is starting to get a bit complex, so may want
 to refactor this into smaller components when possible;
 minor feature that would be cool is spinners while the modal alert loads;
 */
-/* eslint-disable no-unused-expressions */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
-import GetAllModels, { CountAllModels } from '../queries/GetAllModels';
+import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
@@ -15,21 +14,14 @@ import UserContext from '../components/UserContext';
 function ListModels() {
   const history = useHistory();
   const user = React.useContext(UserContext);
-  // const [modelNumber, setModelNumber] = useState('');
-  // const [vendor, setVendor] = useState('');
-  // const [description, setDescription] = useState('');
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const initRowCount = parseInt(urlParams.get('count'), 10);
-  // eslint-disable-next-line no-unused-vars
-  const [rowCount, setRowCount] = useState(initRowCount);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
   let urlFilter = urlParams.get('filters');
   let selectedFilters = null;
   if (urlFilter) {
     selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
-    // console.log(selectedFilters);
   }
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
@@ -37,21 +29,15 @@ function ListModels() {
     descriptions: selectedFilters ? selectedFilters.descriptions : null,
     categories: selectedFilters ? selectedFilters.categories : null,
   });
-  // const navLink = document.getElementById('modelNavLink');
   const getAndSetUrlVals = (search = null) => {
     const urlVals = new URLSearchParams(search || window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
-    const total = parseInt(urlVals.get('count'), 10);
     urlFilter = urlVals.get('filters');
     setInitLimit(lim);
     setInitPage(pg);
-    // console.log(`total = ${total}`);
-    setRowCount(total);
     if (urlFilter) {
       selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
-      // console.log(selectedFilters);
-      // console.log(selectedFilters);
     } else {
       selectedFilters = null;
     }
@@ -182,7 +168,6 @@ function ListModels() {
     modelNumbers,
     descriptions,
     categories,
-    total,
   }) => {
     const actualCategories = categories !== null ? categories : null;
     const filters = Buffer.from(
@@ -201,10 +186,10 @@ function ListModels() {
       && (!modelNumbers)
       && (!descriptions)
     ) {
-      route = `/viewModels?page=1&limit=${initLimit}&count=${total}`;
+      route = `/viewModels?page=1&limit=${initLimit}`;
       history.push(route);
     } else {
-      route = `/viewModels?page=1&limit=${initLimit}&count=${total}&filters=${filters}`;
+      route = `/viewModels?page=1&limit=${initLimit}&filters=${filters}`;
       history.push(
         route,
       );
@@ -219,43 +204,32 @@ function ListModels() {
       actualCategories.push(element.name);
     });
     actualCategories = actualCategories.length > 0 ? actualCategories : null;
-    if (
-      !vendors
-      && (modelCategories === null || modelCategories?.length === 0)
-      && !modelNumbers
-      && !descriptions
-    ) {
-      CountAllModels().then((val) => {
-        // setRowCount(val);
-        //  setInitPage(1);
-        updateUrlWithFilter({
-          vendors,
-          modelNumbers,
-          descriptions,
-          categories: actualCategories,
-          total: val,
-        });
-      });
-    } else {
-      GetAllModels({
-        limit: 1,
-        offset: 0,
-        modelNumber: modelNumbers,
-        description: descriptions,
-        vendor: vendors,
-        categories: actualCategories,
-      }).then((response) => {
-        // setRowCount(response.total);
-        // setInitPage(1);
-        updateUrlWithFilter({
-          vendors,
-          modelNumbers,
-          descriptions,
-          categories: actualCategories,
-          total: response.total,
-        });
-      });
-    }
+    updateUrlWithFilter({
+      vendors,
+      modelNumbers,
+      descriptions,
+      categories: actualCategories,
+    });
+    // if (
+    //   !vendors
+    //   && (modelCategories === null || modelCategories?.length === 0)
+    //   && !modelNumbers
+    //   && !descriptions
+    // ) {
+    //   CountAllModels().then((val) => {
+
+    //   });
+    // } else {
+    // GetAllModels({
+    //   limit: 1,
+    //   offset: 0,
+    //   modelNumber: modelNumbers,
+    //   description: descriptions,
+    //   vendor: vendors,
+    //   categories: actualCategories,
+    // }).then((response) => {
+    // });
+    // }
   };
   const {
     vendors, modelNumbers, descriptions, categories,
@@ -270,22 +244,27 @@ function ListModels() {
       }),
       'ascii',
     ).toString('base64');
-    let searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+    let searchString = `?page=${page}&limit=${limit}`;
     if (window.location.search.includes('filters')) {
-      searchString = `?page=${page}&limit=${limit}&count=${rowCount}&filters=${filters}`;
+      searchString = `?page=${page}&limit=${limit}&filters=${filters}`;
     }
     if (window.location.search !== searchString) {
       // If current location != next location, update url
       history.push(`/viewModels${searchString}`);
-      // setInitLimit(limit);
-      // setInitPage(page);
     }
   };
 
   return (
     <>
       <ServerPaginationGrid
-        rowCount={rowCount}
+        rowCount={() => GetAllModels({
+          limit: 1,
+          offset: 0,
+          modelNumber: modelNumbers,
+          description: descriptions,
+          vendor: vendors,
+          categories,
+        }).then((response) => response.total)}
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">

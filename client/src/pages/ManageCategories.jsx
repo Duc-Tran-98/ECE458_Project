@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
@@ -32,7 +32,6 @@ function ManageCategories({ modifyCount }) {
     startTab = 'instrument';
   }
   const [key, setKey] = useState(startTab);
-  const [rowCount, setRowCount] = React.useState(parseInt(urlParams.get('count'), 10));
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [category, setCategory] = React.useState('');
@@ -114,29 +113,13 @@ function ManageCategories({ modifyCount }) {
   ];
 
   function updateRow(k, replace = false) {
-    let searchString;
-    if (k === 'model') {
-      CountModelCategories().then((val) => {
-        searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
-        if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
-          if (replace) {
-            history.replace(`/${k}Categories${searchString}`);
-          } else {
-            history.push(`/${k}Categories${searchString}`);
-          }
-        }
-      });
-    } else {
-      CountInstrumentCategories().then((val) => {
-        searchString = `?page=${initPage}&limit=${initLimit}&count=${val}`;
-        if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
-          if (replace) {
-            history.replace(`/${k}Categories${searchString}`);
-          } else {
-            history.push(`/${k}Categories${searchString}`);
-          }
-        }
-      });
+    const searchString = `?page=${initPage}&limit=${initLimit}`;
+    if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
+      if (replace) {
+        history.replace(`/${k}Categories${searchString}`);
+      } else {
+        history.push(`/${k}Categories${searchString}`);
+      }
     }
   }
 
@@ -150,10 +133,6 @@ function ManageCategories({ modifyCount }) {
       urlParams = new URLSearchParams(location.search);
       const lim = parseInt(urlParams.get('limit'), 10);
       const pg = parseInt(urlParams.get('page'), 10);
-      const count = parseInt(urlParams.get('count'), 10);
-      if (count !== rowCount) {
-        setRowCount(count);
-      }
       if (lim !== initLimit) {
         setInitLimit(lim);
       }
@@ -161,13 +140,10 @@ function ManageCategories({ modifyCount }) {
         setInitPage(pg);
       }
 
-      // console.log('was a pop');
       if (location.pathname.startsWith('/model')) {
         setKey('model');
-        // console.log('setting start tab = model');
       } else {
         setKey('instrument');
-        //  console.log('setting start tab = instrument');
       }
     })();
 
@@ -232,7 +208,6 @@ function ManageCategories({ modifyCount }) {
 
   return (
     <>
-      <ToastContainer />
       <ModalAlert
         show={showDelete}
         handleClose={closeDeleteModal}
@@ -369,7 +344,7 @@ function ManageCategories({ modifyCount }) {
       </ModalAlert>
       {key === 'model' && (
         <ServerPaginationGrid
-          rowCount={rowCount}
+          rowCount={() => CountModelCategories().then((val) => val)}
           cellHandler={cellHandler}
           headerElement={(
             <div>
@@ -388,13 +363,13 @@ function ManageCategories({ modifyCount }) {
           initPage={initPage}
           initLimit={initLimit}
           onPageChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            const searchString = `?page=${page}&limit=${limit}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
           }}
           onPageSizeChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            const searchString = `?page=${page}&limit=${limit}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
@@ -406,7 +381,7 @@ function ManageCategories({ modifyCount }) {
       )}
       {key === 'instrument' && (
         <ServerPaginationGrid
-          rowCount={rowCount}
+          rowCount={() => CountInstrumentCategories().then((val) => val)}
           cellHandler={cellHandler}
           headerElement={(
             <div>
@@ -425,13 +400,13 @@ function ManageCategories({ modifyCount }) {
           initPage={initPage}
           initLimit={initLimit}
           onPageChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            const searchString = `?page=${page}&limit=${limit}`;
             if (window.location.search !== searchString) {
               history.push(`/instrumentCategories${searchString}`);
             }
           }}
           onPageSizeChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}&count=${rowCount}`;
+            const searchString = `?page=${page}&limit=${limit}`;
             if (window.location.search !== searchString) {
               history.push(`/instrumentCategories${searchString}`);
             }
