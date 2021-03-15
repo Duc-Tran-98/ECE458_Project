@@ -119,7 +119,8 @@ export default function SignUp({ onCreation }) {
           values,
           touched,
           isSubmitting,
-          // setFieldError,
+          setFieldError,
+          // setErrors,
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <div className="row mx-3" style={{ marginBottom: '20px' }}>
@@ -163,15 +164,12 @@ export default function SignUp({ onCreation }) {
                     onChange={(e) => {
                       if (!e.target.value.includes('@')) {
                         handleChange(e);
+                        if (allUserNames.includes(e.target.value)) {
+                          setFieldError('userName', 'Username already exists');
+                        }
                       }
                     }}
-                    // isInvalid={() => checkUserNameExists(values.userName, setFieldError)}
-                    isInvalid={() => (touched.userName && !!errors.userName)}
-                      // if (allUserNames.includes(values.userName)) {
-                      //   console.log('Username already exists');
-                      //   setFieldError('userName', 'Username already exists');
-                      //   return true;
-                      // }
+                    isInvalid={touched.userName && (!!errors.userName || allUserNames.includes(values.userName))}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.userName}
