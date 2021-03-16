@@ -2,6 +2,7 @@ import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import MouseOverPopover from './PopOver';
 import GetModelsForExport from '../queries/GetModelsForExport';
 
 // eslint-disable-next-line no-unused-vars
@@ -66,7 +67,11 @@ const ExportModels = ({ setLoading, filterOptions }) => {
   return (
     <>
       <Button onClick={getTransactionData} variant="dark" className="ms-3">
-        Export Models
+        <MouseOverPopover message="Export all models with current filters" place="top">
+          <div>
+            Export Models
+          </div>
+        </MouseOverPopover>
       </Button>
       <CSVLink
         data={transactionData}

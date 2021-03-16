@@ -2,6 +2,8 @@
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
+import MouseOverPopover from './PopOver';
 import ExpressQuery from '../queries/ExpressQuery';
 import { GetAssetTags } from '../queries/GetInstrumentsForExport';
 
@@ -28,7 +30,10 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
     // ExpressQuery({
     //   endpoint: '/api/barcodes?tags[]=222222&tags[]=124600&tags[]=121199', method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',
     // });
-    if (!getAll && assetTags.length < 1) return;
+    if (!getAll && assetTags.length < 1) {
+      toast.error('Check at least one instrument to generate barcodes');
+      return;
+    }
     let tagsToGenerate;
     let expressParam = '/api/barcodes?';
     if (getAll) {
@@ -49,7 +54,11 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
   return (
     <>
       <Button onClick={barcodeQuery} variant="dark" className="ms-3">
-        Generate Barcodes
+        <MouseOverPopover message="Generate barcodes for all checked instruments with current filters" place="top">
+          <div>
+            Generate Barcodes
+          </div>
+        </MouseOverPopover>
       </Button>
     </>
   );

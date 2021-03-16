@@ -2,6 +2,7 @@ import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import MouseOverPopover from './PopOver';
 import GetInstrumentsForExport from '../queries/GetInstrumentsForExport';
 
 const ExportInstruments = ({ setLoading, filterOptions }) => {
@@ -71,8 +72,12 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
 
   return (
     <>
-      <Button onClick={getTransactionData} variant="dark" className="ms-3">
-        Export Instruments
+      <Button onClick={getTransactionData} className="btn ms-3">
+        <MouseOverPopover message="Export all instruments with current filters" place="top">
+          <div>
+            Export Instruments
+          </div>
+        </MouseOverPopover>
       </Button>
       <CSVLink
         data={transactionData}
