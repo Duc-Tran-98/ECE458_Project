@@ -12,7 +12,6 @@ import { GetAllUsers } from '../queries/GetUser';
 import UserContext from './UserContext';
 import ErrorPage from '../pages/ErrorPage';
 
-// TODO: Add isAdmin
 const schema = Yup.object({
   firstName: Yup.string().required('Please enter First Name'),
   lastName: Yup.string().required('Please enter Last Name'),
@@ -170,7 +169,8 @@ export default function SignUp({ onCreation }) {
                         }
                       }
                     }}
-                    isInvalid={touched.userName && (!!errors.userName || allUserNames.includes(values.userName))}
+                    isInvalid={touched.userName && !!errors.userName}
+                    // TODO: Incorporate allUserNames validation isInvalid={touched.userName && (!!errors.userName || allUserNames.includes(values.userName))}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.userName}
