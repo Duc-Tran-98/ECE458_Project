@@ -19,5 +19,7 @@ export default function ExpressQuery({
     })
     .catch((err) => {
       console.log(err);
+      console.log(err.name);
+      console.log(err.message);
     });
 }

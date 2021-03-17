@@ -12,9 +12,10 @@ const runBarcode = async ({ data }) => {
 
   const pdfDoc = await PDFDocument.create();
   const canvas = createCanvas();
-  const blank = await PDFDocument.load(fs.readFileSync('./templates/LabelTemplate.pdf'));
-  let blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
-  blankPage.forEach((page) => pdfDoc.addPage(page));
+  pdfDoc.addPage([612, 792]);
+  // const blank = await PDFDocument.load(fs.readFileSync('./templates/LabelTemplate.pdf'));
+  // let blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
+  // blankPage.forEach((page) => pdfDoc.addPage(page));
 
   for (let i = 0; i < data.length; i += 1) {
     const pageNum = Math.floor(i / 80);
@@ -36,8 +37,9 @@ const runBarcode = async ({ data }) => {
     const img = await pdfDoc.embedPng(canvas.toDataURL());
 
     if (pageNum >= pdfDoc.getPages().length) {
-      blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
-      blankPage.forEach((el) => pdfDoc.addPage(el));
+      // blankPage = await pdfDoc.copyPages(blank, blank.getPageIndices());
+      // blankPage.forEach((el) => pdfDoc.addPage(el));
+      pdfDoc.addPage([612, 792]);
     }
     const pages = pdfDoc.getPages();
     // eslint-disable-next-line prefer-const
