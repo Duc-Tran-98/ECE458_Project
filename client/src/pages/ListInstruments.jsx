@@ -138,6 +138,7 @@ export default function ListInstruments() {
       description: 'Categories',
       headerClassName: headerClass,
       width: 250,
+      sortable: false, // TODO: Verify this works (does on demo)
       // hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
