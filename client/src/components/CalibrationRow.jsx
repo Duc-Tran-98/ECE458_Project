@@ -24,6 +24,7 @@ export default function CalibrationRow({
   entry,
   showSaveButton,
   onSaveClick,
+  showDeleteBtn = true,
 }) {
   CalibrationRow.propTypes = {
     handleDelete: PropTypes.func,
@@ -40,6 +41,8 @@ export default function CalibrationRow({
     entry: PropTypes.object.isRequired, // This allows us to modify arrays of objects
     showSaveButton: PropTypes.bool, // whether or not to show save button on rows
     onSaveClick: PropTypes.func, // what to call when save button clicked
+    // eslint-disable-next-line react/require-default-props
+    showDeleteBtn: PropTypes.bool,
   };
   CalibrationRow.defaultProps = {
     file: null,
@@ -142,13 +145,14 @@ export default function CalibrationRow({
                           },
                         };
                         onChangeCalibRow(removeIfCurrent, entry);
-                        if (e.target.files[0].size < (32 * 1024 * 1024)) {
+                        if (e.target.files[0].size < 32 * 1024 * 1024) {
                           if (
                             e.target.files[0].type === 'image/jpeg'
-                          || e.target.files[0].type === 'image/png'
-                          || e.target.files[0].type === 'image/gif'
-                          || e.target.files[0].type === 'application/pdf'
-                          || e.target.files[0].type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            || e.target.files[0].type === 'image/png'
+                            || e.target.files[0].type === 'image/gif'
+                            || e.target.files[0].type === 'application/pdf'
+                            || e.target.files[0].type
+                              === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                           ) {
                             e.target.name = 'fileInput';
                             e.target.remove = false;
@@ -156,11 +160,15 @@ export default function CalibrationRow({
                             setDisplayError('');
                             onChangeCalibRow(e, entry);
                           } else {
-                            setDisplayError('ERROR: File must be of type JPG, PNG, GIF, PDF, or XLSX');
+                            setDisplayError(
+                              'ERROR: File must be of type JPG, PNG, GIF, PDF, or XLSX',
+                            );
                             setFileNameDisplay('');
                           }
                         } else {
-                          setDisplayError('ERROR: File size must be less than 32 mb');
+                          setDisplayError(
+                            'ERROR: File size must be less than 32 mb',
+                          );
                           setFileNameDisplay('');
                         }
                       }
@@ -183,29 +191,27 @@ export default function CalibrationRow({
               <div> CALIBRATED BY HPT LOAD BANK </div>
             )}
             {fileNameDisplay.length > 0 && (
-            <div>
-              <div>{fileNameDisplay}</div>
-              <button
-                type="button"
-                className="btn w-100"
-                onClick={() => {
-                  setFileNameDisplay('');
-                  const e = {
-                    target: {
-                      name: 'fileInput',
-                      remove: true,
-                    },
-                  };
-                  onChangeCalibRow(e, entry);
-                }}
-              >
-                Remove
-              </button>
-            </div>
+              <div>
+                <div>{fileNameDisplay}</div>
+                <button
+                  type="button"
+                  className="btn w-100"
+                  onClick={() => {
+                    setFileNameDisplay('');
+                    const e = {
+                      target: {
+                        name: 'fileInput',
+                        remove: true,
+                      },
+                    };
+                    onChangeCalibRow(e, entry);
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
             )}
-            {displayError.length > 0 && (
-              <div>{displayError}</div>
-            )}
+            {displayError.length > 0 && <div>{displayError}</div>}
           </div>
           <div className="col-4">
             {showSaveButton && !viewOnly && (
@@ -214,6 +220,7 @@ export default function CalibrationRow({
                   type="button"
                   className="btn w-100"
                   onClick={() => onSaveClick(entry)}
+                  id={`save-btn-${entry.id}`}
                 >
                   Save
                 </button>
@@ -221,7 +228,7 @@ export default function CalibrationRow({
             )}
           </div>
         </div>
-        {!viewOnly && (
+        {!viewOnly && showDeleteBtn && (
           <MouseOverPopover message="Delete this calibration event">
             <button
               type="button"

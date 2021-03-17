@@ -52,7 +52,7 @@ export function StateLessModal({
 }
 
 function ModalAlert({ // use this modal if you're fine with modal controling its own show state
-  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '',
+  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null,
 }) {
   ModalAlert.propTypes = {
     title: PropTypes.string.isRequired,
@@ -67,6 +67,8 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     btnClass: PropTypes.string,
     // eslint-disable-next-line react/require-default-props
     popOverText: PropTypes.string,
+    // eslint-disable-next-line react/require-default-props
+    onShow: PropTypes.func, // call back for when user clicks button
   };
 
   ModalAlert.defaultProps = {
@@ -81,6 +83,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       }
       if (altCloseBtnId) {
         const altBtn = document.getElementById(altCloseBtnId);
+        console.log('altButton', altBtn);
         if (altBtn) {
           altBtn.onclick = () => setShow(false);
         }
@@ -89,6 +92,13 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     return () => { active = false; };
   }, [show]);
 
+  const handleShow = () => {
+    if (onShow) {
+      onShow();
+    }
+    setShow(true);
+  };
+
   return (
     <>
       {popOverText !== '' ? (
@@ -96,7 +106,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
           <button
             type="button"
             className={btnClass}
-            onClick={() => setShow(true)}
+            onClick={handleShow}
           >
             {btnText}
           </button>
@@ -105,7 +115,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
         <button
           type="button"
           className={btnClass}
-          onClick={() => setShow(true)}
+          onClick={handleShow}
         >
           {btnText}
         </button>

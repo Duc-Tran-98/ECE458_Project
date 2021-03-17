@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -6,13 +7,14 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import { toast } from 'react-toastify';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
-import ModalAlert from '../components/ModalAlert';
+import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import EditInstrument from '../components/EditInstrument';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
@@ -43,6 +45,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const [loading, setLoading] = React.useState(false);
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
+  const [show, setShow] = React.useState(false);
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setResponseMsg(response.message);
@@ -92,16 +95,18 @@ export default function DetailedInstrumentView({ onDelete }) {
   };
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
-    const newHistory = calibHist;
-    newHistory.push({
-      user: user.userName,
-      date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
-      comment: '',
-      id: nextId,
-      viewOnly: false,
-    });
-    setNextId(nextId + 1);
-    setCalibHist(newHistory);
+    if (calibHist.filter((ele) => !ele.viewOnly).length === 0) {
+      const newHistory = calibHist;
+      newHistory.push({
+        user: user.userName,
+        date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
+        comment: '',
+        id: nextId,
+        viewOnly: false,
+      });
+      setNextId(nextId + 1);
+      setCalibHist(newHistory);
+    }
   };
   const deleteRow = (rowId) => {
     const newHistory = calibHist.filter((item) => item.id !== rowId);
@@ -132,6 +137,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const handleSubmit = async (entry) => {
     // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     const newHistory = [entry];
+    setShow(false);
     if (entry.file) {
       const endpoint = '/api/upload';
       const path = `${route}${endpoint}`;
@@ -150,7 +156,8 @@ export default function DetailedInstrumentView({ onDelete }) {
       events: newHistory,
       assetTag,
       handleResponse: () => {
-        fetchData(entry);
+        toast.success(`Added calibration event on ${entry.date}`);
+        fetchData();
       },
     });
   };
@@ -199,11 +206,32 @@ export default function DetailedInstrumentView({ onDelete }) {
     <div className="d-flex flex-row">
       {(user.isAdmin || user.calibrationPermission) && (
         <>
-          <MouseOverPopover message="Add new calibration event">
-            <button type="button" className="btn " onClick={addRow}>
+          <MouseOverPopover message="Add a new calibration event">
+            <button
+              type="button"
+              onClick={() => {
+                addRow();
+                setShow(true);
+              }}
+              className="btn"
+            >
               Add Calibration
             </button>
           </MouseOverPopover>
+          <StateLessModal
+            show={show}
+            title="Add Calibration Event"
+            handleClose={() => setShow(false)}
+          >
+            <CalibrationTable
+              rows={calibHist.filter((ele) => !ele.viewOnly)}
+              deleteRow={deleteRow}
+              onChangeCalibRow={onChangeCalibRow}
+              showSaveButton
+              showDeleteBtn={false}
+              onSaveClick={handleSubmit}
+            />
+          </StateLessModal>
           <span className="mx-2" />
           <ModalAlert
             btnText="Add Load Bank Calibration"
@@ -215,6 +243,7 @@ export default function DetailedInstrumentView({ onDelete }) {
               initSerialNumber={serialNumber}
               initAssetTag={assetTag}
               initVendor={vendor}
+              onFinish={fetchData}
             />
           </ModalAlert>
         </>
@@ -223,11 +252,34 @@ export default function DetailedInstrumentView({ onDelete }) {
   ) : (
     <>
       {(user.isAdmin || user.calibrationPermission) && (
-        <MouseOverPopover message="Add new calibration event">
-          <button type="button" className="btn " onClick={addRow}>
-            Add Calibration
-          </button>
-        </MouseOverPopover>
+        <>
+          <MouseOverPopover message="Add a new calibration event">
+            <button
+              type="button"
+              onClick={() => {
+                addRow();
+                setShow(true);
+              }}
+              className="btn"
+            >
+              Add Calibration
+            </button>
+          </MouseOverPopover>
+          <StateLessModal
+            show={show}
+            title="Add Calibration Event"
+            handleClose={() => setShow(false)}
+          >
+            <CalibrationTable
+              rows={calibHist.filter((ele) => !ele.viewOnly)}
+              deleteRow={deleteRow}
+              onChangeCalibRow={onChangeCalibRow}
+              showSaveButton
+              showDeleteBtn={false}
+              onSaveClick={handleSubmit}
+            />
+          </StateLessModal>
+        </>
       )}
     </>
   );
@@ -238,10 +290,11 @@ export default function DetailedInstrumentView({ onDelete }) {
       btnClass="btn text-nowrap btn-danger col"
       title="Delete Instrument"
       altCloseBtnId="close-del-inst"
+      width=""
     >
       <>
         {responseMsg.length === 0 && (
-          <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${serialNumber}. Are you sure?`}</div>
+          <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${assetTag}. Are you sure?`}</div>
         )}
         <div className="d-flex justify-content-center">
           {loading ? (
@@ -331,7 +384,7 @@ export default function DetailedInstrumentView({ onDelete }) {
             </div>
             {calibFrequency > 0 ? (
               <CalibrationTable
-                rows={calibHist}
+                rows={calibHist.filter((ele) => ele.viewOnly)}
                 deleteRow={deleteRow}
                 onChangeCalibRow={onChangeCalibRow}
                 showSaveButton
