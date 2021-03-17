@@ -8,10 +8,8 @@ import Certificate from './pages/Certificate';
 import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
-import CreateModel from './pages/CreateModel';
 import ListModels from './pages/ListModels';
 import ListInstruments from './pages/ListInstruments';
-import CreateInstrument from './pages/CreateInstrument';
 import DetailedInstrumentView from './pages/ViewInstrument';
 import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
@@ -104,20 +102,6 @@ function App() {
             <Route path="/viewUser">
               {loggedIn ? (
                 <ViewUser onDelete={modifyCount} />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
-            </Route>
-            <Route path="/addInstrument">
-              {loggedIn ? (
-                <CreateInstrument onCreation={modifyCount} />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
-            </Route>
-            <Route path="/addModel">
-              {loggedIn ? (
-                <CreateModel onCreation={modifyCount} />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}

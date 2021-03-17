@@ -119,6 +119,7 @@ export function ServerPaginationGrid({
   filterOptions,
   showToolBar,
   showImport,
+  shouldUpdate = false,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -140,6 +141,7 @@ export function ServerPaginationGrid({
     filterOptions: PropTypes.object,
     showToolBar: PropTypes.bool.isRequired,
     showImport: PropTypes.bool.isRequired,
+    shouldUpdate: PropTypes.bool, // if you want to force update table
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -194,7 +196,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, fetchData]);
+  }, [initLimit, initPage, fetchData, shouldUpdate]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();

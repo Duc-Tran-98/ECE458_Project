@@ -52,12 +52,13 @@ export function StateLessModal({
 }
 
 function ModalAlert({ // use this modal if you're fine with modal controling its own show state
-  title, children, footer, width, btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '',
+  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '',
 }) {
   ModalAlert.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     footer: PropTypes.node,
+    // eslint-disable-next-line react/require-default-props
     width: PropTypes.string,
     btnText: PropTypes.string.isRequired,
     // eslint-disable-next-line react/require-default-props
@@ -70,7 +71,6 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
 
   ModalAlert.defaultProps = {
     footer: null,
-    width: 'modal-100w',
   };
   const [show, setShow] = React.useState(false);
   React.useEffect(() => {

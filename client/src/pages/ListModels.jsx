@@ -2,12 +2,14 @@
 This class is for the table view of models
 */
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
+import CreateModel from './CreateModel';
+import ModalAlert from '../components/ModalAlert';
 
 function ListModels() {
   const history = useHistory();
@@ -16,6 +18,7 @@ function ListModels() {
   const urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  const [update, setUpdate] = useState(false);
   let urlFilter = urlParams.get('filters');
   let selectedFilters = null;
   if (urlFilter) {
@@ -233,6 +236,19 @@ function ListModels() {
       history.push(`/viewModels${searchString}`);
     }
   };
+  const createBtn = (
+    <ModalAlert
+      title="Create Model"
+      btnText="Create Model"
+      btnClass="btn m-2 my-auto text-nowrap"
+    >
+      <CreateModel onCreation={() => {
+        setUpdate(true);
+        setUpdate(false);
+      }}
+      />
+    </ModalAlert>
+  );
 
   return (
     <>
@@ -249,9 +265,7 @@ function ListModels() {
         headerElement={(
           <div className="d-flex justify-content-between py-2">
             {(user.isAdmin || user.modelPermission) && (
-              <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
-                Create Model
-              </Link>
+              createBtn
             )}
             <SearchBar
               forModelSearch
@@ -263,6 +277,7 @@ function ListModels() {
             />
           </div>
         )}
+        shouldUpdate={update}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}

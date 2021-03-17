@@ -1,12 +1,14 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import CreateInstrument from './CreateInstrument';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
+import ModalAlert from '../components/ModalAlert';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -31,6 +33,7 @@ export default function ListInstruments() {
       Buffer.from(urlFilter, 'base64').toString('ascii'),
     );
   }
+  const [update, setUpdate] = React.useState(false);
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
     modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
@@ -315,33 +318,6 @@ export default function ListInstruments() {
       filterSerialNumber,
       assetTag,
     });
-    // if (
-    //   !vendors
-    //   && (modelCategories === null || modelCategories?.length === 0)
-    //   && (instrumentCategories === null || instrumentCategories?.length === 0)
-    //   && !modelNumbers
-    //   && !descriptions
-    //   && !filterSerialNumber
-    //   && !assetTag
-    // ) {
-    //   CountInstruments().then((val) => {
-    //     return val;
-    //   });
-    // } else {
-    //   GetAllInstruments({
-    //     limit: 1,
-    //     offset: 0,
-    //     modelNumber: modelNumbers,
-    //     description: descriptions,
-    //     vendor: vendors,
-    //     modelCategories: formatedModelCategories,
-    //     instrumentCategories: formatedInstrumentCategories,
-    //     serialNumber: filterSerialNumber,
-    //     assetTag,
-    //   }).then((response) => {
-    //     return response.total;
-    //   });
-    // }
   };
   const {
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
@@ -369,6 +345,20 @@ export default function ListInstruments() {
     }
   };
 
+  const createBtn = (
+    <ModalAlert
+      title="Create Instrument"
+      btnText="Create Instrument"
+      btnClass="btn m-2 my-auto text-nowrap"
+    >
+      <CreateInstrument onCreation={() => {
+        setUpdate(true);
+        setUpdate(false);
+      }}
+      />
+    </ModalAlert>
+  );
+
   return (
     <>
       <ServerPaginationGrid
@@ -387,9 +377,7 @@ export default function ListInstruments() {
         headerElement={(
           <div className="d-flex justify-content-between py-2">
             {(user.isAdmin || user.instrumentPermission) && (
-              <Link className="btn m-2 my-auto text-nowrap" to="/addInstrument">
-                Create Instrument
-              </Link>
+              createBtn
             )}
             <SearchBar
               onSearch={onSearch}
@@ -404,6 +392,7 @@ export default function ListInstruments() {
             />
           </div>
         )}
+        shouldUpdate={update}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
