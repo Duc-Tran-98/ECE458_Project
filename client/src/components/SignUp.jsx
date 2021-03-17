@@ -44,8 +44,10 @@ export default function SignUp({ onCreation }) {
   const [allUserNames, setAllUserNames] = React.useState(['admin']);
   const user = useContext(UserContext);
   GetAllUsers({ limit: 100, offset: 0 }).then((response) => {
-    const parsedUsernames = response.map((element) => element.userName);
-    setAllUserNames(parsedUsernames);
+    if (response) {
+      const parsedUsernames = response.map((element) => element.userName);
+      setAllUserNames(parsedUsernames);
+    }
   });
 
   // eslint-disable-next-line no-unused-vars
