@@ -2,6 +2,7 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
+const runBarcode = require('./barcodeGenerator');
 
 function validateInstrument({
   modelNumber, vendor, serialNumber, comment, assetTag,

@@ -9,6 +9,7 @@ const cors = require('cors');
 const multer = require('multer');
 // const bodyParser = require('body-parser');
 const { createVerifier } = require('fast-jwt');
+const stream = require('stream');
 const typeDefs = require('./schema');
 const UserAPI = require('./datasources/users');
 const ModelAPI = require('./datasources/models');
@@ -17,6 +18,7 @@ const CalibrationEventAPI = require('./datasources/calibrationEvents');
 const { createStore, createDB } = require('./util');
 const resolvers = require('./resolvers');
 const BulkDataAPI = require('./datasources/bulkData');
+const runBarcode = require('./datasources/barcodeGenerator');
 
 const { oauthClientId, oauthClientSecret, oauthRedirectURI } = require('./config');
 
@@ -185,6 +187,22 @@ app.post(`${whichRoute}/upload`, upload.any(), (req, res, next) => {
 app.post(`${whichRoute}/uploadExcel`, (req, res) => {
   // Do some things
   res.send('Hello World');
+});
+
+app.get(`${whichRoute}/barcodes`, async (req, res) => {
+  const assetTags = [];
+  for (let i = 0; i < req.query.tags.length; i += 1) {
+    assetTags.push(parseInt(req.query.tags[i], 10));
+  }
+  const pdf = await runBarcode({ data: assetTags });
+  const filename = 'asset_labels.pdf';
+  const readStream = new stream.PassThrough();
+  readStream.end(pdf);
+
+  res.set('Content-disposition', `attachment; filename=${filename}`);
+  res.set('Content-Type', 'application/pdf');
+
+  readStream.pipe(res);
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
