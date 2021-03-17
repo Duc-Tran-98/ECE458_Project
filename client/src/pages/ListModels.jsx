@@ -73,7 +73,7 @@ function ListModels() {
     });
     return catArr.join(', ');
   };
-  const headerClass = 'h5';
+  const headerClass = 'customMuiHeader';
   const cols = [
     {
       field: 'vendor',
@@ -83,10 +83,18 @@ function ListModels() {
       description: 'Vendor',
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 150, headerClassName: headerClass, description: 'Model Number',
+      field: 'modelNumber',
+      headerName: 'Model Number',
+      width: 170,
+      headerClassName: headerClass,
+      description: 'Model Number',
     },
     {
-      field: 'description', headerName: 'Description', width: 350, headerClassName: headerClass, description: 'Description',
+      field: 'description',
+      headerName: 'Description',
+      width: 350,
+      headerClassName: headerClass,
+      description: 'Description',
     },
     {
       field: 'comment',

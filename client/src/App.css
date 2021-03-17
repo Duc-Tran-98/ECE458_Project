@@ -145,21 +145,30 @@ div.MuiPaper-root.MuiPaper-elevation0{
   margin: 0 8px 8px 0;
   background: #fca311;
 }
-  .tag-title {
-    margin-top: 3px;
-  }
-  .tag-close-icon {
-    display: block;
-    width: 16px;
-    height: 16px;
-    font-weight: bold;
-    line-height: 16px;
-    text-align: center;
-    font-size: 12px;
-    margin-left: 8px;
-    position: relative;
-    color: #000;
-    border-radius: 50%;
-    background: #e5e5e5;
-    cursor: pointer;
-  }
+.tag-title {
+  margin-top: 3px;
+}
+.tag-close-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: center;
+  font-size: 12px;
+  margin-left: 8px;
+  position: relative;
+  color: #000;
+  border-radius: 50%;
+  background: #e5e5e5;
+  cursor: pointer;
+}
+
+/* TODO: Improve this styling */
+.customMuiHeader {
+  color: #fca311;
+  font-size: large;
+  /* background: #ffffff (looks funny) */
+  /* font-size: 14px; Not applied (overriden) */
+  /* font-weight: 900; Not applied (overriden) REALLY want this to show */
+}
