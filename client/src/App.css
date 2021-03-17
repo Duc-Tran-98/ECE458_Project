@@ -168,12 +168,8 @@ div.MuiPaper-root.MuiPaper-elevation0{
 .customMuiHeader {
   color: #000;
   font-size: large;
-  /* background: #ffffff (looks funny) */
-  /* font-size: 14px; Not applied (overriden) */
-  /* font-weight: 900; Not applied (overriden) REALLY want this to show */
 }
 
-/* TODO: Fix this styling, remove onCellHover from UITable*/
 .MuiDataGrid-row:hover {
-  cursor: crosshair;
+  cursor: pointer;
 }
