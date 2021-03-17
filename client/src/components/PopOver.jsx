@@ -3,20 +3,24 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import PropTypes from 'prop-types';
 
-export default function MouseOverPopover({ children, message, className }) {
+export default function MouseOverPopover({
+  children, message, className, place,
+}) {
   MouseOverPopover.propTypes = {
     children: PropTypes.node.isRequired,
     message: PropTypes.string.isRequired,
     className: PropTypes.string,
+    place: PropTypes.string,
   };
   MouseOverPopover.defaultProps = {
     className: '',
+    place: 'bottom',
   };
 
   return (
     <div className={className}>
       <OverlayTrigger
-        placement="bottom"
+        placement={place}
         delay={{ show: 250, hide: 400 }}
         trigger={['hover', 'hover']} // duplicated 'hover' as workaround to remove repeated unneccesary warnings
         overlay={<Tooltip id="tooltip-bottom">{message}</Tooltip>}

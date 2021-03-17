@@ -4,7 +4,7 @@ import {
   DataGrid, GridOverlay, ColumnsToolbarButton, DensitySelector,
 } from '@material-ui/data-grid';
 // eslint-disable-next-line no-unused-vars
-import { XGrid } from '@material-ui/x-grid';
+// import { XGrid } from '@material-ui/x-grid';
 
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
@@ -21,6 +21,7 @@ import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
 import UserContext from './UserContext';
+import GenerateBarcodes from './GenerateBarcodes';
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
@@ -151,6 +152,7 @@ export function ServerPaginationGrid({
   };
   paginationContainer = React.useRef(null);
   const [rows, setRows] = React.useState([]);
+  const [tags, setTags] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
   const [total, setTotal] = React.useState(0);
@@ -267,6 +269,7 @@ export function ServerPaginationGrid({
           page={initPage}
           pageSize={initLimit}
           rowCount={total}
+          checkboxSelection={filename && filename.includes('instrument')}
           paginationMode="server"
           onPageChange={handlePageChange}
           loading={loading}
@@ -288,6 +291,16 @@ export function ServerPaginationGrid({
           autoHeight
           onSelectionChange={(newSelection) => {
             setChecked(newSelection.rowIds);
+            const tagArr = [];
+            newSelection.rowIds.forEach((rowID) => {
+              rows.forEach((row) => {
+                // eslint-disable-next-line eqeqeq
+                if (row.id == rowID) {
+                  tagArr.push(row.assetTag);
+                }
+              });
+            });
+            setTags(tagArr);
           }}
           hideFooterSelectedRowCount
           components={{
@@ -368,10 +381,13 @@ export function ServerPaginationGrid({
             <>
               {loadingExport && <CircularProgress />}
               {filename && filename.includes('model') && (
-                <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
+              <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
               )}
               {filename && filename.includes('instrument') && (
-                <ExportInstruments setLoading={setLoadingExport} filterOptions={filterOptions} />
+              <ExportInstruments setLoading={setLoadingExport} filterOptions={filterOptions} />
+              )}
+              {filename && filename.includes('instrument') && (
+                <GenerateBarcodes filterOptions={filterOptions} assetTags={tags} getAll={tags.length === rows.length} />
               )}
             </>
           )}
