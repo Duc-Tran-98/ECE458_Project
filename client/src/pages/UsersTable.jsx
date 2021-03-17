@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
-import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
   const history = useHistory();
@@ -64,36 +63,17 @@ export default function UsersTable() {
       headerName: 'Calibration Permission',
       width: 180,
     },
-    {
-      field: 'view',
-      headerName: 'View',
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="View User">
-              <button type="button" className="btn">
-                View
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
-      ),
-    },
   ];
   return (
     <>
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
-          if (e.field === 'view') {
-            const state = { previousUrl: window.location.href };
-            history.push(
-              `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
-              state,
-            );
-          }
+          const state = { previousUrl: window.location.href };
+          history.push(
+            `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
+            state,
+          );
         }}
         headerElement={(
           <Link className="btn  m-2" to="/addUser">

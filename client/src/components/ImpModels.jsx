@@ -7,7 +7,7 @@ import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
-import ModalAlert from './ModalAlert';
+import { StateLessModal } from './ModalAlert';
 import ImportModelError from './ImportModelError';
 import DisplayGrid from './UITable';
 
@@ -271,9 +271,9 @@ export default function ImpModels({ modifyCount }) {
         importStatus={importStatus}
         hideTable={hideTable}
       />
-      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Models" width=" ">
+      <StateLessModal handleClose={closeModal} show={show} title="Error Importing Models" width=" ">
         <ImportModelError allRowErrors={allRowErrors} errorList={[]} />
-      </ModalAlert>
+      </StateLessModal>
       {showTable && <DisplayGrid rows={rows} cols={cols} />}
     </>
   );

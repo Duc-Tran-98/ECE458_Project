@@ -19,12 +19,8 @@ export default function DetailedModelView({ onDelete }) {
   let modelNumber = urlParams.get('modelNumber');
   let vendor = urlParams.get('vendor');
   let description = urlParams.get('description');
-  const [show, setShow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
-  const closeModal = () => {
-    setShow(false);
-  };
   const history = useHistory();
   history.listen((location, action) => {
     let active = true;
@@ -50,9 +46,6 @@ export default function DetailedModelView({ onDelete }) {
       onDelete();
       setTimeout(() => {
         setResponseMsg('');
-        if (show) {
-          setShow(false);
-        }
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
           // if (path.includes('count')) {
@@ -73,42 +66,49 @@ export default function DetailedModelView({ onDelete }) {
     setLoading(true);
     DeleteModel({ modelNumber, vendor, handleResponse });
   };
+  const deleteBtn = (
+    <ModalAlert
+      btnText="Delete Model"
+      title="Delete Model"
+      btnClass="btn btn-danger col"
+      altCloseBtnId="delete-model-btn"
+    >
+      <>
+        {responseMsg.length === 0 && (
+          <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
+        )}
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : responseMsg.length > 0 ? (
+            <div className="mx-5 mt-3 h4">{responseMsg}</div>
+          ) : (
+            <>
+              <div className="mt-3">
+                <button className="btn" type="button" onClick={handleDelete}>
+                  Yes
+                </button>
+              </div>
+              <span className="mx-3" />
+              <div className="mt-3">
+                <button className="btn " type="button" id="delete-model-btn">
+                  No
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </>
+    </ModalAlert>
+  );
   return (
     <>
-      <ModalAlert show={show} handleClose={closeModal} title="Delete Model">
-        <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
-          )}
-          <div className="d-flex justify-content-center">
-            {loading ? (
-              <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
-            ) : (
-              <>
-                <div className="mt-3">
-                  <button className="btn" type="button" onClick={handleDelete}>
-                    Yes
-                  </button>
-                </div>
-                <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeModal}>
-                    No
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      </ModalAlert>
       <div className="col">
         <div className="row">
           <EditModel
             initModelNumber={modelNumber}
             initVendor={vendor}
-            handleDelete={() => setShow(true)}
+            deleteBtn={deleteBtn}
           />
         </div>
         <div className="row px-3">

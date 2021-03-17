@@ -60,7 +60,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, handleFormSubmit, viewOnly, diffSubmit, type, deleteBtn,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -75,7 +75,7 @@ export default function ModelForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
-    handleDelete: PropTypes.func,
+    deleteBtn: PropTypes.node,
     type: PropTypes.string,
   };
   ModelForm.defaultProps = {
@@ -87,7 +87,7 @@ export default function ModelForm({
     supportLoadBankCalibration: false,
     categories: [],
     diffSubmit: false,
-    handleDelete: () => {},
+    deleteBtn: null,
     type: 'create',
   };
 
@@ -127,13 +127,8 @@ export default function ModelForm({
         errors,
         touched,
       }) => (
-
-        <Form
-          noValidate
-          onSubmit={handleSubmit}
-        >
+        <Form noValidate onSubmit={handleSubmit}>
           <div className="row mx-3">
-
             <div className="col mt-3">
               <Form.Group>
                 <Form.Label className="h4">Vendor</Form.Label>
@@ -151,7 +146,10 @@ export default function ModelForm({
                     queryName={queryName}
                     onInputChange={(e, v) => {
                       if (v !== null) {
-                        setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
+                        setFieldValue(
+                          'vendor',
+                          v.inputValue ? v.inputValue : v.vendor,
+                        );
                       }
                     }}
                     label="Choose a vendor"
@@ -247,7 +245,9 @@ export default function ModelForm({
                   disabled={disabled}
                 />
                 <div className="col">
-                  <strong>{values.supportLoadBankCalibration ? 'Yes' : 'No'}</strong>
+                  <strong>
+                    {values.supportLoadBankCalibration ? 'Yes' : 'No'}
+                  </strong>
                 </div>
               </div>
             </div>
@@ -267,20 +267,34 @@ export default function ModelForm({
               />
             </div>
           </div>
-          {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit && type === 'create') && (
-            <div className="d-flex justify-content-center mt-3 mb-3">
-              {isSubmitting
-                ? <CircularProgress />
-                : <Button type="submit" onClick={handleSubmit}>Add Model</Button>}
-            </div>
+          {(typeof viewOnly === 'undefined' || !viewOnly)
+            && !diffSubmit
+            && type === 'create' && (
+              <div className="d-flex justify-content-center mt-3 mb-3">
+                {isSubmitting ? (
+                  <CircularProgress />
+                ) : (
+                  <Button type="submit" onClick={handleSubmit}>
+                    Add Model
+                  </Button>
+                )}
+              </div>
           )}
           {showFooter && (
             <div className="d-flex justify-content-center my-3">
               <div className="row">
-                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" />
-                {isSubmitting
-                  ? <CircularProgress />
-                  : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}
+                {/* <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" /> */}
+                {isSubmitting ? (
+                  <CircularProgress />
+                ) : (
+                  <CustomButton
+                    onClick={handleSubmit}
+                    divClass="col"
+                    buttonClass="btn text-nowrap"
+                    buttonLabel="Save Changes"
+                  />
+                )}
+                {deleteBtn}
               </div>
             </div>
           )}

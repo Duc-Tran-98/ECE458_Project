@@ -7,7 +7,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
-import ModalAlert from './ModalAlert';
+import { StateLessModal } from './ModalAlert';
 import ImportInstrumentError from './ImportInstrumentError';
 import DisplayGrid from './UITable';
 import UserContext from './UserContext';
@@ -284,9 +284,9 @@ export default function ImpInstruments({ modifyCount }) {
         importStatus={importStatus}
         hideTable={hideTable}
       />
-      <ModalAlert handleClose={closeModal} show={show} title="Error Importing Instruments" width=" ">
+      <StateLessModal handleClose={closeModal} show={show} title="Error Importing Instruments" width=" ">
         <ImportInstrumentError allRowErrors={allRowErrors} errorList={[]} />
-      </ModalAlert>
+      </StateLessModal>
       {showTable && <DisplayGrid rows={rows} cols={cols} />}
     </>
   );

@@ -1,7 +1,5 @@
 /*
-This class is starting to get a bit complex, so may want
-to refactor this into smaller components when possible;
-minor feature that would be cool is spinners while the modal alert loads;
+This class is for the table view of models
 */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -53,7 +51,8 @@ function ListModels() {
     let active = true;
     (() => {
       if (!active) return;
-      getAndSetUrlVals(location.search);
+      getAndSetUrlVals(location.search); // if history.push/replace or pop happens, update our state
+      // based on the search params
     })();
     return () => { active = false; };
   });
@@ -163,7 +162,7 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
-  const updateUrlWithFilter = ({
+  const updateUrlWithFilter = ({ // this method called onSearch to handle url manipulation
     vendors,
     modelNumbers,
     descriptions,
@@ -210,31 +209,12 @@ function ListModels() {
       descriptions,
       categories: actualCategories,
     });
-    // if (
-    //   !vendors
-    //   && (modelCategories === null || modelCategories?.length === 0)
-    //   && !modelNumbers
-    //   && !descriptions
-    // ) {
-    //   CountAllModels().then((val) => {
-
-    //   });
-    // } else {
-    // GetAllModels({
-    //   limit: 1,
-    //   offset: 0,
-    //   modelNumber: modelNumbers,
-    //   description: descriptions,
-    //   vendor: vendors,
-    //   categories: actualCategories,
-    // }).then((response) => {
-    // });
-    // }
   };
   const {
     vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
-  const updateUrl = (page, limit) => {
+  const updateUrl = (page, limit) => { // this is passed to the on page change and on page size change
+    // handlers of the server pagination grid
     const filters = Buffer.from(
       JSON.stringify({
         vendors,
@@ -305,7 +285,7 @@ function ListModels() {
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
-        showImport
+        showImport={user.isAdmin || user.modelPermission}
       />
     </>
   );

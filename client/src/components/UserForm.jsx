@@ -146,17 +146,16 @@ export default function UserForm({
 }
 
 export function EditUserForm({
-  onChangeCheckbox, formState, onDeleteClick,
+  onChangeCheckbox, formState, deleteBtn,
 }) {
   EditUserForm.propTypes = {
     onChangeCheckbox: PropTypes.func,
-    onDeleteClick: PropTypes.func,
     // eslint-disable-next-line react/forbid-prop-types
     formState: PropTypes.object.isRequired,
+    deleteBtn: PropTypes.node.isRequired,
   };
   EditUserForm.defaultProps = {
     onChangeCheckbox: () => undefined,
-    onDeleteClick: () => undefined,
   };
   const user = useContext(UserContext);
   const history = useHistory();
@@ -328,14 +327,15 @@ export function EditUserForm({
         )}
 
         <span className="mx-2" />
-        <button
+        {deleteBtn}
+        {/* <button
           className="btn btn-danger"
           type="button"
           onClick={onDeleteClick}
           disabled={disabledButtons}
         >
           Delete User
-        </button>
+        </button> */}
       </div>
     </form>
   );

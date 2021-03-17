@@ -9,7 +9,7 @@ import { XGrid } from '@material-ui/x-grid';
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
 import {
-  useState, useRef, useEffect, useContext,
+  useState, useRef, useEffect,
 } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -20,7 +20,6 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
-import UserContext from './UserContext';
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
@@ -154,7 +153,6 @@ export function ServerPaginationGrid({
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
   const [total, setTotal] = React.useState(0);
-  const user = useContext(UserContext);
   const history = useHistory();
 
   const handlePageChange = (params) => {
@@ -353,7 +351,7 @@ export function ServerPaginationGrid({
               </li>
             </ul>
           </div>
-          {user.isAdmin && showImport && (
+          {showImport && (
           <button
             type="button"
             className="btn ms-3"

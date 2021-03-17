@@ -6,8 +6,9 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { EditUserForm } from '../components/UserForm';
-import ModalAlert from '../components/ModalAlert';
 import Query from '../components/UseQuery';
+import ModalAlert from '../components/ModalAlert';
+import UserContext from '../components/UserContext';
 
 export default function ViewUser({ onDelete }) {
   ViewUser.propTypes = {
@@ -15,6 +16,7 @@ export default function ViewUser({ onDelete }) {
   };
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
+  const user = React.useContext(UserContext);
   const [formState, setFormState] = React.useState({
     userName: urlParams.get('userName'),
     isAdmin: urlParams.get('isAdmin') === 'true',
@@ -22,7 +24,7 @@ export default function ViewUser({ onDelete }) {
     instrumentPermission: urlParams.get('instrumentPermission') === 'true',
     calibrationPermission: urlParams.get('calibrationPermission') === 'true',
   });
-
+  const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
   const onChangeCheckbox = (event) => {
     if (formState.userName !== 'admin') {
       if (event.target.name === 'isAdmin') { // isAdmin check changed
@@ -40,12 +42,8 @@ export default function ViewUser({ onDelete }) {
       }
     }
   };
-  const [show, setShow] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
-  const closeModal = () => {
-    setShow(false);
-  };
   const history = useHistory();
   // eslint-disable-next-line no-unused-vars
   const handleResponse = (response) => {
@@ -55,9 +53,6 @@ export default function ViewUser({ onDelete }) {
       onDelete();
       setTimeout(() => {
         setResponseMsg('');
-        if (show) {
-          setShow(false);
-        }
         if (history.location.state?.previousUrl) {
           let path = history.location.state.previousUrl.split(window.location.host)[1];
           if (path.includes('count')) {
@@ -74,54 +69,64 @@ export default function ViewUser({ onDelete }) {
       }, 1000);
     }
   };
+  const deleteBtn = (
+    <ModalAlert
+      title="Delete User"
+      btnText="Delete User"
+      btnClass={disabledButtons ? 'btn btn-danger disabled' : 'btn btn-danger'}
+      altCloseBtnId="delete-user"
+    >
+      <>
+        {responseMsg.length === 0 && (
+          <div className="h4 text-center my-3">{`You are about to delete user ${formState.userName}. Are you sure?`}</div>
+        )}
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : responseMsg.length > 0 ? (
+            <div className="mx-5 mt-3 h4">{responseMsg}</div>
+          ) : (
+            <>
+              <div className="mt-3">
+                <button
+                  className="btn"
+                  type="button"
+                  onClick={() => {
+                    setLoading(true);
+                    Query({
+                      query: print(gql`
+                        mutation DelUser($userName: String!) {
+                          deleteUser(userName: $userName)
+                        }
+                      `),
+                      queryName: 'deleteUser',
+                      getVariables: () => ({ userName: formState.userName }),
+                      handleResponse,
+                    });
+                  }}
+                >
+                  Yes
+                </button>
+              </div>
+              <span className="mx-3" />
+              <div className="mt-3">
+                <button className="btn " type="button" id="delete-user">
+                  No
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </>
+    </ModalAlert>
+  );
 
-  const deleteUser = () => {
-    setLoading(true);
-    Query({
-      query: print(gql`
-        mutation DelUser($userName: String!) {
-          deleteUser(userName: $userName)
-        }
-      `),
-      queryName: 'deleteUser',
-      getVariables: () => ({ userName: formState.userName }),
-      handleResponse,
-    });
-  };
   return (
     <>
-      <ModalAlert show={show} handleClose={closeModal} title="Delete User">
-        <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete user ${formState.userName}. Are you sure?`}</div>
-          )}
-          <div className="d-flex justify-content-center">
-            {loading ? (
-              <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
-            ) : (
-              <>
-                <div className="mt-3">
-                  <button className="btn" type="button" onClick={deleteUser}>
-                    Yes
-                  </button>
-                </div>
-                <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeModal}>
-                    No
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      </ModalAlert>
       <EditUserForm
         formState={formState}
         onChangeCheckbox={onChangeCheckbox}
-        onDeleteClick={() => setShow(true)}
+        deleteBtn={deleteBtn}
       />
     </>
   );

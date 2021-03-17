@@ -458,7 +458,7 @@ export default function ListInstruments() {
         filterOptions={filterOptions}
         filename="instruments.csv"
         showToolBar
-        showImport
+        showImport={user.isAdmin || user.instrumentPermission}
       />
     </>
   );

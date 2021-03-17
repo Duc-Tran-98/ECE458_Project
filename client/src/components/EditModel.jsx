@@ -7,14 +7,11 @@ import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
 import EditModelQuery from '../queries/EditModel';
 
-export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
+export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
   EditModel.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func,
-  };
-  EditModel.defaultProps = {
-    handleDelete: null,
+    deleteBtn: PropTypes.node.isRequired,
   };
 
   const [modelId, setModelId] = useState(0);
@@ -125,7 +122,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             validated={false}
             diffSubmit
             viewOnly={!(user.isAdmin || user.modelPermission)}
-            handleDelete={handleDelete}
+            deleteBtn={deleteBtn}
             type="edit"
           />
         </>

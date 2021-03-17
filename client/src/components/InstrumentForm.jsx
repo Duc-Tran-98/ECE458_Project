@@ -68,7 +68,7 @@ export default function InstrumentForm({
   description,
   calibrationFrequency,
   type,
-  handleDelete,
+  deleteBtn,
   footer,
   updateCalibrationFrequency,
 }) {
@@ -84,7 +84,7 @@ export default function InstrumentForm({
     description: PropTypes.string,
     calibrationFrequency: PropTypes.number,
     type: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func,
+    deleteBtn: PropTypes.node,
     footer: PropTypes.node,
     updateCalibrationFrequency: PropTypes.func,
 
@@ -285,12 +285,12 @@ export default function InstrumentForm({
             <div className="row">
               {showFooter && (
                 <>
-                  <CustomButton
+                  {/* <CustomButton
                     onClick={handleDelete}
                     divClass="col"
                     buttonClass="btn btn-danger text-nowrap my-auto"
                     buttonLabel="Delete Instrument"
-                  />
+                  /> */}
                   {isSubmitting ? (
                     <CircularProgress />
                   ) : (
@@ -301,6 +301,7 @@ export default function InstrumentForm({
                       buttonLabel="Save Changes"
                     />
                   )}
+                  {deleteBtn}
                 </>
               )}
               {footer}

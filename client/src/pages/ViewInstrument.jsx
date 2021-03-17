@@ -40,15 +40,9 @@ export default function DetailedInstrumentView({ onDelete }) {
   calibFrequency = parseInt(calibFrequency, 10);
   let id = urlParams.get('id');
   id = parseInt(id, 10);
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [showWiz, setShowWiz] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
-  const closeModal = () => {
-    setShowDeleteModal(false);
-    setShowWiz(false);
-  };
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setResponseMsg(response.message);
@@ -56,9 +50,6 @@ export default function DetailedInstrumentView({ onDelete }) {
       onDelete();
       setTimeout(() => {
         setResponseMsg('');
-        if (showDeleteModal) {
-          setShowDeleteModal(false);
-        }
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
           // if (path.includes('count')) {
@@ -191,20 +182,20 @@ export default function DetailedInstrumentView({ onDelete }) {
     };
   }, []);
 
-  React.useEffect(() => {
-    let active = true;
-    (() => {
-      if (!active) {
-        return;
-      }
-      fetchData();
-    })();
-    return () => {
-      active = false;
-    };
-  }, [showWiz]); // update calib hist if user opens/closes wizard
+  // React.useEffect(() => {
+  //   let active = true;
+  //   (() => {
+  //     if (!active) {
+  //       return;
+  //     }
+  //     fetchData();
+  //   })();
+  //   return () => {
+  //     active = false;
+  //   };
+  // }, [showWiz]); // update calib hist if user opens/closes wizard
 
-  const genCalibButtons = supportsLoadBankWiz ? (
+  const genCalibButtons = supportsLoadBankWiz ? ( // TODO: MOVE CALIB ROW FROM ADD BTN TO MODAL
     <div className="d-flex flex-row">
       {(user.isAdmin || user.calibrationPermission) && (
         <>
@@ -214,15 +205,18 @@ export default function DetailedInstrumentView({ onDelete }) {
             </button>
           </MouseOverPopover>
           <span className="mx-2" />
-          <MouseOverPopover message="Add calibration event via our Load Bank Wizard">
-            <button
-              type="button"
-              className="btn "
-              onClick={() => setShowWiz(true)}
-            >
-              Add Load Bank Calibration
-            </button>
-          </MouseOverPopover>
+          <ModalAlert
+            btnText="Add Load Bank Calibration"
+            title="Load Bank Wizard"
+            popOverText="Add a load bank calibration via our wizard"
+          >
+            <LoadBankWiz
+              initModelNumber={modelNumber}
+              initSerialNumber={serialNumber}
+              initAssetTag={assetTag}
+              initVendor={vendor}
+            />
+          </ModalAlert>
         </>
       )}
     </div>
@@ -238,57 +232,53 @@ export default function DetailedInstrumentView({ onDelete }) {
     </>
   );
 
+  const deleteBtn = (
+    <ModalAlert
+      btnText="Delete Instrument"
+      btnClass="btn text-nowrap btn-danger col"
+      title="Delete Instrument"
+      altCloseBtnId="close-del-inst"
+    >
+      <>
+        {responseMsg.length === 0 && (
+          <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${serialNumber}. Are you sure?`}</div>
+        )}
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : responseMsg.length > 0 ? (
+            <div className="mx-5 mt-3 h4">{responseMsg}</div>
+          ) : (
+            <>
+              <div className="mt-3">
+                <button className="btn" type="button" onClick={handleDelete}>
+                  Yes
+                </button>
+              </div>
+              <span className="mx-3" />
+              <div className="mt-3">
+                <button
+                  className="btn "
+                  type="button"
+                  id="close-del-inst"
+                >
+                  No
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </>
+    </ModalAlert>
+  );
+
   return (
     <>
-      <ModalAlert
-        show={showDeleteModal}
-        handleClose={closeModal}
-        title="Delete Instrument"
-      >
-        <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${serialNumber}. Are you sure?`}</div>
-          )}
-          <div className="d-flex justify-content-center">
-            {loading ? (
-              <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
-            ) : (
-              <>
-                <div className="mt-3">
-                  <button className="btn" type="button" onClick={handleDelete}>
-                    Yes
-                  </button>
-                </div>
-                <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeModal}>
-                    No
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      </ModalAlert>
-      <ModalAlert
-        show={showWiz}
-        handleClose={closeModal}
-        title="Load Bank Wizard"
-      >
-        <LoadBankWiz
-          initModelNumber={modelNumber}
-          initSerialNumber={serialNumber}
-          initAssetTag={assetTag}
-          initVendor={vendor}
-        />
-      </ModalAlert>
       <div className="col">
         <div className="row">
           <EditInstrument
             initCalibrationFrequency={calibFrequency}
-            handleDelete={() => setShowDeleteModal(true)}
+            deleteBtn={deleteBtn}
             initModelNumber={modelNumber}
             initVendor={vendor}
             initSerialNumber={serialNumber}
