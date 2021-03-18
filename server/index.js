@@ -206,14 +206,14 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
 });
 
 // TODO: Implement ssh logic (see tutorial in other doc)
-app.post(`${whichRoute}/klufeStart`, (req, res) => {
+app.post(`${whichRoute}/klufeOn`, (req, res) => {
   console.log(req);
-  res.send('Starting Klufe');
+  res.send('Turning Klufe On');
 });
 
-app.post(`${whichRoute}/klufeStop`, (req, res) => {
+app.post(`${whichRoute}/klufeOff`, (req, res) => {
   console.log(req);
-  res.send('Stopping Klufe');
+  res.send('Turning Klufe Off');
 });
 
 /* STEP MAP:
@@ -226,8 +226,9 @@ app.post(`${whichRoute}/klufeStop`, (req, res) => {
 // TODO: Validate input step makes sense, if not HTTP 404 (? forbidden request)
 app.post(`${whichRoute}/klufeStep`, (req, res) => {
   const { stepNum, stepStart } = req.body;
-  console.log(`Klufe Step with stepNum: ${stepNum} and stepStart: ${stepStart}`);
-  res.send('Starting Klufe');
+  const message = `Klufe Step with stepNum: ${stepNum} and stepStart: ${stepStart}`;
+  console.log(message);
+  res.send(message);
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
