@@ -258,6 +258,7 @@ const typeDefs = gql`
       comment: String
       calibrationFrequency: Int
       supportLoadBankCalibration: Boolean!
+      supportKlufeCalibration: Boolean!
       categories: [String]
     ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
@@ -269,6 +270,7 @@ const typeDefs = gql`
       comment: String
       calibrationFrequency: Int
       supportLoadBankCalibration: Boolean!
+      supportKlufeCalibration: Boolean!
       categories: [String]
     ): String!
 

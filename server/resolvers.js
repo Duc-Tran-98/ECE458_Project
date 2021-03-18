@@ -175,6 +175,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       },
       { dataSources },
@@ -185,6 +186,7 @@ module.exports = {
       description,
       comment,
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       calibrationFrequency,
       categories,
     }),
@@ -197,6 +199,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       },
       { dataSources },
@@ -208,6 +211,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       });
       return response;
