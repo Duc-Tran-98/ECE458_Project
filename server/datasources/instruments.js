@@ -377,6 +377,7 @@ class InstrumentAPI extends DataSource {
           id: instrument.dataValues.id,
           assetTag: instrument.dataValues.assetTag,
           supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
+          supportKlufeCalibration: model.dataValues.supportKlufeCalibration,
         };
       });
     }
@@ -410,6 +411,7 @@ class InstrumentAPI extends DataSource {
           id: instrument.dataValues.id,
           assetTag: instrument.dataValues.assetTag,
           supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
+          supportKlufeCalibration: model.dataValues.supportKlufeCalibration,
         };
         return instrumentInfo;
       });

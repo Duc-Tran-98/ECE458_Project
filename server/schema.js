@@ -131,6 +131,7 @@ const typeDefs = gql`
     id: Int!
     assetTag: Int!
     supportLoadBankCalibration: Boolean
+    supportKlufeCalibration: Boolean
   }
 
   type FilteredInstrument {
