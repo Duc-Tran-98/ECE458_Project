@@ -6,6 +6,9 @@
 # On day 31, 4th weekly "falls off" and becomes first monthly
 # On day 366, 12th monthly "falls off" and is removed
 
+# Bletsch commented - any policy will do (rotation is best)
+# Idea, just go through list 3x for each time scope and remove any extras
+
 from os import name
 import glob
 
