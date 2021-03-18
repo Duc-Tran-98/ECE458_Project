@@ -32,7 +32,8 @@
     "pdf-lib": "^1.16.0",
     "pdfkit": "^0.11.0",
     "sequelize": "^6.5.0",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "socket.io": "^4.0.0"
   },
   "devDependencies": {
     "eslint": "^7.19.0",
