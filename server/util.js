@@ -473,6 +473,7 @@ module.exports.createStore = async () => {
       fileLocation: SQL.STRING,
       fileName: SQL.STRING,
       loadBankData: SQL.TEXT,
+      klufeData: SQL.TEXT,
     },
     { freezeTableName: true },
     {
