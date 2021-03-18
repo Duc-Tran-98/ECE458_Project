@@ -30,3 +30,13 @@ export function KlufeStep({ handleResponse, stepNum, stepStart }) {
     handleResponse,
   });
 }
+
+export function KlufeStatus({ handleResponse }) {
+  const endpoint = '/api/klufeStatus';
+  ExpressQuery({
+    endpoint,
+    method: 'get',
+    queryJSON: { },
+    handleResponse,
+  });
+}

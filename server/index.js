@@ -223,7 +223,6 @@ app.post(`${whichRoute}/klufeOff`, (req, res) => {
 10. set ac 3.5 10 kHz
 12. set ac 3 10 kHz
 */
-// TODO: Validate input step makes sense, if not HTTP 404 (? forbidden request)
 app.post(`${whichRoute}/klufeStep`, (req, res) => {
   const { stepNum, stepStart } = req.body;
   const message = `Klufe Step with stepNum: ${stepNum} and stepStart: ${stepStart}`;
@@ -236,7 +235,11 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
     return res.status(403).send('Invalid requeset');
   }
 
-  res.send(message);
+  return res.send(message);
+});
+
+app.get(`${whichRoute}/klufeStatus`, (req, res) => {
+  res.send('Getting status of klufe calibrator...');
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
