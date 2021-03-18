@@ -133,6 +133,10 @@ module.exports.createStore = async () => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      supportKlufeCalibration: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
