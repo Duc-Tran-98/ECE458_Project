@@ -15,10 +15,10 @@ import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 import ModalAlert, { StateLessModal } from '../components/ModalAlert';
-import EditInstrument from '../components/EditInstrument';
+import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
-import FindInstrument from '../queries/FindInstrument';
+import { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
@@ -32,13 +32,14 @@ export default function DetailedInstrumentView({ onDelete }) {
   const history = useHistory();
   // This code is getting params from url
   const queryString = window.location.search;
-  let urlParams = new URLSearchParams(queryString);
-  const [loading, setLoading] = React.useState(false);
-  const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
-  const [responseMsg, setResponseMsg] = React.useState('');
-  const [show, setShow] = React.useState(false);
-  const [update, setUpdate] = React.useState(false);
-  const [formState, setFormState] = React.useState({
+  const urlParams = new URLSearchParams(queryString);
+  const [loading, setLoading] = React.useState(false); // loading status of delete query
+  const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
+  const [responseMsg, setResponseMsg] = React.useState(''); // msg from delete query
+  const [show, setShow] = React.useState(false); // show add calib event modal or not
+  const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
+  const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
+  const [formState, setFormState] = React.useState({ // our state we display to user
     modelNumber: urlParams.get('modelNumber'),
     vendor: urlParams.get('vendor'),
     serialNumber: urlParams.get('serialNumber'),
@@ -77,7 +78,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const [nextId, setNextId] = useState(0);
   const fetchData = (excludeEntry) => {
     // This will refetch calib history and set it as our state
-    GetCalibHistory({ id }).then((data) => {
+    GetCalibHistory({ id: formState.id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
         // console.log(item);
@@ -153,7 +154,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     }
     AddCalibEventByAssetTag({
       events: newHistory,
-      assetTag,
+      assetTag: formState.assetTag,
       handleResponse: () => {
         toast.success(`Added calibration event on ${entry.date}`);
         fetchData();
@@ -161,21 +162,52 @@ export default function DetailedInstrumentView({ onDelete }) {
     });
   };
 
-  history.listen((location, action) => {
+  // eslint-disable-next-line no-unused-vars
+  history.listen((location) => {
     let active = true;
     (async () => {
       if (!active) {
         return;
       }
       if (!update) {
-        urlParams = new URLSearchParams(location.search);
-        setFormState();
+        // const {state } = location;
         setUpdate(true);
-        console.log(location, action);
       }
     })();
     return () => { active = false; };
   });
+
+  const updateState = (response) => { // function to update our state
+    console.log('updating...', response);
+    setFetched(false);
+    const categories = response.instrumentCategories.map((item) => item.name);
+    let {
+      comment,
+      calibrationFrequency,
+      modelNumber,
+      vendor,
+      serialNumber,
+      assetTag,
+    } = response;
+    comment = comment || '';
+    modelNumber = modelNumber || '';
+    vendor = vendor || '';
+    serialNumber = serialNumber || '';
+    assetTag = assetTag || '';
+    calibrationFrequency = calibrationFrequency || '';
+    setFormState({
+      ...formState,
+      comment,
+      calibrationFrequency,
+      categories,
+      modelNumber,
+      vendor,
+      serialNumber,
+      assetTag,
+    });
+    setUpdate(false);
+    setFetched(true);
+  };
 
   React.useEffect(() => {
     let active = true;
@@ -183,7 +215,7 @@ export default function DetailedInstrumentView({ onDelete }) {
       if (!active) {
         return;
       }
-      fetchData();
+      fetchData(); // get calibhist
       Query({
         query: print(gql`
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
@@ -198,11 +230,16 @@ export default function DetailedInstrumentView({ onDelete }) {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
         },
       });
+      FindInstrumentById({
+        // TODO: UPDATE STATE AFTER USER EDITS INSTS
+        id: formState.id,
+        handleResponse: updateState,
+      });
     })();
     return () => {
       active = false;
     };
-  }, []);
+  }, []); // on mount, get calib hist and inst info
 
   React.useEffect(() => {
     let active = true;
@@ -226,38 +263,10 @@ export default function DetailedInstrumentView({ onDelete }) {
         //     setUpdate(false);
         //   },
         // });
-        FindInstrument({ // TODO: UPDATE STATE AFTER USER EDITS INSTS
-          assetTag: formState.assetTag,
-          handleResponse: (response) => {
-            console.log(response);
-            const categories = response.instrumentCategories.map(
-              (item) => item.name,
-            );
-            let {
-              comment,
-              calibrationFrequency,
-              modelNumber,
-              vendor,
-              serialNumber,
-              assetTag,
-            } = response;
-            comment = comment || '';
-            modelNumber = modelNumber || '';
-            vendor = vendor || '';
-            serialNumber = serialNumber || '';
-            assetTag = assetTag || '';
-            calibrationFrequency = calibrationFrequency || '';
-            setFormState({
-              ...formState,
-              comment,
-              calibrationFrequency,
-              categories,
-              modelNumber,
-              vendor,
-              serialNumber,
-              assetTag,
-            });
-          },
+        console.log('update changed to true');
+        FindInstrumentById({ // TODO: UPDATE STATE AFTER USER EDITS INSTS
+          id: formState.id,
+          handleResponse: updateState,
         });
       }
     })();
@@ -301,10 +310,10 @@ export default function DetailedInstrumentView({ onDelete }) {
             popOverText="Add a load bank calibration via our wizard"
           >
             <LoadBankWiz
-              initModelNumber={modelNumber}
-              initSerialNumber={serialNumber}
-              initAssetTag={assetTag}
-              initVendor={vendor}
+              initModelNumber={formState.modelNumber}
+              initSerialNumber={formState.serialNumber}
+              initAssetTag={formState.assetTag}
+              initVendor={formState.vendor}
               onFinish={fetchData}
             />
           </ModalAlert>
@@ -356,7 +365,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     >
       <>
         {responseMsg.length === 0 && (
-          <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${assetTag}. Are you sure?`}</div>
+          <div className="h4 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
         )}
         <div className="d-flex justify-content-center">
           {loading ? (
@@ -372,11 +381,7 @@ export default function DetailedInstrumentView({ onDelete }) {
               </div>
               <span className="mx-3" />
               <div className="mt-3">
-                <button
-                  className="btn "
-                  type="button"
-                  id="close-del-inst"
-                >
+                <button className="btn " type="button" id="close-del-inst">
                   No
                 </button>
               </div>
@@ -387,15 +392,64 @@ export default function DetailedInstrumentView({ onDelete }) {
     </ModalAlert>
   );
 
-  const {
-    modelNumber, vendor, id, description, assetTag, serialNumber, calibrationFrequency,
-  } = formState;
+  const footer = (
+    <>
+      <MouseOverPopover className="col" message="Go to model's detail view">
+        <Link
+          className="btn  text-nowrap"
+          to={`/viewModel/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&description=${formState.description}`}
+        >
+          View Model
+        </Link>
+      </MouseOverPopover>
+      {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+        <MouseOverPopover
+          className="col"
+          message="View instrument's calibration certificate"
+        >
+          <Link
+            className="btn text-nowrap"
+            to={`/viewCertificate/?serialNumber=${
+              formState.serialNumber || 'N/A'
+            }&assetTag=${formState.assetTag}&modelNumber=${
+              formState.modelNumber
+            }&description=${formState.description}&vendor=${
+              formState.vendor
+            }&id=${formState.id}&calibrationFrequency=${
+              formState.calibrationFrequency
+            }`}
+          >
+            View Certificate
+          </Link>
+        </MouseOverPopover>
+      )}
+    </>
+  );
 
   return (
     <>
       <div className="col">
         <div className="row">
-          <EditInstrument
+          {fetched && (
+            <InstrumentForm
+              modelNumber={formState.modelNumber}
+              vendor={formState.vendor}
+              comment={formState.comment}
+              serialNumber={formState.serialNumber}
+              categories={formState.categories}
+              viewOnly
+              description={formState.description}
+              calibrationFrequency={formState.calibrationFrequency}
+              assetTag={formState.assetTag}
+              id={formState.id}
+              type="edit"
+              deleteBtn={deleteBtn}
+              handleFormSubmit={handleSubmit}
+              footer={footer}
+            />
+          )}
+
+          {/* <EditInstrument
             deleteBtn={deleteBtn}
             initModelNumber={modelNumber}
             initVendor={vendor}
@@ -404,37 +458,10 @@ export default function DetailedInstrumentView({ onDelete }) {
             description={description}
             initAssetTag={assetTag}
             viewOnly
-            footer={(
-              <>
-                <MouseOverPopover
-                  className="col"
-                  message="Go to model's detail view"
-                >
-                  <Link
-                    className="btn  text-nowrap"
-                    to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
-                  >
-                    View Model
-                  </Link>
-                </MouseOverPopover>
-                {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-                  <MouseOverPopover
-                    className="col"
-                    message="View instrument's calibration certificate"
-                  >
-                    <Link
-                      className="btn text-nowrap"
-                      to={`/viewCertificate/?serialNumber=${
-                        serialNumber || 'N/A'
-                      }&assetTag=${assetTag}&modelNumber=${modelNumber}&description=${description}&vendor=${vendor}&id=${id}&calibrationFrequency=${calibrationFrequency}`}
-                    >
-                      View Certificate
-                    </Link>
-                  </MouseOverPopover>
-                )}
-              </>
-            )}
-          />
+            footer={
+
+            }
+          /> */}
         </div>
         <div className="row px-3 mt-3">
           <div
@@ -446,14 +473,14 @@ export default function DetailedInstrumentView({ onDelete }) {
             <div className="sticky-top bg-secondary text-light">
               <div className="row px-3">
                 <h2 className="col-auto me-auto">Calibration History:</h2>
-                {calibFrequency > 0 && (
+                {formState.calibrationFrequency > 0 && (
                   <>
                     <div className="col-auto mt-1">{genCalibButtons}</div>
                   </>
                 )}
               </div>
             </div>
-            {calibFrequency > 0 ? (
+            {formState.calibrationFrequency > 0 ? (
               <CalibrationTable
                 rows={calibHist.filter((ele) => ele.viewOnly)}
                 deleteRow={deleteRow}

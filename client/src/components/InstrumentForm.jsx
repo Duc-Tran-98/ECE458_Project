@@ -331,7 +331,9 @@ export default function InstrumentForm({
                   )}
                 </>
               )}
-              {footer}
+              {viewOnly && (
+                footer
+              )}
             </div>
           </div>
         </Form>

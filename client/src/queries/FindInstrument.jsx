@@ -40,3 +40,34 @@ export default function FindInstrument({
     query, queryName, getVariables, handleResponse,
   });
 }
+
+export function FindInstrumentById({ id, handleResponse }) {
+  FindInstrumentById.propTypes = {
+    id: PropTypes.number.isRequired,
+    handleResponse: PropTypes.func.isRequired,
+  };
+  const FIND_INSTRUMENT = gql`
+      query FindInst($id: Int!) {
+        getInstrumentById(id: $id) {
+          modelNumber
+          vendor
+          serialNumber
+          assetTag
+          calibrationFrequency
+          comment
+          instrumentCategories {
+            name
+          }
+        }
+      }
+    `;
+  const query = print(FIND_INSTRUMENT);
+  const queryName = 'getInstrumentById';
+  const getVariables = () => ({ id });
+  Query({
+    query,
+    queryName,
+    getVariables,
+    handleResponse,
+  });
+}

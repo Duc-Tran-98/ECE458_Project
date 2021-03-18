@@ -83,7 +83,6 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       }
       if (altCloseBtnId) {
         const altBtn = document.getElementById(altCloseBtnId);
-        console.log('altButton', altBtn);
         if (altBtn) {
           altBtn.onclick = () => setShow(false);
         }
