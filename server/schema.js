@@ -106,6 +106,7 @@ const typeDefs = gql`
     calibrationFrequency: Int
     categories: [Category]
     supportLoadBankCalibration: Boolean!
+    supportKlufeCalibration: Boolean!
   }
 
   type ModelOutput {
