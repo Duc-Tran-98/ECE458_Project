@@ -23,4 +23,8 @@ module.exports = {
   oauthClientId: process.env.OAUTH_CLIENT_ID,
   oauthClientSecret: process.env.OAUTH_CLIENT_SECRET,
   oauthRedirectURI: redirectURI,
+  sshHostName: process.env.SSH_HOSTNAME,
+  sshPort: process.env.SSH_PORT,
+  sshUserName: process.env.SSH_USERNAME,
+  sshPassword: process.env.SSH_PASSWORD,
 };

@@ -3,17 +3,60 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const stream = require('stream');
+const httpReq = require('http');
+const ssh2 = require('ssh2');
+const socketIO = require('socket.io');
 const runBarcode = require('./datasources/barcodeGenerator');
 
-const { oauthClientId, oauthClientSecret, oauthRedirectURI } = require('./config');
-// Create express server with oauth route
+const {
+  oauthClientId, oauthClientSecret, oauthRedirectURI, sshHostName, sshPassword, sshUserName, sshPort,
+} = require('./config');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+// app.use(express.urlencoded({
+//   extended: false,
+//   limit: '150mb'
+// })); // TODO: Might need this (from ssh tutorials)
 const expressPort = 4001;
 const whichRoute = process.env.NODE_ENV.includes('dev') ? '/api' : '/express/api';
 
 // Create socket for running ssh commands
+const http = httpReq.Server(app);
+const io = socketIO(http, {
+  cors: {
+    origin: '*',
+  },
+});
+const SSHClient = ssh2.Client;
+
+io.on('connection', (socket) => {
+  const conn = new SSHClient();
+  conn.on('ready', () => {
+    socket.emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
+    conn.shell((err, ioStream) => {
+      if (err) { return socket.emit('data', `\r\n*** SSH SHELL ERROR: ${err.message} ***\r\n`); }
+      socket.on('data', (data) => {
+        ioStream.write(data);
+      });
+      ioStream.on('data', (d) => {
+        socket.emit('data', d.toString('binary'));
+      }).on('close', () => {
+        conn.end();
+      });
+    });
+  }).on('close', () => {
+    socket.emit('data', '\r\n*** SSH CONNECTION CLOSED ***\r\n');
+  }).on('error', (err) => {
+    socket.emit('data', `\r\n*** SSH CONNECTION ERROR: ${err.message} ***\r\n`);
+  }).connect({
+    host: sshHostName,
+    port: sshPort,
+    username: sshUserName,
+    password: sshPassword,
+  });
+});
 
 app.post(`${whichRoute}/oauthConsume`, (req, res) => {
   const { code } = req.body;
