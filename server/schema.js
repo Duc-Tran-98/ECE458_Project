@@ -321,6 +321,14 @@ const typeDefs = gql`
       loadBankData: String!
     ): String!
 
+    addKlufeCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      klufeData: String!
+    ): String!
+
     #bulk import
     # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
     bulkImportData(

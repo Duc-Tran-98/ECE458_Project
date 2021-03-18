@@ -311,6 +311,24 @@ module.exports = {
       );
       return response;
     },
+    addKlufeCalibration: async (
+      _,
+      {
+        assetTag, user, date, comment, klufeData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addKlufeCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          klufeData,
+        },
+      );
+      return response;
+    },
     addCalibrationEventById: async (
       _,
       {
