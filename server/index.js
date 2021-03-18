@@ -228,6 +228,14 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
   const { stepNum, stepStart } = req.body;
   const message = `Klufe Step with stepNum: ${stepNum} and stepStart: ${stepStart}`;
   console.log(message);
+
+  const validStepNumbers = [4, 6, 8, 10, 12];
+  const validStartValues = [true, false];
+
+  if (!validStepNumbers.includes(stepNum) || !validStartValues.includes(stepStart)) {
+    return res.status(403).send('Invalid requeset');
+  }
+
   res.send(message);
 });
 
