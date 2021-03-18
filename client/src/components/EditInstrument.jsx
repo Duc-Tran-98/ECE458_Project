@@ -1,9 +1,11 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+// eslint-disable-next-line import/no-cycle
 import InstrumentForm from './InstrumentForm';
 import UserContext from './UserContext';
 import EditInstrumentQuery from '../queries/EditInstrument';
@@ -18,6 +20,7 @@ export default function EditInstrument({
   description,
   footer,
   deleteBtn,
+  viewOnly = false,
 }) {
   EditInstrument.propTypes = {
     initVendor: PropTypes.string.isRequired,
@@ -28,6 +31,7 @@ export default function EditInstrument({
     footer: PropTypes.node,
     initAssetTag: PropTypes.number.isRequired,
     deleteBtn: PropTypes.node.isRequired,
+    viewOnly: PropTypes.bool,
   };
   EditInstrument.defaultProps = {
     footer: null,
@@ -100,6 +104,7 @@ export default function EditInstrument({
       `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}$assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
       state,
     );
+    console.log('updated history!');
   };
 
   const handleSubmit = (values) => {
@@ -162,10 +167,11 @@ export default function EditInstrument({
             comment={comment}
             serialNumber={serialNumber}
             categories={categories}
-            viewOnly={!(user.isAdmin || user.instrumentPermission)}
+            viewOnly={!(user.isAdmin || user.instrumentPermission) || viewOnly}
             description={description}
             calibrationFrequency={calibrationFrequency}
             assetTag={assetTag}
+            id={id}
             type="edit"
             deleteBtn={deleteBtn}
             handleFormSubmit={handleSubmit}

@@ -18,6 +18,7 @@ import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import EditInstrument from '../components/EditInstrument';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
+import FindInstrument from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
@@ -31,21 +32,23 @@ export default function DetailedInstrumentView({ onDelete }) {
   const history = useHistory();
   // This code is getting params from url
   const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const modelNumber = urlParams.get('modelNumber');
-  const vendor = urlParams.get('vendor');
-  let assetTag = urlParams.get('assetTag');
-  assetTag = parseInt(assetTag, 10);
-  const serialNumber = urlParams.get('serialNumber');
-  const description = urlParams.get('description');
-  let calibFrequency = urlParams.get('calibrationFrequency');
-  calibFrequency = parseInt(calibFrequency, 10);
-  let id = urlParams.get('id');
-  id = parseInt(id, 10);
+  let urlParams = new URLSearchParams(queryString);
   const [loading, setLoading] = React.useState(false);
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
   const [show, setShow] = React.useState(false);
+  const [update, setUpdate] = React.useState(false);
+  const [formState, setFormState] = React.useState({
+    modelNumber: urlParams.get('modelNumber'),
+    vendor: urlParams.get('vendor'),
+    serialNumber: urlParams.get('serialNumber'),
+    description: urlParams.get('description'),
+    categories: [],
+    comment: '',
+    id: parseInt(urlParams.get('id'), 10),
+    calibrationFrequency: parseInt(urlParams.get('calibrationFrequency'), 10),
+    assetTag: parseInt(urlParams.get('assetTag'), 10),
+  });
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setResponseMsg(response.message);
@@ -55,10 +58,6 @@ export default function DetailedInstrumentView({ onDelete }) {
         setResponseMsg('');
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
-          // if (path.includes('count')) {
-          //   const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
-          //   path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
-          // }
           history.replace( // This code updates the url to have the correct count
             path,
             null,
@@ -71,7 +70,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   };
   const handleDelete = () => {
     setLoading(true);
-    DeleteInstrument({ id, handleResponse });
+    DeleteInstrument({ id: formState.id, handleResponse });
   };
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
@@ -162,9 +161,25 @@ export default function DetailedInstrumentView({ onDelete }) {
     });
   };
 
+  history.listen((location, action) => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      if (!update) {
+        urlParams = new URLSearchParams(location.search);
+        setFormState();
+        setUpdate(true);
+        console.log(location, action);
+      }
+    })();
+    return () => { active = false; };
+  });
+
   React.useEffect(() => {
     let active = true;
-    (() => {
+    (async () => {
       if (!active) {
         return;
       }
@@ -178,7 +193,7 @@ export default function DetailedInstrumentView({ onDelete }) {
           }
         `),
         queryName: 'getModel',
-        getVariables: () => ({ modelNumber, vendor }),
+        getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
         },
@@ -189,18 +204,65 @@ export default function DetailedInstrumentView({ onDelete }) {
     };
   }, []);
 
-  // React.useEffect(() => {
-  //   let active = true;
-  //   (() => {
-  //     if (!active) {
-  //       return;
-  //     }
-  //     fetchData();
-  //   })();
-  //   return () => {
-  //     active = false;
-  //   };
-  // }, [showWiz]); // update calib hist if user opens/closes wizard
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      if (update) {
+        // Query({
+        //   query: print(gql`
+        //     query GetCalibSupport($modelNumber: String!, $vendor: String!) {
+        //       getModel(modelNumber: $modelNumber, vendor: $vendor) {
+        //         supportLoadBankCalibration
+        //       }
+        //     }
+        //   `),
+        //   queryName: 'getModel',
+        //   getVariables: () => ({ modelNumber, vendor }),
+        //   handleResponse: (response) => {
+        //     setSupportsLoadBankWiz(response.supportLoadBankCalibration);
+        //     setUpdate(false);
+        //   },
+        // });
+        FindInstrument({ // TODO: UPDATE STATE AFTER USER EDITS INSTS
+          assetTag: formState.assetTag,
+          handleResponse: (response) => {
+            console.log(response);
+            const categories = response.instrumentCategories.map(
+              (item) => item.name,
+            );
+            let {
+              comment,
+              calibrationFrequency,
+              modelNumber,
+              vendor,
+              serialNumber,
+              assetTag,
+            } = response;
+            comment = comment || '';
+            modelNumber = modelNumber || '';
+            vendor = vendor || '';
+            serialNumber = serialNumber || '';
+            assetTag = assetTag || '';
+            calibrationFrequency = calibrationFrequency || '';
+            setFormState({
+              ...formState,
+              comment,
+              calibrationFrequency,
+              categories,
+              modelNumber,
+              vendor,
+              serialNumber,
+              assetTag,
+            });
+          },
+        });
+      }
+    })();
+    return () => { active = false; };
+  }, [update]);
 
   const genCalibButtons = supportsLoadBankWiz ? ( // TODO: MOVE CALIB ROW FROM ADD BTN TO MODAL
     <div className="d-flex flex-row">
@@ -287,7 +349,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const deleteBtn = (
     <ModalAlert
       btnText="Delete Instrument"
-      btnClass="btn text-nowrap btn-danger col"
+      btnClass="btn text-nowrap btn-danger"
       title="Delete Instrument"
       altCloseBtnId="close-del-inst"
       width=""
@@ -325,12 +387,15 @@ export default function DetailedInstrumentView({ onDelete }) {
     </ModalAlert>
   );
 
+  const {
+    modelNumber, vendor, id, description, assetTag, serialNumber, calibrationFrequency,
+  } = formState;
+
   return (
     <>
       <div className="col">
         <div className="row">
           <EditInstrument
-            initCalibrationFrequency={calibFrequency}
             deleteBtn={deleteBtn}
             initModelNumber={modelNumber}
             initVendor={vendor}
@@ -338,6 +403,7 @@ export default function DetailedInstrumentView({ onDelete }) {
             id={id}
             description={description}
             initAssetTag={assetTag}
+            viewOnly
             footer={(
               <>
                 <MouseOverPopover
@@ -356,7 +422,12 @@ export default function DetailedInstrumentView({ onDelete }) {
                     className="col"
                     message="View instrument's calibration certificate"
                   >
-                    <Link className="btn text-nowrap" to={`/viewCertificate/?serialNumber=${serialNumber || 'N/A'}&assetTag=${assetTag}&modelNumber=${modelNumber}&description=${description}&vendor=${vendor}&id=${id}&calibrationFrequency=${calibFrequency}`}>
+                    <Link
+                      className="btn text-nowrap"
+                      to={`/viewCertificate/?serialNumber=${
+                        serialNumber || 'N/A'
+                      }&assetTag=${assetTag}&modelNumber=${modelNumber}&description=${description}&vendor=${vendor}&id=${id}&calibrationFrequency=${calibrationFrequency}`}
+                    >
                       View Certificate
                     </Link>
                   </MouseOverPopover>

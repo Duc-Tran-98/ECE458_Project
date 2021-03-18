@@ -15,7 +15,6 @@ import DetailedModelView from './pages/ViewModel';
 import BulkImport from './pages/BulkImport';
 import ManageCategories from './pages/ManageCategories';
 import UsersTable from './pages/UsersTable';
-import CreateUser from './pages/CreateUser';
 import ViewUser from './pages/ViewUser';
 import OAuthConsume from './pages/OAuthConsume';
 import UserInfo from './pages/UserInfo';
@@ -91,13 +90,6 @@ function App() {
             </Route>
             <Route path="/viewUsers">
               {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
-            </Route>
-            <Route path="/addUser">
-              {loggedIn ? (
-                <CreateUser onCreation={modifyCount} />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
             </Route>
             <Route path="/viewUser">
               {loggedIn ? (

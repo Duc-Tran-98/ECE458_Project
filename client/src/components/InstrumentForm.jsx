@@ -11,6 +11,9 @@ import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { CustomInput, CustomButton } from './CustomFormComponents';
 import UserContext from './UserContext';
+import ModalAlert from './ModalAlert';
+// eslint-disable-next-line import/no-cycle
+import EditInstrument from './EditInstrument';
 
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
@@ -71,6 +74,7 @@ export default function InstrumentForm({
   deleteBtn,
   footer,
   updateCalibrationFrequency,
+  id = null,
 }) {
   InstrumentForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -87,7 +91,7 @@ export default function InstrumentForm({
     deleteBtn: PropTypes.node,
     footer: PropTypes.node,
     updateCalibrationFrequency: PropTypes.func,
-
+    id: PropTypes.number,
   };
   InstrumentForm.defaultProps = {
     handleFormSubmit: null,
@@ -283,7 +287,7 @@ export default function InstrumentForm({
 
           <div className="d-flex justify-content-center my-3">
             <div className="row">
-              {showFooter && (
+              {showFooter && ( // showfooter = type = edit && user has permissions
                 <>
                   {/* <CustomButton
                     onClick={handleDelete}
@@ -291,17 +295,40 @@ export default function InstrumentForm({
                     buttonClass="btn btn-danger text-nowrap my-auto"
                     buttonLabel="Delete Instrument"
                   /> */}
-                  {isSubmitting ? (
-                    <CircularProgress />
-                  ) : (
-                    <CustomButton
-                      onClick={handleSubmit}
-                      divClass="col"
-                      buttonClass="btn text-nowrap"
-                      buttonLabel="Save Changes"
-                    />
+                  {!viewOnly
+                    && (isSubmitting ? (
+                      <CircularProgress />
+                    ) : (
+                      <CustomButton
+                        onClick={handleSubmit}
+                        divClass="col"
+                        buttonClass="btn text-nowrap"
+                        buttonLabel="Save Changes"
+                      />
+                    ))}
+                  {viewOnly && (
+                    <>
+                      <div className="col">
+                        <ModalAlert
+                          btnText="Edit Instrument"
+                          title="Edit Instrument"
+                          btnClass="btn my-auto text-nowrap"
+                        >
+                          <EditInstrument
+                            initVendor={vendor}
+                            initModelNumber={modelNumber}
+                            initSerialNumber={serialNumber}
+                            id={id}
+                            description={description}
+                            footer={footer}
+                            initAssetTag={assetTag}
+                            deleteBtn={deleteBtn}
+                          />
+                        </ModalAlert>
+                      </div>
+                      <div className="col">{deleteBtn}</div>
+                    </>
                   )}
-                  {deleteBtn}
                 </>
               )}
               {footer}

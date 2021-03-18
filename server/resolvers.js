@@ -86,6 +86,7 @@ module.exports = {
     getInstrumentByAssetTag: async (_, { assetTag }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentByAssetTag({
       assetTag,
     }),
+    getInstrumentById: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentById({ id }),
     getInstrumentsWithFilter: async (
       _,
       {
