@@ -29,6 +29,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     comment: '',
     calibrationFrequency: '',
     supportLoadBankCalibration: false,
+    supportKlufeCalibration: false,
     categories: [],
   });
   const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
@@ -36,7 +37,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const handleFindModel = (response) => {
     const categories = response.categories.map((item) => item.name);
     const {
-      description, comment, id, supportLoadBankCalibration,
+      description, comment, id, supportLoadBankCalibration, supportKlufeCalibration,
     } = response;
     setModelId(parseInt(id, 10));
     let { calibrationFrequency } = response;
@@ -53,6 +54,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       categories,
       calibrationFrequency,
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       modelNumber: initModelNumber,
       vendor: initVendor,
     });
@@ -74,7 +76,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const handleSubmit = (values) => {
     // Parse information from model information
     const {
-      calibrationFrequency, supportLoadBankCalibration, description, comment, modelNumber, vendor, categories,
+      calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, description, comment, modelNumber, vendor, categories,
     } = values;
 
     // Send actual query to edit model
@@ -86,6 +88,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       comment,
       calibrationFrequency: parseInt(calibrationFrequency, 10),
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       categories,
       handleResponse: (response) => {
         if (response.success) {
@@ -105,6 +108,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     comment,
     calibrationFrequency,
     supportLoadBankCalibration,
+    supportKlufeCalibration,
     categories,
   } = model;
 
@@ -121,6 +125,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             categories={categories}
             calibrationFrequency={calibrationFrequency}
             supportLoadBankCalibration={supportLoadBankCalibration}
+            supportKlufeCalibration={supportKlufeCalibration}
             handleFormSubmit={handleSubmit}
             validated={false}
             diffSubmit
