@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /*
 This class deals with how to display lots of calibration events
 */
@@ -12,7 +13,7 @@ export default function CalibrationTable({
   deleteRow,
   onChangeCalibRow,
   showSaveButton,
-  onSaveClick,
+  onSaveClick = () => undefined,
   showDeleteBtn = true,
 }) {
   CalibrationTable.propTypes = {
@@ -27,7 +28,6 @@ export default function CalibrationTable({
   };
   CalibrationTable.defaultProps = {
     showSaveButton: false,
-    onSaveClick: () => undefined,
   };
   // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (

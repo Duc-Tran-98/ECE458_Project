@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+// eslint-disable-next-line import/no-cycle
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';

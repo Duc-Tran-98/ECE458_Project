@@ -239,13 +239,13 @@ export default function ModelForm({
             </div>
             <div className="col mt-3">
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h5 col" htmlFor="adminCheck">
+                <label className="form-check-label h5 col" htmlFor="load-bank-support">
                   Can model be calibrated with load bank?
                 </label>
                 <Form.Control
                   className="form-check-input"
                   type="checkbox"
-                  id="adminCheck"
+                  id="load-bank-support"
                   name="supportLoadBankCalibration"
                   checked={values.supportLoadBankCalibration}
                   onChange={handleChange}
@@ -258,13 +258,13 @@ export default function ModelForm({
                 </div>
               </div>
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h4 col" htmlFor="adminCheck">
+                <label className="form-check-label h5 col" htmlFor="klufe-support">
                   Can model be calibrated with Klufe 5700?
                 </label>
                 <Form.Control
                   className="form-check-input"
                   type="checkbox"
-                  id="adminCheck"
+                  id="klufe-support"
                   name="supportKlufeCalibration"
                   checked={values.supportKlufeCalibration}
                   onChange={handleChange}

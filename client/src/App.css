@@ -54,6 +54,7 @@ html body {
 input:disabled{ /* Styling for disabled input*/
   color: #14213d;
   font-weight: bold;
+  font-size: 0.9rem;
 }
 
 textarea:disabled{ /* Styling for disabled textarea*/
@@ -183,9 +184,10 @@ div.MuiPaper-root.MuiPaper-elevation0{
   font-weight: bold;
 }
 
-/* #root .MuiDataGrid-colCellTitle{
-  font-weight: bold; alternatively, don't need class customMUIHeader
-} */
+#root .MuiDataGrid-colCellTitle{
+  font-weight: bold; 
+  /* alternatively, don't need class customMUIHeader */
+}
 
 .MuiDataGrid-row:hover {
   cursor: pointer;

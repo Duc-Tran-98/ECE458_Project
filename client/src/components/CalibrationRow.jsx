@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /*
 This class deals with what a calibration event should be
 */
@@ -23,7 +24,7 @@ export default function CalibrationRow({
   date,
   entry,
   showSaveButton,
-  onSaveClick,
+  onSaveClick = () => undefined,
   showDeleteBtn = true,
 }) {
   CalibrationRow.propTypes = {
@@ -48,7 +49,6 @@ export default function CalibrationRow({
     file: null,
     handleDelete: null,
     showSaveButton: false,
-    onSaveClick: () => undefined,
   };
   const user = React.useContext(UserContext);
   const { viewOnly } = entry;
