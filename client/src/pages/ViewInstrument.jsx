@@ -152,7 +152,7 @@ export default function DetailedInstrumentView() {
       assetTag: formState.assetTag,
       handleResponse: () => {
         toast.success(`Added calibration event on ${entry.date}`);
-        fetchData();
+        fetchData(entry);
       },
     });
   };
@@ -398,19 +398,12 @@ export default function DetailedInstrumentView() {
           )}
         </div>
         <div className="row px-3 mt-3">
-          <div
-            style={{
-              maxHeight: '45vh',
-              overflowY: 'auto',
-            }}
-          >
-            <div className="sticky-top bg-secondary text-light">
+          <div>
+            <div className="bg-secondary text-light py-2">
               <div className="row px-3">
-                <h2 className="col-auto me-auto">Calibration History:</h2>
+                <div className="col-auto me-auto h5 my-auto">Calibration History:</div>
                 {formState.calibrationFrequency > 0 && (
-                  <>
-                    <div className="col-auto mt-1">{genCalibButtons}</div>
-                  </>
+                <div className="col-auto mt-1">{genCalibButtons}</div>
                 )}
               </div>
             </div>

@@ -68,8 +68,12 @@ textarea:disabled{ /* Styling for disabled textarea*/
 
 .bg-theme {
   background: #e5e5e5;
-  width: 92vw;
+  margin: 25px 25px 25px 25px;
   /* Platinum color */
+}
+
+.rendering-zone .MuiDataGrid-row{
+  cursor: pointer;
 }
 
 .bg-offset{

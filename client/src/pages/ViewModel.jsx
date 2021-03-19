@@ -191,14 +191,10 @@ export default function DetailedModelView() {
         <div className="row px-3">
           <div
             id="scrollableDiv"
-            style={{
-              maxHeight: '45vh',
-              overflowY: 'auto',
-            }}
           >
             <InfinityScroll
               title="Instances:"
-              titleClassName="px-3 bg-secondary text-light sticky-top"
+              titleClassName="px-3 bg-secondary text-light"
               query={print(gql`
                 query GetInstrumentFromModel(
                   $modelNumber: String!

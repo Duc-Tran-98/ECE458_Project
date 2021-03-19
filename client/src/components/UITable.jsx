@@ -245,7 +245,7 @@ export function ServerPaginationGrid({
       <div
         className="rounded"
         style={{
-          maxHeight: '72vh',
+          maxHeight: '77vh',
           overflowY: 'auto',
           width: '100%',
         }}
@@ -284,7 +284,6 @@ export function ServerPaginationGrid({
               cellHandler(e);
             }
           }}
-          onCellHover={() => { document.body.style.cursor = 'pointer'; }}
           autoHeight
           onSelectionChange={(newSelection) => {
             setChecked(newSelection.rowIds);
