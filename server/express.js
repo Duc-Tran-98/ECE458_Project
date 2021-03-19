@@ -3,60 +3,30 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const stream = require('stream');
-const httpReq = require('http');
-const ssh2 = require('ssh2');
-const socketIO = require('socket.io');
+const { Client } = require('ssh2');
 const runBarcode = require('./datasources/barcodeGenerator');
 
 const {
+  // eslint-disable-next-line max-len
   oauthClientId, oauthClientSecret, oauthRedirectURI, sshHostName, sshPassword, sshUserName, sshPort,
 } = require('./config');
+
+// SSH Information
+const sshConfig = {
+  host: sshHostName,
+  port: sshPort,
+  username: sshUserName,
+  password: sshPassword,
+};
+console.log('Using SSHConfig: ');
+console.log(sshConfig);
+const conn = new Client();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-// app.use(express.urlencoded({
-//   extended: false,
-//   limit: '150mb'
-// })); // TODO: Might need this (from ssh tutorials)
 const expressPort = 4001;
 const whichRoute = process.env.NODE_ENV.includes('dev') ? '/api' : '/express/api';
-
-// Create socket for running ssh commands
-const http = httpReq.Server(app);
-const io = socketIO(http, {
-  cors: {
-    origin: '*',
-  },
-});
-const SSHClient = ssh2.Client;
-
-io.on('connection', (socket) => {
-  const conn = new SSHClient();
-  conn.on('ready', () => {
-    socket.emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
-    conn.shell((err, ioStream) => {
-      if (err) { return socket.emit('data', `\r\n*** SSH SHELL ERROR: ${err.message} ***\r\n`); }
-      socket.on('data', (data) => {
-        ioStream.write(data);
-      });
-      ioStream.on('data', (d) => {
-        socket.emit('data', d.toString('binary'));
-      }).on('close', () => {
-        conn.end();
-      });
-    });
-  }).on('close', () => {
-    socket.emit('data', '\r\n*** SSH CONNECTION CLOSED ***\r\n');
-  }).on('error', (err) => {
-    socket.emit('data', `\r\n*** SSH CONNECTION ERROR: ${err.message} ***\r\n`);
-  }).connect({
-    host: sshHostName,
-    port: sshPort,
-    username: sshUserName,
-    password: sshPassword,
-  });
-});
 
 app.post(`${whichRoute}/oauthConsume`, (req, res) => {
   const { code } = req.body;
@@ -183,8 +153,28 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
 
 // TODO: Implement ssh logic (see tutorial in other doc)
 app.post(`${whichRoute}/klufeOn`, (req, res) => {
-  console.log(req);
   res.send('Turning Klufe On');
+  // conn.on('ready', () => {
+  //   conn.shell((err, myStream) => {
+  //     if (err) throw err;
+  //     console.log('Writing "on" to shell');
+  //     myStream.write('on');
+  //   });
+  // }).connect(sshConfig);
+  conn.on('ready', () => {
+    console.log('Connection ready!');
+    conn.exec('on', (err, myStream) => {
+      if (err) throw err;
+      myStream.on('close', (code, signal) => {
+        console.log(`Stream :: close :: code: ${code}, signal: ${signal}`);
+        conn.end();
+      }).on('data', (data) => {
+        console.log(`STDOUT: ${data}`);
+      }).stderr.on('data', (data) => {
+        console.log(`STDERR: ${data}`);
+      });
+    });
+  }).connect(sshConfig);
 });
 
 app.post(`${whichRoute}/klufeOff`, (req, res) => {
