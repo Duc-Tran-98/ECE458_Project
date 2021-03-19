@@ -2,7 +2,7 @@ const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const stream = require('stream');
+const Stream = require('stream');
 const { Client } = require('ssh2');
 const runBarcode = require('./datasources/barcodeGenerator');
 
@@ -142,7 +142,7 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
   }
   const pdf = await runBarcode({ data: assetTags });
   const filename = 'asset_labels.pdf';
-  const readStream = new stream.PassThrough();
+  const readStream = new Stream.PassThrough();
   readStream.end(pdf);
 
   res.set('Content-disposition', `attachment; filename=${filename}`);
@@ -151,35 +151,46 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
   readStream.pipe(res);
 });
 
-// TODO: Implement ssh logic (see tutorial in other doc)
 app.post(`${whichRoute}/klufeOn`, (req, res) => {
   res.send('Turning Klufe On');
-  // conn.on('ready', () => {
-  //   conn.shell((err, myStream) => {
-  //     if (err) throw err;
-  //     console.log('Writing "on" to shell');
-  //     myStream.write('on');
-  //   });
-  // }).connect(sshConfig);
+  const cmd = 'on\n';
   conn.on('ready', () => {
-    console.log('Connection ready!');
-    conn.exec('on', (err, myStream) => {
+    console.log('Client :: ready');
+    conn.shell((err, stream) => {
       if (err) throw err;
-      myStream.on('close', (code, signal) => {
-        console.log(`Stream :: close :: code: ${code}, signal: ${signal}`);
+      stream.write(cmd);
+      stream.on('close', () => {
+        console.log('Stream :: close');
         conn.end();
       }).on('data', (data) => {
-        console.log(`STDOUT: ${data}`);
-      }).stderr.on('data', (data) => {
-        console.log(`STDERR: ${data}`);
+        // TODO: Parse data for validation
+        if (data.includes('admin3@k5700:')) {
+          console.log(`${data}`);
+        }
       });
     });
   }).connect(sshConfig);
 });
 
 app.post(`${whichRoute}/klufeOff`, (req, res) => {
-  console.log(req);
   res.send('Turning Klufe Off');
+  const cmd = 'off\n';
+  conn.on('ready', () => {
+    console.log('Client :: ready');
+    conn.shell((err, stream) => {
+      if (err) throw err;
+      stream.write(cmd);
+      stream.on('close', () => {
+        console.log('Stream :: close');
+        conn.end();
+      }).on('data', (data) => {
+        // TODO: Parse data for validation (or send back to frontend?)
+        if (data.includes('admin3@k5700:')) {
+          console.log(`${data}`);
+        }
+      });
+    });
+  }).connect(sshConfig);
 });
 
 /* STEP MAP:
@@ -201,11 +212,64 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
     return res.status(403).send('Invalid requeset');
   }
 
+  let cmd = '';
+  switch (stepNum) {
+    case 4:
+      cmd = 'set dc 3.5';
+      break;
+    case 6:
+      cmd = 'set ac 3.513 50';
+      break;
+    case 8:
+      cmd = 'set ac 100 20000';
+      break;
+    case 10:
+      cmd = 'set ac 3.5 10000';
+      break;
+    case 12:
+      cmd = 'set ac 3 10000';
+      break;
+    default:
+      cmd = '';
+  }
+
+  console.log(`Sending cmd: ${cmd}`);
+  conn.on('ready', () => {
+    console.log('Client :: ready');
+    conn.shell((err, stream) => {
+      if (err) throw err;
+      stream.write(cmd);
+      stream.on('close', () => {
+        console.log('Stream :: close');
+        conn.end();
+      }).on('data', (data) => {
+        // TODO: Parse data for validation (or send back to frontend?)
+        if (data.includes('admin3@k5700:')) {
+          console.log(`${data}`);
+        }
+      });
+    });
+  }).connect(sshConfig);
+
   return res.send(message);
 });
 
 app.get(`${whichRoute}/klufeStatus`, (req, res) => {
-  res.send('Getting status of klufe calibrator...');
+  conn.on('ready', () => {
+    console.log('Client :: ready');
+    conn.shell((err, stream) => {
+      if (err) throw err;
+      stream.on('close', () => {
+        console.log('Stream :: close');
+      }).on('data', (data) => {
+        // TODO: Parse data for validation (or send back to frontend?)
+        if (data.includes('admin3@k5700:')) {
+          console.log(`${data}`);
+          res.send(`${data}`);
+        }
+      });
+    });
+  }).connect(sshConfig);
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
