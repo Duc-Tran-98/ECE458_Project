@@ -215,22 +215,22 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
   let cmd = '';
   switch (stepNum) {
     case 4:
-      cmd = 'set dc 3.5';
+      cmd = 'set dc 3.5\n';
       break;
     case 6:
-      cmd = 'set ac 3.513 50';
+      cmd = 'set ac 3.513 50\n';
       break;
     case 8:
-      cmd = 'set ac 100 20000';
+      cmd = 'set ac 100 20000\n';
       break;
     case 10:
-      cmd = 'set ac 3.5 10000';
+      cmd = 'set ac 3.5 10000\n';
       break;
     case 12:
-      cmd = 'set ac 3 10000';
+      cmd = 'set ac 3 10000\n';
       break;
     default:
-      cmd = '';
+      cmd = '\n';
   }
 
   console.log(`Sending cmd: ${cmd}`);
@@ -265,7 +265,7 @@ app.get(`${whichRoute}/klufeStatus`, (req, res) => {
         // TODO: Parse data for validation (or send back to frontend?)
         if (data.includes('admin3@k5700:')) {
           console.log(`${data}`);
-          res.send(`${data}`);
+          // res.send(`${data}`); // TODO: Debug this line throws an errors
         }
       });
     });
