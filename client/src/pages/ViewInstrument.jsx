@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
@@ -24,10 +23,7 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
   : '/express';
 
-export default function DetailedInstrumentView({ onDelete }) {
-  DetailedInstrumentView.propTypes = {
-    onDelete: PropTypes.func.isRequired,
-  };
+export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
   const history = useHistory();
   // This code is getting params from url
@@ -54,7 +50,6 @@ export default function DetailedInstrumentView({ onDelete }) {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
-      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (history.location.state?.previousUrl) {
@@ -261,7 +256,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     return () => { active = false; };
   }, [update]);
 
-  const genCalibButtons = supportsLoadBankWiz ? (
+  const genCalibButtons = (
     <div className="d-flex flex-row">
       {(user.isAdmin || user.calibrationPermission) && (
         <>
@@ -291,56 +286,42 @@ export default function DetailedInstrumentView({ onDelete }) {
               onSaveClick={handleSubmit}
             />
           </StateLessModal>
-          <span className="mx-2" />
-          <ModalAlert
-            btnText="Add Load Bank Calibration"
-            title="Load Bank Wizard"
-            popOverText="Add a load bank calibration via our wizard"
-          >
-            <LoadBankWiz
-              initModelNumber={formState.modelNumber}
-              initSerialNumber={formState.serialNumber}
-              initAssetTag={formState.assetTag}
-              initVendor={formState.vendor}
-              onFinish={fetchData}
-            />
-          </ModalAlert>
+          {supportsLoadBankWiz && (
+            <div className="mx-2">
+              <ModalAlert
+                btnText="Add Load Bank Calibration"
+                title="Load Bank Wizard"
+                popOverText="Add a load bank calibration via our wizard"
+              >
+                <LoadBankWiz
+                  initModelNumber={formState.modelNumber}
+                  initSerialNumber={formState.serialNumber}
+                  initAssetTag={formState.assetTag}
+                  initVendor={formState.vendor}
+                  onFinish={fetchData}
+                />
+              </ModalAlert>
+            </div>
+          )}
+          {!supportsLoadBankWiz && (
+            <span className="mx-2" />
+          )}
+          {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+            <MouseOverPopover
+              className=""
+              message="View instrument's calibration certificate"
+            >
+              <Link
+                className="btn text-nowrap"
+                to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
+              >
+                Certificate
+              </Link>
+            </MouseOverPopover>
+          )}
         </>
       )}
     </div>
-  ) : (
-    <>
-      {(user.isAdmin || user.calibrationPermission) && (
-        <>
-          <MouseOverPopover message="Add a new calibration event">
-            <button
-              type="button"
-              onClick={() => {
-                addRow();
-                setShow(true);
-              }}
-              className="btn"
-            >
-              Add Calibration
-            </button>
-          </MouseOverPopover>
-          <StateLessModal
-            show={show}
-            title="Add Calibration Event"
-            handleClose={() => setShow(false)}
-          >
-            <CalibrationTable
-              rows={calibHist.filter((ele) => !ele.viewOnly)}
-              deleteRow={deleteRow}
-              onChangeCalibRow={onChangeCalibRow}
-              showSaveButton
-              showDeleteBtn={false}
-              onSaveClick={handleSubmit}
-            />
-          </StateLessModal>
-        </>
-      )}
-    </>
   );
 
   const deleteBtn = (
@@ -353,13 +334,13 @@ export default function DetailedInstrumentView({ onDelete }) {
     >
       <>
         {responseMsg.length === 0 && (
-          <div className="h4 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
+          <div className="h5 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
         )}
         <div className="d-flex justify-content-center">
           {loading ? (
             <CircularProgress />
           ) : responseMsg.length > 0 ? (
-            <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            <div className="mx-5 mt-3 h5">{responseMsg}</div>
           ) : (
             <>
               <div className="mt-3">
@@ -390,27 +371,6 @@ export default function DetailedInstrumentView({ onDelete }) {
           View Model
         </Link>
       </MouseOverPopover>
-      {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-        <MouseOverPopover
-          className="col"
-          message="View instrument's calibration certificate"
-        >
-          <Link
-            className="btn text-nowrap"
-            to={`/viewCertificate/?serialNumber=${
-              formState.serialNumber || 'N/A'
-            }&assetTag=${formState.assetTag}&modelNumber=${
-              formState.modelNumber
-            }&description=${formState.description}&vendor=${
-              formState.vendor
-            }&id=${formState.id}&calibrationFrequency=${
-              formState.calibrationFrequency
-            }`}
-          >
-            View Certificate
-          </Link>
-        </MouseOverPopover>
-      )}
     </>
   );
 
@@ -436,20 +396,6 @@ export default function DetailedInstrumentView({ onDelete }) {
               footer={footer}
             />
           )}
-
-          {/* <EditInstrument
-            deleteBtn={deleteBtn}
-            initModelNumber={modelNumber}
-            initVendor={vendor}
-            initSerialNumber={serialNumber}
-            id={id}
-            description={description}
-            initAssetTag={assetTag}
-            viewOnly
-            footer={
-
-            }
-          /> */}
         </div>
         <div className="row px-3 mt-3">
           <div
@@ -478,7 +424,7 @@ export default function DetailedInstrumentView({ onDelete }) {
               />
             ) : (
               <div className="row mt-3">
-                <p className="text-center h4">Instrument not calibratable</p>
+                <p className="text-center h5">Instrument not calibratable</p>
               </div>
             )}
           </div>

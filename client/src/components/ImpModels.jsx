@@ -4,18 +4,13 @@ import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import PropTypes from 'prop-types';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
 import { StateLessModal } from './ModalAlert';
 import ImportModelError from './ImportModelError';
 import DisplayGrid from './UITable';
 
-export default function ImpModels({ modifyCount }) {
-  ImpModels.propTypes = {
-    modifyCount: PropTypes.func.isRequired,
-  };
-
+export default function ImpModels() {
   const [rows, setRow] = React.useState([]);
   const [showTable, setShowTable] = React.useState(false);
   const [importStatus, setImportStatus] = React.useState('Import');
@@ -239,7 +234,6 @@ export default function ImpModels({ modifyCount }) {
       getVariables,
       handleResponse: (response) => {
         if (response.success) {
-          modifyCount();
           toast.success(`Successfully imported ${models.length} models!`, {
             toastId: 1,
           });

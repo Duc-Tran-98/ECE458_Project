@@ -123,12 +123,12 @@ module.exports = {
     }),
     getCalibrationEventsByInstrument: async (
       _,
-      { modelNumber, vendor, serialNumber },
+      { modelNumber, vendor, assetTag },
       { dataSources },
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({
       modelNumber,
       vendor,
-      serialNumber,
+      assetTag,
     }),
     getCalibrationEventsByReferenceId: async (
       _,

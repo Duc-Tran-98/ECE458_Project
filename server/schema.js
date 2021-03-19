@@ -66,7 +66,7 @@ const typeDefs = gql`
     getCalibrationEventsByInstrument(
       modelNumber: String!
       vendor: String!
-      serialNumber: String!
+      assetTag: Int!
     ): [CalibrationEvent]
     getCalibrationEventsByReferenceId(
       calibrationHistoryIdReference: Int!

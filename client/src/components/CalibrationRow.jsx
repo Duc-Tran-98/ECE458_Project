@@ -66,7 +66,7 @@ export default function CalibrationRow({
         <div className="row mx-3">
           <div className="col-4 mt-3">
             <Form.Group>
-              <Form.Label className="h4">User</Form.Label>
+              <Form.Label className="h5">User</Form.Label>
               {viewOnly ? (
                 <Form.Control
                   name="user"
@@ -95,7 +95,7 @@ export default function CalibrationRow({
           </div>
           <div className="col-4 mt-3">
             <Form.Group>
-              <Form.Label className="h4">Date</Form.Label>
+              <Form.Label className="h5">Date</Form.Label>
               <Form.Control
                 name="date"
                 type="date"
@@ -112,7 +112,7 @@ export default function CalibrationRow({
           </div>
           <div className="col-4 mt-3">
             <Form.Group controlId="formComment">
-              <Form.Label className="h4">Calibration Comment</Form.Label>
+              <Form.Label className="h5">Calibration Comment</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={2}

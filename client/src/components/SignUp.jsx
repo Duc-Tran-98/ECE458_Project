@@ -104,7 +104,7 @@ export default function SignUp({ onCreation }) {
           <Form noValidate onSubmit={handleSubmit}>
             <div className="row mx-3" style={{ marginBottom: '20px' }}>
               <Form.Group controlId="firstName" className="col mt-3">
-                <Form.Label className="h4">First Name</Form.Label>
+                <Form.Label className="h5">First Name</Form.Label>
                 <Form.Control
                   name="firstName"
                   value={values.firstName}
@@ -117,7 +117,7 @@ export default function SignUp({ onCreation }) {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group controlId="lastName" className="col mt-3">
-                <Form.Label className="h4">Last Name</Form.Label>
+                <Form.Label className="h5">Last Name</Form.Label>
                 <Form.Control
                   name="lastName"
                   value={values.lastName}
@@ -131,7 +131,7 @@ export default function SignUp({ onCreation }) {
               </Form.Group>
               {/* TODO: Add validation based on username exists */}
               <Form.Group controlId="userName" className="col mt-3">
-                <Form.Label className="h4">Username</Form.Label>
+                <Form.Label className="h5">Username</Form.Label>
                 <InputGroup className="mb-2">
                   <InputGroup.Prepend>
                     <InputGroup.Text>@</InputGroup.Text>
@@ -155,7 +155,7 @@ export default function SignUp({ onCreation }) {
             </div>
             <div className="row mx-3 border-top border-dark">
               <Form.Group controlId="email" className="col mt-3">
-                <Form.Label className="h4">Email</Form.Label>
+                <Form.Label className="h5">Email</Form.Label>
                 <Form.Control
                   name="email"
                   value={values.email}
@@ -169,7 +169,7 @@ export default function SignUp({ onCreation }) {
               </Form.Group>
               {/* TODO: Add password confirmation */}
               <Form.Group controlId="password" className="col mt-3">
-                <Form.Label className="h4">Password</Form.Label>
+                <Form.Label className="h5">Password</Form.Label>
                 <Form.Control
                   name="password"
                   value={values.password}
@@ -185,7 +185,7 @@ export default function SignUp({ onCreation }) {
             <div className="d-flex flex-row mx-auto">
               <div className="d-flex flex-column mx-auto">
                 <div className="form-check form-switch mt-3">
-                  <label className="form-check-label h4" htmlFor="adminCheck">
+                  <label className="form-check-label h5" htmlFor="adminCheck">
                     Admin user?
                   </label>
                   <input
@@ -202,7 +202,7 @@ export default function SignUp({ onCreation }) {
                 </div>
                 <div className="form-check form-switch mt-3">
                   <label
-                    className="form-check-label h4"
+                    className="form-check-label h5"
                     htmlFor="modelPermissionCheck"
                   >
                     Model Permissions?
@@ -223,7 +223,7 @@ export default function SignUp({ onCreation }) {
               <div className="d-flex flex-column mx-auto">
                 <div className="form-check form-switch mt-3">
                   <label
-                    className="form-check-label h4"
+                    className="form-check-label h5"
                     htmlFor="instrumentPermissionCheck"
                   >
                     Instrument Permissions?
@@ -244,7 +244,7 @@ export default function SignUp({ onCreation }) {
                 </div>
                 <div className="form-check form-switch mt-3">
                   <label
-                    className="form-check-label h4"
+                    className="form-check-label h5"
                     htmlFor="calibrationPermissionCheck"
                   >
                     Calibration Permissions?

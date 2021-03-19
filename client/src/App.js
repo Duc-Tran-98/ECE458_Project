@@ -23,20 +23,18 @@ import './css/customToast.css';
 import { setAuthHeader } from './components/UseQuery';
 
 function App() {
-  let jwt = '';
   const history = useHistory();
+  let jwt = '';
   const handlePageRefresh = async (token) => {
     // this will save token in local storage before reloading page
+    console.log(`handle page refresh called jwt = ${token}`);
     window.sessionStorage.setItem('jwt', token);
   };
   const [loggedIn, setLoggedIn] = useState(false);
-  const [updateCount, setUpdateCount] = useState(false);
-  const modifyCount = () => {
-    // anything that modifies count (add/delete) should call this
-    setUpdateCount(true);
-    setUpdateCount(false);
-  };
   const handleSignOut = () => {
+    window.addEventListener('beforeunload', () => window.sessionStorage.clear());
+    jwt = '';
+    setAuthHeader(jwt);
     window.sessionStorage.clear();
     history.push('/');
     setLoggedIn(false);
@@ -44,27 +42,24 @@ function App() {
   const handleLogin = async (newJwt) => {
     setLoggedIn(true);
     jwt = newJwt;
-    setAuthHeader(newJwt);
-    console.log(`set auth header = ${newJwt}`);
+    setAuthHeader(jwt);
+    console.log(`set auth header = ${jwt}`);
+    window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
   };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) {
       // If previously logged in and refreshed page
-      jwt = window.sessionStorage.getItem('jwt');
-      handleLogin(jwt).then(() => {
-        if (jwt) {
+      handleLogin(window.sessionStorage.getItem('jwt')).then(() => {
+        if (window.sessionStorage.getItem('jwt')) {
           window.sessionStorage.removeItem('jwt');
         }
       });
     }
-  }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
-  React.useEffect(() => {
-    // a use effect for jwt to keep it ephemeral
-    window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
     return () => {
       window.removeEventListener('beforeunload', handlePageRefresh);
     };
-  }, [jwt]);
+  }, [loggedIn]); // The [loggedIn] bit tells React to run this code when loggedIn changes
+
   return (
     <UserProvider loggedIn={loggedIn} handleSignOut={handleSignOut}>
       <ToastContainer />
@@ -73,7 +68,6 @@ function App() {
           title="HPC IMS"
           loggedIn={loggedIn}
           handleSignOut={handleSignOut}
-          updateCount={updateCount}
         />
       </header>
       <main
@@ -93,7 +87,7 @@ function App() {
             </Route>
             <Route path="/viewUser">
               {loggedIn ? (
-                <ViewUser onDelete={modifyCount} />
+                <ViewUser />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
@@ -110,14 +104,14 @@ function App() {
             </Route>
             <Route path="/viewInstrument/">
               {loggedIn ? (
-                <DetailedInstrumentView onDelete={modifyCount} />
+                <DetailedInstrumentView />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
             </Route>
             <Route path="/viewModel/">
               {loggedIn ? (
-                <DetailedModelView onDelete={modifyCount} />
+                <DetailedModelView />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
@@ -127,21 +121,21 @@ function App() {
             </Route>
             <Route path="/import">
               {loggedIn ? (
-                <BulkImport modifyCount={modifyCount} />
+                <BulkImport />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
             </Route>
             <Route path="/modelCategories">
               {loggedIn ? (
-                <ManageCategories modifyCount={modifyCount} />
+                <ManageCategories />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
             </Route>
             <Route path="/instrumentCategories">
               {loggedIn ? (
-                <ManageCategories modifyCount={modifyCount} />
+                <ManageCategories />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}

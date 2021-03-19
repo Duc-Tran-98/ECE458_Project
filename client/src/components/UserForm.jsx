@@ -27,7 +27,7 @@ export default function UserForm({
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
       <div className="row mx-3">
         <div className="col mt-3">
-          <label htmlFor="validationCustom01" className="h4">
+          <label htmlFor="validationCustom01" className="h5">
             First Name
           </label>
           <input
@@ -43,7 +43,7 @@ export default function UserForm({
           <div className="valid-feedback">Looks good!</div>
         </div>
         <div className="col mt-3">
-          <label htmlFor="validationCustom02" className="h4">
+          <label htmlFor="validationCustom02" className="h5">
             Last name
           </label>
           <input
@@ -59,7 +59,7 @@ export default function UserForm({
           <div className="valid-feedback">Looks good!</div>
         </div>
         <div className="col mt-3">
-          <label htmlFor="validationCustomUsername" className="h4">
+          <label htmlFor="validationCustomUsername" className="h5">
             Username
           </label>
           <div className="input-group">
@@ -85,7 +85,7 @@ export default function UserForm({
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
-          <label htmlFor="validationCustom03" className="h4">
+          <label htmlFor="validationCustom03" className="h5">
             Email
           </label>
           <input
@@ -101,7 +101,7 @@ export default function UserForm({
           <div className="invalid-feedback">Please provide a valid email.</div>
         </div>
         <div className="col mt-3">
-          <label htmlFor="validationCustom04" className="h4">
+          <label htmlFor="validationCustom04" className="h5">
             Password
           </label>
           <input
@@ -119,7 +119,7 @@ export default function UserForm({
         </div>
         <div className="col mt-3">
           <div className="form-check form-switch mt-4">
-            <label className="form-check-label h4 col" htmlFor="adminCheck">
+            <label className="form-check-label h5 col" htmlFor="adminCheck">
               Admin user?
             </label>
 
@@ -207,7 +207,7 @@ export function EditUserForm({
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
       <div className="mx-3">
         <div className="row mt-3">
-          <label htmlFor="validationCustomUsername" className="h4">
+          <label htmlFor="validationCustomUsername" className="h5">
             Username
           </label>
           <div className="input-group">
@@ -230,7 +230,7 @@ export function EditUserForm({
         <div className="d-flex flex-row mx-auto">
           <div className="d-flex flex-column mx-auto">
             <div className="form-check form-switch mt-3">
-              <label className="form-check-label h4" htmlFor="adminCheck">
+              <label className="form-check-label h5" htmlFor="adminCheck">
                 Admin user?
               </label>
               <input
@@ -248,7 +248,7 @@ export function EditUserForm({
             </div>
             <div className="form-check form-switch mt-3">
               <label
-                className="form-check-label h4"
+                className="form-check-label h5"
                 htmlFor="modelPermissionCheck"
               >
                 Model Permissions?
@@ -270,7 +270,7 @@ export function EditUserForm({
           <div className="d-flex flex-column mx-auto">
             <div className="form-check form-switch mt-3">
               <label
-                className="form-check-label h4"
+                className="form-check-label h5"
                 htmlFor="instrumentPermissionCheck"
               >
                 Instrument Permissions?
@@ -290,7 +290,7 @@ export function EditUserForm({
             </div>
             <div className="form-check form-switch mt-3">
               <label
-                className="form-check-label h4"
+                className="form-check-label h5"
                 htmlFor="calibrationPermissionCheck"
               >
                 Calibration Permissions?

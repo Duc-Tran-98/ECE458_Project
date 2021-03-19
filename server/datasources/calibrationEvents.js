@@ -47,13 +47,13 @@ class CalibrationEventAPI extends DataSource {
     return calibrationEvents;
   }
 
-  async getCalibrationEventsByInstrument({ modelNumber, vendor, serialNumber }) {
+  async getCalibrationEventsByInstrument({ modelNumber, vendor, assetTag }) {
     let calibrationHistoryIdReference = -1;
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.findAll({
       where:
-      { modelNumber, vendor, serialNumber },
+      { modelNumber, vendor, assetTag },
     }).then((instrument) => {
       if (instrument && instrument[0]) {
         calibrationHistoryIdReference = instrument[0].dataValues.id;

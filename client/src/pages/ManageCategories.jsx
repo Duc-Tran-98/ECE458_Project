@@ -6,7 +6,6 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { toast } from 'react-toastify';
-import PropTypes from 'prop-types';
 import { ServerPaginationGrid } from '../components/UITable';
 import ModalAlert from '../components/ModalAlert';
 import GetModelCategories, { CountModelCategories, CountModelsAttached } from '../queries/GetModelCategories';
@@ -19,10 +18,7 @@ import EditModelCategory from '../queries/EditModelCategory';
 import EditInstrumentCategory from '../queries/EditInstrumentCategory';
 import UserContext from '../components/UserContext';
 
-function ManageCategories({ modifyCount }) {
-  ManageCategories.propTypes = {
-    modifyCount: PropTypes.func.isRequired,
-  };
+function ManageCategories() {
   const history = useHistory();
   const queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
@@ -69,7 +65,6 @@ function ManageCategories({ modifyCount }) {
 
   const handleResponse = (response) => {
     if (response.success) {
-      modifyCount();
       toast.success(response.message, {
         toastId: Math.random(),
       });
@@ -170,7 +165,7 @@ function ManageCategories({ modifyCount }) {
       altCloseBtnId="close-cat-mod"
     >
       <div>
-        <div className="h4 text-center my-3">
+        <div className="h5 text-center my-3">
           {`You are about to delete category ${category}. This category is attached to ${num} ${key}${
             num === 1 ? '' : 's'
           }. Are you sure?`}
@@ -303,19 +298,6 @@ function ManageCategories({ modifyCount }) {
       active = false;
     };
   });
-
-  // const closeDeleteModal = () => {
-  //   setShowDelete(false);
-  //   updateRow(key, true);
-  // };
-  // const closeEditModal = () => {
-  //   setShowEdit(false);
-  //   updateRow(key, true);
-  // };
-  // const closeCreateModal = () => {
-  //   setShowCreate(false);
-  //   updateRow(key, true);
-  // };
 
   return (
     <>

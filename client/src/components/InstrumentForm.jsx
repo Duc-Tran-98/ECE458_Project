@@ -139,7 +139,7 @@ export default function InstrumentForm({
           <div className="row mx-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center">
+                <Form.Label className="h5 text-center">
                   Model Selection
                 </Form.Label>
                 {viewOnly ? (
@@ -182,7 +182,7 @@ export default function InstrumentForm({
               <CustomInput
                 placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formAssetTag"
-                className="h4"
+                className="h5"
                 label="Asset Tag"
                 name="assetTag"
                 type="number"
@@ -198,7 +198,7 @@ export default function InstrumentForm({
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center text-nowrap ">
+                <Form.Label className="h5 text-center text-nowrap ">
                   Calibration Frequency
                 </Form.Label>
                 <Form.Control
@@ -211,7 +211,7 @@ export default function InstrumentForm({
             </div>
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center">
+                <Form.Label className="h5 text-center">
                   Model Description
                 </Form.Label>
                 <Form.Control
@@ -227,7 +227,7 @@ export default function InstrumentForm({
               <CustomInput
                 placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formSerialNumber"
-                className="h4"
+                className="h5"
                 label="Serial Number"
                 name="serialNumber"
                 type="text"
@@ -242,7 +242,7 @@ export default function InstrumentForm({
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Group controlId="formComment">
-                <Form.Label className="h4">Comment</Form.Label>
+                <Form.Label className="h5">Comment</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
@@ -261,7 +261,7 @@ export default function InstrumentForm({
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <Form.Label className="h4">Categories</Form.Label>
+              <Form.Label className="h5">Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);

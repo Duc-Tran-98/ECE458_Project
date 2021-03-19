@@ -134,7 +134,7 @@ export default function ModelForm({
           <div className="row mx-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4">Vendor</Form.Label>
+                <Form.Label className="h5">Vendor</Form.Label>
                 {viewOnly ? (
                   <Form.Control
                     type="text"
@@ -168,7 +168,7 @@ export default function ModelForm({
             <div className="col mt-3">
               <CustomInput
                 controlId="formModelNumber"
-                className="h4"
+                className="h5"
                 label="Model Number"
                 name="modelNumber"
                 type="text"
@@ -186,7 +186,7 @@ export default function ModelForm({
             <div className="col mt-3">
               <CustomInput
                 controlId="formCalibrationFrequency"
-                className="h4 text-nowrap"
+                className="h5 text-nowrap"
                 label="Calibration Frequency"
                 name="calibrationFrequency"
                 type="number"
@@ -201,7 +201,7 @@ export default function ModelForm({
             <div className="col mt-3">
               <CustomInput
                 controlId="formDescription"
-                className="h4"
+                className="h5"
                 label="Description"
                 name="description"
                 type="text"
@@ -217,7 +217,7 @@ export default function ModelForm({
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Group controlId="formComment">
-                <Form.Label className="h4">Comment</Form.Label>
+                <Form.Label className="h5">Comment</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
@@ -235,7 +235,7 @@ export default function ModelForm({
             </div>
             <div className="col mt-3">
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h4 col" htmlFor="adminCheck">
+                <label className="form-check-label h5 col" htmlFor="adminCheck">
                   Can model be calibrated with load bank?
                 </label>
                 <Form.Control
@@ -258,7 +258,7 @@ export default function ModelForm({
           {/* TODO: Ensure tags are added into the db (not rendering on view)  */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <Form.Label className="h4">Categories</Form.Label>
+              <Form.Label className="h5">Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);

@@ -4,17 +4,13 @@ import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import PropTypes from 'prop-types';
 import { EditUserForm } from '../components/UserForm';
 import Query from '../components/UseQuery';
 import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
 import GetUser from '../queries/GetUser';
 
-export default function ViewUser({ onDelete }) {
-  ViewUser.propTypes = {
-    onDelete: PropTypes.func.isRequired,
-  };
+export default function ViewUser() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const user = React.useContext(UserContext);
@@ -65,7 +61,6 @@ export default function ViewUser({ onDelete }) {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
-      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (history.location.state?.previousUrl) {
@@ -93,13 +88,13 @@ export default function ViewUser({ onDelete }) {
     >
       <>
         {responseMsg.length === 0 && (
-          <div className="h4 text-center my-3">{`You are about to delete user ${formState.userName}. Are you sure?`}</div>
+          <div className="h5 text-center my-3">{`You are about to delete user ${formState.userName}. Are you sure?`}</div>
         )}
         <div className="d-flex justify-content-center">
           {loading ? (
             <CircularProgress />
           ) : responseMsg.length > 0 ? (
-            <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            <div className="mx-5 mt-3 h5">{responseMsg}</div>
           ) : (
             <>
               <div className="mt-3">

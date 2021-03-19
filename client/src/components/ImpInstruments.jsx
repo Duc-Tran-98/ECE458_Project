@@ -4,7 +4,6 @@ import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import moment from 'moment';
-import PropTypes from 'prop-types';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
 import { StateLessModal } from './ModalAlert';
@@ -12,11 +11,7 @@ import ImportInstrumentError from './ImportInstrumentError';
 import DisplayGrid from './UITable';
 import UserContext from './UserContext';
 
-export default function ImpInstruments({ modifyCount }) {
-  ImpInstruments.propTypes = {
-    modifyCount: PropTypes.func.isRequired,
-  };
-
+export default function ImpInstruments() {
   const user = useContext(UserContext);
   const [rows, setRow] = React.useState([]);
   const [showTable, setShowTable] = React.useState(false);
@@ -256,7 +251,6 @@ export default function ImpInstruments({ modifyCount }) {
       getVariables,
       handleResponse: (response) => {
         if (response.success) {
-          modifyCount();
           toast.success(`Successfully imported ${instruments.length} instruments!`);
           renderTable(instruments);
           resetUpload();

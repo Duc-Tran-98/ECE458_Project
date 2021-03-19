@@ -4,17 +4,13 @@ import { gql } from '@apollo/client';
 import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import PropTypes from 'prop-types';
 import ModelForm from '../components/ModelForm';
 import InfinityScroll from '../components/InfiniteScroll';
 import ModalAlert from '../components/ModalAlert';
 import DeleteModel from '../queries/DeleteModel';
 import FindModel, { FindModelById } from '../queries/FindModel';
 
-export default function DetailedModelView({ onDelete }) {
-  DetailedModelView.propTypes = {
-    onDelete: PropTypes.func.isRequired,
-  };
+export default function DetailedModelView() {
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   const [model, setModel] = React.useState({
@@ -108,7 +104,6 @@ export default function DetailedModelView({ onDelete }) {
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
-      onDelete();
       setTimeout(() => {
         setResponseMsg('');
         if (history.location.state?.previousUrl) {
@@ -145,13 +140,13 @@ export default function DetailedModelView({ onDelete }) {
     >
       <>
         {responseMsg.length === 0 && (
-          <div className="h4 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
+          <div className="h5 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
         )}
         <div className="d-flex justify-content-center">
           {loading ? (
             <CircularProgress />
           ) : responseMsg.length > 0 ? (
-            <div className="mx-5 mt-3 h4">{responseMsg}</div>
+            <div className="mx-5 mt-3 h5">{responseMsg}</div>
           ) : (
             <>
               <div className="mt-3">
@@ -192,11 +187,6 @@ export default function DetailedModelView({ onDelete }) {
               type="edit"
             />
           )}
-          {/* <EditModel
-            initModelNumber={modelNumber}
-            initVendor={vendor}
-            deleteBtn={deleteBtn}
-          /> */}
         </div>
         <div className="row px-3">
           <div
