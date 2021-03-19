@@ -7,11 +7,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import CreateUser from '../queries/CreateUser';
+import { GetAllUsers } from '../queries/GetUser';
 
 import UserContext from './UserContext';
 import ErrorPage from '../pages/ErrorPage';
 
-// TODO: Add isAdmin
 const schema = Yup.object({
   firstName: Yup.string().required('Please enter First Name'),
   lastName: Yup.string().required('Please enter Last Name'),
@@ -40,7 +40,25 @@ export default function SignUp({ onCreation }) {
   SignUp.propTypes = {
     onCreation: PropTypes.func.isRequired,
   };
+  const [allUserNames, setAllUserNames] = React.useState(['admin']);
   const user = useContext(UserContext);
+  GetAllUsers({ limit: 100, offset: 0 }).then((response) => {
+    if (response) {
+      const parsedUsernames = response.map((element) => element.userName);
+      setAllUserNames(parsedUsernames);
+    }
+  });
+
+  // eslint-disable-next-line no-unused-vars
+  const checkUserNameExists = (userName, setFieldError) => {
+    console.log('checking if username exists');
+    if (allUserNames.includes(userName)) {
+      console.log('Found userName collsion! Setting error');
+      setFieldError('userName', 'Username already exists');
+      return true;
+    }
+    return false;
+  };
 
   const handleSignup = (values, resetForm) => {
     const {
@@ -101,6 +119,8 @@ export default function SignUp({ onCreation }) {
           values,
           touched,
           isSubmitting,
+          setFieldError,
+          // setErrors,
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <div className="row mx-3" style={{ marginBottom: '20px' }}>
@@ -144,9 +164,13 @@ export default function SignUp({ onCreation }) {
                     onChange={(e) => {
                       if (!e.target.value.includes('@')) {
                         handleChange(e);
+                        if (allUserNames.includes(e.target.value)) {
+                          setFieldError('userName', 'Username already exists');
+                        }
                       }
                     }}
                     isInvalid={touched.userName && !!errors.userName}
+                    // TODO: Incorporate allUserNames validation isInvalid={touched.userName && (!!errors.userName || allUserNames.includes(values.userName))}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.userName}

@@ -287,7 +287,7 @@ export function ServerPaginationGrid({
               cellHandler(e);
             }
           }}
-          onCellHover={() => { document.body.style.cursor = 'pointer'; }}
+          // onCellHover={() => { document.body.style.cursor = 'pointer'; }}
           autoHeight
           onSelectionChange={(newSelection) => {
             setChecked(newSelection.rowIds);

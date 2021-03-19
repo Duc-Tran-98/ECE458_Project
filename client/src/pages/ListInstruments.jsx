@@ -115,16 +115,16 @@ export default function ListInstruments() {
     });
     return catArr.join(', ');
   };
-  const headerClass = 'h5'; // TODO: UPdate me to bold (why not apply "fw-bold?")
+  const headerClass = 'customMuiHeader';
   const cols = [
     {
-      field: 'vendor', headerName: 'Vendor', width: 120, description: 'Vendor', headerClassName: headerClass,
+      field: 'vendor', headerName: 'Vendor', width: 100, description: 'Vendor', headerClassName: headerClass,
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 140, description: 'Model Number', headerClassName: headerClass,
+      field: 'modelNumber', headerName: 'Model Number', width: 170, description: 'Model Number', headerClassName: headerClass,
     },
     {
-      field: 'assetTag', headerName: 'Asset Tag', width: 100, description: 'Asset Tag', headerClassName: headerClass,
+      field: 'assetTag', headerName: 'Asset Tag', width: 140, description: 'Asset Tag', headerClassName: headerClass,
     },
     {
       field: 'description', headerName: 'Description', width: 225, description: 'Description', headerClassName: headerClass,
@@ -137,7 +137,8 @@ export default function ListInstruments() {
       headerName: 'Categories',
       description: 'Categories',
       headerClassName: headerClass,
-      width: 300,
+      width: 250,
+      sortable: false, // TODO: Verify this works (does on demo)
       // hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
