@@ -11,7 +11,6 @@ import CreateUser from '../queries/CreateUser';
 import UserContext from './UserContext';
 import ErrorPage from '../pages/ErrorPage';
 
-// TODO: Add isAdmin
 const schema = Yup.object({
   firstName: Yup.string().required('Please enter First Name'),
   lastName: Yup.string().required('Please enter Last Name'),

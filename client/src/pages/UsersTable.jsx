@@ -79,8 +79,8 @@ export default function UsersTable() {
         rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
           const state = { previousUrl: window.location.href };
-          history.push( // TODO: MAKE LINK ONLY SHOW USERNAME
-            `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
+          history.push(
+            `/viewUser/?userName=${e.row.userName}`,
             state,
           );
         }}

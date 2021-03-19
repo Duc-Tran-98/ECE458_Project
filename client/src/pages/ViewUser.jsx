@@ -9,6 +9,7 @@ import { EditUserForm } from '../components/UserForm';
 import Query from '../components/UseQuery';
 import ModalAlert from '../components/ModalAlert';
 import UserContext from '../components/UserContext';
+import GetUser from '../queries/GetUser';
 
 export default function ViewUser({ onDelete }) {
   ViewUser.propTypes = {
@@ -17,14 +18,28 @@ export default function ViewUser({ onDelete }) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const user = React.useContext(UserContext);
+  const [fetched, setFetched] = React.useState(false);
   const [formState, setFormState] = React.useState({
     userName: urlParams.get('userName'),
-    isAdmin: urlParams.get('isAdmin') === 'true',
-    modelPermission: urlParams.get('modelPermission') === 'true',
-    instrumentPermission: urlParams.get('instrumentPermission') === 'true',
-    calibrationPermission: urlParams.get('calibrationPermission') === 'true',
+    isAdmin: false,
+    modelPermission: false,
+    instrumentPermission: false,
+    calibrationPermission: false,
   });
   const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      GetUser({ userName: urlParams.get('userName'), includeAll: true }).then((response) => {
+        setFormState(response);
+        setFetched(true);
+      });
+    })();
+    return () => { active = false; };
+  }, []);
   const onChangeCheckbox = (event) => {
     if (formState.userName !== 'admin') {
       if (event.target.name === 'isAdmin') { // isAdmin check changed
@@ -123,11 +138,13 @@ export default function ViewUser({ onDelete }) {
 
   return (
     <>
-      <EditUserForm
-        formState={formState}
-        onChangeCheckbox={onChangeCheckbox}
-        deleteBtn={deleteBtn}
-      />
+      {fetched && (
+        <EditUserForm
+          formState={formState}
+          onChangeCheckbox={onChangeCheckbox}
+          deleteBtn={deleteBtn}
+        />
+      )}
     </>
   );
 }

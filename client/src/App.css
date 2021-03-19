@@ -15,6 +15,11 @@ body {
   color: white;
 }
 
+.modal .btn.btn-danger{
+  background: #fc2311;
+  color: white;
+}
+
 .delete-container {
   width: 80%;
   /*border-radius: 25px;*/

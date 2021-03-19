@@ -194,7 +194,7 @@ export function EditUserForm({
           toast.success('Successfully updated permissions');
           const { state } = history.location;
           history.replace(
-            `/viewUser/?userName=${userName}&isAdmin=${isAdmin}&modelPermission=${modelPermission}&instrumentPermission=${instrumentPermission}&calibrationPermission=${calibrationPermission}`,
+            `/viewUser/?userName=${userName}`,
             state,
           );
         } else {

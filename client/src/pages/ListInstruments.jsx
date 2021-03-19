@@ -72,7 +72,7 @@ export default function ListInstruments() {
   // eslint-disable-next-line no-unused-vars
   history.listen((location, action) => {
     let active = true;
-    (() => {
+    (async () => {
       if (!active) return;
       getAndSetUrlVals(location.search);
     })();
