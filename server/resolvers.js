@@ -177,6 +177,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       },
       { dataSources },
@@ -187,6 +188,7 @@ module.exports = {
       description,
       comment,
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       calibrationFrequency,
       categories,
     }),
@@ -199,6 +201,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       },
       { dataSources },
@@ -210,6 +213,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       });
       return response;
@@ -309,6 +313,24 @@ module.exports = {
           date,
           comment,
           loadBankData,
+        },
+      );
+      return response;
+    },
+    addKlufeCalibration: async (
+      _,
+      {
+        assetTag, user, date, comment, klufeData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addKlufeCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          klufeData,
         },
       );
       return response;

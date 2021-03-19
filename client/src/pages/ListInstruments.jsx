@@ -118,15 +118,16 @@ export default function ListInstruments() {
     });
     return catArr.join(', ');
   };
+  const headerClass = 'customMuiHeader';
   const cols = [
     {
-      field: 'vendor', headerName: 'Vendor', width: 120, description: 'Vendor',
+      field: 'vendor', headerName: 'Vendor', width: 100, description: 'Vendor', headerClassName: headerClass,
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 140, description: 'Model Number',
+      field: 'modelNumber', headerName: 'Model Number', width: 170, description: 'Model Number', headerClassName: headerClass,
     },
     {
-      field: 'assetTag', headerName: 'Asset Tag', width: 100, description: 'Asset Tag',
+      field: 'assetTag', headerName: 'Asset Tag', width: 140, description: 'Asset Tag', headerClassName: headerClass,
     },
     {
       field: 'description', headerName: 'Description', width: 225, description: 'Description',
@@ -138,7 +139,9 @@ export default function ListInstruments() {
       field: 'categories',
       headerName: 'Categories',
       description: 'Categories',
-      width: 300,
+      headerClassName: headerClass,
+      width: 250,
+      sortable: false, // TODO: Verify this works (does on demo)
       // hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>

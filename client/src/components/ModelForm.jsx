@@ -63,7 +63,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, handleFormSubmit, viewOnly, diffSubmit, type, deleteBtn,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -72,6 +72,7 @@ export default function ModelForm({
     comment: PropTypes.string,
     description: PropTypes.string,
     supportLoadBankCalibration: PropTypes.bool,
+    supportKlufeCalibration: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
@@ -88,6 +89,7 @@ export default function ModelForm({
     comment: '',
     description: '',
     supportLoadBankCalibration: false,
+    supportKlufeCalibration: false,
     categories: [],
     diffSubmit: false,
     deleteBtn: null,
@@ -111,6 +113,7 @@ export default function ModelForm({
         description: description || '',
         categories: categories || [],
         supportLoadBankCalibration: supportLoadBankCalibration || false,
+        supportKlufeCalibration: supportKlufeCalibration || false,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -252,6 +255,23 @@ export default function ModelForm({
                   <strong>
                     {values.supportLoadBankCalibration ? 'Yes' : 'No'}
                   </strong>
+                </div>
+              </div>
+              <div className="form-check form-switch mt-4">
+                <label className="form-check-label h4 col" htmlFor="adminCheck">
+                  Can model be calibrated with Klufe 5700?
+                </label>
+                <Form.Control
+                  className="form-check-input"
+                  type="checkbox"
+                  id="adminCheck"
+                  name="supportKlufeCalibration"
+                  checked={values.supportKlufeCalibration}
+                  onChange={handleChange}
+                  disabled={disabled}
+                />
+                <div className="col">
+                  <strong>{values.supportKlufeCalibration ? 'Yes' : 'No'}</strong>
                 </div>
               </div>
             </div>

@@ -2,6 +2,8 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
+// eslint-disable-next-line no-unused-vars
+const runBarcode = require('./barcodeGenerator');
 
 function validateInstrument({
   modelNumber, vendor, serialNumber, comment, assetTag,
@@ -719,19 +721,15 @@ class InstrumentAPI extends DataSource {
                 }
               });
           } else {
-            newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-            // eslint-disable-next-line max-len
-            let instrumentCheck = await this.store.instruments.findOne({
-              where: { assetTag: newAssetTag },
+            const assetTags = await this.store.instruments.findAll({
+              attributes: ['assetTag'],
             });
-            while (instrumentCheck != null) {
-              newAssetTag = Math.floor(
-                Math.floor(Math.random() * 900000) + 100000,
-              );
-              // eslint-disable-next-line no-await-in-loop
-              instrumentCheck = await this.store.instrument.findOne({
-                where: { newAssetTag },
-              });
+            const tags = assetTags.map((item) => item.dataValues.assetTag);
+            for (let j = 100000; j < 1000000; j += 1) {
+              if (!tags.includes(j)) {
+                newAssetTag = j;
+                break;
+              }
             }
           }
           if (response.success) {

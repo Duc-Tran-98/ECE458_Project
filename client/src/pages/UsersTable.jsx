@@ -1,9 +1,11 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
 import CreateUser from './CreateUser';
 import ModalAlert from '../components/ModalAlert';
+// import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
   const history = useHistory();
@@ -22,41 +24,67 @@ export default function UsersTable() {
       setInitPage(pg);
     }
   });
+  // FIXME: Style icon in center, currently div does nothing...
+  const showTableBoolean = (params) => (params.value ? <div className="text-center"><CheckCircleIcon /></div> : <div> </div>);
+  const headerClass = 'customMuiHeader';
   const cols = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 60,
+      hide: true,
+      disableColumnMenu: true,
+      type: 'number',
+      headerClassName: headerClass,
+    },
     {
       field: 'firstName',
       headerName: 'First Name',
       width: 200,
+      headerClassName: headerClass,
     },
     {
       field: 'lastName',
       headerName: 'Last Name',
       width: 200,
+      headerClassName: headerClass,
     },
     {
       field: 'userName',
       headerName: 'User Name',
       width: 200,
+      headerClassName: headerClass,
     },
     {
       field: 'isAdmin',
       headerName: 'Admin',
-      width: 100,
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
     {
       field: 'modelPermission',
-      headerName: 'Model Permission',
-      width: 175,
+      headerName: 'Model Perm',
+      description: 'Model Permission',
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
     {
       field: 'instrumentPermission',
-      headerName: 'Instrument Permission',
-      width: 175,
+      headerName: 'Inst Perm',
+      description: 'Instrument Permission',
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
     {
       field: 'calibrationPermission',
-      headerName: 'Calibration Permission',
-      width: 180,
+      headerName: 'Calib Perm',
+      description: 'Calibration Permission',
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
   ];
 

@@ -1,7 +1,8 @@
 import React from 'react';
+import XGridTest from '../components/XGridTest';
 
 export default function ComponentTest() {
   return (
-    <div>You can test components here or elsewhere</div>
+    <XGridTest />
   );
 }
