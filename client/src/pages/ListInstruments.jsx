@@ -83,10 +83,10 @@ export default function ListInstruments() {
   const cellHandler = (e) => {
     const state = { previousUrl: window.location.href };
     const {
-      modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency,
+      modelNumber, vendor, assetTag,
     } = e.row;
     history.push(
-      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency || 0}`,
+      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}`,
       state,
     );
   };

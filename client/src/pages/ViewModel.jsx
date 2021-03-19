@@ -5,10 +5,11 @@ import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import PropTypes from 'prop-types';
-import EditModel from '../components/EditModel';
+import ModelForm from '../components/ModelForm';
 import InfinityScroll from '../components/InfiniteScroll';
 import ModalAlert from '../components/ModalAlert';
 import DeleteModel from '../queries/DeleteModel';
+import FindModel, { FindModelById } from '../queries/FindModel';
 
 export default function DetailedModelView({ onDelete }) {
   DetailedModelView.propTypes = {
@@ -16,29 +17,93 @@ export default function DetailedModelView({ onDelete }) {
   };
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
-  let modelNumber = urlParams.get('modelNumber');
-  let vendor = urlParams.get('vendor');
-  let description = urlParams.get('description');
+  const [model, setModel] = React.useState({
+    // set model state
+    modelNumber: urlParams.get('modelNumber'),
+    vendor: urlParams.get('vendor'),
+    description: '',
+    id: '',
+    comment: '',
+    calibrationFrequency: '',
+    supportLoadBankCalibration: false,
+    categories: [],
+  });
   const [loading, setLoading] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
+  const [fetched, setFetched] = React.useState(false);
+  const [update, setUpdate] = React.useState(false);
+  const handleFindModel = (response) => {
+    setFetched(false);
+    const categories = response.categories.map((item) => item.name);
+    const {
+      description, comment, supportLoadBankCalibration,
+    } = response;
+    let { calibrationFrequency, id } = response;
+    if (calibrationFrequency !== null) {
+      calibrationFrequency = calibrationFrequency.toString();
+    } else {
+      calibrationFrequency = 0;
+    }
+    id = parseInt(id, 10);
+    setModel({
+      ...model,
+      description,
+      comment,
+      id,
+      categories,
+      calibrationFrequency,
+      supportLoadBankCalibration,
+    });
+    setUpdate(false);
+    setFetched(true);
+  };
   const history = useHistory();
   history.listen((location, action) => {
     let active = true;
-    (() => {
-      queryString = window.location.search;
+    (async () => {
+      queryString = location.search;
       urlParams = new URLSearchParams(queryString);
       if (active && action === 'REPLACE') {
         // edit model updates url wit replace action,
         // so update state
-        modelNumber = urlParams.get('modelNumber');
-        vendor = urlParams.get('vendor');
-        description = urlParams.get('description');
+        if (!active) {
+          return;
+        }
+        if (!update) {
+          setUpdate(true);
+        }
       }
     })();
     return () => {
       active = false;
     };
   });
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      FindModel({
+        modelNumber: model.modelNumber,
+        vendor: model.vendor,
+        handleResponse: handleFindModel,
+      });
+    })();
+    return () => { active = false; };
+  }, []);
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      if (update) {
+        FindModelById({ id: model.id, handleResponse: handleFindModel });
+      }
+    })();
+    return () => { active = false; };
+  }, [update]);
   const handleResponse = (response) => {
     setLoading(false);
     setResponseMsg(response.message);
@@ -48,10 +113,6 @@ export default function DetailedModelView({ onDelete }) {
         setResponseMsg('');
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
-          // if (path.includes('count')) {
-          //   const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
-          //   path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
-          // }
           history.replace( // This code updates the url to have the correct count
             path,
             null,
@@ -62,6 +123,15 @@ export default function DetailedModelView({ onDelete }) {
       }, 1000);
     }
   };
+  const {
+    modelNumber,
+    vendor,
+    description,
+    comment,
+    calibrationFrequency,
+    supportLoadBankCalibration,
+    categories,
+  } = model;
   const handleDelete = () => {
     setLoading(true);
     DeleteModel({ modelNumber, vendor, handleResponse });
@@ -105,11 +175,28 @@ export default function DetailedModelView({ onDelete }) {
     <>
       <div className="col">
         <div className="row">
-          <EditModel
+          {fetched && (
+            <ModelForm
+              modelNumber={modelNumber}
+              vendor={vendor}
+              description={description}
+              comment={comment}
+              categories={categories}
+              calibrationFrequency={calibrationFrequency}
+              supportLoadBankCalibration={supportLoadBankCalibration}
+              handleFormSubmit={() => undefined}
+              validated={false}
+              diffSubmit
+              viewOnly
+              deleteBtn={deleteBtn}
+              type="edit"
+            />
+          )}
+          {/* <EditModel
             initModelNumber={modelNumber}
             initVendor={vendor}
             deleteBtn={deleteBtn}
-          />
+          /> */}
         </div>
         <div className="row px-3">
           <div
@@ -146,28 +233,28 @@ export default function DetailedModelView({ onDelete }) {
                 }
               `)}
               queryName="getAllInstrumentsWithModel"
-              variables={{ modelNumber, vendor, description }}
+              variables={{ modelNumber, vendor }}
               renderItems={(items) => items.map((entry) => (
                 <li className="list-group-item" key={entry.id}>
-                  <div className="d-flex justify-content-between">
-                    <span>
+                  <div className="row">
+                    <span className="col">
                       Serial #:
                       {' '}
                       {entry.serialNumber || 'N/A'}
                     </span>
-                    <span>
+                    <span className="col">
                       Asset Tag:
                       {' '}
                       {entry.assetTag}
                     </span>
-                    <span className="">
+                    <span className="col-auto me-auto">
                       <button
                         type="button"
                         className="btn "
                         onClick={() => {
                           const state = { previousUrl: window.location.href };
                           history.push(
-                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${entry.assetTag}&serialNumber=${entry.serialNumber}&description=${description}&id=${entry.id}&calibrationFrequency=${entry.calibrationFrequency}`,
+                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${entry.assetTag}`,
                             state,
                           );
                         }}

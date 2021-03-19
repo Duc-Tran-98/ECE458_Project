@@ -94,17 +94,12 @@ export default function EditInstrument({
     modelNumber,
     vendor,
     assetTag,
-    serialNumber,
-    description,
-    id,
-    calibrationFrequency,
   ) => {
     const { state } = history.location;
     history.replace(
-      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}$assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
+      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}`,
       state,
     );
-    console.log('updated history!');
   };
 
   const handleSubmit = (values) => {
@@ -114,9 +109,7 @@ export default function EditInstrument({
       assetTag,
       vendor,
       serialNumber,
-      description,
       categories,
-      calibrationFrequency,
     } = values;
     const handleResponse = (response) => {
       if (response.success) {
@@ -125,10 +118,6 @@ export default function EditInstrument({
           modelNumber,
           vendor,
           assetTag,
-          serialNumber,
-          description,
-          id,
-          calibrationFrequency,
         );
       } else {
         toast.error(response.message);

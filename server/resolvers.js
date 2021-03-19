@@ -28,6 +28,7 @@ module.exports = {
     getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
+    getModelById: async (_, { id }, { dataSources }) => await dataSources.modelAPI.getModelById({ id }),
     // eslint-disable-next-line max-len
     getModelsWithFilter: async (
       _,

@@ -11,6 +11,9 @@ import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
 import { CustomButton, CustomInput } from './CustomFormComponents';
+import ModalAlert from './ModalAlert';
+// eslint-disable-next-line import/no-cycle
+import EditModel from './EditModel';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -284,17 +287,35 @@ export default function ModelForm({
             <div className="d-flex justify-content-center my-3">
               <div className="row">
                 {/* <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" /> */}
-                {isSubmitting ? (
-                  <CircularProgress />
-                ) : (
-                  <CustomButton
-                    onClick={handleSubmit}
-                    divClass="col"
-                    buttonClass="btn text-nowrap"
-                    buttonLabel="Save Changes"
-                  />
+                {!viewOnly
+                  && (isSubmitting ? (
+                    <CircularProgress />
+                  ) : (
+                    <CustomButton
+                      onClick={handleSubmit}
+                      divClass="col"
+                      buttonClass="btn text-nowrap"
+                      buttonLabel="Save Changes"
+                    />
+                  ))}
+                {viewOnly && (
+                  <>
+                    <div className="col">
+                      <ModalAlert
+                        btnText="Edit Model"
+                        title="Edit Model"
+                        btnClass="btn my-auto text-nowrap"
+                      >
+                        <EditModel
+                          initModelNumber={modelNumber}
+                          initVendor={vendor}
+                          deleteBtn={deleteBtn}
+                        />
+                      </ModalAlert>
+                    </div>
+                    {deleteBtn}
+                  </>
                 )}
-                {deleteBtn}
               </div>
             </div>
           )}

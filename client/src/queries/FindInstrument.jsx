@@ -27,6 +27,8 @@ export default function FindInstrument({
               assetTag
               calibrationFrequency
               comment
+              description
+              id
               instrumentCategories{
                   name
               }
@@ -47,20 +49,21 @@ export function FindInstrumentById({ id, handleResponse }) {
     handleResponse: PropTypes.func.isRequired,
   };
   const FIND_INSTRUMENT = gql`
-      query FindInst($id: Int!) {
-        getInstrumentById(id: $id) {
-          modelNumber
-          vendor
-          serialNumber
-          assetTag
-          calibrationFrequency
-          comment
-          instrumentCategories {
-            name
-          }
+    query FindInst($id: Int!) {
+      getInstrumentById(id: $id) {
+        modelNumber
+        vendor
+        serialNumber
+        assetTag
+        calibrationFrequency
+        comment
+        description
+        instrumentCategories {
+          name
         }
       }
-    `;
+    }
+  `;
   const query = print(FIND_INSTRUMENT);
   const queryName = 'getInstrumentById';
   const getVariables = () => ({ id });

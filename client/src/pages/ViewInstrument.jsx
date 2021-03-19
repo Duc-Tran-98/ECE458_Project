@@ -18,7 +18,7 @@ import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
-import { FindInstrumentById } from '../queries/FindInstrument';
+import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
@@ -42,12 +42,12 @@ export default function DetailedInstrumentView({ onDelete }) {
   const [formState, setFormState] = React.useState({ // our state we display to user
     modelNumber: urlParams.get('modelNumber'),
     vendor: urlParams.get('vendor'),
-    serialNumber: urlParams.get('serialNumber'),
-    description: urlParams.get('description'),
+    serialNumber: '',
+    description: '',
     categories: [],
     comment: '',
-    id: parseInt(urlParams.get('id'), 10),
-    calibrationFrequency: parseInt(urlParams.get('calibrationFrequency'), 10),
+    id: 0,
+    calibrationFrequency: 0,
     assetTag: parseInt(urlParams.get('assetTag'), 10),
   });
   const handleResponse = (response) => { // handle deletion
@@ -76,9 +76,9 @@ export default function DetailedInstrumentView({ onDelete }) {
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const fetchData = (excludeEntry) => {
+  const fetchData = (excludeEntry = null, id = null) => {
     // This will refetch calib history and set it as our state
-    GetCalibHistory({ id: formState.id }).then((data) => {
+    GetCalibHistory({ id: id || formState.id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
         // console.log(item);
@@ -178,32 +178,38 @@ export default function DetailedInstrumentView({ onDelete }) {
   });
 
   const updateState = (response) => { // function to update our state
-    console.log('updating...', response);
     setFetched(false);
     const categories = response.instrumentCategories.map((item) => item.name);
     let {
       comment,
+      description,
       calibrationFrequency,
       modelNumber,
       vendor,
       serialNumber,
       assetTag,
+      id,
     } = response;
+    fetchData(null, id);
     comment = comment || '';
     modelNumber = modelNumber || '';
     vendor = vendor || '';
     serialNumber = serialNumber || '';
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
+    description = description || '';
+    id = id || 0;
     setFormState({
       ...formState,
       comment,
+      description,
       calibrationFrequency,
       categories,
       modelNumber,
       vendor,
       serialNumber,
       assetTag,
+      id,
     });
     setUpdate(false);
     setFetched(true);
@@ -215,7 +221,6 @@ export default function DetailedInstrumentView({ onDelete }) {
       if (!active) {
         return;
       }
-      fetchData(); // get calibhist
       Query({
         query: print(gql`
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
@@ -230,9 +235,8 @@ export default function DetailedInstrumentView({ onDelete }) {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
         },
       });
-      FindInstrumentById({
-        // TODO: UPDATE STATE AFTER USER EDITS INSTS
-        id: formState.id,
+      FindInstrument({
+        assetTag: formState.assetTag,
         handleResponse: updateState,
       });
     })();
@@ -248,23 +252,7 @@ export default function DetailedInstrumentView({ onDelete }) {
         return;
       }
       if (update) {
-        // Query({
-        //   query: print(gql`
-        //     query GetCalibSupport($modelNumber: String!, $vendor: String!) {
-        //       getModel(modelNumber: $modelNumber, vendor: $vendor) {
-        //         supportLoadBankCalibration
-        //       }
-        //     }
-        //   `),
-        //   queryName: 'getModel',
-        //   getVariables: () => ({ modelNumber, vendor }),
-        //   handleResponse: (response) => {
-        //     setSupportsLoadBankWiz(response.supportLoadBankCalibration);
-        //     setUpdate(false);
-        //   },
-        // });
-        console.log('update changed to true');
-        FindInstrumentById({ // TODO: UPDATE STATE AFTER USER EDITS INSTS
+        FindInstrumentById({
           id: formState.id,
           handleResponse: updateState,
         });
@@ -273,7 +261,7 @@ export default function DetailedInstrumentView({ onDelete }) {
     return () => { active = false; };
   }, [update]);
 
-  const genCalibButtons = supportsLoadBankWiz ? ( // TODO: MOVE CALIB ROW FROM ADD BTN TO MODAL
+  const genCalibButtons = supportsLoadBankWiz ? (
     <div className="d-flex flex-row">
       {(user.isAdmin || user.calibrationPermission) && (
         <>
@@ -397,7 +385,7 @@ export default function DetailedInstrumentView({ onDelete }) {
       <MouseOverPopover className="col" message="Go to model's detail view">
         <Link
           className="btn  text-nowrap"
-          to={`/viewModel/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&description=${formState.description}`}
+          to={`/viewModel/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}`}
         >
           View Model
         </Link>

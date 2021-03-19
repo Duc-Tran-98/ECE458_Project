@@ -62,9 +62,9 @@ function ListModels() {
 
   const cellHandler = (e) => {
     const state = { previousUrl: window.location.href };
-    const { modelNumber, vendor, description } = e.row;
+    const { modelNumber, vendor } = e.row;
     history.push(
-      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}`,
       state,
     );
   };

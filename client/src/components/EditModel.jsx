@@ -60,10 +60,10 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
     FindModel({ modelNumber: initModelNumber, vendor: initVendor, handleResponse: handleFindModel });
   }, []); // empty dependency array, only run once on mount
 
-  const updateHistory = (modelNumber, vendor, description) => {
+  const updateHistory = (modelNumber, vendor) => {
     const { state } = history.location;
     history.replace(
-      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}`,
       state,
     ); // change url because link for view instruments have changed;
   };
@@ -87,7 +87,7 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
       handleResponse: (response) => {
         if (response.success) {
           toast.success(response.message);
-          updateHistory(modelNumber, vendor, description);
+          updateHistory(modelNumber, vendor);
         } else {
           toast.error(response.message);
         }

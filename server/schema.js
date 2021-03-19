@@ -16,6 +16,7 @@ const typeDefs = gql`
     getAllModelsWithModelNum(modelNumber: String!): [Model]
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
+    getModelById(id: Int!): Model
     getUniqueVendors: [Model]
     getModelsWithFilter(
       vendor: String
