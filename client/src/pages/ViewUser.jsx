@@ -82,9 +82,29 @@ export default function ViewUser() {
   const deleteBtn = (
     <ModalAlert
       title="Delete User"
-      btnText="Delete User"
-      btnClass={disabledButtons ? 'btn btn-danger disabled' : 'btn btn-danger'}
-      altCloseBtnId="delete-user"
+      btnText=""
+      altBtnId="delete-user-btn"
+      popOverText={disabledButtons ? `You cannot delete user ${formState.userName}` : `Delete ${formState.userName}`}
+      altBtn={(
+        <svg
+          id="delete-user-btn"
+          style={{ cursor: disabledButtons ? 'auto' : 'pointer' }}
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="currentColor"
+          className={
+            disabledButtons
+              ? 'bi bi-trash-fill mt-3 disabled'
+              : 'bi bi-trash-fill mt-3'
+          }
+          viewBox="0 0 16 16"
+        >
+          {/* eslint-disable-next-line max-len */}
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+        </svg>
+      )}
+      altCloseBtnId="close-delete-user-modal"
     >
       <>
         {responseMsg.length === 0 && (
@@ -120,7 +140,11 @@ export default function ViewUser() {
               </div>
               <span className="mx-3" />
               <div className="mt-3">
-                <button className="btn " type="button" id="delete-user">
+                <button
+                  className="btn "
+                  type="button"
+                  id="close-delete-user-modal"
+                >
                   No
                 </button>
               </div>

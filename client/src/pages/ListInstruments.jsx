@@ -118,28 +118,26 @@ export default function ListInstruments() {
     });
     return catArr.join(', ');
   };
-  const headerClass = 'h5'; // TODO: UPdate me to bold (why not apply "fw-bold?")
   const cols = [
     {
-      field: 'vendor', headerName: 'Vendor', width: 120, description: 'Vendor', headerClassName: headerClass,
+      field: 'vendor', headerName: 'Vendor', width: 120, description: 'Vendor',
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 140, description: 'Model Number', headerClassName: headerClass,
+      field: 'modelNumber', headerName: 'Model Number', width: 140, description: 'Model Number',
     },
     {
-      field: 'assetTag', headerName: 'Asset Tag', width: 100, description: 'Asset Tag', headerClassName: headerClass,
+      field: 'assetTag', headerName: 'Asset Tag', width: 100, description: 'Asset Tag',
     },
     {
-      field: 'description', headerName: 'Description', width: 225, description: 'Description', headerClassName: headerClass,
+      field: 'description', headerName: 'Description', width: 225, description: 'Description',
     },
     {
-      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number', headerClassName: headerClass,
+      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number',
     },
     {
       field: 'categories',
       headerName: 'Categories',
       description: 'Categories',
-      headerClassName: headerClass,
       width: 300,
       // hide: true,
       renderCell: (params) => (
@@ -151,7 +149,6 @@ export default function ListInstruments() {
       headerName: 'Comment',
       description: 'Comment',
       width: 400,
-      headerClassName: headerClass,
       hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
@@ -162,7 +159,6 @@ export default function ListInstruments() {
       headerName: 'Calib Date',
       description: 'Calibration Date',
       width: 140,
-      headerClassName: headerClass,
       type: 'date',
     },
     {
@@ -170,7 +166,6 @@ export default function ListInstruments() {
       headerName: 'Calibration Comment',
       description: 'Calibration Comment',
       width: 300,
-      headerClassName: headerClass,
       hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
@@ -181,7 +176,6 @@ export default function ListInstruments() {
       headerName: 'Calib Exp',
       description: 'Calibration Expiration',
       width: 120,
-      headerClassName: headerClass,
       type: 'date',
       renderCell: (params) => (
         <div className="row">

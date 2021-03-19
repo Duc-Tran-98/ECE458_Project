@@ -139,9 +139,13 @@ export default function InstrumentForm({
           <div className="row mx-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h5 text-center">
-                  Model Selection
-                </Form.Label>
+                <div className="d-flex flex-row">
+                  <Form.Label className="h5 text-center">
+                    Model Selection
+                  </Form.Label>
+                  <span className="mx-2" />
+                  {viewOnly && footer}
+                </div>
                 {viewOnly ? (
                   // TODO: Can you edit this during change?
                   <Form.Control
@@ -194,9 +198,7 @@ export default function InstrumentForm({
                 error={errors.assetTag}
               />
             </div>
-            <div className="col-auto me-auto mt-5">
-              {viewOnly && deleteBtn}
-            </div>
+            <div className="col-auto me-auto mt-5">{viewOnly && deleteBtn}</div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
@@ -292,12 +294,6 @@ export default function InstrumentForm({
             <div className="row">
               {showFooter && ( // showfooter = type = edit && user has permissions
                 <>
-                  {/* <CustomButton
-                    onClick={handleDelete}
-                    divClass="col"
-                    buttonClass="btn btn-danger text-nowrap my-auto"
-                    buttonLabel="Delete Instrument"
-                  /> */}
                   {!viewOnly
                     && (isSubmitting ? (
                       <CircularProgress />
@@ -332,9 +328,6 @@ export default function InstrumentForm({
                     </>
                   )}
                 </>
-              )}
-              {viewOnly && (
-                footer
               )}
             </div>
           </div>

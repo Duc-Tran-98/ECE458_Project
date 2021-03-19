@@ -205,26 +205,31 @@ export function EditUserForm({
   };
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
-      <div className="mx-3">
+      <div className="mx-3 py-1">
         <div className="row mt-3">
-          <label htmlFor="validationCustomUsername" className="h5">
-            Username
-          </label>
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="inputGroupPrepend">
-                @
-              </span>
+          <div className="col">
+            <label htmlFor="validationCustomUsername" className="h5">
+              Username
+            </label>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <span className="input-group-text" id="inputGroupPrepend">
+                  @
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                id="validationCustomUsername"
+                aria-describedby="inputGroupPrepend"
+                name="userName"
+                value={formState.userName}
+                disabled
+              />
             </div>
-            <input
-              type="text"
-              className="form-control"
-              id="validationCustomUsername"
-              aria-describedby="inputGroupPrepend"
-              name="userName"
-              value={formState.userName}
-              disabled
-            />
+          </div>
+          <div className="col-auto me-auto mt-4">
+            {deleteBtn}
           </div>
         </div>
         <div className="d-flex flex-row mx-auto">
@@ -313,7 +318,7 @@ export function EditUserForm({
           </div>
         </div>
       </div>
-      <div className="d-flex justify-content-center my-3">
+      <div className="d-flex justify-content-center py-3">
         {loading ? (
           <CircularProgress />
         ) : (
@@ -325,9 +330,6 @@ export function EditUserForm({
             Save Changes
           </button>
         )}
-
-        <span className="mx-2" />
-        {deleteBtn}
         {/* <button
           className="btn btn-danger"
           type="button"

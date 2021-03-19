@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React from 'react';
 import {
   Button,
@@ -23,7 +24,6 @@ export function StateLessModal({
     show: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
-    // eslint-disable-next-line react/require-default-props
     width: PropTypes.string,
   };
   return (
@@ -52,44 +52,26 @@ export function StateLessModal({
 }
 
 function ModalAlert({ // use this modal if you're fine with modal controling its own show state
-  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null,
+  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null, altBtn = null, altBtnId = null,
 }) {
   ModalAlert.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     footer: PropTypes.node,
-    // eslint-disable-next-line react/require-default-props
     width: PropTypes.string,
     btnText: PropTypes.string.isRequired,
-    // eslint-disable-next-line react/require-default-props
     altCloseBtnId: PropTypes.string, // id of other button that you want to close modal
-    // eslint-disable-next-line react/require-default-props
     btnClass: PropTypes.string,
-    // eslint-disable-next-line react/require-default-props
     popOverText: PropTypes.string,
-    // eslint-disable-next-line react/require-default-props
     onShow: PropTypes.func, // call back for when user clicks button
+    altBtn: PropTypes.node, // if you want to replace btn with something else that user will click on
+    altBtnId: PropTypes.string, // id of alt btn so we can assign on click event to it
   };
 
   ModalAlert.defaultProps = {
     footer: null,
   };
   const [show, setShow] = React.useState(false);
-  React.useEffect(() => {
-    let active = true;
-    (async () => {
-      if (!active) {
-        return;
-      }
-      if (altCloseBtnId) {
-        const altBtn = document.getElementById(altCloseBtnId);
-        if (altBtn) {
-          altBtn.onclick = () => setShow(false);
-        }
-      }
-    })();
-    return () => { active = false; };
-  }, [show]);
 
   const handleShow = () => {
     if (onShow) {
@@ -98,26 +80,58 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     setShow(true);
   };
 
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      if (altCloseBtnId) {
+        const alctCloseBtn = document.getElementById(altCloseBtnId);
+        if (alctCloseBtn) {
+          alctCloseBtn.onclick = () => setShow(false);
+        }
+      }
+    })();
+    return () => { active = false; };
+  }, [show]);
+
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      if (altBtnId) {
+        const altBtnEl = document.getElementById(altBtnId);
+        if (altBtnEl) {
+          altBtnEl.onclick = () => handleShow();
+        }
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const displayBtn = altBtn || (
+    <button
+      type="button"
+      className={btnClass}
+      onClick={handleShow}
+    >
+      {btnText}
+    </button>
+  );
+
   return (
     <>
       {popOverText !== '' ? (
         <MouseOverPopover message={popOverText}>
-          <button
-            type="button"
-            className={btnClass}
-            onClick={handleShow}
-          >
-            {btnText}
-          </button>
+          {displayBtn}
         </MouseOverPopover>
       ) : (
-        <button
-          type="button"
-          className={btnClass}
-          onClick={handleShow}
-        >
-          {btnText}
-        </button>
+        displayBtn
       )}
       <Modal
         show={show}

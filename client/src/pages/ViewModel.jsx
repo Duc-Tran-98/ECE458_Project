@@ -1,8 +1,9 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ModelForm from '../components/ModelForm';
 import InfinityScroll from '../components/InfiniteScroll';
@@ -133,10 +134,26 @@ export default function DetailedModelView() {
   };
   const deleteBtn = (
     <ModalAlert
-      btnText="Delete Model"
+      btnText=""
       title="Delete Model"
-      btnClass="btn btn-danger col"
-      altCloseBtnId="delete-model-btn"
+      altBtnId="delete-model-btn"
+      popOverText="Delete this model"
+      altBtn={(
+        <svg
+          id="delete-model-btn"
+          style={{ cursor: 'pointer' }}
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="currentColor"
+          className="bi bi-trash-fill mt-2"
+          viewBox="0 0 16 16"
+        >
+          {/* eslint-disable-next-line max-len */}
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+        </svg>
+      )}
+      altCloseBtnId="close-delete-modal"
     >
       <>
         {responseMsg.length === 0 && (
@@ -156,7 +173,7 @@ export default function DetailedModelView() {
               </div>
               <span className="mx-3" />
               <div className="mt-3">
-                <button className="btn " type="button" id="delete-model-btn">
+                <button className="btn " type="button" id="close-delete-modal">
                   No
                 </button>
               </div>
@@ -189,9 +206,7 @@ export default function DetailedModelView() {
           )}
         </div>
         <div className="row px-3">
-          <div
-            id="scrollableDiv"
-          >
+          <div id="scrollableDiv">
             <InfinityScroll
               title="Instances:"
               titleClassName="px-3 bg-secondary text-light"
@@ -234,19 +249,15 @@ export default function DetailedModelView() {
                       {entry.assetTag}
                     </span>
                     <span className="col-auto me-auto">
-                      <button
-                        type="button"
-                        className="btn "
-                        onClick={() => {
-                          const state = { previousUrl: window.location.href };
-                          history.push(
-                            `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${entry.assetTag}`,
-                            state,
-                          );
+                      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                      <Link
+                        to={{
+                          pathname: `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${entry.assetTag}`,
+                          state: { previousUrl: window.location.href },
                         }}
                       >
                         View Instrument
-                      </button>
+                      </Link>
                     </span>
                   </div>
                 </li>

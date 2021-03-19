@@ -326,8 +326,24 @@ export default function DetailedInstrumentView() {
 
   const deleteBtn = (
     <ModalAlert
-      btnText="Delete Instrument"
-      btnClass="btn text-nowrap btn-danger"
+      btnText=""
+      altBtnId="delete-intrsument-btn"
+      popOverText="Delete this instrument"
+      altBtn={(
+        <svg
+          id="delete-intrsument-btn"
+          style={{ cursor: 'pointer' }}
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="currentColor"
+          className="bi bi-trash-fill mt-2"
+          viewBox="0 0 16 16"
+        >
+          {/* eslint-disable-next-line max-len */}
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+        </svg>
+        )}
       title="Delete Instrument"
       altCloseBtnId="close-del-inst"
       width=""
@@ -363,9 +379,9 @@ export default function DetailedInstrumentView() {
 
   const footer = (
     <>
-      <MouseOverPopover className="col" message="Go to model's detail view">
+      <MouseOverPopover message="Go to model's detail view">
         <Link
-          className="btn  text-nowrap"
+          className="text-nowrap"
           to={`/viewModel/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}`}
         >
           View Model

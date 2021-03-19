@@ -119,7 +119,7 @@ const Login = ({ handleLogin }) => {
         <button className="btn mx-auto" type="submit">
           Log In
         </button>
-        <div className="mx-auto mt-3">
+        <div className="mx-auto my-3">
           <OAuthLogin />
         </div>
       </div>

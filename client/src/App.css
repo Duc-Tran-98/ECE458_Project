@@ -10,6 +10,10 @@ body {
   border: 1px solid black;
 }
 
+html body {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
 #root .btn.btn-danger{
   background: #fc2311;
   color: white;
@@ -18,6 +22,10 @@ body {
 .modal .btn.btn-danger{
   background: #fc2311;
   color: white;
+}
+
+#root .MuiDataGrid-colCellTitle{
+  font-weight: bold;
 }
 
 .delete-container {

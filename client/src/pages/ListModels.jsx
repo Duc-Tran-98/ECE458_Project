@@ -75,20 +75,18 @@ function ListModels() {
     });
     return catArr.join(', ');
   };
-  const headerClass = 'h5';
   const cols = [
     {
       field: 'vendor',
       headerName: 'Vendor',
       width: 150,
-      headerClassName: headerClass,
       description: 'Vendor',
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 150, headerClassName: headerClass, description: 'Model Number',
+      field: 'modelNumber', headerName: 'Model Number', width: 150, description: 'Model Number',
     },
     {
-      field: 'description', headerName: 'Description', width: 350, headerClassName: headerClass, description: 'Description',
+      field: 'description', headerName: 'Description', width: 350, description: 'Description',
     },
     {
       field: 'comment',
@@ -99,13 +97,11 @@ function ListModels() {
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
       ),
-      headerClassName: headerClass,
     },
     {
       field: 'calibrationFrequency',
       headerName: 'Calib Freq',
       description: 'Calibration Frequency',
-      headerClassName: headerClass,
       width: 120,
       renderCell: (params) => (
         <div className="row">
@@ -137,7 +133,6 @@ function ListModels() {
       field: 'categories',
       headerName: 'Categories',
       description: 'Categories',
-      headerClassName: headerClass,
       width: 350,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>

@@ -240,6 +240,9 @@ export function ServerPaginationGrid({
     }
   };
 
+  const rowsPerPage = total > 100 ? [25, 50, 100, total] : [25, 50, total];
+  // console.log(rowsPerPage);
+
   return (
     <div className="rounded" style={{ zIndex: 0 }}>
       <div
@@ -259,8 +262,10 @@ export function ServerPaginationGrid({
             ref={csvLink}
           />
         )}
-        <div className="sticky-top bg-offset rounded" style={{ zIndex: 40 }}>{headerElement}</div>
-        <DataGrid
+        <div className="sticky-top bg-offset rounded" style={{ zIndex: 40 }}>
+          {headerElement}
+        </div>
+        <DataGrid // TODO: DATAGRID CANNOT HANDLE MORE THAN 100 ROWS AT A TIME!
           rows={rows}
           columns={cols}
           pagination
@@ -271,7 +276,7 @@ export function ServerPaginationGrid({
           onPageChange={handlePageChange}
           loading={loading}
           className=""
-          rowsPerPageOptions={[25, 50, 100]}
+          rowsPerPageOptions={rowsPerPage}
           locateText={{
             toolbarDensity: 'Size',
             toolbarDensityLabel: 'Size',
@@ -290,14 +295,12 @@ export function ServerPaginationGrid({
           }}
           hideFooterSelectedRowCount
           components={{
-            Toolbar: () => (
-              showToolBar ? (
-                <>
-                  <ColumnsToolbarButton />
-                  <DensitySelector />
-                </>
-              ) : null
-            ),
+            Toolbar: () => (showToolBar ? (
+              <>
+                <ColumnsToolbarButton />
+                <DensitySelector />
+              </>
+            ) : null),
             LoadingOverlay: CustomLoadingOverlay,
             Pagination: CustomPagination,
           }}
@@ -323,54 +326,44 @@ export function ServerPaginationGrid({
               className="dropdown-menu bg-light"
               aria-labelledby="dropdownMenu2"
             >
-              <li>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 25 })}
-                >
-                  25
-                </button>
-              </li>
-              <li>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 50 })}
-                >
-                  50
-                </button>
-              </li>
-              <li>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 100 })}
-                >
-                  100
-                </button>
-              </li>
+              {rowsPerPage.map((el) => (
+                <li key={el}>
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    onClick={() => handlePageSizeChange({ page: initPage, pageSize: el })}
+                  >
+                    {el === total ? 'All' : el}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           {showImport && (
-          <button
-            type="button"
-            className="btn ms-3"
-            onClick={() => {
-              history.push('/import');
-            }}
-          >
-            Import
-          </button>
+            <button
+              type="button"
+              className="btn ms-3"
+              onClick={() => {
+                history.push('/import');
+              }}
+            >
+              Import
+            </button>
           )}
           {handleExport && (
             <>
               {loadingExport && <CircularProgress />}
               {filename && filename.includes('model') && (
-                <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
+                <ExportModels
+                  setLoading={setLoadingExport}
+                  filterOptions={filterOptions}
+                />
               )}
               {filename && filename.includes('instrument') && (
-                <ExportInstruments setLoading={setLoadingExport} filterOptions={filterOptions} />
+                <ExportInstruments
+                  setLoading={setLoadingExport}
+                  filterOptions={filterOptions}
+                />
               )}
             </>
           )}

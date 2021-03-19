@@ -180,6 +180,7 @@ export default function ModelForm({
                 error={errors.modelNumber}
               />
             </div>
+            {viewOnly && <div className="col-auto me-auto mt-5">{deleteBtn}</div>}
           </div>
           {/* TODO: Calibration frequency ONLY accept numeric values */}
           <div className="row mx-3 border-top border-dark mt-3">
@@ -313,7 +314,6 @@ export default function ModelForm({
                         />
                       </ModalAlert>
                     </div>
-                    {deleteBtn}
                   </>
                 )}
               </div>
