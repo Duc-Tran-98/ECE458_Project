@@ -257,12 +257,34 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
   return res.send(message);
 });
 
+const parseResponse = (promp) => {
+  const split = promp.split(/\s+/);
+  const voltage = split[0];
+  const current = split[1];
+  let status = split[2];
+  let frequency = null;
+  if (current === 'AC') {
+    [, , frequency, status] = split;
+  }
+
+  return {
+    voltage,
+    current,
+    frequency,
+    status,
+  };
+};
+
 app.get(`${whichRoute}/klufeStatus`, async (req, res) => {
   const shell = await ssh.shell();
   await shell.on('data', (data) => {
     if (data.includes('admin3@k5700:')) {
-      console.log(`${data}`);
-      res.send(`${data}`);
+      const regex = new RegExp('\\\x1B[[0-9;]*m');
+      const split = data.toString().split(regex);
+      const prompt = split[2];
+      console.log(`prompt: ${prompt}`);
+      const responseObj = parseResponse(prompt);
+      res.send(responseObj);
     }
   });
 });
