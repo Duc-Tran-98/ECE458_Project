@@ -1,8 +1,10 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
+import CreateUser from './CreateUser';
+import ModalAlert from '../components/ModalAlert';
 // import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
@@ -11,6 +13,7 @@ export default function UsersTable() {
   let urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [update, setUpdate] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
@@ -84,6 +87,20 @@ export default function UsersTable() {
       renderCell: (params) => showTableBoolean(params),
     },
   ];
+
+  const createBtn = (
+    <ModalAlert
+      title="Create User"
+      btnText="Create User"
+      btnClass="btn m-2 text-nowrap"
+    >
+      <CreateUser onCreation={() => {
+        setUpdate(true);
+        setUpdate(false);
+      }}
+      />
+    </ModalAlert>
+  );
   return (
     <>
       <ServerPaginationGrid
@@ -91,14 +108,13 @@ export default function UsersTable() {
         cellHandler={(e) => {
           const state = { previousUrl: window.location.href };
           history.push(
-            `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
+            `/viewUser/?userName=${e.row.userName}`,
             state,
           );
         }}
+        shouldUpdate={update}
         headerElement={(
-          <Link className="btn  m-2" to="/addUser">
-            Create User
-          </Link>
+          createBtn
         )}
         cols={cols}
         initPage={initPage}

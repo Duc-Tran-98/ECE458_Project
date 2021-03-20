@@ -10,7 +10,16 @@ body {
   border: 1px solid black;
 }
 
+html body {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
 #root .btn.btn-danger{
+  background: #fc2311;
+  color: white;
+}
+
+.modal .btn.btn-danger{
   background: #fc2311;
   color: white;
 }
@@ -45,6 +54,7 @@ body {
 input:disabled{ /* Styling for disabled input*/
   color: #14213d;
   font-weight: bold;
+  font-size: 0.9rem;
 }
 
 textarea:disabled{ /* Styling for disabled textarea*/
@@ -63,8 +73,12 @@ textarea:disabled{ /* Styling for disabled textarea*/
 
 .bg-theme {
   background: #e5e5e5;
-  width: 92vw;
+  margin: 25px 25px 25px 25px;
   /* Platinum color */
+}
+
+.rendering-zone .MuiDataGrid-row{
+  cursor: pointer;
 }
 
 .bg-offset{
@@ -167,7 +181,12 @@ div.MuiPaper-root.MuiPaper-elevation0{
 /* TODO: Improve this styling */
 .customMuiHeader {
   color: #000;
-  font-size: large;
+  font-weight: bold;
+}
+
+#root .MuiDataGrid-colCellTitle{
+  font-weight: bold; 
+  /* alternatively, don't need class customMUIHeader */
 }
 
 .MuiDataGrid-row:hover {

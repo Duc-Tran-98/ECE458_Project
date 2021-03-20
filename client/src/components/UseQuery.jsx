@@ -9,7 +9,7 @@ export function setAuthHeader(token) { // This is to let backend know request ar
   axios.defaults.headers.post.authorization = token || '';
 }
 
-const Query = ({ // TODO: MAKE SURE REQUEST ARE SECURED WITH TOKEN
+const Query = ({
   query, queryName, getVariables, handleResponse, handleError,
 }) => {
   Query.propTypes = {

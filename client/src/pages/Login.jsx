@@ -75,7 +75,7 @@ const Login = ({ handleLogin }) => {
       <div className="row mx-3 d-flex justify-content-center">
         <div className="col-6 mt-3">
           <Form.Group controlId="formUsername">
-            <Form.Label className="h4">Username</Form.Label>
+            <Form.Label className="h5">Username</Form.Label>
             <Form.Control
               type="text"
               placeholder="Username"
@@ -91,7 +91,7 @@ const Login = ({ handleLogin }) => {
       <div className="row mx-3 mt-3 d-flex justify-content-center">
         <div className="col-6">
           <Form.Group>
-            <Form.Label className="h4">Password</Form.Label>
+            <Form.Label className="h5">Password</Form.Label>
             <Form.Control
               type="password"
               name="password"
@@ -119,7 +119,7 @@ const Login = ({ handleLogin }) => {
         <button className="btn mx-auto" type="submit">
           Log In
         </button>
-        <div className="mx-auto mt-3">
+        <div className="mx-auto my-3">
           <OAuthLogin />
         </div>
       </div>
