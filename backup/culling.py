@@ -94,6 +94,8 @@ def filterFiles(allFiles, weeks, days, totalIntervals, keepInRange):
 def main():
   filePath = getPath()
   allFiles = getFilesInPath(path=filePath)
+  print(f"filePath: {filePath}")
+  print(f"allFiles: {allFiles}")
   filterFiles(allFiles=allFiles, weeks=1, days=0, totalIntervals=3, keepInRange=1)
   filterFiles(allFiles=allFiles, weeks=4, days=2, totalIntervals=12, keepInRange=1)
 
