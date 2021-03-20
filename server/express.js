@@ -4,6 +4,8 @@ const cors = require('cors');
 const multer = require('multer');
 const Stream = require('stream');
 const { Client } = require('ssh2');
+const SSH2Promise = require('ssh2-promise');
+
 const runBarcode = require('./datasources/barcodeGenerator');
 
 const {
@@ -21,6 +23,7 @@ const sshConfig = {
 console.log('Using SSHConfig: ');
 console.log(sshConfig);
 const conn = new Client();
+const ssh = new SSH2Promise(sshConfig);
 
 const app = express();
 app.use(cors());
@@ -254,22 +257,14 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
   return res.send(message);
 });
 
-app.get(`${whichRoute}/klufeStatus`, (req, res) => {
-  conn.on('ready', () => {
-    console.log('Client :: ready');
-    conn.shell((err, stream) => {
-      if (err) throw err;
-      stream.on('close', () => {
-        console.log('Stream :: close');
-      }).on('data', (data) => {
-        // TODO: Parse data for validation (or send back to frontend?)
-        if (data.includes('admin3@k5700:')) {
-          console.log(`${data}`);
-          // res.send(`${data}`); // TODO: Debug this line throws an errors
-        }
-      });
-    });
-  }).connect(sshConfig);
+app.get(`${whichRoute}/klufeStatus`, async (req, res) => {
+  const shell = await ssh.shell();
+  await shell.on('data', (data) => {
+    if (data.includes('admin3@k5700:')) {
+      console.log(`${data}`);
+      res.send(`${data}`);
+    }
+  });
 });
 
 app.listen({ port: expressPort }, () => console.log(`🚀 Express Server ready at http://localhost:${expressPort}, whichRoute = ${whichRoute}`));
