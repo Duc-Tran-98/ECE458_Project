@@ -70,7 +70,7 @@ export default function InfinityScroll({
         endMessage={<div className="my-4" />}
       >
         {items.length === 0 && (
-          <div className="my-3 bg-light text-center h4">No Instances</div>
+          <div className="my-3 bg-light text-center h5">No Instances</div>
         )}
         {renderItems === null ? (
           items.map((entry) => (

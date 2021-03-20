@@ -23,7 +23,7 @@ export default function ProfileIcon({ handleSignOut }) {
   };
 
   return (
-    <NavDropdown title={welcomeMessage}>
+    <NavDropdown title={welcomeMessage} className="h5">
       <div className="shadow-sm p-3 rounded">
         <NavDropdown.Item onClick={handleClick} className="text-center border-bottom border-dark">
           <PersonIcon fontSize="large" />

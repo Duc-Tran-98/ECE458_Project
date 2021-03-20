@@ -11,6 +11,9 @@ import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
 import { CustomButton, CustomInput } from './CustomFormComponents';
+import ModalAlert from './ModalAlert';
+// eslint-disable-next-line import/no-cycle
+import EditModel from './EditModel';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -60,7 +63,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, handleDelete, type,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -76,7 +79,7 @@ export default function ModelForm({
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
-    handleDelete: PropTypes.func,
+    deleteBtn: PropTypes.node,
     type: PropTypes.string,
   };
   ModelForm.defaultProps = {
@@ -89,7 +92,7 @@ export default function ModelForm({
     supportKlufeCalibration: false,
     categories: [],
     diffSubmit: false,
-    handleDelete: () => {},
+    deleteBtn: null,
     type: 'create',
   };
 
@@ -130,16 +133,11 @@ export default function ModelForm({
         errors,
         touched,
       }) => (
-
-        <Form
-          noValidate
-          onSubmit={handleSubmit}
-        >
+        <Form noValidate onSubmit={handleSubmit}>
           <div className="row mx-3">
-
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4">Vendor</Form.Label>
+                <Form.Label className="h5">Vendor</Form.Label>
                 {viewOnly ? (
                   <Form.Control
                     type="text"
@@ -154,7 +152,10 @@ export default function ModelForm({
                     queryName={queryName}
                     onInputChange={(e, v) => {
                       if (v !== null) {
-                        setFieldValue('vendor', v.inputValue ? v.inputValue : v.vendor);
+                        setFieldValue(
+                          'vendor',
+                          v.inputValue ? v.inputValue : v.vendor,
+                        );
                       }
                     }}
                     label="Choose a vendor"
@@ -170,7 +171,7 @@ export default function ModelForm({
             <div className="col mt-3">
               <CustomInput
                 controlId="formModelNumber"
-                className="h4"
+                className="h5"
                 label="Model Number"
                 name="modelNumber"
                 type="text"
@@ -182,13 +183,14 @@ export default function ModelForm({
                 error={errors.modelNumber}
               />
             </div>
+            {viewOnly && <div className="col-auto me-auto mt-5">{deleteBtn}</div>}
           </div>
           {/* TODO: Calibration frequency ONLY accept numeric values */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <CustomInput
                 controlId="formCalibrationFrequency"
-                className="h4 text-nowrap"
+                className="h5 text-nowrap"
                 label="Calibration Frequency"
                 name="calibrationFrequency"
                 type="number"
@@ -203,7 +205,7 @@ export default function ModelForm({
             <div className="col mt-3">
               <CustomInput
                 controlId="formDescription"
-                className="h4"
+                className="h5"
                 label="Description"
                 name="description"
                 type="text"
@@ -219,7 +221,7 @@ export default function ModelForm({
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Group controlId="formComment">
-                <Form.Label className="h4">Comment</Form.Label>
+                <Form.Label className="h5">Comment</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
@@ -237,30 +239,32 @@ export default function ModelForm({
             </div>
             <div className="col mt-3">
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h4 col" htmlFor="adminCheck">
+                <label className="form-check-label h5 col" htmlFor="load-bank-support">
                   Can model be calibrated with load bank?
                 </label>
                 <Form.Control
                   className="form-check-input"
                   type="checkbox"
-                  id="adminCheck"
+                  id="load-bank-support"
                   name="supportLoadBankCalibration"
                   checked={values.supportLoadBankCalibration}
                   onChange={handleChange}
                   disabled={disabled}
                 />
                 <div className="col">
-                  <strong>{values.supportLoadBankCalibration ? 'Yes' : 'No'}</strong>
+                  <strong>
+                    {values.supportLoadBankCalibration ? 'Yes' : 'No'}
+                  </strong>
                 </div>
               </div>
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h4 col" htmlFor="adminCheck">
+                <label className="form-check-label h5 col" htmlFor="klufe-support">
                   Can model be calibrated with Klufe 5700?
                 </label>
                 <Form.Control
                   className="form-check-input"
                   type="checkbox"
-                  id="adminCheck"
+                  id="klufe-support"
                   name="supportKlufeCalibration"
                   checked={values.supportKlufeCalibration}
                   onChange={handleChange}
@@ -275,7 +279,7 @@ export default function ModelForm({
           {/* TODO: Ensure tags are added into the db (not rendering on view)  */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <Form.Label className="h4">Categories</Form.Label>
+              <Form.Label className="h5">Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
@@ -287,20 +291,51 @@ export default function ModelForm({
               />
             </div>
           </div>
-          {((typeof viewOnly === 'undefined' || !viewOnly) && !diffSubmit && type === 'create') && (
-            <div className="d-flex justify-content-center mt-3 mb-3">
-              {isSubmitting
-                ? <CircularProgress />
-                : <Button type="submit" onClick={handleSubmit}>Add Model</Button>}
-            </div>
+          {(typeof viewOnly === 'undefined' || !viewOnly)
+            && !diffSubmit
+            && type === 'create' && (
+              <div className="d-flex justify-content-center mt-3 mb-3">
+                {isSubmitting ? (
+                  <CircularProgress />
+                ) : (
+                  <Button type="submit" onClick={handleSubmit}>
+                    Add Model
+                  </Button>
+                )}
+              </div>
           )}
           {showFooter && (
             <div className="d-flex justify-content-center my-3">
               <div className="row">
-                <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" />
-                {isSubmitting
-                  ? <CircularProgress />
-                  : <CustomButton onClick={handleSubmit} divClass="col" buttonClass="btn text-nowrap" buttonLabel="Save Changes" />}
+                {/* <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" /> */}
+                {!viewOnly
+                  && (isSubmitting ? (
+                    <CircularProgress />
+                  ) : (
+                    <CustomButton
+                      onClick={handleSubmit}
+                      divClass="col"
+                      buttonClass="btn text-nowrap"
+                      buttonLabel="Save Changes"
+                    />
+                  ))}
+                {viewOnly && (
+                  <>
+                    <div className="col">
+                      <ModalAlert
+                        btnText="Edit Model"
+                        title="Edit Model"
+                        btnClass="btn my-auto text-nowrap"
+                      >
+                        <EditModel
+                          initModelNumber={modelNumber}
+                          initVendor={vendor}
+                          deleteBtn={deleteBtn}
+                        />
+                      </ModalAlert>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}

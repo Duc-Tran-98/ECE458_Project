@@ -92,7 +92,7 @@ export default function FormTest() {
           >
             <CustomInput
               controlId="formModelNumber"
-              className="h4"
+              className="h5"
               label="Model Number"
               name="modelNumber"
               type="text"

@@ -28,6 +28,7 @@ module.exports = {
     getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
     // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
+    getModelById: async (_, { id }, { dataSources }) => await dataSources.modelAPI.getModelById({ id }),
     // eslint-disable-next-line max-len
     getModelsWithFilter: async (
       _,
@@ -86,6 +87,7 @@ module.exports = {
     getInstrumentByAssetTag: async (_, { assetTag }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentByAssetTag({
       assetTag,
     }),
+    getInstrumentById: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentById({ id }),
     getInstrumentsWithFilter: async (
       _,
       {
@@ -121,12 +123,12 @@ module.exports = {
     }),
     getCalibrationEventsByInstrument: async (
       _,
-      { modelNumber, vendor, serialNumber },
+      { modelNumber, vendor, assetTag },
       { dataSources },
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({
       modelNumber,
       vendor,
-      serialNumber,
+      assetTag,
     }),
     getCalibrationEventsByReferenceId: async (
       _,
