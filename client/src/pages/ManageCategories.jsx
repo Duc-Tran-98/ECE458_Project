@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { toast } from 'react-toastify';
 import { ServerPaginationGrid } from '../components/UITable';
-import ModalAlert from '../components/ModalAlert';
+import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import GetModelCategories, { CountModelCategories, CountModelsAttached } from '../queries/GetModelCategories';
 import GetInstrumentCategories, { CountInstrumentCategories, CountInstrumentsAttached } from '../queries/GetInstrumentCategories';
 import DeleteModelCategory from '../queries/DeleteModelCategory';
@@ -35,6 +35,7 @@ function ManageCategories() {
   const [loading, setLoading] = React.useState(false);
   const [num, setNum] = React.useState(0);
   const [newCategory, setNewCategory] = React.useState('');
+  const [showEdit, setShowEdit] = React.useState(false);
   const user = React.useContext(UserContext);
 
   const getNumAttached = async () => {
@@ -65,6 +66,7 @@ function ManageCategories() {
 
   const handleResponse = (response) => {
     if (response.success) {
+      setShowEdit(false);
       toast.success(response.message, {
         toastId: Math.random(),
       });
@@ -195,45 +197,52 @@ function ManageCategories() {
   );
 
   const editBtn = (
-    <ModalAlert title="Edit Category" btnText="Edit" width=" ">
-      <div className="d-flex flex-row text-center m-3">
-        <h5>{`Change name of category: ${category}`}</h5>
-      </div>
-      <div className="d-flex justify-content-center">
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            <div className="row">
-              <input
-                id="editCat"
-                value={newCategory}
-                className="m-2 col-auto my-auto"
-                onChange={(e) => {
-                  if (!e.target.value.includes(' ')) {
-                    setNewCategory(e.target.value);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.code === 'Enter' && newCategory.length > 0) {
+    <>
+      <button type="button" className="btn" onClick={() => setShowEdit(true)}>
+        Edit
+      </button>
+      <StateLessModal title="Edit Category" width="" handleClose={() => setShowEdit(false)} show={showEdit}>
+        <div className="d-flex flex-row text-center m-3">
+          <h5>{`Change name of category: ${category}`}</h5>
+        </div>
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <div className="row">
+                <input
+                  id="editCat"
+                  value={newCategory}
+                  className="m-2 col-auto my-auto"
+                  onChange={(e) => {
+                    if (!e.target.value.includes(' ')) {
+                      setNewCategory(e.target.value);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.code === 'Enter' && newCategory.length > 0) {
+                      setNewCategory('');
+                      handleEdit(document.getElementById('editCat').value);
+                    }
+                  }}
+                />
+                <button
+                  className="btn m-3 col"
+                  type="button"
+                  onClick={() => {
+                    setNewCategory('');
                     handleEdit(document.getElementById('editCat').value);
-                  }
-                }}
-              />
-              <button
-                className="btn m-3 col"
-                type="button"
-                onClick={() => {
-                  handleEdit(document.getElementById('editCat').value);
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </ModalAlert>
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </StateLessModal>
+    </>
   );
 
   const cols = [
