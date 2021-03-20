@@ -26,7 +26,7 @@ def getOperatingSystem():
 
 def getPath():
   operatingSystem = getOperatingSystem()
-  print(f"operatingSystem: {operatingSystem}") # "nt" on Windows, "posix" on vcm
+  # print(f"operatingSystem: {operatingSystem}") # "nt" on Windows, "posix" on vcm
   return WINDOWS_PATH if operatingSystem == WINDOWS_NAME else LINUX_PATH
 
 def getFilesInPath(path):
@@ -72,6 +72,7 @@ def removeExtraFiles(filesInsideIntervals, keepInRange):
     if (len(fileList) > keepInRange):
       for index in range(1, len(fileList)):
         removeFile = fileList[index]
+        print(f"removing: {removeFile}")
         remove(removeFile)
 
 def filterFiles(allFiles, weeks, days, totalIntervals, keepInRange):
@@ -87,7 +88,7 @@ def filterFiles(allFiles, weeks, days, totalIntervals, keepInRange):
     if intervalIndex >= 0:
       filesInsideIntervals[intervalIndex].append(f)
 
-  printIntervalFiles(intervals=intervals, filesInsideIntervals=filesInsideIntervals)
+  # printIntervalFiles(intervals=intervals, filesInsideIntervals=filesInsideIntervals)
   removeExtraFiles(filesInsideIntervals=filesInsideIntervals, keepInRange=keepInRange)
 
 def main():
