@@ -106,6 +106,7 @@ const typeDefs = gql`
     calibrationFrequency: Int
     categories: [Category]
     supportLoadBankCalibration: Boolean!
+    supportKlufeCalibration: Boolean!
   }
 
   type ModelOutput {
@@ -130,6 +131,7 @@ const typeDefs = gql`
     id: Int!
     assetTag: Int!
     supportLoadBankCalibration: Boolean
+    supportKlufeCalibration: Boolean
   }
 
   type FilteredInstrument {
@@ -258,6 +260,7 @@ const typeDefs = gql`
       comment: String
       calibrationFrequency: Int
       supportLoadBankCalibration: Boolean!
+      supportKlufeCalibration: Boolean!
       categories: [String]
     ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
@@ -269,6 +272,7 @@ const typeDefs = gql`
       comment: String
       calibrationFrequency: Int
       supportLoadBankCalibration: Boolean!
+      supportKlufeCalibration: Boolean!
       categories: [String]
     ): String!
 
@@ -319,6 +323,14 @@ const typeDefs = gql`
       user: String!
       comment: String
       loadBankData: String!
+    ): String!
+
+    addKlufeCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      klufeData: String!
     ): String!
 
     #bulk import

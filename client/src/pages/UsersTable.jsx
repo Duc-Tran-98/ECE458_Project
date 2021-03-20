@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
-import MouseOverPopover from '../components/PopOver';
+// import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
   const history = useHistory();
@@ -20,6 +21,9 @@ export default function UsersTable() {
       setInitPage(pg);
     }
   });
+  // FIXME: Style icon in center, currently div does nothing...
+  const showTableBoolean = (params) => (params.value ? <div className="text-center"><CheckCircleIcon /></div> : <div> </div>);
+  const headerClass = 'customMuiHeader';
   const cols = [
     {
       field: 'id',
@@ -28,58 +32,56 @@ export default function UsersTable() {
       hide: true,
       disableColumnMenu: true,
       type: 'number',
+      headerClassName: headerClass,
     },
     {
       field: 'firstName',
       headerName: 'First Name',
       width: 200,
+      headerClassName: headerClass,
     },
     {
       field: 'lastName',
       headerName: 'Last Name',
       width: 200,
+      headerClassName: headerClass,
     },
     {
       field: 'userName',
       headerName: 'User Name',
       width: 200,
+      headerClassName: headerClass,
     },
     {
       field: 'isAdmin',
       headerName: 'Admin',
-      width: 100,
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
     {
       field: 'modelPermission',
-      headerName: 'Model Permission',
-      width: 175,
+      headerName: 'Model Perm',
+      description: 'Model Permission',
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
     {
       field: 'instrumentPermission',
-      headerName: 'Instrument Permission',
-      width: 175,
+      headerName: 'Inst Perm',
+      description: 'Instrument Permission',
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
     {
       field: 'calibrationPermission',
-      headerName: 'Calibration Permission',
-      width: 180,
-    },
-    {
-      field: 'view',
-      headerName: 'View',
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: () => (
-        <div className="row">
-          <div className="col mt-1">
-            <MouseOverPopover message="View User">
-              <button type="button" className="btn">
-                View
-              </button>
-            </MouseOverPopover>
-          </div>
-        </div>
-      ),
+      headerName: 'Calib Perm',
+      description: 'Calibration Permission',
+      width: 140,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
     },
   ];
   return (
@@ -87,13 +89,11 @@ export default function UsersTable() {
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
-          if (e.field === 'view') {
-            const state = { previousUrl: window.location.href };
-            history.push(
-              `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
-              state,
-            );
-          }
+          const state = { previousUrl: window.location.href };
+          history.push(
+            `/viewUser/?userName=${e.row.userName}&isAdmin=${e.row.isAdmin}&modelPermission=${e.row.modelPermission}&instrumentPermission=${e.row.instrumentPermission}&calibrationPermission=${e.row.calibrationPermission}`,
+            state,
+          );
         }}
         headerElement={(
           <Link className="btn  m-2" to="/addUser">

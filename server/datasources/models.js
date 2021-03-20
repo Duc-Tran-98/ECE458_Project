@@ -94,6 +94,7 @@ class ModelAPI extends DataSource {
     comment,
     calibrationFrequency,
     supportLoadBankCalibration,
+    supportKlufeCalibration,
     categories,
   }) {
     const response = { message: '', success: false };
@@ -123,6 +124,7 @@ class ModelAPI extends DataSource {
             comment,
             calibrationFrequency,
             supportLoadBankCalibration,
+            supportKlufeCalibration,
           },
           { where: { id } },
         );
@@ -394,6 +396,7 @@ class ModelAPI extends DataSource {
     comment,
     calibrationFrequency,
     supportLoadBankCalibration = false,
+    supportKlufeCalibration = false,
     categories = [],
   }) {
     const response = { message: '', success: false };
@@ -422,6 +425,7 @@ class ModelAPI extends DataSource {
           comment,
           calibrationFrequency,
           supportLoadBankCalibration,
+          supportKlufeCalibration,
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });

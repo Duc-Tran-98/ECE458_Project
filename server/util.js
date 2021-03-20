@@ -138,6 +138,10 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      supportKlufeCalibration: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
@@ -478,6 +482,7 @@ module.exports.createStore = async (useTestDB) => {
       fileLocation: SQL.STRING,
       fileName: SQL.STRING,
       loadBankData: SQL.TEXT,
+      klufeData: SQL.TEXT,
     },
     { freezeTableName: true },
     {

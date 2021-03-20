@@ -1,10 +1,8 @@
 import React from 'react';
-import GenerateBarcodes from '../components/GenerateBarcodes';
+import XGridTest from '../components/XGridTest';
 
 export default function ComponentTest() {
   return (
-    <div>
-      <GenerateBarcodes filterOptions={null} />
-    </div>
+    <XGridTest />
   );
 }
