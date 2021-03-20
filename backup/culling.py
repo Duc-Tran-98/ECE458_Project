@@ -9,8 +9,10 @@
 # Bletsch commented - any policy will do (rotation is best)
 # Idea, just go through list 3x for each time scope and remove any extras
 
-from os import name
+from os import name, path
 import glob
+from datetime import datetime as dt
+import re
 
 # Static strings for operating
 PATH_TO_PROJECT = "C:\\Users\\smith\\Desktop\\ECE458\\ECE458_Project"
@@ -29,11 +31,25 @@ def getPath():
 def getFilesInPath(path):
   return glob.glob(f"{path}/backup_*.zip")
 
+def getAllWeekly(allFiles):
+  # Helper to get all weekly files
+  for f in allFiles:
+    filePath, fileName = path.split(f)
+    fileDate = re.search('\d{8}', fileName).group(0)
+    dateObj = dt.strptime(fileDate, "%Y%m%d")
+    print(f"fileName: {fileName}\tfileDate: {fileDate}\tdateObj: {dateObj}")
+
+
+
+# def removeExtraWeekly(allFiles):
+#   # Helper to remove extra weekly files
+#   weekly = getAllWeekly(allFiles=allFiles)
+
+
 def main():
   filePath = getPath()
   allFiles = getFilesInPath(path=filePath)
-  for f in allFiles:
-    print(f)
+  getAllWeekly(allFiles=allFiles)
 
 if __name__ == "__main__":
     # execute only if run as a script
