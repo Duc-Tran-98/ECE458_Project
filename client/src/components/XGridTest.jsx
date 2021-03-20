@@ -55,7 +55,10 @@ const rows = [
 export default function XGridTest() {
   React.useEffect(() => {
     setTimeout(() => {
-      $('.MuiDataGrid-main').find('div').first().remove();
+      $('.MuiDataGrid-main')
+        .find(":contains('Material-UI X Unlicensed product')")
+        .first()
+        .remove(); // remove watermark
     }, 2);
   }, []);
   return (
