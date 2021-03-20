@@ -56,14 +56,18 @@ class BulkDataAPI extends DataSource {
         const categories = currentModel.categories;
         const supportLoadBankCalibration = currentModel.loadBankSupport;
 
-        const createdModel = await this.store.models.create({
-          vendor,
-          modelNumber,
-          description,
-          comment,
-          calibrationFrequency,
-          supportLoadBankCalibration,
-        }, { transaction: t });
+        const createdModel = await this.store.models.create(
+          {
+            vendor,
+            modelNumber,
+            description,
+            comment,
+            calibrationFrequency,
+            supportLoadBankCalibration,
+            supportKlufeCalibration: false,
+          },
+          { transaction: t },
+        );
         const modelId = createdModel.dataValues.id;
         if (categories) {
           for (let j = 0; j < categories.length; j += 1) {
