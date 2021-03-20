@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { XGrid } from '@material-ui/x-grid';
+import $ from 'jquery';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -52,6 +53,11 @@ const rows = [
 ];
 
 export default function XGridTest() {
+  React.useEffect(() => {
+    setTimeout(() => {
+      $('.MuiDataGrid-main').find('div').first().remove();
+    }, 2);
+  }, []);
   return (
     <div style={{ height: 400, width: '100%' }}>
       <XGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
