@@ -1,9 +1,11 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable prefer-const */
 /* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+// eslint-disable-next-line import/no-cycle
 import InstrumentForm from './InstrumentForm';
 import UserContext from './UserContext';
 import EditInstrumentQuery from '../queries/EditInstrument';
@@ -16,8 +18,9 @@ export default function EditInstrument({
   id,
   initAssetTag,
   description,
-  handleDelete,
   footer,
+  deleteBtn,
+  viewOnly = false,
 }) {
   EditInstrument.propTypes = {
     initVendor: PropTypes.string.isRequired,
@@ -25,12 +28,12 @@ export default function EditInstrument({
     initSerialNumber: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     description: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func,
     footer: PropTypes.node,
     initAssetTag: PropTypes.number.isRequired,
+    deleteBtn: PropTypes.node.isRequired,
+    viewOnly: PropTypes.bool,
   };
   EditInstrument.defaultProps = {
-    handleDelete: null,
     footer: null,
   };
   const history = useHistory();
@@ -52,7 +55,12 @@ export default function EditInstrument({
   const handleFindInstrument = (response) => {
     const categories = response.instrumentCategories.map((item) => item.name);
     let {
-      comment, calibrationFrequency, modelNumber, vendor, serialNumber, assetTag,
+      comment,
+      calibrationFrequency,
+      modelNumber,
+      vendor,
+      serialNumber,
+      assetTag,
     } = response;
     comment = comment || '';
     modelNumber = modelNumber || '';
@@ -61,7 +69,14 @@ export default function EditInstrument({
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
     setFormState({
-      ...formState, comment, calibrationFrequency, categories, modelNumber, vendor, serialNumber, assetTag,
+      ...formState,
+      comment,
+      calibrationFrequency,
+      categories,
+      modelNumber,
+      vendor,
+      serialNumber,
+      assetTag,
     });
     setCompleteFetch(true);
   };
@@ -70,14 +85,19 @@ export default function EditInstrument({
     let { assetTag } = formState;
     assetTag = parseInt(assetTag, 10);
     FindInstrument({
-      assetTag, handleResponse: handleFindInstrument,
+      assetTag,
+      handleResponse: handleFindInstrument,
     });
   }, []); // empty dependency array, only run once on mount
 
-  const updateHistory = (modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency) => {
+  const updateHistory = (
+    modelNumber,
+    vendor,
+    assetTag,
+  ) => {
     const { state } = history.location;
     history.replace(
-      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}$assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency}`,
+      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}`,
       state,
     );
   };
@@ -89,14 +109,16 @@ export default function EditInstrument({
       assetTag,
       vendor,
       serialNumber,
-      description,
       categories,
-      calibrationFrequency,
     } = values;
     const handleResponse = (response) => {
       if (response.success) {
         toast.success(response.message);
-        updateHistory(modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency);
+        updateHistory(
+          modelNumber,
+          vendor,
+          assetTag,
+        );
       } else {
         toast.error(response.message);
       }
@@ -127,23 +149,24 @@ export default function EditInstrument({
   return (
     <>
       {completeFetch && (
-      <>
-        <InstrumentForm
-          modelNumber={modelNumber}
-          vendor={vendor}
-          comment={comment}
-          serialNumber={serialNumber}
-          categories={categories}
-          viewOnly={!(user.isAdmin || user.instrumentPermission)}
-          description={description}
-          calibrationFrequency={calibrationFrequency}
-          assetTag={assetTag}
-          type="edit"
-          handleFormSubmit={handleSubmit}
-          handleDelete={handleDelete}
-          footer={footer}
-        />
-      </>
+        <>
+          <InstrumentForm
+            modelNumber={modelNumber}
+            vendor={vendor}
+            comment={comment}
+            serialNumber={serialNumber}
+            categories={categories}
+            viewOnly={!(user.isAdmin || user.instrumentPermission) || viewOnly}
+            description={description}
+            calibrationFrequency={calibrationFrequency}
+            assetTag={assetTag}
+            id={id}
+            type="edit"
+            deleteBtn={deleteBtn}
+            handleFormSubmit={handleSubmit}
+            footer={footer}
+          />
+        </>
       )}
     </>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /*
 This class deals with how to display lots of calibration events
 */
@@ -12,7 +13,8 @@ export default function CalibrationTable({
   deleteRow,
   onChangeCalibRow,
   showSaveButton,
-  onSaveClick,
+  onSaveClick = () => undefined,
+  showDeleteBtn = true,
 }) {
   CalibrationTable.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
@@ -21,14 +23,16 @@ export default function CalibrationTable({
     onChangeCalibRow: PropTypes.func.isRequired,
     showSaveButton: PropTypes.bool, // whether or not to show a save button on rows
     onSaveClick: PropTypes.func, // what to call when save button clicked
+    // eslint-disable-next-line react/require-default-props
+    showDeleteBtn: PropTypes.bool,
   };
   CalibrationTable.defaultProps = {
     showSaveButton: false,
-    onSaveClick: () => undefined,
   };
   // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (
     <CalibrationRow
+      showDeleteBtn={showDeleteBtn}
       key={entry.id}
       handleDelete={deleteRow}
       id={entry.id}

@@ -11,7 +11,22 @@ const filter = createFilterOptions();
 
 export default function AsyncSuggest({
   query,
-  queryName, onInputChange, label, getOptionLabel, getOptionSelected, value, allowAdditions, isInvalid, invalidMsg, validMsg, multiple, multipleValues, isComboBox, getVariables, filterRes,
+  queryName,
+  onInputChange,
+  label,
+  getOptionLabel,
+  getOptionSelected,
+  value,
+  allowAdditions,
+  isInvalid,
+  invalidMsg,
+  validMsg,
+  multiple,
+  multipleValues,
+  isComboBox,
+  getVariables,
+  filterRes,
+  handleKeyPress, // what to do when user clicks key on input
 }) {
   AsyncSuggest.propTypes = {
     query: PropTypes.string.isRequired, // what query to perform
@@ -32,6 +47,7 @@ export default function AsyncSuggest({
     isComboBox: PropTypes.bool, // whether or not display should be textfield input or combo box
     getVariables: PropTypes.func, // pass variables to queries
     filterRes: PropTypes.func, // how to filter response
+    handleKeyPress: PropTypes.func,
   };
   AsyncSuggest.defaultProps = {
     value: null,
@@ -43,6 +59,7 @@ export default function AsyncSuggest({
     invalidMsg: `Please ${label}`,
     validMsg: 'Looks Good',
     filterRes: null,
+    handleKeyPress: () => undefined,
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
@@ -88,31 +105,34 @@ export default function AsyncSuggest({
       active = false;
     };
   }, [open]);
-  const genLook = (params) => (
-    isComboBox ? (
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      <TextField {...params} label={label} variant="outlined" size="small" />
-    ) : (
-      <div ref={params.InputProps.ref}>
-        <Form.Control
-          type="text"
-          required
-          placeholder={label}
-          isInvalid={isInvalid}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-          {...params.inputProps}
-        />
-        <>{loading ? <LinearProgress /> : null}</>
-        <Form.Control.Feedback type="invalid">
-          {invalidMsg}
-        </Form.Control.Feedback>
-        <Form.Control.Feedback type="valid">
-          {validMsg}
-        </Form.Control.Feedback>
-      </div>
-    )
-  );
-  if (allowAdditions) { // If we want use to add new suggestions
+  const genLook = (params) => (isComboBox ? (
+    <TextField
+        // eslint-disable-next-line react/jsx-props-no-spreading
+      {...params}
+      label={label}
+      variant="outlined"
+      size="small"
+      onKeyDown={(e) => handleKeyPress(e)}
+    />
+  ) : (
+    <div ref={params.InputProps.ref}>
+      <Form.Control
+        type="text"
+        required
+        placeholder={label}
+        isInvalid={isInvalid}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+        {...params.inputProps}
+      />
+      <>{loading ? <LinearProgress /> : null}</>
+      <Form.Control.Feedback type="invalid">
+        {invalidMsg}
+      </Form.Control.Feedback>
+      <Form.Control.Feedback type="valid">{validMsg}</Form.Control.Feedback>
+    </div>
+  ));
+  if (allowAdditions) {
+    // If we want use to add new suggestions
     return (
       <Autocomplete
         style={{ width: '100%' }}
@@ -173,7 +193,7 @@ export default function AsyncSuggest({
         renderInput={(params) => (
           <>
             <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
+              // eslint-disable-next-line react/jsx-props-no-spreading
               {...params}
               variant="outlined"
               size="small"

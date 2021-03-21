@@ -27,7 +27,7 @@ export default function UserForm({
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
       <div className="row mx-3">
         <div className="col mt-3">
-          <label htmlFor="validationCustom01" className="h4">
+          <label htmlFor="validationCustom01" className="h5">
             First Name
           </label>
           <input
@@ -43,7 +43,7 @@ export default function UserForm({
           <div className="valid-feedback">Looks good!</div>
         </div>
         <div className="col mt-3">
-          <label htmlFor="validationCustom02" className="h4">
+          <label htmlFor="validationCustom02" className="h5">
             Last name
           </label>
           <input
@@ -59,7 +59,7 @@ export default function UserForm({
           <div className="valid-feedback">Looks good!</div>
         </div>
         <div className="col mt-3">
-          <label htmlFor="validationCustomUsername" className="h4">
+          <label htmlFor="validationCustomUsername" className="h5">
             Username
           </label>
           <div className="input-group">
@@ -85,7 +85,7 @@ export default function UserForm({
       </div>
       <div className="row mx-3 border-top border-dark mt-3">
         <div className="col mt-3">
-          <label htmlFor="validationCustom03" className="h4">
+          <label htmlFor="validationCustom03" className="h5">
             Email
           </label>
           <input
@@ -101,7 +101,7 @@ export default function UserForm({
           <div className="invalid-feedback">Please provide a valid email.</div>
         </div>
         <div className="col mt-3">
-          <label htmlFor="validationCustom04" className="h4">
+          <label htmlFor="validationCustom04" className="h5">
             Password
           </label>
           <input
@@ -119,7 +119,7 @@ export default function UserForm({
         </div>
         <div className="col mt-3">
           <div className="form-check form-switch mt-4">
-            <label className="form-check-label h4 col" htmlFor="adminCheck">
+            <label className="form-check-label h5 col" htmlFor="adminCheck">
               Admin user?
             </label>
 
@@ -146,17 +146,16 @@ export default function UserForm({
 }
 
 export function EditUserForm({
-  onChangeCheckbox, formState, onDeleteClick,
+  onChangeCheckbox, formState, deleteBtn,
 }) {
   EditUserForm.propTypes = {
     onChangeCheckbox: PropTypes.func,
-    onDeleteClick: PropTypes.func,
     // eslint-disable-next-line react/forbid-prop-types
     formState: PropTypes.object.isRequired,
+    deleteBtn: PropTypes.node.isRequired,
   };
   EditUserForm.defaultProps = {
     onChangeCheckbox: () => undefined,
-    onDeleteClick: () => undefined,
   };
   const user = useContext(UserContext);
   const history = useHistory();
@@ -195,7 +194,7 @@ export function EditUserForm({
           toast.success('Successfully updated permissions');
           const { state } = history.location;
           history.replace(
-            `/viewUser/?userName=${userName}&isAdmin=${isAdmin}&modelPermission=${modelPermission}&instrumentPermission=${instrumentPermission}&calibrationPermission=${calibrationPermission}`,
+            `/viewUser/?userName=${userName}`,
             state,
           );
         } else {
@@ -206,32 +205,37 @@ export function EditUserForm({
   };
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
-      <div className="mx-3">
+      <div className="mx-3 py-1">
         <div className="row mt-3">
-          <label htmlFor="validationCustomUsername" className="h4">
-            Username
-          </label>
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="inputGroupPrepend">
-                @
-              </span>
+          <div className="col">
+            <label htmlFor="validationCustomUsername" className="h5">
+              Username
+            </label>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <span className="input-group-text" id="inputGroupPrepend">
+                  @
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                id="validationCustomUsername"
+                aria-describedby="inputGroupPrepend"
+                name="userName"
+                value={formState.userName}
+                disabled
+              />
             </div>
-            <input
-              type="text"
-              className="form-control"
-              id="validationCustomUsername"
-              aria-describedby="inputGroupPrepend"
-              name="userName"
-              value={formState.userName}
-              disabled
-            />
+          </div>
+          <div className="col-auto me-auto mt-4">
+            {deleteBtn}
           </div>
         </div>
         <div className="d-flex flex-row mx-auto">
           <div className="d-flex flex-column mx-auto">
             <div className="form-check form-switch mt-3">
-              <label className="form-check-label h4" htmlFor="adminCheck">
+              <label className="form-check-label h5" htmlFor="adminCheck">
                 Admin user?
               </label>
               <input
@@ -249,7 +253,7 @@ export function EditUserForm({
             </div>
             <div className="form-check form-switch mt-3">
               <label
-                className="form-check-label h4"
+                className="form-check-label h5"
                 htmlFor="modelPermissionCheck"
               >
                 Model Permissions?
@@ -271,7 +275,7 @@ export function EditUserForm({
           <div className="d-flex flex-column mx-auto">
             <div className="form-check form-switch mt-3">
               <label
-                className="form-check-label h4"
+                className="form-check-label h5"
                 htmlFor="instrumentPermissionCheck"
               >
                 Instrument Permissions?
@@ -291,7 +295,7 @@ export function EditUserForm({
             </div>
             <div className="form-check form-switch mt-3">
               <label
-                className="form-check-label h4"
+                className="form-check-label h5"
                 htmlFor="calibrationPermissionCheck"
               >
                 Calibration Permissions?
@@ -314,7 +318,7 @@ export function EditUserForm({
           </div>
         </div>
       </div>
-      <div className="d-flex justify-content-center my-3">
+      <div className="d-flex justify-content-center py-3">
         {loading ? (
           <CircularProgress />
         ) : (
@@ -326,16 +330,14 @@ export function EditUserForm({
             Save Changes
           </button>
         )}
-
-        <span className="mx-2" />
-        <button
+        {/* <button
           className="btn btn-danger"
           type="button"
           onClick={onDeleteClick}
           disabled={disabledButtons}
         >
           Delete User
-        </button>
+        </button> */}
       </div>
     </form>
   );

@@ -2,19 +2,17 @@ import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+// eslint-disable-next-line import/no-cycle
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
 import EditModelQuery from '../queries/EditModel';
 
-export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
+export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
   EditModel.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func,
-  };
-  EditModel.defaultProps = {
-    handleDelete: null,
+    deleteBtn: PropTypes.node.isRequired,
   };
 
   const [modelId, setModelId] = useState(0);
@@ -65,10 +63,10 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     FindModel({ modelNumber: initModelNumber, vendor: initVendor, handleResponse: handleFindModel });
   }, []); // empty dependency array, only run once on mount
 
-  const updateHistory = (modelNumber, vendor, description) => {
+  const updateHistory = (modelNumber, vendor) => {
     const { state } = history.location;
     history.replace(
-      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}`,
       state,
     ); // change url because link for view instruments have changed;
   };
@@ -93,7 +91,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       handleResponse: (response) => {
         if (response.success) {
           toast.success(response.message);
-          updateHistory(modelNumber, vendor, description);
+          updateHistory(modelNumber, vendor);
         } else {
           toast.error(response.message);
         }
@@ -130,7 +128,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             validated={false}
             diffSubmit
             viewOnly={!(user.isAdmin || user.modelPermission)}
-            handleDelete={handleDelete}
+            deleteBtn={deleteBtn}
             type="edit"
           />
         </>

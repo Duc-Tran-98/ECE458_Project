@@ -16,6 +16,7 @@ const typeDefs = gql`
     getAllModelsWithModelNum(modelNumber: String!): [Model]
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
+    getModelById(id: Int!): Model
     getUniqueVendors: [Model]
     getModelsWithFilter(
       vendor: String
@@ -47,6 +48,7 @@ const typeDefs = gql`
       serialNumber: String!
     ): Instrument
     getInstrumentByAssetTag(assetTag: Int!): Instrument
+    getInstrumentById(id: Int!): Instrument
     getInstrumentsWithFilter(
       vendor: String
       modelNumber: String
@@ -64,7 +66,7 @@ const typeDefs = gql`
     getCalibrationEventsByInstrument(
       modelNumber: String!
       vendor: String!
-      serialNumber: String!
+      assetTag: Int!
     ): [CalibrationEvent]
     getCalibrationEventsByReferenceId(
       calibrationHistoryIdReference: Int!

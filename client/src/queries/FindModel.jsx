@@ -36,3 +36,37 @@ export default function FindModel({
     query, queryName, getVariables, handleResponse,
   });
 }
+
+export function FindModelById({ id, handleResponse }) {
+  FindModelById.propTypes = {
+    id: PropTypes.number.isRequired,
+    handleResponse: PropTypes.func.isRequired,
+  };
+  const FIND_MODEL = gql`
+    query FindModel($id: Int!) {
+      getModelById(id: $id) {
+        description
+        comment
+        id
+        modelNumber
+        vendor
+        calibrationFrequency
+        supportLoadBankCalibration
+        categories {
+          name
+        }
+      }
+    }
+  `;
+  const query = print(FIND_MODEL);
+  const queryName = 'getModelById';
+  const getVariables = () => ({
+    id,
+  });
+  Query({
+    query,
+    queryName,
+    getVariables,
+    handleResponse,
+  });
+}

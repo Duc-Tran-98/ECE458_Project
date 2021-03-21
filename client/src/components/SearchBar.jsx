@@ -156,6 +156,20 @@ export default function SearchBar({
     };
   }, [initSerialNumber]);
 
+  const handleKeyPress = (e) => {
+    if (e.code === 'Enter') {
+      onSearch({
+        vendors: vendors?.vendor || null,
+        modelNumbers: modelNumbers?.modelNumber || null,
+        descriptions: descriptions?.description || null,
+        modelCategories,
+        instrumentCategories,
+        filterSerialNumber: serialNumber?.serialNumber || null,
+        assetTag: assetTag?.assetTag || null,
+      });
+    }
+  };
+
   const baseSearchRow = () => (
     <>
       <div className="m-2 w-25 my-auto pt-1">
@@ -175,6 +189,7 @@ export default function SearchBar({
           value={vendors}
           isComboBox
           isInvalid={false}
+          handleKeyPress={handleKeyPress}
         />
       </div>
       <div className="m-2 w-25 my-auto pt-1">
@@ -194,6 +209,7 @@ export default function SearchBar({
           value={modelNumbers}
           isComboBox
           isInvalid={false}
+          handleKeyPress={handleKeyPress}
         />
       </div>
       <div className="m-2 w-25 my-auto pt-1">
@@ -215,6 +231,7 @@ export default function SearchBar({
           multiple
           multipleValues={modelCategories}
           isInvalid={false}
+          handleKeyPress={handleKeyPress}
         />
       </div>
       <div className="m-2 w-25 my-auto pt-1">
@@ -234,6 +251,7 @@ export default function SearchBar({
           value={descriptions}
           isComboBox
           isInvalid={false}
+          handleKeyPress={handleKeyPress}
         />
       </div>
       {/* {dropdownMenu} */}
@@ -281,6 +299,7 @@ export default function SearchBar({
               isComboBox
               value={serialNumber}
               isInvalid={false}
+              handleKeyPress={handleKeyPress}
             />
           </div>
           <div className="m-2 w-25 my-auto pt-1">
@@ -300,6 +319,7 @@ export default function SearchBar({
               isComboBox
               value={assetTag}
               isInvalid={false}
+              handleKeyPress={handleKeyPress}
             />
           </div>
           <div className="m-2 w-25 my-auto pt-1">
@@ -319,6 +339,7 @@ export default function SearchBar({
               multiple
               multipleValues={instrumentCategories}
               isInvalid={false}
+              handleKeyPress={handleKeyPress}
             />
           </div>
           {/* This is for matching the spacing of the above row */}

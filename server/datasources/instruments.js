@@ -2,6 +2,7 @@
 // This file deals with what methods a model model should have
 const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
+// eslint-disable-next-line no-unused-vars
 const runBarcode = require('./barcodeGenerator');
 
 function validateInstrument({
@@ -66,9 +67,54 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
+  async getInstrumentById({ id }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.store.instruments.findOne({
+      where: { id },
+      include: {
+        model: this.store.instrumentCategories,
+        as: 'instrumentCategories',
+        through: 'instrumentCategoryRelationships',
+      },
+    });
+    let instrumentInfo = null;
+    if (instrument) {
+      const modRef = instrument.dataValues.modelReference;
+      await this.store.models
+        .findOne({ where: { id: modRef } })
+        .then((model) => {
+          instrumentInfo = {
+            vendor: instrument.dataValues.vendor,
+            modelNumber: instrument.dataValues.modelNumber,
+            serialNumber: instrument.dataValues.serialNumber,
+            modelReference: instrument.dataValues.modelReference,
+            calibrationFrequency: instrument.dataValues.calibrationFrequency,
+            instrumentCategories: instrument.dataValues.instrumentCategories,
+            comment: instrument.dataValues.comment,
+            description: instrument.dataValues.description,
+            id: instrument.dataValues.id,
+            assetTag: instrument.dataValues.assetTag,
+            supportLoadBankCalibration:
+              model.dataValues.supportLoadBankCalibration,
+          };
+          return instrumentInfo;
+        });
+    }
+    return instrumentInfo;
+  }
+
   async getInstrumentsWithFilter({
     // eslint-disable-next-line max-len
-    vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, limit = null, offset = null,
+    vendor,
+    modelNumber,
+    description,
+    serialNumber,
+    assetTag,
+    modelCategories,
+    instrumentCategories,
+    limit = null,
+    offset = null,
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -126,18 +172,48 @@ class InstrumentAPI extends DataSource {
 
       // eslint-disable-next-line prefer-const
       let filters = [];
-      if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
-      if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
-      if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
-      if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+      if (vendor) {
+        filters.push({
+          vendor: SQL.where(
+            SQL.fn('LOWER', SQL.col('vendor')),
+            'LIKE',
+            `%${vendor.toLowerCase()}%`,
+          ),
+        });
+      }
+      if (modelNumber) {
+        filters.push({
+          modelNumber: SQL.where(
+            SQL.fn('LOWER', SQL.col('modelNumber')),
+            'LIKE',
+            `%${modelNumber.toLowerCase()}%`,
+          ),
+        });
+      }
+      if (description) {
+        filters.push({
+          description: SQL.where(
+            SQL.fn('LOWER', SQL.col('description')),
+            'LIKE',
+            `%${description.toLowerCase()}%`,
+          ),
+        });
+      }
+      if (serialNumber) {
+        filters.push({
+          serialNumber: SQL.where(
+            SQL.fn('LOWER', SQL.col('serialNumber')),
+            'LIKE',
+            `%${serialNumber.toLowerCase()}%`,
+          ),
+        });
+      }
       if (assetTag) filters.push({ assetTag });
 
       let instruments = await this.store.instruments.findAndCountAll({
         include: includeData,
         where: filters,
-        order: [
-          ['assetTag', 'ASC'],
-        ],
+        order: [['assetTag', 'ASC']],
       });
       response.instruments = instruments.rows;
       response.total = instruments.count;
@@ -146,10 +222,14 @@ class InstrumentAPI extends DataSource {
         let instrumentsWithCategories = [];
         const checker = (arr, target) => target.every((v) => arr.includes(v));
         for (let i = 0; i < instruments.length; i += 1) {
-          const hasModelCategories = instruments[i].dataValues.modelCategories.map((a) => a.name);
+          const hasModelCategories = instruments[
+            i
+          ].dataValues.modelCategories.map((a) => a.name);
           if (checker(hasModelCategories, checkModelCategories)) {
             // eslint-disable-next-line max-len
-            const hasInstrumentCategories = instruments[i].dataValues.instrumentCategories.map((a) => a.name);
+            const hasInstrumentCategories = instruments[
+              i
+            ].dataValues.instrumentCategories.map((a) => a.name);
             if (checker(hasInstrumentCategories, checkInstrumentCategories)) {
               instrumentsWithCategories.push(instruments[i]);
             }
@@ -159,12 +239,15 @@ class InstrumentAPI extends DataSource {
         if (limit > 0 && response.total > limit) {
           // eslint-disable-next-line no-param-reassign
           if (offset === null) offset = 0;
-          instrumentsWithCategories = instrumentsWithCategories.slice(offset, offset + limit);
+          instrumentsWithCategories = instrumentsWithCategories.slice(
+            offset,
+            offset + limit,
+          );
         }
         response.instruments = instrumentsWithCategories;
       }
     } else {
-    // eslint-disable-next-line prefer-const
+      // eslint-disable-next-line prefer-const
       let includeData = [];
       includeData.push({
         subQuery: false,
@@ -201,16 +284,48 @@ class InstrumentAPI extends DataSource {
 
       // eslint-disable-next-line prefer-const
       let filters = [];
-      if (vendor) filters.push({ vendor: SQL.where(SQL.fn('LOWER', SQL.col('vendor')), 'LIKE', `%${vendor.toLowerCase()}%`) });
-      if (modelNumber) filters.push({ modelNumber: SQL.where(SQL.fn('LOWER', SQL.col('modelNumber')), 'LIKE', `%${modelNumber.toLowerCase()}%`) });
-      if (description) filters.push({ description: SQL.where(SQL.fn('LOWER', SQL.col('description')), 'LIKE', `%${description.toLowerCase()}%`) });
-      if (serialNumber) filters.push({ serialNumber: SQL.where(SQL.fn('LOWER', SQL.col('serialNumber')), 'LIKE', `%${serialNumber.toLowerCase()}%`) });
+      if (vendor) {
+        filters.push({
+          vendor: SQL.where(
+            SQL.fn('LOWER', SQL.col('vendor')),
+            'LIKE',
+            `%${vendor.toLowerCase()}%`,
+          ),
+        });
+      }
+      if (modelNumber) {
+        filters.push({
+          modelNumber: SQL.where(
+            SQL.fn('LOWER', SQL.col('modelNumber')),
+            'LIKE',
+            `%${modelNumber.toLowerCase()}%`,
+          ),
+        });
+      }
+      if (description) {
+        filters.push({
+          description: SQL.where(
+            SQL.fn('LOWER', SQL.col('description')),
+            'LIKE',
+            `%${description.toLowerCase()}%`,
+          ),
+        });
+      }
+      if (serialNumber) {
+        filters.push({
+          serialNumber: SQL.where(
+            SQL.fn('LOWER', SQL.col('serialNumber')),
+            'LIKE',
+            `%${serialNumber.toLowerCase()}%`,
+          ),
+        });
+      }
       if (assetTag) filters.push({ assetTag });
 
       let lim = limit;
       let off = offset;
       if (modelCategories || instrumentCategories) {
-      // eslint-disable-next-line no-param-reassign
+        // eslint-disable-next-line no-param-reassign
         lim = null;
         // eslint-disable-next-line no-param-reassign
         off = null;
@@ -218,9 +333,7 @@ class InstrumentAPI extends DataSource {
       let instruments = await this.store.instruments.findAndCountAll({
         include: includeData,
         where: filters,
-        order: [
-          ['assetTag', 'ASC'],
-        ],
+        order: [['assetTag', 'ASC']],
         subQuery: false,
         limit: lim,
         offset: off,
@@ -324,7 +437,9 @@ class InstrumentAPI extends DataSource {
       offset,
       where: { modelNumber, vendor },
     });
-    let total = await this.store.instruments.findAndCountAll({ where: { modelNumber, vendor } });
+    let total = await this.store.instruments.findAndCountAll({
+      where: { modelNumber, vendor },
+    });
     total = total.count;
     return { rows: instruments, total };
   }
@@ -364,22 +479,24 @@ class InstrumentAPI extends DataSource {
     });
     let instrumentInfo = null;
     if (instrument) {
-      await this.store.models.findOne({ where: { modelNumber, vendor } }).then((model) => {
-        instrumentInfo = {
-          vendor: instrument.dataValues.vendor,
-          modelNumber: instrument.dataValues.modelNumber,
-          serialNumber: instrument.dataValues.serialNumber,
-          modelReference: instrument.dataValues.modelReference,
-          calibrationFrequency: instrument.dataValues.calibrationFrequency,
-          instrumentCategories: instrument.dataValues.instrumentCategories,
-          comment: instrument.dataValues.comment,
-          description: instrument.dataValues.description,
-          id: instrument.dataValues.id,
-          assetTag: instrument.dataValues.assetTag,
-          supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
-          supportKlufeCalibration: model.dataValues.supportKlufeCalibration,
-        };
-      });
+      await this.store.models
+        .findOne({ where: { modelNumber, vendor } })
+        .then((model) => {
+          instrumentInfo = {
+            vendor: instrument.dataValues.vendor,
+            modelNumber: instrument.dataValues.modelNumber,
+            serialNumber: instrument.dataValues.serialNumber,
+            modelReference: instrument.dataValues.modelReference,
+            calibrationFrequency: instrument.dataValues.calibrationFrequency,
+            instrumentCategories: instrument.dataValues.instrumentCategories,
+            comment: instrument.dataValues.comment,
+            description: instrument.dataValues.description,
+            id: instrument.dataValues.id,
+            assetTag: instrument.dataValues.assetTag,
+            supportLoadBankCalibration:
+              model.dataValues.supportLoadBankCalibration,
+          };
+        });
     }
     return instrumentInfo;
   }
@@ -398,33 +515,45 @@ class InstrumentAPI extends DataSource {
     let instrumentInfo = null;
     if (instrument) {
       const modRef = instrument.dataValues.modelReference;
-      await this.store.models.findOne({ where: { id: modRef } }).then((model) => {
-        instrumentInfo = {
-          vendor: instrument.dataValues.vendor,
-          modelNumber: instrument.dataValues.modelNumber,
-          serialNumber: instrument.dataValues.serialNumber,
-          modelReference: instrument.dataValues.modelReference,
-          calibrationFrequency: instrument.dataValues.calibrationFrequency,
-          instrumentCategories: instrument.dataValues.instrumentCategories,
-          comment: instrument.dataValues.comment,
-          description: instrument.dataValues.description,
-          id: instrument.dataValues.id,
-          assetTag: instrument.dataValues.assetTag,
-          supportLoadBankCalibration: model.dataValues.supportLoadBankCalibration,
-          supportKlufeCalibration: model.dataValues.supportKlufeCalibration,
-        };
-        return instrumentInfo;
-      });
+      await this.store.models
+        .findOne({ where: { id: modRef } })
+        .then((model) => {
+          instrumentInfo = {
+            vendor: instrument.dataValues.vendor,
+            modelNumber: instrument.dataValues.modelNumber,
+            serialNumber: instrument.dataValues.serialNumber,
+            modelReference: instrument.dataValues.modelReference,
+            calibrationFrequency: instrument.dataValues.calibrationFrequency,
+            instrumentCategories: instrument.dataValues.instrumentCategories,
+            comment: instrument.dataValues.comment,
+            description: instrument.dataValues.description,
+            id: instrument.dataValues.id,
+            assetTag: instrument.dataValues.assetTag,
+            supportLoadBankCalibration:
+              model.dataValues.supportLoadBankCalibration,
+          };
+          return instrumentInfo;
+        });
     }
     return instrumentInfo;
   }
 
   async editInstrument({
-    modelNumber, vendor, serialNumber, comment, assetTag, id, categories = [],
+    modelNumber,
+    vendor,
+    serialNumber,
+    comment,
+    assetTag,
+    id,
+    categories = [],
   }) {
     const response = { message: '', success: true };
     const validation = validateInstrument({
-      modelNumber, vendor, serialNumber, comment, assetTag,
+      modelNumber,
+      vendor,
+      serialNumber,
+      comment,
+      assetTag,
     });
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -452,22 +581,29 @@ class InstrumentAPI extends DataSource {
     }); // Get all instruments associated with model
     if (instruments) {
       instruments.rows.forEach((element) => {
-        if (element.serialNumber === serialNumber && serialNumber !== '' && element.id !== id) {
+        if (
+          element.serialNumber === serialNumber
+          && serialNumber !== ''
+          && element.id !== id
+        ) {
           response.message = `ERROR: The instrument ${vendor} ${modelNumber} ${serialNumber} already exists!`;
           response.success = false;
         } // check that there are no unique conflicts, but exclude ourselves
       });
     }
-    await this.store.instruments.findOne({ where: { assetTag } }).then(
-      (instrument) => {
+    await this.store.instruments
+      .findOne({ where: { assetTag } })
+      .then((instrument) => {
         if (instrument) {
-          if (instrument.dataValues.assetTag === assetTag && instrument.dataValues.id !== id) {
+          if (
+            instrument.dataValues.assetTag === assetTag
+            && instrument.dataValues.id !== id
+          ) {
             response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists!`;
             response.success = false;
           }
         }
-      },
-    );
+      });
     if (response.success) {
       // eslint-disable-next-line prefer-destructuring
       const calibrationFrequency = model[0].dataValues.calibrationFrequency;
@@ -526,11 +662,20 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrument({
-    modelNumber, vendor, assetTag = null, serialNumber, comment, categories = [],
+    modelNumber,
+    vendor,
+    assetTag = null,
+    serialNumber,
+    comment,
+    categories = [],
   }) {
     const response = { message: '', success: true, assetTag: 0 };
     const validation = validateInstrument({
-      modelNumber, vendor, serialNumber, comment, assetTag,
+      modelNumber,
+      vendor,
+      serialNumber,
+      comment,
+      assetTag,
     });
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -549,20 +694,23 @@ class InstrumentAPI extends DataSource {
       .then(async (model) => {
         if (model) {
           if (serialNumber) {
-            await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
-              async (instrument) => {
-                if (instrument) {
-                  response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
-                  response.assetTag = -1;
-                  response.success = false;
-                }
-              },
-            );
+            await this.getInstrument({
+              modelNumber,
+              vendor,
+              serialNumber,
+            }).then(async (instrument) => {
+              if (instrument) {
+                response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
+                response.assetTag = -1;
+                response.success = false;
+              }
+            });
           }
           let newAssetTag;
           if (assetTag) {
-            await this.store.instruments.findOne({ where: { assetTag } }).then(
-              (instrument) => {
+            await this.store.instruments
+              .findOne({ where: { assetTag } })
+              .then((instrument) => {
                 if (instrument) {
                   response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists`;
                   response.assetTag = -1;
@@ -571,8 +719,7 @@ class InstrumentAPI extends DataSource {
                   newAssetTag = assetTag;
                   response.assetTag = newAssetTag;
                 }
-              },
-            );
+              });
           } else {
             const assetTags = await this.store.instruments.findAll({
               attributes: ['assetTag'],
@@ -587,10 +734,7 @@ class InstrumentAPI extends DataSource {
           }
           if (response.success) {
             const modelReference = model.dataValues.id;
-            const {
-              description,
-              calibrationFrequency,
-            } = model.dataValues;
+            const { description, calibrationFrequency } = model.dataValues;
             const newInstrumentData = {
               modelReference,
               vendor,
@@ -601,18 +745,22 @@ class InstrumentAPI extends DataSource {
               description,
               assetTag: newAssetTag,
             };
-            const created = await this.store.instruments.create(newInstrumentData);
+            const created = await this.store.instruments.create(
+              newInstrumentData,
+            );
             const instrumentId = created.dataValues.id;
             categories.forEach(async (category) => {
-              await this.getInstrumentCategory({ name: category }).then((result) => {
-                if (result) {
-                  const instrumentCategoryId = result.dataValues.id;
-                  this.store.instrumentCategoryRelationships.create({
-                    instrumentId,
-                    instrumentCategoryId,
-                  });
-                }
-              });
+              await this.getInstrumentCategory({ name: category }).then(
+                (result) => {
+                  if (result) {
+                    const instrumentCategoryId = result.dataValues.id;
+                    this.store.instrumentCategoryRelationships.create({
+                      instrumentId,
+                      instrumentCategoryId,
+                    });
+                  }
+                },
+              );
             });
             response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
             response.assetTag = newAssetTag;
@@ -717,7 +865,10 @@ class InstrumentAPI extends DataSource {
   }
 
   async addCategoryToInstrument({
-    vendor, modelNumber, serialNumber, category,
+    vendor,
+    modelNumber,
+    serialNumber,
+    category,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -726,32 +877,37 @@ class InstrumentAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
-      if (value) {
-        const name = category;
-        await this.getInstrumentCategory({ name }).then((result) => {
-          if (result) {
-            const instrumentId = value.dataValues.id;
-            const instrumentCategoryId = result.dataValues.id;
-            this.store.instrumentCategoryRelationships.create({
-              instrumentId,
-              instrumentCategoryId,
-            });
-            response.success = true;
-            response.message = `Category ${category} successfully added to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
-          } else {
-            response.message = `ERROR: Cannot add category ${category}, to instrument because it does not exist!`;
-          }
-        });
-      } else {
-        response.message = `ERROR: cannot add category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
-      }
-    });
+    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
+      async (value) => {
+        if (value) {
+          const name = category;
+          await this.getInstrumentCategory({ name }).then((result) => {
+            if (result) {
+              const instrumentId = value.dataValues.id;
+              const instrumentCategoryId = result.dataValues.id;
+              this.store.instrumentCategoryRelationships.create({
+                instrumentId,
+                instrumentCategoryId,
+              });
+              response.success = true;
+              response.message = `Category ${category} successfully added to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+            } else {
+              response.message = `ERROR: Cannot add category ${category}, to instrument because it does not exist!`;
+            }
+          });
+        } else {
+          response.message = `ERROR: cannot add category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
+        }
+      },
+    );
     return JSON.stringify(response);
   }
 
   async removeCategoryFromInstrument({
-    vendor, modelNumber, serialNumber, category,
+    vendor,
+    modelNumber,
+    serialNumber,
+    category,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -760,39 +916,43 @@ class InstrumentAPI extends DataSource {
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(async (value) => {
-      if (value) {
-        const name = category;
-        await this.getInstrumentCategory({ name }).then(async (result) => {
-          if (result) {
-            const instrumentId = value.dataValues.id;
-            const instrumentCategoryId = result.dataValues.id;
-            const attached = await this.store.instrumentCategoryRelationships.findAll({
-              where: {
-                instrumentId,
-                instrumentCategoryId,
-              },
-            });
-            if (attached && attached[0]) {
-              await this.store.instrumentCategoryRelationships.destroy({
-                where: {
-                  instrumentId,
-                  instrumentCategoryId,
+    await this.getInstrument({ modelNumber, vendor, serialNumber }).then(
+      async (value) => {
+        if (value) {
+          const name = category;
+          await this.getInstrumentCategory({ name }).then(async (result) => {
+            if (result) {
+              const instrumentId = value.dataValues.id;
+              const instrumentCategoryId = result.dataValues.id;
+              const attached = await this.store.instrumentCategoryRelationships.findAll(
+                {
+                  where: {
+                    instrumentId,
+                    instrumentCategoryId,
+                  },
                 },
-              });
-              response.success = true;
-              response.message = `Category ${category} successfully removed from instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+              );
+              if (attached && attached[0]) {
+                await this.store.instrumentCategoryRelationships.destroy({
+                  where: {
+                    instrumentId,
+                    instrumentCategoryId,
+                  },
+                });
+                response.success = true;
+                response.message = `Category ${category} successfully removed from instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+              } else {
+                response.message = `ERROR: category ${category} was not attached to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+              }
             } else {
-              response.message = `ERROR: category ${category} was not attached to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+              response.message = `ERROR: Cannot remove category ${category}, from instrument because category does not exist!`;
             }
-          } else {
-            response.message = `ERROR: Cannot remove category ${category}, from instrument because category does not exist!`;
-          }
-        });
-      } else {
-        response.message = `ERROR: cannot remove category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
-      }
-    });
+          });
+        } else {
+          response.message = `ERROR: cannot remove category beacuse instrument ${vendor} ${modelNumber} ${serialNumber}, does not exist!`;
+        }
+      },
+    );
     return JSON.stringify(response);
   }
 
@@ -827,9 +987,11 @@ class InstrumentAPI extends DataSource {
     await this.getInstrumentCategory({ name }).then(async (result) => {
       if (result) {
         const instrumentCategoryId = result.dataValues.id;
-        const attached = await this.store.instrumentCategoryRelationships.count({
-          where: { instrumentCategoryId },
-        });
+        const attached = await this.store.instrumentCategoryRelationships.count(
+          {
+            where: { instrumentCategoryId },
+          },
+        );
         response = attached;
       } else {
         console.log('category deos not exist');
