@@ -25,6 +25,7 @@ const typeDefs = gql`
       categories: [String]
       limit: Int
       offset: Int
+      orderBy: [[String]]
     ): ModelOutput
 
     # Instrument Related Queries
@@ -59,6 +60,7 @@ const typeDefs = gql`
       instrumentCategories: [String]
       limit: Int
       offset: Int
+      orderBy: [[String]]
     ): InstrumentOutput
 
     # Calibration Event Related Queries

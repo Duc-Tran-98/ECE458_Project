@@ -105,7 +105,6 @@ class InstrumentAPI extends DataSource {
   }
 
   async getInstrumentsWithFilter({
-    // eslint-disable-next-line max-len
     vendor,
     modelNumber,
     description,
@@ -115,6 +114,7 @@ class InstrumentAPI extends DataSource {
     instrumentCategories,
     limit = null,
     offset = null,
+    orderBy = [['assetTag', 'ASC']],
   }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -213,7 +213,7 @@ class InstrumentAPI extends DataSource {
       let instruments = await this.store.instruments.findAndCountAll({
         include: includeData,
         where: filters,
-        order: [['assetTag', 'ASC']],
+        order: orderBy,
       });
       response.instruments = instruments.rows;
       response.total = instruments.count;
@@ -330,14 +330,16 @@ class InstrumentAPI extends DataSource {
         // eslint-disable-next-line no-param-reassign
         off = null;
       }
+
       let instruments = await this.store.instruments.findAndCountAll({
         include: includeData,
         where: filters,
-        order: [['assetTag', 'ASC']],
+        order: orderBy,
         subQuery: false,
         limit: lim,
         offset: off,
       });
+
       for (let j = 0; j < instruments.rows.length; j += 1) {
         const itmcr = instruments.rows[j].itmcr.map((a) => a.dataValues);
         let cats = [];

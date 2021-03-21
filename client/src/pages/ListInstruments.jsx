@@ -316,9 +316,11 @@ export default function ListInstruments() {
       assetTag,
     });
   };
+
   const {
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   } = filterOptions;
+
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
       JSON.stringify({

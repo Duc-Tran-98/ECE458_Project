@@ -33,7 +33,7 @@ module.exports = {
     getModelsWithFilter: async (
       _,
       {
-        vendor, modelNumber, description, categories, limit, offset,
+        vendor, modelNumber, description, categories, limit, offset, orderBy,
       },
       { dataSources },
     ) => await dataSources.modelAPI.getModelsWithFilter({
@@ -43,6 +43,7 @@ module.exports = {
       categories,
       limit,
       offset,
+      orderBy,
     }),
 
     // eslint-disable-next-line max-len
@@ -101,6 +102,7 @@ module.exports = {
         instrumentCategories,
         limit,
         offset,
+        orderBy,
       },
       { dataSources },
     ) => await dataSources.instrumentAPI.getInstrumentsWithFilter({
@@ -113,6 +115,7 @@ module.exports = {
       instrumentCategories,
       limit,
       offset,
+      orderBy,
     }),
 
     // Calibration Queries
