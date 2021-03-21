@@ -110,4 +110,5 @@ dist
 *.env
 
 # ignore copy script
-backup/
+backup/copy.sh
+backup/test/
