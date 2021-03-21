@@ -82,7 +82,9 @@ class UserAPI extends DataSource {
     const salt = bcrypt.genSaltSync(saltRounds);
     const password = bcrypt.hashSync(netId, salt);
 
-    const response = { success: true, message: '', userName };
+    const response = {
+      success: true, message: '', userName, jwt: '',
+    };
     await this.findUser({ userName }).then((value) => {
       if (value) {
         response.message = 'Account already exists';
@@ -99,6 +101,14 @@ class UserAPI extends DataSource {
           calibrationPermission: false,
         });
         response.message = 'Created account for user';
+        // 1 day = 8.64e7 ms
+        const signSync = createSigner({
+          key: 'secret',
+          expiresIn: 8.64e7,
+        });
+        response.jwt = signSync({
+          userName,
+        });
       }
     });
     return JSON.stringify(response);

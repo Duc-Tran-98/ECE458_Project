@@ -184,10 +184,6 @@ export function ServerPaginationGrid({
         .first()
         .remove(); // remove watermark
     }, 1);
-    (async () => {
-      const val = await rowCount();
-      setTotal(val);
-    })();
   }, []);
 
   React.useEffect(() => {
@@ -195,12 +191,13 @@ export function ServerPaginationGrid({
 
     (async () => {
       setLoading(true);
-
+      const val = await rowCount();
       const offset = (initPage - 1) * initLimit;
       const newRows = await fetchData(initLimit, offset);
       if (!active) {
         return;
       }
+      setTotal(val);
       setRows(newRows);
       if (window.location.href.includes('/viewInstruments')) {
         setTimeout(() => { // lots of data/queries from this route, so

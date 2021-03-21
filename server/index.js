@@ -43,10 +43,9 @@ const server = new ApolloServer({
     const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
     const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
-    if (
-      !user // jwt DNE || malformed
-      && !(req.body.query === 'mutation LoginMutation($password: String!, $userName: String!) {\n' + '  login(password: $password, userName: $userName)\n'
-    + '}\n')) { // and query !== login, then that's invalid access
+    const { query } = req.body;
+    if (!user && !(query.includes('mutation LoginMutation') || query.includes('mutation OAuthSignOn'))) {
+      // and query !== login, then that's invalid access
       console.log('invalid access');
       throw new AuthenticationError('you must be logged in');
     }
@@ -57,7 +56,7 @@ const server = new ApolloServer({
         return val[0].dataValues;
       }
       return null; // return null if user no longer exists
-    });
+    }).catch(() => null);
     return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
   },
   // Additional constructor options
