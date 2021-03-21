@@ -25,7 +25,7 @@ const { oauthClientId, oauthClientSecret, oauthRedirectURI } = require('./config
 // Connect to db and init tables
 let store;
 createDB().then(() => {
-  store = createStore();
+  store = createStore(false);
 });
 
 // Define api

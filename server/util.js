@@ -10,6 +10,7 @@ const {
   user,
   password,
   database,
+  testDatabase,
   adminUsername,
   adminEmail,
   adminFirstName,
@@ -24,13 +25,17 @@ module.exports.createDB = async () => {
     user,
     password,
   });
+  await connection.query(
+    `CREATE DATABASE IF NOT EXISTS \`${testDatabase}\`;`,
+  );
   return await connection.query(
     `CREATE DATABASE IF NOT EXISTS \`${database}\`;`,
   ); // create db if it doesn't exists
 };
 
-module.exports.createStore = async () => {
-  const db = new SQL(database, user, password, {
+module.exports.createStore = async (useTestDB) => {
+  const dbToUse = useTestDB ? testDatabase : database;
+  const db = new SQL(dbToUse, user, password, {
     host,
     dialect: 'mysql' /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
     port,
@@ -41,7 +46,7 @@ module.exports.createStore = async () => {
     },
     // eslint-disable-next-line no-console
     logging: () => undefined,
-    database,
+    dbToUse,
   });
 
   db.query('SET NAMES utf8mb4;');

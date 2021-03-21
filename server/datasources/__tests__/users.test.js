@@ -7,7 +7,7 @@ let store;
 let userAPI;
 describe('Test User API Methods', () => {
   beforeAll(async () => {
-    store = await createStore();
+    store = await createStore(true);
     await store.db.query('SET FOREIGN_KEY_CHECKS = 0').catch(() => undefined);
     await store.db.sync({ force: true }).catch(() => undefined);
     await store.db.query('SET FOREIGN_KEY_CHECKS = 1').catch(() => undefined);
