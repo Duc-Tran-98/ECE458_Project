@@ -58,8 +58,6 @@ export default function ImportModels() {
         return null;
       // case 'calibrationFrequency':
       //   return Number.isNaN(value) ? null : parseInt(value, 10);
-      // case 'loadBankSupport':
-      //   return typeof (value) === 'string' && (value.toLowerCase() === 'y' || value.toLowerCase() === 'yes');
       default:
         return value.trim().length > 0 ? value.trim() : null;
     }
@@ -151,9 +149,8 @@ export default function ImportModels() {
   };
 
   const invalidCalibrationSupport = (calibrationSupport) => {
-    if (typeof (calibrationSupport) !== 'string') {
-      return false;
-    }
+    if (calibrationSupport === null) { return true; }
+    if (typeof (calibrationSupport) !== 'string') { return false; }
     const lower = calibrationSupport.toLowerCase();
     return lower === 'load-bank' || lower === 'klufe';
   };
@@ -189,9 +186,10 @@ export default function ImportModels() {
       const isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
       const invalidEntries = validateRow(row);
       const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
+      const invalidSpecialCalibrationSupport = invalidCalibrationSupport(row.specialCalibrationSupport);
 
       // If any errors exist, create errors object
-      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel) {
+      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel || invalidSpecialCalibrationSupport) {
         const rowError = {
           data: row,
           row: index + 2,
@@ -199,6 +197,7 @@ export default function ImportModels() {
           ...(invalidEntries) && { invalidEntries },
           ...(isDuplicateModel) && { isDuplicateModel },
           ...(invalidCalibration) && { invalidCalibration },
+          ...(invalidSpecialCalibrationSupport) && { invalidSpecialCalibrationSupport },
         };
         importRowErrors.push(rowError);
       }
@@ -221,7 +220,7 @@ export default function ImportModels() {
     modelNumber: String(obj.modelNumber),
     description: String(obj.description),
     categories: obj.categories,
-    loadBankSupport: Boolean(typeof (obj.loadBankSupport) === 'string' && (obj.loadBankSupport.toLowerCase() === 'y' || obj.loadBankSupport.toLowerCase() === 'yes')),
+    specialCalibrationSupport: obj.specialCalibrationSupport,
     comment: String(obj.comment),
     calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
   }));
