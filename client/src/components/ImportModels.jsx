@@ -36,7 +36,7 @@ export default function ImportModels() {
     { display: 'Short-Description', value: 'description' },
     { display: 'Comment', value: 'comment' },
     { display: 'Model-Categories', value: 'categories' },
-    { display: 'Load-Bank-Support', value: 'loadBankSupport' },
+    { display: 'Special-Calibration-Support', value: 'specialCalibrationSupport' },
     { display: 'Calibration-Frequency', value: 'calibrationFrequency' },
   ];
   const customHeaderTransform = (header) => {
@@ -150,6 +150,14 @@ export default function ImportModels() {
     return isDuplicateModel;
   };
 
+  const invalidCalibrationSupport = (calibrationSupport) => {
+    if (typeof (calibrationSupport) !== 'string') {
+      return false;
+    }
+    const lower = calibrationSupport.toLowerCase();
+    return lower === 'load-bank' || lower === 'klufe';
+  };
+
   const validateRow = (row) => {
     const invalidKeys = [];
     if (row.vendor && row.vendor.length > characterLimits.model.vendor) { invalidKeys.push('Vendor'); }
@@ -157,7 +165,7 @@ export default function ImportModels() {
     if (row.description && row.description.length > characterLimits.model.description) { invalidKeys.push('Short-Description'); }
     if (row.categories && row.categories.length > characterLimits.model.categories) { invalidKeys.push('Model-Categories'); }
     if (row.comment && row.comment.length > characterLimits.model.comment) { invalidKeys.push('Comment'); }
-    if (row.loadBankSupport && !(typeof (row.loadBankSupport) === 'string' && (row.loadBankSupport.toLowerCase() === 'y' || row.loadBankSupport.toLowerCase() === 'yes'))) { invalidKeys.push('Load-Bank-Support'); }
+    if (row.specialCalibrationSupport && invalidCalibrationSupport(row.specialCalibrationSupport)) { invalidKeys.push('Load-Bank-Support'); }
     if (row.calibrationFrequency && row.calibrationFrequency.length > characterLimits.model.calibrationFrequency) { invalidKeys.push('Calibration-Frequency'); }
     return invalidKeys.length > 0 ? invalidKeys : null;
   };
