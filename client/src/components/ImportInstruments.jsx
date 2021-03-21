@@ -11,7 +11,7 @@ import ImportInstrumentError from './ImportInstrumentError';
 import DisplayGrid from './UITable';
 import UserContext from './UserContext';
 
-export default function ImpInstruments() {
+export default function ImportInstruments() {
   const user = useContext(UserContext);
   const [rows, setRow] = React.useState([]);
   const [showTable, setShowTable] = React.useState(false);

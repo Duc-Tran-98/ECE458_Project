@@ -10,7 +10,7 @@ import { StateLessModal } from './ModalAlert';
 import ImportModelError from './ImportModelError';
 import DisplayGrid from './UITable';
 
-export default function ImpModels() {
+export default function ImportModels() {
   const [rows, setRow] = React.useState([]);
   const [showTable, setShowTable] = React.useState(false);
   const [importStatus, setImportStatus] = React.useState('Import');
