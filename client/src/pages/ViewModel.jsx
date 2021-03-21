@@ -23,6 +23,7 @@ export default function DetailedModelView() {
     comment: '',
     calibrationFrequency: '',
     supportLoadBankCalibration: false,
+    supportKlufeCalibration: false,
     categories: [],
   });
   const [loading, setLoading] = React.useState(false);
@@ -33,7 +34,7 @@ export default function DetailedModelView() {
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
     const {
-      description, comment, supportLoadBankCalibration,
+      description, comment, supportLoadBankCalibration, supportKlufeCalibration,
     } = response;
     let { calibrationFrequency, id } = response;
     if (calibrationFrequency !== null) {
@@ -50,6 +51,7 @@ export default function DetailedModelView() {
       categories,
       calibrationFrequency,
       supportLoadBankCalibration,
+      supportKlufeCalibration,
     });
     setUpdate(false);
     setFetched(true);
@@ -126,6 +128,7 @@ export default function DetailedModelView() {
     comment,
     calibrationFrequency,
     supportLoadBankCalibration,
+    supportKlufeCalibration,
     categories,
   } = model;
   const handleDelete = () => {
@@ -196,6 +199,7 @@ export default function DetailedModelView() {
               categories={categories}
               calibrationFrequency={calibrationFrequency}
               supportLoadBankCalibration={supportLoadBankCalibration}
+              supportKlufeCalibration={supportKlufeCalibration}
               handleFormSubmit={() => undefined}
               validated={false}
               diffSubmit
