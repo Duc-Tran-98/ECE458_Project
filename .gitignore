@@ -108,3 +108,6 @@ dist
 
 # ignore any env files
 *.env
+
+# ignore copy script
+backup/
