@@ -71,18 +71,22 @@ const TagsInput = (props) => {
   return (
     <div className="tags-input">
       <ul id="tags">
-        {tags && tags.length > 0 ? (tags.map((tag, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <li key={index} className="tag">
-            <span className="tag-title">{tag}</span>
-            <span
-              className="tag-close-icon"
-              onClick={() => removeTags(index)}
-            >
-              X
-            </span>
-          </li>
-        ))) : (<p>No categories attached</p>)}
+        {tags && tags.length > 0 ? (
+          tags.map((tag, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={index} className="tag">
+              <span className="tag-title">{tag}</span>
+              <span
+                className="tag-close-icon"
+                onClick={() => removeTags(index)}
+              >
+                X
+              </span>
+            </li>
+          ))
+        ) : (
+          <p>No categories attached</p>
+        )}
       </ul>
       {dis ? (
         <input

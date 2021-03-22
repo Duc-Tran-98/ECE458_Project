@@ -161,9 +161,9 @@ export default function ModelForm({
                     label="Choose a vendor"
                     getOptionSelected={formatSelected}
                     getOptionLabel={formatOption}
-                    value={{ vendor: values.vendor }}
-                    allowAdditions
+                    value={values.vendor.length > 0 ? { vendor: values.vendor } : null}
                     isInvalid={touched.vendor && !!errors.vendor}
+                    allowAdditions
                   />
                 )}
               </Form.Group>
@@ -183,7 +183,9 @@ export default function ModelForm({
                 error={errors.modelNumber}
               />
             </div>
-            {viewOnly && <div className="col-auto me-auto mt-5">{deleteBtn}</div>}
+            {viewOnly && (
+              <div className="col-auto me-auto mt-5">{deleteBtn}</div>
+            )}
           </div>
           {/* TODO: Calibration frequency ONLY accept numeric values */}
           <div className="row mx-3 border-top border-dark mt-3">
@@ -239,7 +241,10 @@ export default function ModelForm({
             </div>
             <div className="col mt-3">
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h5 col" htmlFor="load-bank-support">
+                <label
+                  className="form-check-label h5 col"
+                  htmlFor="load-bank-support"
+                >
                   Can model be calibrated with load bank?
                 </label>
                 <Form.Control
@@ -258,7 +263,10 @@ export default function ModelForm({
                 </div>
               </div>
               <div className="form-check form-switch mt-4">
-                <label className="form-check-label h5 col" htmlFor="klufe-support">
+                <label
+                  className="form-check-label h5 col"
+                  htmlFor="klufe-support"
+                >
                   Can model be calibrated with Klufe 5700?
                 </label>
                 <Form.Control
@@ -271,7 +279,9 @@ export default function ModelForm({
                   disabled={disabled}
                 />
                 <div className="col">
-                  <strong>{values.supportKlufeCalibration ? 'Yes' : 'No'}</strong>
+                  <strong>
+                    {values.supportKlufeCalibration ? 'Yes' : 'No'}
+                  </strong>
                 </div>
               </div>
             </div>
