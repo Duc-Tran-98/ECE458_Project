@@ -218,8 +218,8 @@ export default function ImportModels() {
     modelNumber: String(obj.modelNumber),
     description: String(obj.description),
     categories: obj.categories,
-    supportLoadBankCalibration: obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'load-bank',
-    supportKlufeCalibration: obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'klufe',
+    supportLoadBankCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'load-bank') || false,
+    supportKlufeCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'klufe') || false,
     comment: String(obj.comment),
     calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
   }));
