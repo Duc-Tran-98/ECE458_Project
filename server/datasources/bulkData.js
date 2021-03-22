@@ -48,7 +48,6 @@ class BulkDataAPI extends DataSource {
       // Then, we do some calls passing this transaction as an option:
       for (let i = 0; i < models.length; i += 1) {
         const currentModel = models[i];
-        console.log(currentModel);
         const vendor = currentModel.vendor;
         const modelNumber = currentModel.modelNumber;
         const description = currentModel.description;
