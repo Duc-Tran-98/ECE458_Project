@@ -218,7 +218,8 @@ export default function ImportModels() {
     modelNumber: String(obj.modelNumber),
     description: String(obj.description),
     categories: obj.categories,
-    specialCalibrationSupport: obj.specialCalibrationSupport,
+    supportLoadBankCalibration: obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'load-bank',
+    supportKlufeCalibration: obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'klufe',
     comment: String(obj.comment),
     calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
   }));
@@ -232,6 +233,8 @@ export default function ImportModels() {
 
     // File has been validated, now push to database
     const models = filterData(fileInfo);
+    console.log('Sending import models request with data: ');
+    console.log(models);
     const getVariables = () => ({ models });
     Query({
       query,
@@ -251,8 +254,8 @@ export default function ImportModels() {
         }
         resetState();
       },
-      handleError: () => {
-        toast.error('Sorry, process took longer than expected. Please check back in a few minutes.');
+      handleError: (err) => {
+        toast.error(err);
         resetUpload();
         resetState();
       },
