@@ -14,6 +14,7 @@ module.exports = {
   port: process.env.SQL_PORT,
   password: process.env.MYSQL_ROOT_PASSWORD,
   database: process.env.SQL_DATABASE,
+  testDatabase: process.env.SQL_TEST_DATABASE,
   user: process.env.SQL_USER,
   adminUsername: process.env.ADMIN_USERNAME,
   adminFirstName: process.env.ADMIN_FIRSTNAME,
