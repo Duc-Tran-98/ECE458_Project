@@ -48,13 +48,15 @@ class BulkDataAPI extends DataSource {
       // Then, we do some calls passing this transaction as an option:
       for (let i = 0; i < models.length; i += 1) {
         const currentModel = models[i];
+        console.log(currentModel);
         const vendor = currentModel.vendor;
         const modelNumber = currentModel.modelNumber;
         const description = currentModel.description;
         const comment = currentModel.comment;
         const calibrationFrequency = currentModel.calibrationFrequency;
         const categories = currentModel.categories;
-        const supportLoadBankCalibration = currentModel.loadBankSupport;
+        const supportLoadBankCalibration = currentModel.supportLoadBankCalibration;
+        const supportKlufeCalibration = currentModel.supportKlufeCalibration;
 
         const createdModel = await this.store.models.create({
           vendor,
@@ -63,6 +65,7 @@ class BulkDataAPI extends DataSource {
           comment,
           calibrationFrequency,
           supportLoadBankCalibration,
+          supportKlufeCalibration,
         }, { transaction: t });
         const modelId = createdModel.dataValues.id;
         if (categories) {
