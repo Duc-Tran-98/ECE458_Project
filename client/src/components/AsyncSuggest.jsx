@@ -187,6 +187,7 @@ export default function AsyncSuggest({
         }}
         selectOnFocus
         clearOnBlur
+        blurOnSelect
         freeSolo
         getOptionSelected={getOptionSelected}
         getOptionLabel={getOptionLabel}

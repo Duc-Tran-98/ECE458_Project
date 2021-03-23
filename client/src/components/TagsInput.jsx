@@ -13,7 +13,8 @@ const TagsInput = (props) => {
   // eslint-disable-next-line prefer-const
   let [tags, setTags] = React.useState(props.tags);
   const [removed, setRemoved] = React.useState(['']);
-  const [update, setUpdate] = React.useState(false);
+  const [selectedCat, setSelectedCat] = React.useState(null);
+  // const [update, setUpdate] = React.useState(false);
   const models = React.useState(props.models);
   // eslint-disable-next-line prefer-destructuring
   const dis = props.dis;
@@ -46,6 +47,7 @@ const TagsInput = (props) => {
       setRemoved([...removed, tags[indexToRemove]]);
       setTags([...tags.filter((_, index) => index !== indexToRemove)]);
       props.selectedTags([...tags.filter((_, index) => index !== indexToRemove)]);
+      setSelectedCat(null);
     }
   };
   const addTags = (tag) => {
@@ -60,6 +62,7 @@ const TagsInput = (props) => {
   const formatSelected = (option, value) => option.name === value.name;
   const onInputChange = (e, v) => {
     addTags(v.name);
+    setSelectedCat(v);
   };
 
   if (startTags) {
@@ -67,6 +70,13 @@ const TagsInput = (props) => {
       if (!removed.includes(element)) addTags(element);
     });
   }
+
+  React.useEffect(() => {
+    if (props.tags.length === 0) {
+      setTags([]);
+      setSelectedCat(null);
+    }
+  }, [props.tags]);
 
   return (
     <div className="tags-input">
@@ -106,6 +116,7 @@ const TagsInput = (props) => {
           getOptionLabel={formatOption}
           allowAdditions={false}
           isInvalid={props.isInvalid}
+          value={selectedCat}
         />
       )}
     </div>
