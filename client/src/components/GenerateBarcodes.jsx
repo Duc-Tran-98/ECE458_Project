@@ -28,9 +28,6 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
   };
 
   const barcodeQuery = async () => {
-    // ExpressQuery({
-    //   endpoint: '/api/barcodes?tags[]=222222&tags[]=124600&tags[]=121199', method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',
-    // });
     if (!getAll && assetTags.length < 1) {
       toast.error('Check at least one instrument to generate barcodes');
       return;
@@ -38,16 +35,30 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
     let tagsToGenerate;
     let expressParam = '/api/barcodes?';
     if (getAll) {
-      // await GetAssetTags({ filterOptions }).then((res) => {
-      //   tagsToGenerate = res.instruments.map((a) => a.assetTag);
-      // });
       expressParam = expressParam.concat('all=true');
+      console.log(filterOptions);
+      if (filterOptions.vendors) expressParam += `&vendor=${filterOptions.vendors}`;
+      if (filterOptions.modelNumbers) expressParam += `&modelNumber=${filterOptions.modelNumbers}`;
+      if (filterOptions.assetTag) expressParam += `&assetTag=${filterOptions.assetTag}`;
+      if (filterOptions.descriptions) expressParam += `&description=${filterOptions.descriptions}`;
+      if (filterOptions.filterSerialNumber) expressParam += `&serialNumber=${filterOptions.filterSerialNumber}`;
+      if (filterOptions.modelCategories) {
+        for (let i = 0; i < filterOptions.modelCategories.length; i += 1) {
+          expressParam += `&modelCat[]=${filterOptions.modelCategories[i]}`;
+        }
+      }
+      if (filterOptions.instrumentCategories) {
+        for (let i = 0; i < filterOptions.instrumentCategories.length; i += 1) {
+          expressParam += `&instCat[]=${filterOptions.instrumentCategories[i]}`;
+        }
+      }
     } else {
       tagsToGenerate = assetTags;
       for (let i = 0; i < tagsToGenerate.length; i += 1) {
-        expressParam = expressParam.concat(`${i === 0 ? '' : '&'}tags[]=${tagsToGenerate[i]}`);
+        expressParam += `${i === 0 ? '' : '&'}tags[]=${tagsToGenerate[i]}`;
       }
     }
+    console.log(expressParam);
     ExpressQuery({
       endpoint: expressParam, method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',
     });
