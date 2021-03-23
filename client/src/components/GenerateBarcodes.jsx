@@ -20,11 +20,13 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
     getAll: PropTypes.bool.isRequired,
   };
 
+  const [loading, setLoading] = React.useState(false);
+
   const handleResponse = (response) => {
-    console.log(response);
     // create pdf from bytestream and download in browser
     const blob = new Blob([response.data], { type: 'application/pdf' });
     download(blob, 'asset_labels.pdf', 'application/pdf');
+    setLoading(false);
   };
 
   const barcodeQuery = async () => {
@@ -32,11 +34,11 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
       toast.error('Check at least one instrument to generate barcodes');
       return;
     }
+    setLoading(true);
     let tagsToGenerate;
     let expressParam = '/api/barcodes?';
     if (getAll) {
       expressParam = expressParam.concat('all=true');
-      console.log(filterOptions);
       if (filterOptions.vendors) expressParam += `&vendor=${filterOptions.vendors}`;
       if (filterOptions.modelNumbers) expressParam += `&modelNumber=${filterOptions.modelNumbers}`;
       if (filterOptions.assetTag) expressParam += `&assetTag=${filterOptions.assetTag}`;
@@ -58,19 +60,27 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
         expressParam += `${i === 0 ? '' : '&'}tags[]=${tagsToGenerate[i]}`;
       }
     }
-    console.log(expressParam);
-    ExpressQuery({
-      endpoint: expressParam, method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',
-    });
+    if (!loading) {
+      ExpressQuery({
+        endpoint: expressParam, method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',
+      });
+    }
   };
 
   return (
     <>
       <Button onClick={barcodeQuery} variant="dark" className="ms-3">
         <MouseOverPopover message="Generate barcodes for all checked instruments with current filters" place="top">
-          <div>
-            Generate Barcodes
-          </div>
+          {loading ? (
+            <div>
+              Generating...
+            </div>
+          )
+            : (
+              <div>
+                Generate Barcodes
+              </div>
+            )}
         </MouseOverPopover>
       </Button>
     </>
