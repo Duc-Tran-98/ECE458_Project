@@ -21,6 +21,7 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
   };
 
   const handleResponse = (response) => {
+    console.log(response);
     // create pdf from bytestream and download in browser
     const blob = new Blob([response.data], { type: 'application/pdf' });
     download(blob, 'asset_labels.pdf', 'application/pdf');
@@ -37,14 +38,15 @@ const GenerateBarcodes = ({ filterOptions, assetTags, getAll }) => {
     let tagsToGenerate;
     let expressParam = '/api/barcodes?';
     if (getAll) {
-      await GetAssetTags({ filterOptions }).then((res) => {
-        tagsToGenerate = res.instruments.map((a) => a.assetTag);
-      });
+      // await GetAssetTags({ filterOptions }).then((res) => {
+      //   tagsToGenerate = res.instruments.map((a) => a.assetTag);
+      // });
+      expressParam = expressParam.concat('all=true');
     } else {
       tagsToGenerate = assetTags;
-    }
-    for (let i = 0; i < tagsToGenerate.length; i += 1) {
-      expressParam = expressParam.concat(`${i === 0 ? '' : '&'}tags[]=${tagsToGenerate[i]}`);
+      for (let i = 0; i < tagsToGenerate.length; i += 1) {
+        expressParam = expressParam.concat(`${i === 0 ? '' : '&'}tags[]=${tagsToGenerate[i]}`);
+      }
     }
     ExpressQuery({
       endpoint: expressParam, method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',

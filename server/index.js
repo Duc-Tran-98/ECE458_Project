@@ -190,9 +190,18 @@ app.post(`${whichRoute}/uploadExcel`, (req, res) => {
 });
 
 app.get(`${whichRoute}/barcodes`, async (req, res) => {
-  const assetTags = [];
-  for (let i = 0; i < req.query.tags.length; i += 1) {
-    assetTags.push(parseInt(req.query.tags[i], 10));
+  let assetTags = [];
+  if (req.query.all) {
+    const s = await store;
+    const tags = await s.instruments.findAll({
+      attributes: ['assetTag'],
+    });
+    assetTags = tags.map((a) => a.dataValues.assetTag);
+  } else {
+    assetTags = [];
+    for (let i = 0; i < req.query.tags.length; i += 1) {
+      assetTags.push(parseInt(req.query.tags[i], 10));
+    }
   }
   const pdf = await runBarcode({ data: assetTags });
   const filename = 'asset_labels.pdf';
