@@ -86,27 +86,21 @@ const TagsInput = (props) => {
             // eslint-disable-next-line react/no-array-index-key
             <li key={index} className="tag">
               <span className="tag-title">{tag}</span>
-              <span
-                className="tag-close-icon"
-                onClick={() => removeTags(index)}
-              >
-                X
-              </span>
+              {!dis && (
+                <span
+                  className="tag-close-icon"
+                  onClick={() => removeTags(index)}
+                >
+                  X
+                </span>
+              )}
             </li>
           ))
         ) : (
           <p>No categories attached</p>
         )}
       </ul>
-      {dis ? (
-        <input
-          type="text"
-          // onKeyUp={(event) => (event.key === 'Enter' ? addTags(event) : null)}
-          placeholder={dis ? '' : 'Select Categories'}
-          className="form-control"
-          disabled={dis}
-        />
-      ) : (
+      {!dis && (
         <AsyncSuggest
           query={query}
           queryName={queryName}
