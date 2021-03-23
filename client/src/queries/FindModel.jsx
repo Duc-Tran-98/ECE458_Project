@@ -52,6 +52,7 @@ export function FindModelById({ id, handleResponse }) {
         vendor
         calibrationFrequency
         supportLoadBankCalibration
+        supportKlufeCalibration
         categories {
           name
         }

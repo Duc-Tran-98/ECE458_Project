@@ -164,6 +164,7 @@ const typeDefs = gql`
     fileLocation: String
     fileName: String
     loadBankData: String
+    klufeData: String
   }
 
   type InstrumentWithCalibration {
@@ -199,7 +200,8 @@ const typeDefs = gql`
     description: String!
     comment: String
     categories: [String]
-    loadBankSupport: Boolean!
+    supportLoadBankCalibration: Boolean!
+    supportKlufeCalibration: Boolean!
     calibrationFrequency: Int
   }
 
