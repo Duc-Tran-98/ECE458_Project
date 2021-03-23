@@ -67,6 +67,15 @@ class InstrumentAPI extends DataSource {
     return instruments;
   }
 
+  async getAssetTags() {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instruments = await this.store.instruments.findAll({
+      attributes: ['assetTag'],
+    });
+    return instruments;
+  }
+
   async getInstrumentById({ id }) {
     const storeModel = await this.store;
     this.store = storeModel;
