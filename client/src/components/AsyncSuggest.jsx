@@ -115,7 +115,7 @@ export default function AsyncSuggest({
       onKeyDown={(e) => handleKeyPress(e)}
     />
   ) : (
-    <div ref={params.InputProps.ref}>
+    <div ref={params.InputProps.ref} className="position-relative">
       <Form.Control
         type="text"
         required
@@ -125,6 +125,35 @@ export default function AsyncSuggest({
         {...params.inputProps}
       />
       <>{loading ? <LinearProgress /> : null}</>
+      <>
+        {open ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            style={{ cursor: 'pointer' }}
+            onClick={() => setOpen(false)}
+            className="bi bi-caret-up-fill position-absolute top-50 start-98 translate-middle"
+            viewBox="0 0 16 16"
+          >
+            <path d="M7.247 4.86l-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            style={{ cursor: 'pointer' }}
+            onClick={() => setOpen(true)}
+            className="bi bi-caret-down-fill position-absolute top-50 start-98 translate-middle"
+            viewBox="0 0 16 16"
+          >
+            <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+          </svg>
+        )}
+      </>
       <Form.Control.Feedback type="invalid">
         {invalidMsg}
       </Form.Control.Feedback>
@@ -158,6 +187,7 @@ export default function AsyncSuggest({
         }}
         selectOnFocus
         clearOnBlur
+        blurOnSelect
         freeSolo
         getOptionSelected={getOptionSelected}
         getOptionLabel={getOptionLabel}

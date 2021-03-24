@@ -39,28 +39,27 @@ const dataSources = () => ({
 });
 
 const server = new ApolloServer({
-  // context: async ({ req }) => {
-  //   // simple auth check on every request
-  //   const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
-  //   const verifyWithPromise = createVerifier({ key: async () => 'secret' });
-  //   const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
-  //   if (
-  //     !user // jwt DNE || malformed
-  //     && !(req.body.query === 'mutation LoginMutation($password: String!, $userName: String!) {\n' + '  login(password: $password, userName: $userName)\n'
-  //   + '}\n')) { // and query !== login, then that's invalid access
-  //     console.log('invalid access');
-  //     throw new AuthenticationError('you must be logged in');
-  //   }
-  //   // if decode ok
-  //   const storeModel = await store;
-  //   const userVals = await storeModel.users.findAll({ where: { userName: user?.userName || req.body?.variables?.userName } }).then((val) => {
-  //     if (val && val[0]) { // look up user and return their info
-  //       return val[0].dataValues;
-  //     }
-  //     return null; // return null if user no longer exists
-  //   });
-  //   return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
-  // },
+  context: async ({ req }) => {
+    // simple auth check on every request
+    const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
+    const verifyWithPromise = createVerifier({ key: async () => 'secret' });
+    const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
+    const { query } = req.body;
+    if (!user && !(query.includes('mutation LoginMutation') || query.includes('mutation OAuthSignOn'))) {
+      // and query !== login, then that's invalid access
+      console.log('invalid access');
+      throw new AuthenticationError('you must be logged in');
+    }
+    // if decode ok
+    const storeModel = await store;
+    const userVals = await storeModel.users.findAll({ where: { userName: user?.userName || req.body?.variables?.userName } }).then((val) => {
+      if (val && val[0]) { // look up user and return their info
+        return val[0].dataValues;
+      }
+      return null; // return null if user no longer exists
+    }).catch(() => null);
+    return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
+  },
   // Additional constructor options
   typeDefs,
   resolvers,

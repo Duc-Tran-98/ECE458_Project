@@ -634,7 +634,11 @@ export default function LoadBankWiz({
                           date: v?.recentCalibration[0]?.date,
                           calibrationFrequency: v.calibrationFrequency,
                         });
-                        setFormState({ ...formState, voltMeter: v, voltMeterOk });
+                        setFormState({
+                          ...formState,
+                          voltMeter: v,
+                          voltMeterOk,
+                        });
                       }
                     }}
                     label="Select a voltmeter"
@@ -649,7 +653,8 @@ export default function LoadBankWiz({
               </Form.Group>
               <Form.Group className="col mx-2">
                 <Form.Label className="h6 my-auto">
-                  Current shunt meter to be used: (Vendor-Model number-Asset Tag)
+                  Current shunt meter to be used: (Vendor-Model number-Asset
+                  Tag)
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
@@ -669,7 +674,9 @@ export default function LoadBankWiz({
                       }
                     `)}
                     queryName="getInstrumentsWithFilter"
-                    getVariables={() => ({ description: 'current shunt meter' })}
+                    getVariables={() => ({
+                      description: 'current shunt meter',
+                    })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
                       if (!DEBUG) {
@@ -677,7 +684,11 @@ export default function LoadBankWiz({
                           date: v?.recentCalibration[0]?.date,
                           calibrationFrequency: v.calibrationFrequency,
                         });
-                        setFormState({ ...formState, shuntMeter: v, shuntMeterOk });
+                        setFormState({
+                          ...formState,
+                          shuntMeter: v,
+                          shuntMeterOk,
+                        });
                       }
                     }}
                     label="Select a shunt meter"
