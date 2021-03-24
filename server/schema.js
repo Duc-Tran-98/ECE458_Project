@@ -7,7 +7,11 @@ const typeDefs = gql`
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllUsers(limit: Int, offset: Int): [User]
+    getAllUsers(
+      limit: Int
+      offset: Int
+      orderBy: [[String]]
+    ): [User]
     countAllUsers: Int!
 
     # Model Related Queries
@@ -25,6 +29,7 @@ const typeDefs = gql`
       categories: [String]
       limit: Int
       offset: Int
+      orderBy: [[String]]
     ): ModelOutput
 
     # Instrument Related Queries
@@ -59,6 +64,7 @@ const typeDefs = gql`
       instrumentCategories: [String]
       limit: Int
       offset: Int
+      orderBy: [[String]]
     ): InstrumentOutput
 
     # Calibration Event Related Queries

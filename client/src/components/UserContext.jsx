@@ -38,7 +38,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         }).then((res) => {
           if (typeof res === 'undefined') {
             // undefined => user got deleted
-            toast.error('This account has been delted! Signing you out.');
+            toast.error('This account has been deleted! Signing you out.');
             clearInterval(intervalId);
             handleSignOut(); // stop polling, and sign out user
           } else {

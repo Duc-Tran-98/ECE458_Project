@@ -166,10 +166,6 @@ class ModelAPI extends DataSource {
   async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({
       limit,
       offset,
@@ -183,15 +179,11 @@ class ModelAPI extends DataSource {
   }
 
   async getModelsWithFilter({
-    vendor, modelNumber, description, categories, limit = null, offset = null,
+    vendor, modelNumber, description, categories, limit = null, offset = null, orderBy = [['id', 'ASC']],
   }) {
     const response = { models: [], total: 0 };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return response;
-    // }
     if (categories) {
       let includeData;
       if (categories) {
@@ -224,6 +216,7 @@ class ModelAPI extends DataSource {
       let models = await this.store.models.findAndCountAll({
         include: includeData,
         where: filters,
+        order: orderBy,
       });
       response.models = models.rows;
       response.total = models.count;
@@ -259,7 +252,6 @@ class ModelAPI extends DataSource {
           ],
         },
       ];
-      // }
 
       // eslint-disable-next-line prefer-const
       let filters = [];
@@ -273,6 +265,7 @@ class ModelAPI extends DataSource {
         limit,
         offset,
         subQuery: false,
+        order: orderBy,
       });
       for (let j = 0; j < models.rows.length; j += 1) {
         const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
@@ -298,6 +291,7 @@ class ModelAPI extends DataSource {
           include: includeData,
           where: filters,
           subQuery: false,
+          order: orderBy,
         });
         for (let j = 0; j < models.rows.length; j += 1) {
           const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
@@ -342,10 +336,6 @@ class ModelAPI extends DataSource {
   async getAllModelsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ where: { modelNumber } });
     return models;
   }
@@ -353,10 +343,6 @@ class ModelAPI extends DataSource {
   async getAllModelsWithVendor({ vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ where: { vendor } });
     return models;
   }
@@ -364,10 +350,6 @@ class ModelAPI extends DataSource {
   async getUniqueVendors() {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ attributes: [[SQL.fn('DISTINCT', SQL.col('vendor')), 'vendor']] });
     return models;
   }
@@ -375,10 +357,6 @@ class ModelAPI extends DataSource {
   async getModelById({ id }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const model = await this.store.models.findAll({
       where: { id },
       include: {
@@ -396,10 +374,6 @@ class ModelAPI extends DataSource {
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
       include: {
@@ -637,10 +611,6 @@ class ModelAPI extends DataSource {
   async getModelCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const category = await this.store.modelCategories.findAll({
       where: { name },
     });
@@ -653,10 +623,6 @@ class ModelAPI extends DataSource {
   async getAllModelCategories({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     return await this.store.modelCategories.findAll({ limit, offset });
   }
 

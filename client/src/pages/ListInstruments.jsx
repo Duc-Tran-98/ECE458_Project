@@ -141,8 +141,7 @@ export default function ListInstruments() {
       description: 'Categories',
       headerClassName: headerClass,
       width: 250,
-      sortable: false, // TODO: Verify this works (does on demo)
-      // hide: true,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),
@@ -162,6 +161,7 @@ export default function ListInstruments() {
       headerName: 'Calib Date',
       description: 'Calibration Date',
       width: 140,
+      sortable: false,
       type: 'date',
     },
     {
@@ -170,6 +170,7 @@ export default function ListInstruments() {
       description: 'Calibration Comment',
       width: 300,
       hide: true,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
       ),
@@ -179,6 +180,7 @@ export default function ListInstruments() {
       headerName: 'Calib Exp',
       description: 'Calibration Expiration',
       width: 120,
+      sortable: false,
       type: 'date',
       renderCell: (params) => (
         <div className="row">
@@ -316,9 +318,11 @@ export default function ListInstruments() {
       assetTag,
     });
   };
+
   const {
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   } = filterOptions;
+
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
       JSON.stringify({
@@ -399,7 +403,7 @@ export default function ListInstruments() {
         onPageSizeChange={(page, limit) => {
           updateUrl(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllInstruments({
+        fetchData={(limit, offset, orderBy) => GetAllInstruments({
           limit,
           offset,
           vendor: vendors,
@@ -409,6 +413,7 @@ export default function ListInstruments() {
           instrumentCategories,
           serialNumber: filterSerialNumber,
           assetTag,
+          orderBy,
         }).then((response) => {
           if (response !== null) {
             response.instruments.forEach((element) => {

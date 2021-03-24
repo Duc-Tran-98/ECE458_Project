@@ -208,10 +208,14 @@ class UserAPI extends DataSource {
     return exists ? user[0] : null;
   }
 
-  async getAllUsers({ limit = null, offset = null }) {
+  async getAllUsers({ limit = null, offset = null, orderBy = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const users = await this.store.users.findAll({ limit, offset });
+    const users = await this.store.users.findAll({
+      limit,
+      offset,
+      order: orderBy,
+    });
     return users;
   }
 
