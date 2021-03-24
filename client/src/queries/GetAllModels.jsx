@@ -1,9 +1,10 @@
+/* eslint-disable react/forbid-prop-types */
 import { gql } from '@apollo/client';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
 export default async function GetAllModels({
-  limit, offset, vendor, modelNumber, description, categories,
+  limit, offset, vendor, modelNumber, description, categories, orderBy,
 }) {
   GetAllModels.propTypes = {
     limit: PropTypes.number,
@@ -11,8 +12,8 @@ export default async function GetAllModels({
     vendor: PropTypes.string,
     modelNumber: PropTypes.string,
     description: PropTypes.string,
-    // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
+    orderBy: PropTypes.array,
   };
   const GET_MODELS_QUERY = gql`
     query Models(
@@ -22,6 +23,7 @@ export default async function GetAllModels({
       $modelNumber: String
       $description: String
       $categories: [String]
+      $orderBy: [[String]]
     ) {
       getModelsWithFilter(
         limit: $limit
@@ -30,6 +32,7 @@ export default async function GetAllModels({
         modelNumber: $modelNumber
         description: $description
         categories: $categories
+        orderBy: $orderBy
       ) {
         models {
           id
@@ -50,7 +53,7 @@ export default async function GetAllModels({
   const query = GET_MODELS_QUERY;
   const queryName = 'getModelsWithFilter';
   const getVariables = () => ({
-    limit, offset, vendor, modelNumber, description, categories,
+    limit, offset, vendor, modelNumber, description, categories, orderBy,
   });
   const response = await QueryAndThen({ query, queryName, getVariables });
   return response;

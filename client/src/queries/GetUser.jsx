@@ -40,18 +40,28 @@ export default function GetUser({ userName, includeAll = false, fetchPolicy = nu
   return response;
 }
 
-export function GetAllUsers({ limit, offset }) {
+export function GetAllUsers({ limit, offset, orderBy }) {
   GetAllUsers.propTypes = {
     limit: PropTypes.number,
     offset: PropTypes.number,
+    // eslint-disable-next-line react/forbid-prop-types
+    orderBy: PropTypes.array,
   };
   GetAllUsers.defaultProps = {
     limit: null,
     offset: null,
   };
   const GET_USERS = gql`
-    query GetUsers($limit: Int, $offset: Int) {
-      getAllUsers(limit: $limit, offset: $offset) {
+    query GetUsers(
+      $limit: Int
+      $offset: Int
+      $orderBy: [[String]]
+    ) {
+      getAllUsers(
+        limit: $limit
+        offset: $offset
+        orderBy: $orderBy
+      ) { 
         firstName
         lastName
         userName
@@ -66,7 +76,7 @@ export function GetAllUsers({ limit, offset }) {
 
   const query = GET_USERS;
   const queryName = 'getAllUsers';
-  const getVariables = () => ({ limit, offset });
+  const getVariables = () => ({ limit, offset, orderBy });
   const response = QueryAndThen({ query, queryName, getVariables });
   return response;
 }
