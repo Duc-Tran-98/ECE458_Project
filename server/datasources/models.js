@@ -4,7 +4,7 @@ const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
 
 function validateModel({
-  modelNumber = '', vendor = '', description = '', comment = '',
+  modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false,
 }) {
   if (vendor.length > 30) {
     return [false, 'Vendor input must be under 30 characters!'];
@@ -26,6 +26,9 @@ function validateModel({
   }
   if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
+  }
+  if (klufe && loadBank) {
+    return [false, 'Model cannot be calibratable by Load Bank and Klufe Calibrator!'];
   }
   return [true];
 }
@@ -105,7 +108,8 @@ class ModelAPI extends DataSource {
       return JSON.stringify(response);
     }
     const validation = validateModel({
-      modelNumber, vendor, description, comment,
+      // eslint-disable-next-line max-len
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -428,7 +432,8 @@ class ModelAPI extends DataSource {
       return JSON.stringify(response);
     }
     const validation = validateModel({
-      modelNumber, vendor, description, comment,
+      // eslint-disable-next-line max-len
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring

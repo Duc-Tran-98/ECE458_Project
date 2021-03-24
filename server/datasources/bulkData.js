@@ -54,7 +54,8 @@ class BulkDataAPI extends DataSource {
         const comment = currentModel.comment;
         const calibrationFrequency = currentModel.calibrationFrequency;
         const categories = currentModel.categories;
-        const supportLoadBankCalibration = currentModel.loadBankSupport;
+        const supportLoadBankCalibration = currentModel.supportLoadBankCalibration;
+        const supportKlufeCalibration = currentModel.supportKlufeCalibration;
 
         const createdModel = await this.store.models.create({
           vendor,
@@ -63,6 +64,7 @@ class BulkDataAPI extends DataSource {
           comment,
           calibrationFrequency,
           supportLoadBankCalibration,
+          supportKlufeCalibration,
         }, { transaction: t });
         const modelId = createdModel.dataValues.id;
         if (categories) {
