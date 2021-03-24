@@ -243,6 +243,7 @@ export default function ImportInstruments() {
       return;
     }
 
+    setImportStatus('Registering');
     // File has been validated, now push to database
     const getVariables = () => ({ instruments });
     Query({

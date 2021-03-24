@@ -235,6 +235,7 @@ export default function ImportModels() {
       return;
     }
 
+    setImportStatus('Registering');
     // File has been validated, now push to database
     const models = filterData(fileInfo);
     console.log('Sending import models request with data: ');

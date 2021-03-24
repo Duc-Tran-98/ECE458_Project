@@ -9,7 +9,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 export default function CustomUpload({
   requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus, hideTable,
 }) {
-  const CHUNK_SIZE = 10000;
+  const CHUNK_SIZE = 50000;
   CustomUpload.propTypes = {
     requiredHeaders: PropTypes.array.isRequired,
     customHeaderTransform: PropTypes.func.isRequired,
@@ -161,6 +161,7 @@ export default function CustomUpload({
                 type="submit"
                 onClick={handleSubmitFile}
                 style={{ borderRadius: 5 }}
+                disabled={importStatus !== 'Import'}
               >
                 {importStatus}
               </Button>
