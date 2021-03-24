@@ -401,7 +401,7 @@ export default function ListInstruments() {
         onPageSizeChange={(page, limit) => {
           updateUrl(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllInstruments({
+        fetchData={(limit, offset, orderBy) => GetAllInstruments({
           limit,
           offset,
           vendor: vendors,
@@ -411,6 +411,7 @@ export default function ListInstruments() {
           instrumentCategories,
           serialNumber: filterSerialNumber,
           assetTag,
+          orderBy,
         }).then((response) => {
           if (response !== null) {
             response.instruments.forEach((element) => {

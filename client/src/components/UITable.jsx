@@ -169,6 +169,7 @@ export function ServerPaginationGrid({
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
   };
+
   const handlePageSizeChange = (e) => {
     let actualPage = initPage;
     const maxPage = Math.ceil(total / e.pageSize);
