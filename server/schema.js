@@ -7,7 +7,11 @@ const typeDefs = gql`
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllUsers(limit: Int, offset: Int): [User]
+    getAllUsers(
+      limit: Int
+      offset: Int
+      orderBy: [[String]]
+    ): [User]
     countAllUsers: Int!
 
     # Model Related Queries
