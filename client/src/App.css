@@ -24,6 +24,10 @@ html body {
   color: white;
 }
 
+.start-98 {
+    left:98%!important;
+}
+
 .delete-container {
   width: 80%;
   /*border-radius: 25px;*/

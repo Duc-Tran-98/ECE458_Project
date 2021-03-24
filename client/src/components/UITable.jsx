@@ -170,7 +170,7 @@ export function ServerPaginationGrid({
   };
   const handlePageSizeChange = (e) => {
     let actualPage = initPage;
-    const maxPage = Math.ceil(rowCount / e.pageSize);
+    const maxPage = Math.ceil(total / e.pageSize);
     if (e.page > maxPage) { // if you are on page outside page range
       actualPage = maxPage; // change page to max page
     }
@@ -192,7 +192,6 @@ export function ServerPaginationGrid({
     (async () => {
       setLoading(true);
       const val = await rowCount();
-
       const offset = (initPage - 1) * initLimit;
       const newRows = await fetchData(initLimit, offset);
       if (!active) {
@@ -203,7 +202,7 @@ export function ServerPaginationGrid({
       if (window.location.href.includes('/viewInstruments')) {
         setTimeout(() => { // lots of data/queries from this route, so
           setLoading(false); // GUI needs more time to update
-        }, initLimit * 10);
+        }, 10);
       } else {
         setLoading(false);
       }
@@ -259,7 +258,10 @@ export function ServerPaginationGrid({
   const rowsPerPage = total > 100 ? [25, 50, 100, total] : [25, 50, total];
 
   return (
-    <div className="rounded" style={{ zIndex: 0 }}>
+    <div className="rounded position-relative" style={{ zIndex: 0 }}>
+      <div className="position-absolute top-50 start-50 translate-middle">
+        {loading && <CircularProgress size="5rem" variant="indeterminate" />}
+      </div>
       <div
         className="rounded"
         style={{
@@ -277,7 +279,7 @@ export function ServerPaginationGrid({
             ref={csvLink}
           />
         )}
-        <div className="bg-offset rounded" style={{ zIndex: 40 }}>
+        <div className="sticky-top bg-offset rounded" style={{ zIndex: 40 }}>
           {headerElement}
         </div>
         <XGrid
@@ -317,6 +319,7 @@ export function ServerPaginationGrid({
           components={{
             Pagination: CustomPagination,
             Toolbar: () => CustomToolBar(showToolBar),
+            LoadingOverlay: () => null,
           }}
         />
       </div>
