@@ -205,8 +205,6 @@ export function ServerPaginationGrid({
 
       const offset = (initPage - 1) * initLimit;
       const newRows = await fetchData(initLimit, offset, ordering);
-      console.log(newRows);
-      console.log(ordering);
       if (!active) {
         return;
       }

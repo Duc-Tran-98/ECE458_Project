@@ -179,7 +179,7 @@ class ModelAPI extends DataSource {
   }
 
   async getModelsWithFilter({
-    vendor, modelNumber, description, categories, limit = null, offset = null, orderBy,
+    vendor, modelNumber, description, categories, limit = null, offset = null, orderBy = [['id', 'ASC']],
   }) {
     const response = { models: [], total: 0 };
     const storeModel = await this.store;

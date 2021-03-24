@@ -134,6 +134,7 @@ function ListModels() {
       headerName: 'Categories',
       description: 'Categories',
       width: 350,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),
@@ -208,9 +209,11 @@ function ListModels() {
       categories: actualCategories,
     });
   };
+
   const {
     vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
+
   const updateUrl = (page, limit) => { // this is passed to the on page change and on page size change
     // handlers of the server pagination grid
     const filters = Buffer.from(
@@ -231,6 +234,7 @@ function ListModels() {
       history.push(`/viewModels${searchString}`);
     }
   };
+
   const createBtn = (
     <ModalAlert
       title="Create Model"
