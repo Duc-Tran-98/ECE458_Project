@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
@@ -48,7 +47,7 @@ export default async function GetAllModels({
       }
     }
   `;
-  const query = print(GET_MODELS_QUERY);
+  const query = GET_MODELS_QUERY;
   const queryName = 'getModelsWithFilter';
   const getVariables = () => ({
     limit, offset, vendor, modelNumber, description, categories,
@@ -58,11 +57,11 @@ export default async function GetAllModels({
 }
 
 export async function CountAllModels() {
-  const query = print(gql`
+  const query = gql`
         query CountModels{
             countAllModels
         }
-    `);
+    `;
   const queryName = 'countAllModels';
   const response = await QueryAndThen({ query, queryName });
   return response;

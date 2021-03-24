@@ -1,6 +1,5 @@
 /* eslint-disable react/forbid-prop-types */
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
@@ -77,7 +76,7 @@ export default async function GetAllInstruments({
     }
   `;
   const queryName = 'getInstrumentsWithFilter';
-  const query = print(GET_INSTRUMENTS_QUERY);
+  const query = GET_INSTRUMENTS_QUERY;
   const getVariables = () => ({
     limit, offset, vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories,
   });
@@ -96,11 +95,11 @@ export default async function GetAllInstruments({
 }
 
 export async function CountInstruments() {
-  const query = print(gql`
+  const query = gql`
     query Count{
       countAllInstruments
     }
-  `);
+  `;
   const queryName = 'countAllInstruments';
   const response = await QueryAndThen({ query, queryName });
   return response;

@@ -3,7 +3,6 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { EditUserForm } from '../components/UserForm';
 import Query from '../components/UseQuery';
 import ModalAlert from '../components/ModalAlert';
@@ -124,11 +123,11 @@ export default function ViewUser() {
                   onClick={() => {
                     setLoading(true);
                     Query({
-                      query: print(gql`
+                      query: gql`
                         mutation DelUser($userName: String!) {
                           deleteUser(userName: $userName)
                         }
-                      `),
+                      `,
                       queryName: 'deleteUser',
                       getVariables: () => ({ userName: formState.userName }),
                       handleResponse,

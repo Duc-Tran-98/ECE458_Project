@@ -183,6 +183,12 @@ const typeDefs = gql`
     recentCalComment: String
   }
 
+  type ModelCacheUpdate {
+    model: Model
+    message: String!
+    success: Boolean!
+  }
+
   type CalibrationEvent {
     id: ID!
     calibrationHistoryIdReference: Int!
@@ -278,7 +284,7 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
-    ): String!
+    ): ModelCacheUpdate
 
     # Instrument related mutations
     addInstrument(

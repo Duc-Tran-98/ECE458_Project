@@ -5,7 +5,6 @@ import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { toast } from 'react-toastify';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
@@ -77,9 +76,7 @@ export default function DetailedInstrumentView() {
       let counter = nextId;
       data.forEach((item) => {
         // console.log(item);
-        // eslint-disable-next-line no-param-reassign
         item.id = counter;
-        // eslint-disable-next-line no-param-reassign
         item.viewOnly = true;
         counter += 1;
       });
@@ -217,13 +214,13 @@ export default function DetailedInstrumentView() {
         return;
       }
       Query({
-        query: print(gql`
+        query: gql`
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
             }
           }
-        `),
+        `,
         queryName: 'getModel',
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {

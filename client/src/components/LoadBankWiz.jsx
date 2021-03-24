@@ -3,7 +3,6 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
@@ -127,7 +126,7 @@ export default function LoadBankWiz({
       printerOk,
     });
     Query({
-      query: print(gql`
+      query: gql`
         mutation AddLoadBankCalib (
             $assetTag: Int!,
             $date: String!,
@@ -143,7 +142,7 @@ export default function LoadBankWiz({
             loadBankData: $loadBankData,
           )
         }
-      `),
+      `,
       queryName: 'addLoadBankCalibration',
       getVariables: () => ({
         assetTag,
@@ -318,6 +317,11 @@ export default function LoadBankWiz({
                       type="number"
                       className="w-50"
                       autoFocus
+                      onFocus={(e) => {
+                        if (!touched.vr) {
+                          e.target.value = ''; // clear on focus
+                        }
+                      }}
                       min={0}
                       value={voltageReading.vr}
                       onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
@@ -424,6 +428,11 @@ export default function LoadBankWiz({
                       min={0}
                       className="w-50"
                       autoFocus
+                      onFocus={(e) => {
+                        if (!touched.cr) {
+                          e.target.value = ''; // clear on focus!
+                        }
+                      }}
                       value={currentReadings.filter((element) => element.id === step)[0].cr}
                       onChange={(e) => {
                         setFieldTouched('cr', true);
@@ -610,7 +619,7 @@ export default function LoadBankWiz({
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
-                    query={print(gql`
+                    query={gql`
                       query Instruments($description: String) {
                         getInstrumentsWithFilter(description: $description) {
                           instruments {
@@ -624,7 +633,7 @@ export default function LoadBankWiz({
                           }
                         }
                       }
-                    `)}
+                    `}
                     queryName="getInstrumentsWithFilter"
                     getVariables={() => ({ description: 'voltmeter' })}
                     // eslint-disable-next-line no-unused-vars
@@ -658,7 +667,7 @@ export default function LoadBankWiz({
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
-                    query={print(gql`
+                    query={gql`
                       query Instruments($description: String) {
                         getInstrumentsWithFilter(description: $description) {
                           instruments {
@@ -672,7 +681,7 @@ export default function LoadBankWiz({
                           }
                         }
                       }
-                    `)}
+                    `}
                     queryName="getInstrumentsWithFilter"
                     getVariables={() => ({
                       description: 'current shunt meter',

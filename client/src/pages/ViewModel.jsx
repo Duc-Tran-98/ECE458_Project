@@ -2,7 +2,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { useHistory, Link } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ModelForm from '../components/ModelForm';
@@ -214,7 +213,7 @@ export default function DetailedModelView() {
             <InfinityScroll
               title="Instances:"
               titleClassName="px-3 bg-secondary text-light"
-              query={print(gql`
+              query={gql`
                 query GetInstrumentFromModel(
                   $modelNumber: String!
                   $vendor: String!
@@ -236,7 +235,7 @@ export default function DetailedModelView() {
                     }
                   }
                 }
-              `)}
+              `}
               queryName="getAllInstrumentsWithModel"
               variables={{ modelNumber, vendor }}
               renderItems={(items) => items.map((entry) => (

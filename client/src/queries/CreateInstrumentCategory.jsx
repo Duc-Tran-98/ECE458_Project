@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -13,7 +12,7 @@ export default function CreateInstrumentCategory({ name, handleResponse }) {
         addInstrumentCategory(name: $name)
       }
     `;
-  const query = print(CREATE_INST);
+  const query = CREATE_INST;
   const queryName = 'addInstrumentCategory';
   const getVariables = () => ({ name });
   Query({

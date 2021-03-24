@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import moment from 'moment';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
@@ -73,7 +72,7 @@ export default function ImportInstruments() {
       bulkImportInstruments(instruments: $instruments)
     }
     `;
-  const query = print(IMPORT_INSTRUMENTS);
+  const query = IMPORT_INSTRUMENTS;
   const queryName = 'bulkImportInstruments';
   const renderTable = (instruments) => {
     const filteredData = instruments.map((obj) => ({

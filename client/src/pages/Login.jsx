@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
@@ -48,7 +47,7 @@ const Login = ({ handleLogin }) => {
      }
    `;
     const queryName = 'login';
-    const query = print(LOGIN_MUTATION);
+    const query = LOGIN_MUTATION;
     function handleResponse(response) {
       if (response.success) {
         window.sessionStorage.setItem(

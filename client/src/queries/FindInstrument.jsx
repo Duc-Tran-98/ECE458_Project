@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 // eslint-disable-next-line no-unused-vars
 import Query, { QueryAndThen } from '../components/UseQuery';
@@ -35,7 +34,7 @@ export default function FindInstrument({
             }
         }
     `;
-  const query = print(FIND_INSTRUMENT);
+  const query = FIND_INSTRUMENT;
   const queryName = 'getInstrumentByAssetTag';
   const getVariables = () => ({ assetTag });
   Query({
@@ -64,7 +63,7 @@ export function FindInstrumentById({ id, handleResponse }) {
       }
     }
   `;
-  const query = print(FIND_INSTRUMENT);
+  const query = FIND_INSTRUMENT;
   const queryName = 'getInstrumentById';
   const getVariables = () => ({ id });
   Query({

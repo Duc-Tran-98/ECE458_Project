@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -17,7 +16,7 @@ export default function OAuthSignOn({
         oauthLogin(netId: $netId, firstName: $firstName, lastName: $lastName)
     }
   `;
-  const query = print(OAUTH_SIGNON);
+  const query = OAUTH_SIGNON;
   const queryName = 'oauthLogin';
   const getVariables = () => ({ netId, firstName, lastName });
   Query({

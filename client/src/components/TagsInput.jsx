@@ -4,7 +4,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { print } from 'graphql';
 import { gql } from '@apollo/client';
 import AsyncSuggest from './AsyncSuggest';
 
@@ -35,10 +34,10 @@ const TagsInput = (props) => {
     }
     `;
   if (models[0]) {
-    query = print(GET_MODELS_CAT);
+    query = GET_MODELS_CAT;
     queryName = 'getAllModelCategories';
   } else {
-    query = print(GET_INST_CAT);
+    query = GET_INST_CAT;
     queryName = 'getAllInstrumentCategories';
   }
 

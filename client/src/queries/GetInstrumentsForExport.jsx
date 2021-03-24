@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
@@ -57,7 +56,7 @@ export default async function GetInstrumentsForExport({ filterOptions }) {
     }
   }
   `;
-  const query = print(GET_INSTRUMENTS_QUERY);
+  const query = GET_INSTRUMENTS_QUERY;
   const queryName = 'getInstrumentsWithFilter';
 
   const serialNumber = typeof filterOptions.filterSerialNumber === 'undefined' ? null : filterOptions.filterSerialNumber;
@@ -107,7 +106,7 @@ export async function GetAssetTags({ filterOptions }) {
     }
   }
   `;
-  const query = print(GET_INSTRUMENTS_QUERY);
+  const query = GET_INSTRUMENTS_QUERY;
   const queryName = 'getInstrumentsWithFilter';
 
   const serialNumber = typeof filterOptions.filterSerialNumber === 'undefined' ? null : filterOptions.filterSerialNumber;

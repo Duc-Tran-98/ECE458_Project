@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
@@ -25,7 +24,7 @@ export default async function EditInstrumentQuery({
       editInstrument(modelNumber: $modelNumber, vendor: $vendor, assetTag: $assetTag, serialNumber: $serialNumber, comment: $comment, categories: $categories, id: $id)
     }
   `;
-  const query = print(EDIT_INST);
+  const query = EDIT_INST;
   const queryName = 'editInstrument';
   const getVariables = () => ({
     modelNumber,

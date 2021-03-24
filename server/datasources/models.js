@@ -55,6 +55,9 @@ class ModelAPI extends DataSource {
 
   checkPermissions() {
     const { user } = this.context;
+    if (process.env.NODE_ENV.includes('dev')) {
+      return true;
+    }
     return user.isAdmin || user.modelPermission;
   }
 
@@ -100,12 +103,12 @@ class ModelAPI extends DataSource {
     supportKlufeCalibration,
     categories,
   }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission';
-      return JSON.stringify(response);
+      return response;
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
@@ -114,7 +117,7 @@ class ModelAPI extends DataSource {
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
-      return JSON.stringify(response);
+      return response;
     }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value && value.id !== id) {
@@ -158,9 +161,10 @@ class ModelAPI extends DataSource {
         }
         response.message = 'Model Updated Successfully!';
         response.success = true;
+        response.model = await this.getModelById({ id });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async getAllModels({ limit = null, offset = null }) {

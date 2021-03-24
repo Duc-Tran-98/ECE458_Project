@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -14,7 +13,7 @@ export default function EditModelCategory({ currentName, updatedName, handleResp
         editModelCategory(currentName: $currentName, updatedName: $updatedName)
       }
     `;
-  const query = print(EDIT_MODEL_CAT);
+  const query = EDIT_MODEL_CAT;
   const queryName = 'editModelCategory';
   const getVariables = () => ({ currentName, updatedName });
   Query({

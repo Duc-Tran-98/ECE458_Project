@@ -3,7 +3,6 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
 import { StateLessModal } from './ModalAlert';
@@ -69,7 +68,7 @@ export default function ImportModels() {
       bulkImportModels(models: $models)
     }
   `;
-  const query = print(IMPORT_MODELS);
+  const query = IMPORT_MODELS;
   const queryName = 'bulkImportModels';
 
   const isNA = (calibrationFrequency) => {

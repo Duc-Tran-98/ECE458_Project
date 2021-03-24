@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
@@ -16,7 +15,7 @@ export default async function GetModelCategories({ limit, offset }) {
         }
     }
   `;
-  const query = print(GET_MODEL_CATEGORIES_QUERY);
+  const query = GET_MODEL_CATEGORIES_QUERY;
   const queryName = 'getAllModelCategories';
   const getVariables = () => ({ limit, offset });
   const response = await QueryAndThen({ query, queryName, getVariables });
@@ -25,22 +24,22 @@ export default async function GetModelCategories({ limit, offset }) {
 }
 
 export async function CountModelCategories() {
-  const query = print(gql`
+  const query = gql`
         query Count{
             countModelCategories
         }
-    `);
+    `;
   const queryName = 'countModelCategories';
   const response = await QueryAndThen({ query, queryName });
   return response;
 }
 
 export async function CountModelsAttached({ name }) {
-  const query = print(gql`
+  const query = gql`
         query Count($name: String!){
           countModelsAttachedToCategory(name: $name)
         }
-    `);
+    `;
   const getVariables = () => ({ name });
   const queryName = 'countModelsAttachedToCategory';
   const response = await QueryAndThen({ query, queryName, getVariables });

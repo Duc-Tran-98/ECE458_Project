@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -63,7 +62,7 @@ export default function CreateUser({
     instrumentPermission,
     calibrationPermission,
   });
-  const query = print(SIGNUP_MUTATION);
+  const query = SIGNUP_MUTATION;
   const queryName = 'signup';
   Query({
     query,

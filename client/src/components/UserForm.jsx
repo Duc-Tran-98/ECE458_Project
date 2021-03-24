@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Query from './UseQuery';
@@ -169,7 +168,7 @@ export function EditUserForm({
       userName, isAdmin, modelPermission, instrumentPermission, calibrationPermission,
     } = formState;
     Query({
-      query: print(gql`
+      query: gql`
            mutation ChangePermissions(
             $userName: String!, 
             $isAdmin: Boolean!, 
@@ -179,7 +178,7 @@ export function EditUserForm({
             ) {
              editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission)
            }
-         `),
+         `,
       queryName: 'editPermissions',
       getVariables: () => ({
         userName,

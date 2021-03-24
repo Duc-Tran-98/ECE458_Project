@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
@@ -22,7 +21,7 @@ const GET_MODELS_QUERY = gql`
     }
   }
 `;
-const query = print(GET_MODELS_QUERY);
+const query = GET_MODELS_QUERY;
 const queryName = 'getUniqueVendors';
 
 // Schema information for form validation

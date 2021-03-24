@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -41,7 +40,7 @@ export default function CreateModel({
         )
       }
     `;
-  const query = print(ADD_MODEL);
+  const query = ADD_MODEL;
   const queryName = 'addModel';
   const getVariables = () => ({
     modelNumber,

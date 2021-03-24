@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -14,7 +13,7 @@ export default function DeleteModel({ modelNumber, vendor, handleResponse }) {
         deleteModel(modelNumber: $modelNumber, vendor: $vendor)
       }
     `;
-  const query = print(DEL_MODEL);
+  const query = DEL_MODEL;
   const queryName = 'deleteModel';
   const getVariables = () => ({ modelNumber, vendor });
   Query({

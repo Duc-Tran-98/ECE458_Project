@@ -411,7 +411,8 @@ export default function ListInstruments() {
           assetTag,
         }).then((response) => {
           if (response !== null) {
-            response.instruments.forEach((element) => {
+            const copyOfRes = JSON.parse(JSON.stringify(response)); // make deep copy of response b/c cannot add new properties to response
+            copyOfRes.instruments.forEach((element) => {
               if (element !== null) {
                 element.categories = element.modelCategories.concat(element.instrumentCategories);
                 element.calibrationStatus = element.calibrationFrequency === null
@@ -435,7 +436,7 @@ export default function ListInstruments() {
                 }
               }
             });
-            return response.instruments;
+            return copyOfRes.instruments;
           }
           return [];
         })}

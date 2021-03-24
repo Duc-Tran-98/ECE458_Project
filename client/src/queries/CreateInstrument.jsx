@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
@@ -38,7 +37,7 @@ export default async function CreateInstrument({
         )
       }
     `;
-  const query = print(ADD_INSTRUMENT);
+  const query = ADD_INSTRUMENT;
   const queryName = 'addInstrument';
   const getVariables = () => ({
     modelNumber, vendor, assetTag, serialNumber, comment, categories,

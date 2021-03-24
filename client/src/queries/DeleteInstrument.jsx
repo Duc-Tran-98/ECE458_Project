@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -15,7 +14,7 @@ export default function DeleteInstrument({
       deleteInstrument(id: $id)
     }
   `;
-  const query = print(DEL_INST);
+  const query = DEL_INST;
   const queryName = 'deleteInstrument';
   const getVariables = () => ({ id });
   Query({

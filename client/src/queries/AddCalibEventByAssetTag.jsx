@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -31,7 +30,7 @@ export default async function AddCalibEventByAssetTag({
         )
       }
     `;
-  const query = print(ADD_EVENT);
+  const query = ADD_EVENT;
   const queryName = 'addCalibrationEventByAssetTag';
   events.forEach((entry) => {
     const getVariables = () => ({
@@ -47,6 +46,7 @@ export default async function AddCalibEventByAssetTag({
       queryName,
       getVariables,
       handleResponse,
+      fetchPolicy: 'no-cache',
     });
   });
 }

@@ -83,10 +83,16 @@ function ListModels() {
       description: 'Vendor',
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 150, description: 'Model Number',
+      field: 'modelNumber',
+      headerName: 'Model Number',
+      width: 150,
+      description: 'Model Number',
     },
     {
-      field: 'description', headerName: 'Description', width: 350, description: 'Description',
+      field: 'description',
+      headerName: 'Description',
+      width: 350,
+      description: 'Description',
     },
     {
       field: 'comment',
@@ -134,6 +140,7 @@ function ListModels() {
       headerName: 'Categories',
       description: 'Categories',
       width: 350,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),

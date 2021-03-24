@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -13,7 +12,7 @@ export default function DeleteInstrumentCategory({ name, handleResponse }) {
         removeInstrumentCategory(name: $name)
       }
     `;
-  const query = print(DEL_INST);
+  const query = DEL_INST;
   const queryName = 'removeInstrumentCategory';
   const getVariables = () => ({ name });
   Query({

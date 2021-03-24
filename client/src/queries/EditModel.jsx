@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -53,7 +52,7 @@ export default function EditModelQuery({
             )
         }
     `;
-  const query = print(EDIT_MODEL);
+  const query = EDIT_MODEL;
   const queryName = 'editModel';
   const getVariables = () => ({
     description,
@@ -67,6 +66,9 @@ export default function EditModelQuery({
     categories,
   });
   Query({
-    query, queryName, getVariables, handleResponse,
+    query,
+    queryName,
+    getVariables,
+    handleResponse,
   });
 }
