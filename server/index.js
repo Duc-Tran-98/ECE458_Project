@@ -34,6 +34,9 @@ const dataSources = () => ({
 const server = new ApolloServer({
   context: async ({ req }) => {
     // simple auth check on every request
+    if (process.env.NODE_ENV.includes('dev')) {
+      return { user: null };
+    }
     const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
     const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
