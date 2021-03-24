@@ -208,33 +208,37 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
   const message = `Klufe Step with stepNum: ${stepNum} and stepStart: ${stepStart}`;
   console.log(message);
 
-  const validStepNumbers = [4, 6, 8, 10, 12];
+  const validStepNumbers = [4, 7, 9, 11, 13];
   const validStartValues = [true, false];
 
   if (!validStepNumbers.includes(stepNum) || !validStartValues.includes(stepStart)) {
     return res.status(403).send('Invalid requeset');
   }
 
+  const start = validStartValues === true ? 'on\n' : 'off\n';
+
   let cmd = '';
   switch (stepNum) {
     case 4:
       cmd = 'set dc 3.5\n';
       break;
-    case 6:
+    case 7:
       cmd = 'set ac 3.513 50\n';
       break;
-    case 8:
+    case 9:
       cmd = 'set ac 100 20000\n';
       break;
-    case 10:
+    case 11:
       cmd = 'set ac 3.5 10000\n';
       break;
-    case 12:
+    case 13:
       cmd = 'set ac 3 10000\n';
       break;
     default:
       cmd = '\n';
   }
+
+  cmd += start;
 
   console.log(`Sending cmd: ${cmd}`);
   conn.on('ready', () => {
