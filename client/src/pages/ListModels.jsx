@@ -282,13 +282,14 @@ function ListModels() {
         onPageSizeChange={(page, limit) => {
           updateUrl(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllModels({
+        fetchData={(limit, offset, orderBy) => GetAllModels({
           limit,
           offset,
           vendor: vendors,
           modelNumber: modelNumbers,
           description: descriptions,
           categories,
+          orderBy,
         }).then((response) => response.models)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}

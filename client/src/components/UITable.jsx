@@ -163,6 +163,7 @@ export function ServerPaginationGrid({
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
   const [total, setTotal] = React.useState(0);
+  const [ordering, setOrdering] = React.useState(null);
   const history = useHistory();
 
   const handlePageChange = (params) => {
@@ -186,6 +187,15 @@ export function ServerPaginationGrid({
     }, 1);
   }, []);
 
+  const handleSortModelChange = (params) => {
+    const orderBy = params.sortModel;
+    if (orderBy.length === 0) {
+      setOrdering(null);
+    } else {
+      setOrdering([[orderBy[0].field, orderBy[0].sort.toUpperCase()]]);
+    }
+  };
+
   React.useEffect(() => {
     let active = true;
 
@@ -194,7 +204,9 @@ export function ServerPaginationGrid({
       const val = await rowCount();
 
       const offset = (initPage - 1) * initLimit;
-      const newRows = await fetchData(initLimit, offset);
+      const newRows = await fetchData(initLimit, offset, ordering);
+      console.log(newRows);
+      console.log(ordering);
       if (!active) {
         return;
       }
@@ -212,7 +224,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, fetchData, shouldUpdate]);
+  }, [initLimit, initPage, ordering, fetchData, shouldUpdate]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
@@ -290,6 +302,8 @@ export function ServerPaginationGrid({
           pageSize={initLimit}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
+          sortingMode="server"
+          onSortModelChange={handleSortModelChange}
           loading={loading}
           rowsPerPageOptions={rowsPerPage}
           hideFooterSelectedRowCount

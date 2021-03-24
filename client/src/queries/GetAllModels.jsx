@@ -23,6 +23,7 @@ export default async function GetAllModels({
       $modelNumber: String
       $description: String
       $categories: [String]
+      $orderBy: [[String]]
     ) {
       getModelsWithFilter(
         limit: $limit
@@ -31,6 +32,7 @@ export default async function GetAllModels({
         modelNumber: $modelNumber
         description: $description
         categories: $categories
+        orderBy: $orderBy
       ) {
         models {
           id
