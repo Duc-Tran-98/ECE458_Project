@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
@@ -23,8 +24,7 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
     { label: 'Calibration-Date', key: 'calibrationDate' },
     { label: 'Calibration-Comment', key: 'calibrationComment' },
     { label: 'Instrument-Categories', key: 'instrumentCategories' },
-    { label: 'Calibration-File-Attachment', key: 'calibrationFile' },
-    { label: 'Calibration-Load-Bank-Results-Exist', key: 'calibrationLoadBank' },
+    { label: 'Calibration-Attachment-Type', key: 'calibrationType' },
   ];
 
   const getData = async () => {
@@ -48,8 +48,10 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
         instrumentCategories: row.instrumentCategories.map((item) => item.name).join(' '),
         calibrationDate: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].date) ? row.recentCalibration[0].date : '',
         calibrationComment: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].comment) ? row.recentCalibration[0].comment : '',
-        calibrationFile: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].fileName) ? `Attached file ${row.recentCalibration[0].fileName}` : '',
-        calibrationLoadBank: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].loadBankData) ? 'Calibrated via Load Bank Wizard' : '',
+        calibrationType: typeof row.recentCalibration[0] !== 'undefined' ? (row.recentCalibration[0].fileName ? `Attached file ${row.recentCalibration[0].fileName}`
+          : (row.recentCalibration[0].loadBankData ? 'Calibrated via Load Bank Wizard'
+            : (row.recentCalibration[0].klufeData ? 'Calibrated via Klufe Calibrator' : '')))
+          : '',
       };
       filteredData.push(updatedRow);
     });

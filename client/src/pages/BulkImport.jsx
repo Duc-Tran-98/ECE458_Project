@@ -1,6 +1,6 @@
 import React from 'react';
-import ImpModels from '../components/ImpModels';
-import ImpInstruments from '../components/ImpInstruments';
+import ImportModels from '../components/ImportModels';
+import ImportInstruments from '../components/ImportInstruments';
 import ImportTemplates from '../components/ImportTemplates';
 
 export default function BulkImport() {
@@ -15,8 +15,8 @@ export default function BulkImport() {
         below.
       </p>
       <ImportTemplates />
-      <ImpModels />
-      <ImpInstruments />
+      <ImportModels />
+      <ImportInstruments />
     </div>
   );
 }

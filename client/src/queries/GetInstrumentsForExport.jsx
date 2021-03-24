@@ -44,6 +44,7 @@ export default async function GetInstrumentsForExport({ filterOptions }) {
           fileName
           fileLocation
           loadBankData
+          klufeData
         }
         modelCategories {
           name
