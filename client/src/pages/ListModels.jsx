@@ -1,15 +1,15 @@
 /*
-This class is starting to get a bit complex, so may want
-to refactor this into smaller components when possible;
-minor feature that would be cool is spinners while the modal alert loads;
+This class is for the table view of models
 */
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
+import CreateModel from './CreateModel';
+import ModalAlert from '../components/ModalAlert';
 
 function ListModels() {
   const history = useHistory();
@@ -18,6 +18,7 @@ function ListModels() {
   const urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  const [update, setUpdate] = useState(false);
   let urlFilter = urlParams.get('filters');
   let selectedFilters = null;
   if (urlFilter) {
@@ -51,18 +52,19 @@ function ListModels() {
   // eslint-disable-next-line no-unused-vars
   history.listen((location, action) => {
     let active = true;
-    (() => {
+    (async () => {
       if (!active) return;
-      getAndSetUrlVals(location.search);
+      getAndSetUrlVals(location.search); // if history.push/replace or pop happens, update our state
+      // based on the search params
     })();
     return () => { active = false; };
   });
 
   const cellHandler = (e) => {
     const state = { previousUrl: window.location.href };
-    const { modelNumber, vendor, description } = e.row;
+    const { modelNumber, vendor } = e.row;
     history.push(
-      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}`,
       state,
     );
   };
@@ -73,28 +75,18 @@ function ListModels() {
     });
     return catArr.join(', ');
   };
-  const headerClass = 'customMuiHeader';
   const cols = [
     {
       field: 'vendor',
       headerName: 'Vendor',
       width: 150,
-      headerClassName: headerClass,
       description: 'Vendor',
     },
     {
-      field: 'modelNumber',
-      headerName: 'Model Number',
-      width: 170,
-      headerClassName: headerClass,
-      description: 'Model Number',
+      field: 'modelNumber', headerName: 'Model Number', width: 150, description: 'Model Number',
     },
     {
-      field: 'description',
-      headerName: 'Description',
-      width: 350,
-      headerClassName: headerClass,
-      description: 'Description',
+      field: 'description', headerName: 'Description', width: 350, description: 'Description',
     },
     {
       field: 'comment',
@@ -105,13 +97,11 @@ function ListModels() {
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
       ),
-      headerClassName: headerClass,
     },
     {
       field: 'calibrationFrequency',
       headerName: 'Calib Freq',
       description: 'Calibration Frequency',
-      headerClassName: headerClass,
       width: 120,
       renderCell: (params) => (
         <div className="row">
@@ -143,8 +133,8 @@ function ListModels() {
       field: 'categories',
       headerName: 'Categories',
       description: 'Categories',
-      headerClassName: headerClass,
       width: 350,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),
@@ -171,7 +161,7 @@ function ListModels() {
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
-  const updateUrlWithFilter = ({
+  const updateUrlWithFilter = ({ // this method called onSearch to handle url manipulation
     vendors,
     modelNumbers,
     descriptions,
@@ -218,31 +208,14 @@ function ListModels() {
       descriptions,
       categories: actualCategories,
     });
-    // if (
-    //   !vendors
-    //   && (modelCategories === null || modelCategories?.length === 0)
-    //   && !modelNumbers
-    //   && !descriptions
-    // ) {
-    //   CountAllModels().then((val) => {
-
-    //   });
-    // } else {
-    // GetAllModels({
-    //   limit: 1,
-    //   offset: 0,
-    //   modelNumber: modelNumbers,
-    //   description: descriptions,
-    //   vendor: vendors,
-    //   categories: actualCategories,
-    // }).then((response) => {
-    // });
-    // }
   };
+
   const {
     vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
-  const updateUrl = (page, limit) => {
+
+  const updateUrl = (page, limit) => { // this is passed to the on page change and on page size change
+    // handlers of the server pagination grid
     const filters = Buffer.from(
       JSON.stringify({
         vendors,
@@ -262,6 +235,20 @@ function ListModels() {
     }
   };
 
+  const createBtn = (
+    <ModalAlert
+      title="Create Model"
+      btnText="Create Model"
+      btnClass="btn m-2 my-auto text-nowrap"
+    >
+      <CreateModel onCreation={() => {
+        setUpdate(true);
+        setUpdate(false);
+      }}
+      />
+    </ModalAlert>
+  );
+
   return (
     <>
       <ServerPaginationGrid
@@ -277,9 +264,7 @@ function ListModels() {
         headerElement={(
           <div className="d-flex justify-content-between py-2">
             {(user.isAdmin || user.modelPermission) && (
-              <Link className="btn m-2 my-auto text-nowrap" to="/addModel">
-                Create Model
-              </Link>
+              createBtn
             )}
             <SearchBar
               forModelSearch
@@ -291,6 +276,7 @@ function ListModels() {
             />
           </div>
         )}
+        shouldUpdate={update}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
@@ -300,20 +286,21 @@ function ListModels() {
         onPageSizeChange={(page, limit) => {
           updateUrl(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllModels({
+        fetchData={(limit, offset, orderBy) => GetAllModels({
           limit,
           offset,
           vendor: vendors,
           modelNumber: modelNumbers,
           description: descriptions,
           categories,
+          orderBy,
         }).then((response) => response.models)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
-        showImport
+        showImport={user.isAdmin || user.modelPermission}
       />
     </>
   );

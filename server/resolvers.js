@@ -7,10 +7,9 @@ const saltRounds = 10;
 module.exports = {
   Query: {
     // User Queries
-    // eslint-disable-next-line max-len
     getUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.findUser({ userName }),
     isAdmin: (_, { userName }, { dataSources }) => dataSources.userAPI.isAdmin({ userName }),
-    getAllUsers: async (_, { limit, offset }, { dataSources }) => await dataSources.userAPI.getAllUsers({ limit, offset }),
+    getAllUsers: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.userAPI.getAllUsers({ limit, offset, orderBy }),
     countAllUsers: async (_, __, { dataSources }) => await dataSources.userAPI.countAllUsers(),
 
     countModelCategories: async (_, __, { dataSources }) => await dataSources.modelAPI.countModelCategories(),
@@ -20,19 +19,15 @@ module.exports = {
 
     // Model Queries
     countAllModels: async (_, __, { dataSources }) => await dataSources.modelAPI.countAllModels(),
-    // eslint-disable-next-line max-len
     getAllModels: (_, { limit, offset }, { dataSources }) => dataSources.modelAPI.getAllModels({ limit, offset }),
-    // eslint-disable-next-line max-len
     getAllModelsWithModelNum: async (_, { modelNumber }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithModelNum({ modelNumber }),
-    // eslint-disable-next-line max-len
     getAllModelsWithVendor: async (_, { vendor }, { dataSources }) => await dataSources.modelAPI.getAllModelsWithVendor({ vendor }),
-    // eslint-disable-next-line max-len
     getModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.getModel({ modelNumber, vendor }),
-    // eslint-disable-next-line max-len
+    getModelById: async (_, { id }, { dataSources }) => await dataSources.modelAPI.getModelById({ id }),
     getModelsWithFilter: async (
       _,
       {
-        vendor, modelNumber, description, categories, limit, offset,
+        vendor, modelNumber, description, categories, limit, offset, orderBy,
       },
       { dataSources },
     ) => await dataSources.modelAPI.getModelsWithFilter({
@@ -42,16 +37,14 @@ module.exports = {
       categories,
       limit,
       offset,
+      orderBy,
     }),
 
-    // eslint-disable-next-line max-len
     getUniqueVendors: async (_, __, { dataSources }) => await dataSources.modelAPI.getUniqueVendors(),
+
     // Instrument Queries
-    // eslint-disable-next-line max-len
     countAllInstruments: async (_, __, { dataSources }) => await dataSources.instrumentAPI.countAllInstruments(),
-    // eslint-disable-next-line max-len
     getAllInstruments: (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstruments({ limit, offset }),
-    // eslint-disable-next-line max-len
     getAllInstrumentsWithInfo: async (_, { limit, offset }, { dataSources }) => dataSources.instrumentAPI.getAllInstrumentsWithInfo({ limit, offset }),
     getAllInstrumentsWithModel: async (
       _,
@@ -86,10 +79,10 @@ module.exports = {
     getInstrumentByAssetTag: async (_, { assetTag }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentByAssetTag({
       assetTag,
     }),
+    getInstrumentById: async (_, { id }, { dataSources }) => await dataSources.instrumentAPI.getInstrumentById({ id }),
     getInstrumentsWithFilter: async (
       _,
       {
-        // eslint-disable-next-line max-len
         vendor,
         modelNumber,
         description,
@@ -99,6 +92,7 @@ module.exports = {
         instrumentCategories,
         limit,
         offset,
+        orderBy,
       },
       { dataSources },
     ) => await dataSources.instrumentAPI.getInstrumentsWithFilter({
@@ -111,22 +105,22 @@ module.exports = {
       instrumentCategories,
       limit,
       offset,
+      orderBy,
     }),
 
     // Calibration Queries
-    // eslint-disable-next-line max-len
     getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
       limit,
       offset,
     }),
     getCalibrationEventsByInstrument: async (
       _,
-      { modelNumber, vendor, serialNumber },
+      { modelNumber, vendor, assetTag },
       { dataSources },
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByInstrument({
       modelNumber,
       vendor,
-      serialNumber,
+      assetTag,
     }),
     getCalibrationEventsByReferenceId: async (
       _,
@@ -163,7 +157,6 @@ module.exports = {
     bulkImportInstruments: async (_, { instruments }, { dataSources }) => await dataSources.bulkDataAPI.bulkImportInstruments({
       instruments,
     }),
-    // eslint-disable-next-line max-len
     deleteModel: async (_, { modelNumber, vendor }, { dataSources }) => await dataSources.modelAPI.deleteModel({ modelNumber, vendor }),
     editModel: async (
       _,
@@ -175,6 +168,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       },
       { dataSources },
@@ -185,6 +179,7 @@ module.exports = {
       description,
       comment,
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       calibrationFrequency,
       categories,
     }),
@@ -197,6 +192,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       },
       { dataSources },
@@ -208,6 +204,7 @@ module.exports = {
         comment,
         calibrationFrequency,
         supportLoadBankCalibration,
+        supportKlufeCalibration,
         categories,
       });
       return response;
@@ -307,6 +304,24 @@ module.exports = {
           date,
           comment,
           loadBankData,
+        },
+      );
+      return response;
+    },
+    addKlufeCalibration: async (
+      _,
+      {
+        assetTag, user, date, comment, klufeData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addKlufeCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          klufeData,
         },
       );
       return response;

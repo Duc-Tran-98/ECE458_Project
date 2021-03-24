@@ -38,7 +38,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         }).then((res) => {
           if (typeof res === 'undefined') {
             // undefined => user got deleted
-            toast.error('This account has been delted! Signing you out.');
+            toast.error('This account has been deleted! Signing you out.');
             clearInterval(intervalId);
             handleSignOut(); // stop polling, and sign out user
           } else {
@@ -62,7 +62,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
 
   useEffect(() => {
     token = window.sessionStorage.getItem('token');
-    if (token === null) {
+    if (token === null) { // user signed out
       setUserState({
         isLoggedIn: false,
         isAdmin: false,
@@ -74,8 +74,9 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         calibrationPermission: false,
         instrumentPermission: false,
       });
+      clearInterval(intervalId); // stop previous polling!
     } else {
-      // If user logged in
+      // else user logged in
       setTimeout(() => {
         GetUser({
           userName: Buffer.from(token, 'base64').toString('ascii'),
@@ -86,7 +87,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
           setUserState(val);
           startPolling(val);
         });
-      }, 20);
+      }, 20); // set timeout to give time for new authheader to get applied
     }
   }, [loggedIn]);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;

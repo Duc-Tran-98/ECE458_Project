@@ -1,71 +1,60 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { gql } from '@apollo/client';
 import { print } from 'graphql';
+import { toast } from 'react-toastify';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
-import ModalAlert from '../components/ModalAlert';
-import EditInstrument from '../components/EditInstrument';
+import ModalAlert, { StateLessModal } from '../components/ModalAlert';
+import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
+import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
   : '/express';
 
-export default function DetailedInstrumentView({ onDelete }) {
-  DetailedInstrumentView.propTypes = {
-    onDelete: PropTypes.func.isRequired,
-  };
+export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
   const history = useHistory();
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const modelNumber = urlParams.get('modelNumber');
-  const vendor = urlParams.get('vendor');
-  let assetTag = urlParams.get('assetTag');
-  assetTag = parseInt(assetTag, 10);
-  const serialNumber = urlParams.get('serialNumber');
-  const description = urlParams.get('description');
-  let calibFrequency = urlParams.get('calibrationFrequency');
-  calibFrequency = parseInt(calibFrequency, 10);
-  let id = urlParams.get('id');
-  id = parseInt(id, 10);
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [showLBWiz, setShowLBWiz] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
+  const [loading, setLoading] = React.useState(false); // loading status of delete query
+  const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
   const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
-  const [responseMsg, setResponseMsg] = React.useState('');
-  const closeModal = () => {
-    setShowDeleteModal(false);
-    setShowLBWiz(false);
-  };
+  const [responseMsg, setResponseMsg] = React.useState(''); // msg from delete query
+  const [show, setShow] = React.useState(false); // show add calib event modal or not
+  const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
+  const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
+  const [formState, setFormState] = React.useState({ // our state we display to user
+    modelNumber: urlParams.get('modelNumber'),
+    vendor: urlParams.get('vendor'),
+    serialNumber: '',
+    description: '',
+    categories: [],
+    comment: '',
+    id: 0,
+    calibrationFrequency: 0,
+    assetTag: parseInt(urlParams.get('assetTag'), 10),
+  });
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setResponseMsg(response.message);
     if (response.success) {
-      onDelete();
       setTimeout(() => {
         setResponseMsg('');
-        if (showDeleteModal) {
-          setShowDeleteModal(false);
-        }
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
-          // if (path.includes('count')) {
-          //   const count = parseInt(path.substring(path.indexOf('count')).split('count=')[1], 10) - 1;
-          //   path = path.replace(path.substring(path.indexOf('count')), `count=${count}`);
-          // }
           history.replace( // This code updates the url to have the correct count
             path,
             null,
@@ -78,14 +67,14 @@ export default function DetailedInstrumentView({ onDelete }) {
   };
   const handleDelete = () => {
     setLoading(true);
-    DeleteInstrument({ id, handleResponse });
+    DeleteInstrument({ id: formState.id, handleResponse });
   };
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const fetchData = (excludeEntry) => {
+  const fetchData = (excludeEntry = null, id = null) => {
     // This will refetch calib history and set it as our state
-    GetCalibHistory({ id }).then((data) => {
+    GetCalibHistory({ id: id || formState.id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
         // console.log(item);
@@ -102,16 +91,18 @@ export default function DetailedInstrumentView({ onDelete }) {
   };
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
-    const newHistory = calibHist;
-    newHistory.push({
-      user: user.userName,
-      date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
-      comment: '',
-      id: nextId,
-      viewOnly: false,
-    });
-    setNextId(nextId + 1);
-    setCalibHist(newHistory);
+    if (calibHist.filter((ele) => !ele.viewOnly).length === 0) {
+      const newHistory = calibHist;
+      newHistory.push({
+        user: user.userName,
+        date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
+        comment: '',
+        id: nextId,
+        viewOnly: false,
+      });
+      setNextId(nextId + 1);
+      setCalibHist(newHistory);
+    }
   };
   const deleteRow = (rowId) => {
     const newHistory = calibHist.filter((item) => item.id !== rowId);
@@ -142,6 +133,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const handleSubmit = async (entry) => {
     // const validEvents = calibHist.filter((entry) => !entry.viewOnly); // Collect valid entries
     const newHistory = [entry];
+    setShow(false);
     if (entry.file) {
       const endpoint = '/api/upload';
       const path = `${route}${endpoint}`;
@@ -158,20 +150,73 @@ export default function DetailedInstrumentView({ onDelete }) {
     }
     AddCalibEventByAssetTag({
       events: newHistory,
-      assetTag,
+      assetTag: formState.assetTag,
       handleResponse: () => {
+        toast.success(`Added calibration event on ${entry.date}`);
         fetchData(entry);
       },
     });
   };
 
-  React.useEffect(() => {
+  // eslint-disable-next-line no-unused-vars
+  history.listen((location) => {
     let active = true;
-    (() => {
+    (async () => {
       if (!active) {
         return;
       }
-      fetchData();
+      if (!update) {
+        // const {state } = location;
+        setUpdate(true);
+      }
+    })();
+    return () => { active = false; };
+  });
+
+  const updateState = (response) => { // function to update our state
+    setFetched(false);
+    const categories = response.instrumentCategories.map((item) => item.name);
+    let {
+      comment,
+      description,
+      calibrationFrequency,
+      modelNumber,
+      vendor,
+      serialNumber,
+      assetTag,
+      id,
+    } = response;
+    fetchData(null, id);
+    comment = comment || '';
+    modelNumber = modelNumber || '';
+    vendor = vendor || '';
+    serialNumber = serialNumber || '';
+    assetTag = assetTag || '';
+    calibrationFrequency = calibrationFrequency || '';
+    description = description || '';
+    id = id || 0;
+    setFormState({
+      ...formState,
+      comment,
+      description,
+      calibrationFrequency,
+      categories,
+      modelNumber,
+      vendor,
+      serialNumber,
+      assetTag,
+      id,
+    });
+    setUpdate(false);
+    setFetched(true);
+  };
+
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
       Query({
         query: print(gql`
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
@@ -182,193 +227,217 @@ export default function DetailedInstrumentView({ onDelete }) {
           }
         `),
         queryName: 'getModel',
-        getVariables: () => ({ modelNumber, vendor }),
+        getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
           setSupportsKlufeWiz(response.supportKlufeCalibration);
         },
       });
+      FindInstrument({
+        assetTag: formState.assetTag,
+        handleResponse: updateState,
+      });
     })();
     return () => {
       active = false;
     };
-  }, []);
+  }, []); // on mount, get calib hist and inst info
 
   React.useEffect(() => {
     let active = true;
-    (() => {
+    (async () => {
       if (!active) {
         return;
       }
-      fetchData();
+      if (update) {
+        FindInstrumentById({
+          id: formState.id,
+          handleResponse: updateState,
+        });
+      }
     })();
-    return () => {
-      active = false;
-    };
-  }, [showLBWiz]); // update calib hist if user opens/closes wizard
+    return () => { active = false; };
+  }, [update]);
 
-  const genCalibButtons = () => {
-    if (supportsLoadBankWiz) {
-      <div className="d-flex flex-row">
-        {(user.isAdmin || user.calibrationPermission) && (
+  const genCalibButtons = (
+    <div className="d-flex flex-row">
+      {(user.isAdmin || user.calibrationPermission) && (
         <>
-          <MouseOverPopover message="Add new calibration event">
-            <button type="button" className="btn " onClick={addRow}>
+          <MouseOverPopover message="Add a new calibration event">
+            <button
+              type="button"
+              onClick={() => {
+                addRow();
+                setShow(true);
+              }}
+              className="btn"
+            >
               Add Calibration
             </button>
           </MouseOverPopover>
-          <span className="mx-2" />
-          <MouseOverPopover message="Add calibration event via our Load Bank Wizard">
-            <button
-              type="button"
-              className="btn "
-              onClick={() => setShowLBWiz(true)}
+          <StateLessModal
+            show={show}
+            title="Add Calibration Event"
+            handleClose={() => setShow(false)}
+          >
+            <CalibrationTable
+              rows={calibHist.filter((ele) => !ele.viewOnly)}
+              deleteRow={deleteRow}
+              onChangeCalibRow={onChangeCalibRow}
+              showSaveButton
+              showDeleteBtn={false}
+              onSaveClick={handleSubmit}
+            />
+          </StateLessModal>
+          {supportsLoadBankWiz && (
+            <div className="mx-2">
+              <ModalAlert
+                btnText="Add Load Bank Calibration"
+                title="Load Bank Wizard"
+                popOverText="Add a load bank calibration via our wizard"
+              >
+                <LoadBankWiz
+                  initModelNumber={formState.modelNumber}
+                  initSerialNumber={formState.serialNumber}
+                  initAssetTag={formState.assetTag}
+                  initVendor={formState.vendor}
+                  onFinish={fetchData}
+                />
+              </ModalAlert>
+            </div>
+          )}
+          {supportsKlufeWiz && (
+            <div className="mx-2">
+              <ModalAlert
+                btnText="Add Klufe Calibration"
+                title="Add Klufe Calibration"
+                popOverText="Add calibration via Klufe"
+                onClose={() => console.log('closing modal')} // pass function to run on close of modal
+              >
+                <>YOUR WIZARD COMPONENT HERE</>
+              </ModalAlert>
+            </div>
+          )}
+          {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+            <MouseOverPopover
+              className=""
+              message="View instrument's calibration certificate"
             >
-              Add Load Bank Calibration
-            </button>
-          </MouseOverPopover>
+              <Link
+                className="btn text-nowrap"
+                to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
+              >
+                Certificate
+              </Link>
+            </MouseOverPopover>
+          )}
         </>
+      )}
+    </div>
+  );
+
+  const deleteBtn = (
+    <ModalAlert
+      btnText=""
+      altBtnId="delete-intrsument-btn"
+      popOverText="Delete this instrument"
+      altBtn={(
+        <svg
+          id="delete-intrsument-btn"
+          style={{ cursor: 'pointer' }}
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="currentColor"
+          className="bi bi-trash-fill mt-2"
+          viewBox="0 0 16 16"
+        >
+          {/* eslint-disable-next-line max-len */}
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+        </svg>
         )}
-      </div>;
-    } else if (supportsKlufeWiz) {
-      <div className="d-flex flex-row">
-        {(user.isAdmin || user.calibrationPermission) && (
-        <>
-          <MouseOverPopover message="Add new calibration event">
-            <button type="button" className="btn " onClick={addRow}>
-              Add Calibration
-            </button>
-          </MouseOverPopover>
-          <span className="mx-2" />
-          <MouseOverPopover message="Add calibration event via our Guided Hardware Calibration Wizard">
-            <button
-              type="button"
-              className="btn "
-              // onClick={() => setShowGCWiz(true)}
-            >
-              Add Guided Hardware Calibration
-            </button>
-          </MouseOverPopover>
-        </>
-        )}
-      </div>;
-    } else {
+      title="Delete Instrument"
+      altCloseBtnId="close-del-inst"
+      width=""
+    >
       <>
-        {(user.isAdmin || user.calibrationPermission) && (
-        <MouseOverPopover message="Add new calibration event">
-          <button type="button" className="btn " onClick={addRow}>
-            Add Calibration
-          </button>
-        </MouseOverPopover>
+        {responseMsg.length === 0 && (
+          <div className="h5 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
         )}
-      </>;
-    }
-  };
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : responseMsg.length > 0 ? (
+            <div className="mx-5 mt-3 h5">{responseMsg}</div>
+          ) : (
+            <>
+              <div className="mt-3">
+                <button className="btn" type="button" onClick={handleDelete}>
+                  Yes
+                </button>
+              </div>
+              <span className="mx-3" />
+              <div className="mt-3">
+                <button className="btn " type="button" id="close-del-inst">
+                  No
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </>
+    </ModalAlert>
+  );
+
+  const footer = (
+    <>
+      <MouseOverPopover message="Go to model's detail view">
+        <Link
+          className="text-nowrap"
+          to={`/viewModel/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}`}
+        >
+          View Model
+        </Link>
+      </MouseOverPopover>
+    </>
+  );
 
   return (
     <>
-      <ModalAlert
-        show={showDeleteModal}
-        handleClose={closeModal}
-        title="Delete Instrument"
-      >
-        <>
-          {responseMsg.length === 0 && (
-            <div className="h4 text-center my-3">{`You are about to delete ${vendor}:${modelNumber}:${serialNumber}. Are you sure?`}</div>
-          )}
-          <div className="d-flex justify-content-center">
-            {loading ? (
-              <CircularProgress />
-            ) : responseMsg.length > 0 ? (
-              <div className="mx-5 mt-3 h4">{responseMsg}</div>
-            ) : (
-              <>
-                <div className="mt-3">
-                  <button className="btn" type="button" onClick={handleDelete}>
-                    Yes
-                  </button>
-                </div>
-                <span className="mx-3" />
-                <div className="mt-3">
-                  <button className="btn " type="button" onClick={closeModal}>
-                    No
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </>
-      </ModalAlert>
-      <ModalAlert
-        show={showLBWiz}
-        handleClose={closeModal}
-        title="Load Bank Wizard"
-      >
-        <LoadBankWiz
-          initModelNumber={modelNumber}
-          initSerialNumber={serialNumber}
-          initAssetTag={assetTag}
-          initVendor={vendor}
-        />
-      </ModalAlert>
       <div className="col">
         <div className="row">
-          <EditInstrument
-            initCalibrationFrequency={calibFrequency}
-            handleDelete={() => setShowDeleteModal(true)}
-            initModelNumber={modelNumber}
-            initVendor={vendor}
-            initSerialNumber={serialNumber}
-            id={id}
-            description={description}
-            initAssetTag={assetTag}
-            footer={(
-              <>
-                <MouseOverPopover
-                  className="col"
-                  message="Go to model's detail view"
-                >
-                  <Link
-                    className="btn  text-nowrap"
-                    to={`/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`}
-                  >
-                    View Model
-                  </Link>
-                </MouseOverPopover>
-                {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-                  <MouseOverPopover
-                    className="col"
-                    message="View instrument's calibration certificate"
-                  >
-                    <Link className="btn text-nowrap" to={`/viewCertificate/?serialNumber=${serialNumber || 'N/A'}&assetTag=${assetTag}&modelNumber=${modelNumber}&description=${description}&vendor=${vendor}&id=${id}&calibrationFrequency=${calibFrequency}`}>
-                      View Certificate
-                    </Link>
-                  </MouseOverPopover>
-                )}
-              </>
-            )}
-          />
+          {fetched && (
+            <InstrumentForm
+              modelNumber={formState.modelNumber}
+              vendor={formState.vendor}
+              comment={formState.comment}
+              serialNumber={formState.serialNumber}
+              categories={formState.categories}
+              viewOnly
+              description={formState.description}
+              calibrationFrequency={formState.calibrationFrequency}
+              assetTag={formState.assetTag}
+              id={formState.id}
+              type="edit"
+              deleteBtn={deleteBtn}
+              handleFormSubmit={handleSubmit}
+              footer={footer}
+            />
+          )}
         </div>
         <div className="row px-3 mt-3">
-          <div
-            style={{
-              maxHeight: '45vh',
-              overflowY: 'auto',
-            }}
-          >
-            <div className="sticky-top bg-secondary text-light">
+          <div>
+            <div className="bg-secondary text-light py-2">
               <div className="row px-3">
-                <h2 className="col-auto me-auto">Calibration History:</h2>
-                {calibFrequency > 0 && (
-                  <>
-                    <div className="col-auto mt-1">{genCalibButtons}</div>
-                  </>
+                <div className="col-auto me-auto h5 my-auto">Calibration History:</div>
+                {formState.calibrationFrequency > 0 && (
+                <div className="col-auto mt-1">{genCalibButtons}</div>
                 )}
               </div>
             </div>
-            {calibFrequency > 0 ? (
+            {formState.calibrationFrequency > 0 ? (
               <CalibrationTable
-                rows={calibHist}
+                rows={calibHist.filter((ele) => ele.viewOnly)}
                 deleteRow={deleteRow}
                 onChangeCalibRow={onChangeCalibRow}
                 showSaveButton
@@ -376,7 +445,7 @@ export default function DetailedInstrumentView({ onDelete }) {
               />
             ) : (
               <div className="row mt-3">
-                <p className="text-center h4">Instrument not calibratable</p>
+                <p className="text-center h5">Instrument not calibratable</p>
               </div>
             )}
           </div>

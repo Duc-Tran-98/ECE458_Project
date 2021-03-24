@@ -1,12 +1,14 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import CreateInstrument from './CreateInstrument';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
+import ModalAlert from '../components/ModalAlert';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -31,6 +33,7 @@ export default function ListInstruments() {
       Buffer.from(urlFilter, 'base64').toString('ascii'),
     );
   }
+  const [update, setUpdate] = React.useState(false);
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
     modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
@@ -69,7 +72,7 @@ export default function ListInstruments() {
   // eslint-disable-next-line no-unused-vars
   history.listen((location, action) => {
     let active = true;
-    (() => {
+    (async () => {
       if (!active) return;
       getAndSetUrlVals(location.search);
     })();
@@ -80,10 +83,10 @@ export default function ListInstruments() {
   const cellHandler = (e) => {
     const state = { previousUrl: window.location.href };
     const {
-      modelNumber, vendor, assetTag, serialNumber, description, id, calibrationFrequency,
+      modelNumber, vendor, assetTag,
     } = e.row;
     history.push(
-      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}&serialNumber=${serialNumber}&description=${description}&id=${id}&calibrationFrequency=${calibrationFrequency || 0}`,
+      `/viewInstrument/?modelNumber=${modelNumber}&vendor=${vendor}&assetTag=${assetTag}`,
       state,
     );
   };
@@ -127,10 +130,10 @@ export default function ListInstruments() {
       field: 'assetTag', headerName: 'Asset Tag', width: 140, description: 'Asset Tag', headerClassName: headerClass,
     },
     {
-      field: 'description', headerName: 'Description', width: 225, description: 'Description', headerClassName: headerClass,
+      field: 'description', headerName: 'Description', width: 225, description: 'Description',
     },
     {
-      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number', headerClassName: headerClass,
+      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number',
     },
     {
       field: 'categories',
@@ -138,8 +141,7 @@ export default function ListInstruments() {
       description: 'Categories',
       headerClassName: headerClass,
       width: 250,
-      sortable: false, // TODO: Verify this works (does on demo)
-      // hide: true,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),
@@ -149,7 +151,6 @@ export default function ListInstruments() {
       headerName: 'Comment',
       description: 'Comment',
       width: 400,
-      headerClassName: headerClass,
       hide: true,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
@@ -160,7 +161,7 @@ export default function ListInstruments() {
       headerName: 'Calib Date',
       description: 'Calibration Date',
       width: 140,
-      headerClassName: headerClass,
+      sortable: false,
       type: 'date',
     },
     {
@@ -168,8 +169,8 @@ export default function ListInstruments() {
       headerName: 'Calibration Comment',
       description: 'Calibration Comment',
       width: 300,
-      headerClassName: headerClass,
       hide: true,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
       ),
@@ -179,7 +180,7 @@ export default function ListInstruments() {
       headerName: 'Calib Exp',
       description: 'Calibration Expiration',
       width: 120,
-      headerClassName: headerClass,
+      sortable: false,
       type: 'date',
       renderCell: (params) => (
         <div className="row">
@@ -316,37 +317,12 @@ export default function ListInstruments() {
       filterSerialNumber,
       assetTag,
     });
-    // if (
-    //   !vendors
-    //   && (modelCategories === null || modelCategories?.length === 0)
-    //   && (instrumentCategories === null || instrumentCategories?.length === 0)
-    //   && !modelNumbers
-    //   && !descriptions
-    //   && !filterSerialNumber
-    //   && !assetTag
-    // ) {
-    //   CountInstruments().then((val) => {
-    //     return val;
-    //   });
-    // } else {
-    //   GetAllInstruments({
-    //     limit: 1,
-    //     offset: 0,
-    //     modelNumber: modelNumbers,
-    //     description: descriptions,
-    //     vendor: vendors,
-    //     modelCategories: formatedModelCategories,
-    //     instrumentCategories: formatedInstrumentCategories,
-    //     serialNumber: filterSerialNumber,
-    //     assetTag,
-    //   }).then((response) => {
-    //     return response.total;
-    //   });
-    // }
   };
+
   const {
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   } = filterOptions;
+
   const updateUrl = (page, limit) => {
     const filters = Buffer.from(
       JSON.stringify({
@@ -370,6 +346,20 @@ export default function ListInstruments() {
     }
   };
 
+  const createBtn = (
+    <ModalAlert
+      title="Create Instrument"
+      btnText="Create Instrument"
+      btnClass="btn m-2 my-auto text-nowrap"
+    >
+      <CreateInstrument onCreation={() => {
+        setUpdate(true);
+        setUpdate(false);
+      }}
+      />
+    </ModalAlert>
+  );
+
   return (
     <>
       <ServerPaginationGrid
@@ -388,9 +378,7 @@ export default function ListInstruments() {
         headerElement={(
           <div className="d-flex justify-content-between py-2">
             {(user.isAdmin || user.instrumentPermission) && (
-              <Link className="btn m-2 my-auto text-nowrap" to="/addInstrument">
-                Create Instrument
-              </Link>
+              createBtn
             )}
             <SearchBar
               onSearch={onSearch}
@@ -405,6 +393,7 @@ export default function ListInstruments() {
             />
           </div>
         )}
+        shouldUpdate={update}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
@@ -414,7 +403,7 @@ export default function ListInstruments() {
         onPageSizeChange={(page, limit) => {
           updateUrl(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllInstruments({
+        fetchData={(limit, offset, orderBy) => GetAllInstruments({
           limit,
           offset,
           vendor: vendors,
@@ -424,6 +413,7 @@ export default function ListInstruments() {
           instrumentCategories,
           serialNumber: filterSerialNumber,
           assetTag,
+          orderBy,
         }).then((response) => {
           if (response !== null) {
             response.instruments.forEach((element) => {
@@ -459,7 +449,7 @@ export default function ListInstruments() {
         filterOptions={filterOptions}
         filename="instruments.csv"
         showToolBar
-        showImport
+        showImport={user.isAdmin || user.instrumentPermission}
       />
     </>
   );

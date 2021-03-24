@@ -7,7 +7,11 @@ const typeDefs = gql`
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllUsers(limit: Int, offset: Int): [User]
+    getAllUsers(
+      limit: Int
+      offset: Int
+      orderBy: [[String]]
+    ): [User]
     countAllUsers: Int!
 
     # Model Related Queries
@@ -16,6 +20,7 @@ const typeDefs = gql`
     getAllModelsWithModelNum(modelNumber: String!): [Model]
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
+    getModelById(id: Int!): Model
     getUniqueVendors: [Model]
     getModelsWithFilter(
       vendor: String
@@ -24,6 +29,7 @@ const typeDefs = gql`
       categories: [String]
       limit: Int
       offset: Int
+      orderBy: [[String]]
     ): ModelOutput
 
     # Instrument Related Queries
@@ -47,6 +53,7 @@ const typeDefs = gql`
       serialNumber: String!
     ): Instrument
     getInstrumentByAssetTag(assetTag: Int!): Instrument
+    getInstrumentById(id: Int!): Instrument
     getInstrumentsWithFilter(
       vendor: String
       modelNumber: String
@@ -57,6 +64,7 @@ const typeDefs = gql`
       instrumentCategories: [String]
       limit: Int
       offset: Int
+      orderBy: [[String]]
     ): InstrumentOutput
 
     # Calibration Event Related Queries
@@ -64,7 +72,7 @@ const typeDefs = gql`
     getCalibrationEventsByInstrument(
       modelNumber: String!
       vendor: String!
-      serialNumber: String!
+      assetTag: Int!
     ): [CalibrationEvent]
     getCalibrationEventsByReferenceId(
       calibrationHistoryIdReference: Int!
@@ -106,6 +114,7 @@ const typeDefs = gql`
     calibrationFrequency: Int
     categories: [Category]
     supportLoadBankCalibration: Boolean!
+    supportKlufeCalibration: Boolean!
   }
 
   type ModelOutput {
@@ -130,6 +139,7 @@ const typeDefs = gql`
     id: Int!
     assetTag: Int!
     supportLoadBankCalibration: Boolean
+    supportKlufeCalibration: Boolean
   }
 
   type FilteredInstrument {
@@ -160,6 +170,7 @@ const typeDefs = gql`
     fileLocation: String
     fileName: String
     loadBankData: String
+    klufeData: String
   }
 
   type InstrumentWithCalibration {
@@ -195,7 +206,8 @@ const typeDefs = gql`
     description: String!
     comment: String
     categories: [String]
-    loadBankSupport: Boolean!
+    supportLoadBankCalibration: Boolean!
+    supportKlufeCalibration: Boolean!
     calibrationFrequency: Int
   }
 
@@ -258,6 +270,7 @@ const typeDefs = gql`
       comment: String
       calibrationFrequency: Int
       supportLoadBankCalibration: Boolean!
+      supportKlufeCalibration: Boolean!
       categories: [String]
     ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
@@ -269,6 +282,7 @@ const typeDefs = gql`
       comment: String
       calibrationFrequency: Int
       supportLoadBankCalibration: Boolean!
+      supportKlufeCalibration: Boolean!
       categories: [String]
     ): String!
 
@@ -319,6 +333,14 @@ const typeDefs = gql`
       user: String!
       comment: String
       loadBankData: String!
+    ): String!
+
+    addKlufeCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      klufeData: String!
     ): String!
 
     #bulk import

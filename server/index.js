@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-useless-concat */
 /* eslint-disable max-len */
 // This is the actual backend server;
@@ -18,7 +19,7 @@ require('./express'); // use express server too
 // Connect to db and init tables
 let store;
 createDB().then(() => {
-  store = createStore();
+  store = createStore(false);
 });
 
 // Define api
@@ -33,13 +34,15 @@ const dataSources = () => ({
 const server = new ApolloServer({
   context: async ({ req }) => {
     // simple auth check on every request
+    if (process.env.NODE_ENV.includes('dev')) {
+      return { user: null };
+    }
     const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
     const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
-    if (
-      !user // jwt DNE || malformed
-      && !(req.body.query === 'mutation LoginMutation($password: String!, $userName: String!) {\n' + '  login(password: $password, userName: $userName)\n'
-    + '}\n')) { // and query !== login, then that's invalid access
+    const { query } = req.body;
+    if (!user && !(query.includes('mutation LoginMutation') || query.includes('mutation OAuthSignOn'))) {
+      // and query !== login, then that's invalid access
       console.log('invalid access');
       throw new AuthenticationError('you must be logged in');
     }
@@ -50,7 +53,7 @@ const server = new ApolloServer({
         return val[0].dataValues;
       }
       return null; // return null if user no longer exists
-    });
+    }).catch(() => null);
     return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
   },
   // Additional constructor options

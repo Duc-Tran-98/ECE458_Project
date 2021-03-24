@@ -4,7 +4,7 @@ const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
 
 function validateModel({
-  modelNumber = '', vendor = '', description = '', comment = '',
+  modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false,
 }) {
   if (vendor.length > 30) {
     return [false, 'Vendor input must be under 30 characters!'];
@@ -26,6 +26,9 @@ function validateModel({
   }
   if (comment != null && comment.length > 2000) {
     return [false, 'Comment input must be under 2000 characters!'];
+  }
+  if (klufe && loadBank) {
+    return [false, 'Model cannot be calibratable by Load Bank and Klufe Calibrator!'];
   }
   return [true];
 }
@@ -52,6 +55,9 @@ class ModelAPI extends DataSource {
 
   checkPermissions() {
     const { user } = this.context;
+    if (process.env.NODE_ENV.includes('dev')) {
+      return true;
+    }
     return user.isAdmin || user.modelPermission;
   }
 
@@ -94,6 +100,7 @@ class ModelAPI extends DataSource {
     comment,
     calibrationFrequency,
     supportLoadBankCalibration,
+    supportKlufeCalibration,
     categories,
   }) {
     const response = { message: '', success: false };
@@ -104,7 +111,8 @@ class ModelAPI extends DataSource {
       return JSON.stringify(response);
     }
     const validation = validateModel({
-      modelNumber, vendor, description, comment,
+      // eslint-disable-next-line max-len
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -123,6 +131,7 @@ class ModelAPI extends DataSource {
             comment,
             calibrationFrequency,
             supportLoadBankCalibration,
+            supportKlufeCalibration,
           },
           { where: { id } },
         );
@@ -160,10 +169,6 @@ class ModelAPI extends DataSource {
   async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({
       limit,
       offset,
@@ -177,15 +182,11 @@ class ModelAPI extends DataSource {
   }
 
   async getModelsWithFilter({
-    vendor, modelNumber, description, categories, limit = null, offset = null,
+    vendor, modelNumber, description, categories, limit = null, offset = null, orderBy = [['id', 'ASC']],
   }) {
     const response = { models: [], total: 0 };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return response;
-    // }
     if (categories) {
       let includeData;
       if (categories) {
@@ -218,6 +219,7 @@ class ModelAPI extends DataSource {
       let models = await this.store.models.findAndCountAll({
         include: includeData,
         where: filters,
+        order: orderBy,
       });
       response.models = models.rows;
       response.total = models.count;
@@ -253,7 +255,6 @@ class ModelAPI extends DataSource {
           ],
         },
       ];
-      // }
 
       // eslint-disable-next-line prefer-const
       let filters = [];
@@ -267,6 +268,7 @@ class ModelAPI extends DataSource {
         limit,
         offset,
         subQuery: false,
+        order: orderBy,
       });
       for (let j = 0; j < models.rows.length; j += 1) {
         const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
@@ -292,6 +294,7 @@ class ModelAPI extends DataSource {
           include: includeData,
           where: filters,
           subQuery: false,
+          order: orderBy,
         });
         for (let j = 0; j < models.rows.length; j += 1) {
           const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
@@ -336,10 +339,6 @@ class ModelAPI extends DataSource {
   async getAllModelsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ where: { modelNumber } });
     return models;
   }
@@ -347,10 +346,6 @@ class ModelAPI extends DataSource {
   async getAllModelsWithVendor({ vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ where: { vendor } });
     return models;
   }
@@ -358,21 +353,30 @@ class ModelAPI extends DataSource {
   async getUniqueVendors() {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ attributes: [[SQL.fn('DISTINCT', SQL.col('vendor')), 'vendor']] });
     return models;
+  }
+
+  async getModelById({ id }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const model = await this.store.models.findAll({
+      where: { id },
+      include: {
+        model: this.store.modelCategories,
+        as: 'categories',
+        through: 'modelCategoryRelationships',
+      },
+    });
+    if (model && model[0]) {
+      return model[0];
+    }
+    return null;
   }
 
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
       include: {
@@ -394,6 +398,7 @@ class ModelAPI extends DataSource {
     comment,
     calibrationFrequency,
     supportLoadBankCalibration = false,
+    supportKlufeCalibration = false,
     categories = [],
   }) {
     const response = { message: '', success: false };
@@ -404,7 +409,8 @@ class ModelAPI extends DataSource {
       return JSON.stringify(response);
     }
     const validation = validateModel({
-      modelNumber, vendor, description, comment,
+      // eslint-disable-next-line max-len
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -422,6 +428,7 @@ class ModelAPI extends DataSource {
           comment,
           calibrationFrequency,
           supportLoadBankCalibration,
+          supportKlufeCalibration,
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
@@ -607,10 +614,6 @@ class ModelAPI extends DataSource {
   async getModelCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const category = await this.store.modelCategories.findAll({
       where: { name },
     });
@@ -623,10 +626,6 @@ class ModelAPI extends DataSource {
   async getAllModelCategories({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     return await this.store.modelCategories.findAll({ limit, offset });
   }
 

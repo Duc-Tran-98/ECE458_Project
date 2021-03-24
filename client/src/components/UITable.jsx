@@ -1,26 +1,30 @@
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
 import {
-  DataGrid, GridOverlay, ColumnsToolbarButton, DensitySelector,
+  DataGrid,
 } from '@material-ui/data-grid';
-// eslint-disable-next-line no-unused-vars
-// import { XGrid } from '@material-ui/x-grid';
+import {
+  GridDensitySelector,
+  XGrid,
+  GridToolbarContainer,
+  GridColumnsToolbarButton,
+} from '@material-ui/x-grid';
+import $ from 'jquery';
 
 import PropTypes from 'prop-types';
 import useStateWithCallback from 'use-state-with-callback';
 import {
-  useState, useRef, useEffect, useContext,
+  useState, useRef, useEffect,
 } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { CSVLink } from 'react-csv';
 import Pagination from '@material-ui/lab/Pagination';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Portal from '@material-ui/core/Portal';
 import ExportInstruments from './ExportInstruments';
 import ExportModels from './ExportModels';
-import UserContext from './UserContext';
+// import UserContext from './UserContext';
 import GenerateBarcodes from './GenerateBarcodes';
 
 export default function DisplayGrid({
@@ -64,16 +68,6 @@ export default function DisplayGrid({
 
 let paginationContainer;
 
-function CustomLoadingOverlay() {
-  return (
-    <GridOverlay>
-      <div style={{ position: 'absolute', top: 0, width: '100%' }}>
-        <LinearProgress />
-      </div>
-    </GridOverlay>
-  );
-}
-
 function CustomPagination(props) {
   const { state, api } = props;
 
@@ -104,6 +98,18 @@ CustomPagination.propTypes = {
   state: PropTypes.object.isRequired,
 };
 
+function CustomToolBar(show) {
+  if (!show) {
+    return null;
+  }
+  return (
+    <GridToolbarContainer>
+      <GridDensitySelector />
+      <GridColumnsToolbarButton />
+    </GridToolbarContainer>
+  );
+}
+
 export function ServerPaginationGrid({
   fetchData,
   cols,
@@ -117,10 +123,10 @@ export function ServerPaginationGrid({
   onPageSizeChange,
   rowCount,
   headerElement,
-  // eslint-disable-next-line no-unused-vars
   filterOptions,
   showToolBar,
   showImport,
+  shouldUpdate = false,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -142,6 +148,7 @@ export function ServerPaginationGrid({
     filterOptions: PropTypes.object,
     showToolBar: PropTypes.bool.isRequired,
     showImport: PropTypes.bool.isRequired,
+    shouldUpdate: PropTypes.bool, // if you want to force update table
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -156,19 +163,38 @@ export function ServerPaginationGrid({
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
   const [total, setTotal] = React.useState(0);
-  const user = useContext(UserContext);
+  const [ordering, setOrdering] = React.useState(null);
   const history = useHistory();
 
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
   };
+
   const handlePageSizeChange = (e) => {
     let actualPage = initPage;
-    const maxPage = Math.ceil(rowCount / e.pageSize);
+    const maxPage = Math.ceil(total / e.pageSize);
     if (e.page > maxPage) { // if you are on page outside page range
       actualPage = maxPage; // change page to max page
     }
     onPageSizeChange(actualPage, e.pageSize);
+  };
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      $('.MuiDataGrid-main')
+        .find(":contains('Material-UI X Unlicensed product')")
+        .first()
+        .remove(); // remove watermark
+    }, 1);
+  }, []);
+
+  const handleSortModelChange = (params) => {
+    const orderBy = params.sortModel;
+    if (orderBy.length === 0) {
+      setOrdering(null);
+    } else {
+      setOrdering([[orderBy[0].field, orderBy[0].sort.toUpperCase()]]);
+    }
   };
 
   React.useEffect(() => {
@@ -177,10 +203,8 @@ export function ServerPaginationGrid({
     (async () => {
       setLoading(true);
       const val = await rowCount();
-      // console.log(val);
-
       const offset = (initPage - 1) * initLimit;
-      const newRows = await fetchData(initLimit, offset);
+      const newRows = await fetchData(initLimit, offset, ordering);
       if (!active) {
         return;
       }
@@ -189,7 +213,7 @@ export function ServerPaginationGrid({
       if (window.location.href.includes('/viewInstruments')) {
         setTimeout(() => { // lots of data/queries from this route, so
           setLoading(false); // GUI needs more time to update
-        }, initLimit * 10);
+        }, 10);
       } else {
         setLoading(false);
       }
@@ -198,7 +222,7 @@ export function ServerPaginationGrid({
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, fetchData]);
+  }, [initLimit, initPage, ordering, fetchData, shouldUpdate]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
@@ -242,12 +266,17 @@ export function ServerPaginationGrid({
     }
   };
 
+  const rowsPerPage = total > 100 ? [25, 50, 100, total] : [25, 50, total];
+
   return (
-    <div className="rounded" style={{ zIndex: 0 }}>
+    <div className="rounded position-relative" style={{ zIndex: 0 }}>
+      <div className="position-absolute top-50 start-50 translate-middle">
+        {loading && <CircularProgress size="5rem" variant="indeterminate" />}
+      </div>
       <div
         className="rounded"
         style={{
-          maxHeight: '72vh',
+          maxHeight: '77vh',
           overflowY: 'auto',
           width: '100%',
         }}
@@ -261,38 +290,36 @@ export function ServerPaginationGrid({
             ref={csvLink}
           />
         )}
-        <div className="sticky-top bg-offset rounded" style={{ zIndex: 40 }}>{headerElement}</div>
-        <DataGrid
+        <div className="sticky-top bg-offset rounded" style={{ zIndex: 40 }}>
+          {headerElement}
+        </div>
+        <XGrid
           rows={rows}
           columns={cols}
+          rowCount={total}
           pagination
+          paginationMode="server"
           page={initPage}
           pageSize={initLimit}
-          rowCount={total}
-          checkboxSelection={filename && filename.includes('instrument')}
-          paginationMode="server"
           onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          sortingMode="server"
+          onSortModelChange={handleSortModelChange}
           loading={loading}
-          className=""
-          rowsPerPageOptions={[25, 50, 100]}
-          locateText={{
-            toolbarDensity: 'Size',
-            toolbarDensityLabel: 'Size',
-            toolbarDensityCompact: 'Small',
-            toolbarDensityStandard: 'Medium',
-            toolbarDensityComfortable: 'Large',
-          }}
+          rowsPerPageOptions={rowsPerPage}
+          hideFooterSelectedRowCount
+          autoHeight
+          disableColumnMenu
           onCellClick={(e) => {
             if (cellHandler) {
               cellHandler(e);
             }
           }}
-          // onCellHover={() => { document.body.style.cursor = 'pointer'; }}
-          autoHeight
-          onSelectionChange={(newSelection) => {
-            setChecked(newSelection.rowIds);
+          checkboxSelection={filename && filename.includes('instrument')}
+          onSelectionModelChange={(newSelection) => {
+            setChecked(newSelection.selectionModel);
             const tagArr = [];
-            newSelection.rowIds.forEach((rowID) => {
+            newSelection.selectionModel.forEach((rowID) => {
               rows.forEach((row) => {
                 // eslint-disable-next-line eqeqeq
                 if (row.id == rowID) {
@@ -302,26 +329,56 @@ export function ServerPaginationGrid({
             });
             setTags(tagArr);
           }}
-          hideFooterSelectedRowCount
           components={{
-            Toolbar: () => (
-              showToolBar ? (
-                <>
-                  <ColumnsToolbarButton />
-                  <DensitySelector />
-                </>
-              ) : null
-            ),
-            LoadingOverlay: CustomLoadingOverlay,
             Pagination: CustomPagination,
+            Toolbar: () => CustomToolBar(showToolBar),
+            LoadingOverlay: () => null,
           }}
-          disableColumnMenu
         />
       </div>
       <div className="row bg-offset rounded py-2 mx-auto">
+        {/* This is where the footer starts */}
         <div className="col-auto me-auto" ref={paginationContainer} />
+        {/* This is container for the custom pagination */}
         <div className="col-auto">
+          {showImport && (
+            <button
+              type="button"
+              className="btn ms-3"
+              onClick={() => {
+                history.push('/import');
+              }}
+            >
+              Import
+            </button>
+          )}
+          {handleExport && (
+            <>
+              {loadingExport && <CircularProgress />}
+              {filename && filename.includes('model') && (
+                <ExportModels
+                  setLoading={setLoadingExport}
+                  filterOptions={filterOptions}
+                />
+              )}
+              {filename && filename.includes('instrument') && (
+                <ExportInstruments
+                  setLoading={setLoadingExport}
+                  filterOptions={filterOptions}
+                />
+              )}
+              {filename && filename.includes('instrument') && (
+                <GenerateBarcodes
+                  filterOptions={filterOptions}
+                  assetTags={tags}
+                  getAll={tags.length === rows.length}
+                />
+              )}
+              <span className="ms-3" />
+            </>
+          )}
           <div className="btn-group dropup">
+            {/* This is for the drop up of how many user can select */}
             <button
               className="btn  dropdown-toggle"
               type="button"
@@ -331,66 +388,25 @@ export function ServerPaginationGrid({
             >
               Limit
               {' '}
-              {initLimit}
+              {initLimit === total ? 'All' : initLimit}
             </button>
             <ul
               className="dropdown-menu bg-light"
               aria-labelledby="dropdownMenu2"
             >
-              <li>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 25 })}
-                >
-                  25
-                </button>
-              </li>
-              <li>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 50 })}
-                >
-                  50
-                </button>
-              </li>
-              <li>
-                <button
-                  className="dropdown-item"
-                  type="button"
-                  onClick={() => handlePageSizeChange({ page: initPage, pageSize: 100 })}
-                >
-                  100
-                </button>
-              </li>
+              {rowsPerPage.map((el) => (
+                <li key={el}>
+                  <button
+                    className="dropdown-item"
+                    type="button"
+                    onClick={() => handlePageSizeChange({ page: initPage, pageSize: el })}
+                  >
+                    {el === total ? 'All' : el}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
-          {user.isAdmin && showImport && (
-          <button
-            type="button"
-            className="btn ms-3"
-            onClick={() => {
-              history.push('/import');
-            }}
-          >
-            Import
-          </button>
-          )}
-          {handleExport && (
-            <>
-              {loadingExport && <CircularProgress />}
-              {filename && filename.includes('model') && (
-              <ExportModels setLoading={setLoadingExport} filterOptions={filterOptions} />
-              )}
-              {filename && filename.includes('instrument') && (
-              <ExportInstruments setLoading={setLoadingExport} filterOptions={filterOptions} />
-              )}
-              {filename && filename.includes('instrument') && (
-                <GenerateBarcodes filterOptions={filterOptions} assetTags={tags} getAll={tags.length === rows.length} />
-              )}
-            </>
-          )}
         </div>
       </div>
     </div>

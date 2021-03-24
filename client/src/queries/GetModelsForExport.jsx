@@ -31,6 +31,7 @@ export default async function GetModelsForExport({ filterOptions }) {
             name
           }
           supportLoadBankCalibration
+          supportKlufeCalibration
         }
       }
     }
