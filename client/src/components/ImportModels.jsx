@@ -113,7 +113,12 @@ export default function ImportModels() {
           {params.value}
         </div>
       ),
-    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+    }, {
+      field: 'calibrationFrequency',
+      headerName: 'Calibration-Frequency',
+      width: 200,
+      renderCell: (params) => ((params.value >= 0) ? params.value : ' '),
+    },
   ];
 
   const characterLimits = {
@@ -150,7 +155,6 @@ export default function ImportModels() {
     if (calibrationSupport === null) { return false; }
     if (typeof (calibrationSupport) !== 'string') { return false; }
     const lower = calibrationSupport.toLowerCase();
-    console.log(`lower: ${lower}`);
     return !(lower === 'load-bank' || lower === 'klufe');
   };
 

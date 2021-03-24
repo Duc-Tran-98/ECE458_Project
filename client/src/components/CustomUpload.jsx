@@ -9,6 +9,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 export default function CustomUpload({
   requiredHeaders, customHeaderTransform, customTransform, uploadLabel, handleImport, importStatus, hideTable,
 }) {
+  const CHUNK_SIZE = 10000;
   CustomUpload.propTypes = {
     requiredHeaders: PropTypes.array.isRequired,
     customHeaderTransform: PropTypes.func.isRequired,
@@ -48,7 +49,8 @@ export default function CustomUpload({
   const extractData = (data) => data.map((row) => row.data);
 
   const handleOnFileLoad = (data) => {
-    console.log(data);
+    console.log(data); // getting all 50k immediately
+
     hideTable();
     // Validate non empty file
     if (data.length === 0) {
@@ -70,9 +72,14 @@ export default function CustomUpload({
       return;
     }
 
+    // Chunk data into 10k
+    const chunkedData = data.slice(0, CHUNK_SIZE);
+    console.log(`Chunking data of size: ${CHUNK_SIZE}`);
+    console.log(chunkedData);
+
     // Headers validated, handle import
     setShow(true);
-    setFileInfo(extractData(data));
+    setFileInfo(extractData(chunkedData));
   };
 
   // TODO: What can cause an error here?
