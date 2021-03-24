@@ -11,6 +11,9 @@ import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { CustomInput, CustomButton } from './CustomFormComponents';
 import UserContext from './UserContext';
+import ModalAlert from './ModalAlert';
+// eslint-disable-next-line import/no-cycle
+import EditInstrument from './EditInstrument';
 
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
@@ -68,9 +71,10 @@ export default function InstrumentForm({
   description,
   calibrationFrequency,
   type,
-  handleDelete,
+  deleteBtn,
   footer,
   updateCalibrationFrequency,
+  id = null,
 }) {
   InstrumentForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -84,10 +88,10 @@ export default function InstrumentForm({
     description: PropTypes.string,
     calibrationFrequency: PropTypes.number,
     type: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func,
+    deleteBtn: PropTypes.node,
     footer: PropTypes.node,
     updateCalibrationFrequency: PropTypes.func,
-
+    id: PropTypes.number,
   };
   InstrumentForm.defaultProps = {
     handleFormSubmit: null,
@@ -135,9 +139,13 @@ export default function InstrumentForm({
           <div className="row mx-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center">
-                  Model Selection
-                </Form.Label>
+                <div className="d-flex flex-row">
+                  <Form.Label className="h5 text-center">
+                    Model Selection
+                  </Form.Label>
+                  <span className="mx-2" />
+                  {viewOnly && footer}
+                </div>
                 {viewOnly ? (
                   // TODO: Can you edit this during change?
                   <Form.Control
@@ -178,7 +186,7 @@ export default function InstrumentForm({
               <CustomInput
                 placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formAssetTag"
-                className="h4"
+                className="h5"
                 label="Asset Tag"
                 name="assetTag"
                 type="number"
@@ -190,11 +198,12 @@ export default function InstrumentForm({
                 error={errors.assetTag}
               />
             </div>
+            <div className="col-auto me-auto mt-5">{viewOnly && deleteBtn}</div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center text-nowrap ">
+                <Form.Label className="h5 text-center text-nowrap ">
                   Calibration Frequency
                 </Form.Label>
                 <Form.Control
@@ -207,7 +216,7 @@ export default function InstrumentForm({
             </div>
             <div className="col mt-3">
               <Form.Group>
-                <Form.Label className="h4 text-center">
+                <Form.Label className="h5 text-center">
                   Model Description
                 </Form.Label>
                 <Form.Control
@@ -223,7 +232,7 @@ export default function InstrumentForm({
               <CustomInput
                 placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formSerialNumber"
-                className="h4"
+                className="h5"
                 label="Serial Number"
                 name="serialNumber"
                 type="text"
@@ -238,7 +247,7 @@ export default function InstrumentForm({
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
               <Form.Group controlId="formComment">
-                <Form.Label className="h4">Comment</Form.Label>
+                <Form.Label className="h5">Comment</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
@@ -257,7 +266,7 @@ export default function InstrumentForm({
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <Form.Label className="h4">Categories</Form.Label>
+              <Form.Label className="h5">Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
@@ -283,27 +292,43 @@ export default function InstrumentForm({
 
           <div className="d-flex justify-content-center my-3">
             <div className="row">
-              {showFooter && (
+              {showFooter && ( // showfooter = type = edit && user has permissions
                 <>
-                  <CustomButton
-                    onClick={handleDelete}
-                    divClass="col"
-                    buttonClass="btn btn-danger text-nowrap my-auto"
-                    buttonLabel="Delete Instrument"
-                  />
-                  {isSubmitting ? (
-                    <CircularProgress />
-                  ) : (
-                    <CustomButton
-                      onClick={handleSubmit}
-                      divClass="col"
-                      buttonClass="btn text-nowrap"
-                      buttonLabel="Save Changes"
-                    />
+                  {!viewOnly
+                    && (isSubmitting ? (
+                      <CircularProgress />
+                    ) : (
+                      <CustomButton
+                        onClick={handleSubmit}
+                        divClass="col"
+                        buttonClass="btn text-nowrap"
+                        buttonLabel="Save Changes"
+                      />
+                    ))}
+                  {viewOnly && (
+                    <>
+                      <div className="col">
+                        <ModalAlert
+                          btnText="Edit Instrument"
+                          title="Edit Instrument"
+                          btnClass="btn my-auto text-nowrap"
+                        >
+                          <EditInstrument
+                            initVendor={vendor}
+                            initModelNumber={modelNumber}
+                            initSerialNumber={serialNumber}
+                            id={id}
+                            description={description}
+                            footer={footer}
+                            initAssetTag={assetTag}
+                            deleteBtn={deleteBtn}
+                          />
+                        </ModalAlert>
+                      </div>
+                    </>
                   )}
                 </>
               )}
-              {footer}
             </div>
           </div>
         </Form>

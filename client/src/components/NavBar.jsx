@@ -20,7 +20,7 @@ function NavBar({
       <div className="col-auto me-auto">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
           <li className="nav-item">
-            <NavLink className="nav-link" exact to="/">
+            <NavLink className="nav-link h5" exact to="/">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -41,7 +41,7 @@ function NavBar({
           </li>
           <li className="nav-item dropdown">
             <a
-              className="nav-link dropdown-toggle"
+              className="nav-link h5 dropdown-toggle"
               href="#"
               id="navBarDropDown-models"
               role="button"
@@ -97,7 +97,7 @@ function NavBar({
           </li>
           <li className="nav-item dropdown">
             <a
-              className="nav-link dropdown-toggle"
+              className="nav-link h5 dropdown-toggle"
               href="#"
               id="navBarDropDown-instruments"
               role="button"
@@ -154,7 +154,7 @@ function NavBar({
           {user.isAdmin && (
             <li className="nav-item">
               <NavLink
-                className="nav-link"
+                className="nav-link h5"
                 to="/viewUsers?page=1&limit=25"
               >
                 <svg
@@ -191,7 +191,7 @@ function NavBar({
   ) : (
     <ul className="navbar-nav mr-auto">
       <li className="nav-item">
-        <NavLink exact to="/" className="nav-link" type="button">
+        <NavLink exact to="/" className="nav-link h5" type="button">
           Login
         </NavLink>
       </li>
@@ -200,7 +200,7 @@ function NavBar({
   return (
     <nav className="navbar navbar-expand-lg nav-bg-theme navbar-dark">
       <div className="container-fluid">
-        <Link to="/" className="navbar-brand">
+        <Link to="/" className="navbar-brand h2">
           {title}
         </Link>
         {/* This button is displayed when the screen is less than large */}

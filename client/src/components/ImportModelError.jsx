@@ -29,6 +29,11 @@ export default function ImportModelError({ allRowErrors, errorList }) {
         {`Unable to parse Calibration-Frequency: (${rowError.data.calibrationFrequency})`}
       </li>
       )}
+      {rowError.invalidSpecialCalibrationSupport && (
+      <li>
+        {`Unable to parse Special-Calibration-Support: (${rowError.data.specialCalibrationSupport})`}
+      </li>
+      )}
     </div>
 
   );

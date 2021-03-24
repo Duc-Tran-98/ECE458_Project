@@ -2,19 +2,17 @@ import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
+// eslint-disable-next-line import/no-cycle
 import ModelForm from './ModelForm';
 import UserContext from './UserContext';
 import FindModel from '../queries/FindModel';
 import EditModelQuery from '../queries/EditModel';
 
-export default function EditModel({ initVendor, initModelNumber, handleDelete }) {
+export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
   EditModel.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
-    handleDelete: PropTypes.func,
-  };
-  EditModel.defaultProps = {
-    handleDelete: null,
+    deleteBtn: PropTypes.node.isRequired,
   };
 
   const [modelId, setModelId] = useState(0);
@@ -29,6 +27,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     comment: '',
     calibrationFrequency: '',
     supportLoadBankCalibration: false,
+    supportKlufeCalibration: false,
     categories: [],
   });
   const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
@@ -36,7 +35,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const handleFindModel = (response) => {
     const categories = response.categories.map((item) => item.name);
     const {
-      description, comment, id, supportLoadBankCalibration,
+      description, comment, id, supportLoadBankCalibration, supportKlufeCalibration,
     } = response;
     setModelId(parseInt(id, 10));
     let { calibrationFrequency } = response;
@@ -53,6 +52,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       categories,
       calibrationFrequency,
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       modelNumber: initModelNumber,
       vendor: initVendor,
     });
@@ -63,10 +63,10 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     FindModel({ modelNumber: initModelNumber, vendor: initVendor, handleResponse: handleFindModel });
   }, []); // empty dependency array, only run once on mount
 
-  const updateHistory = (modelNumber, vendor, description) => {
+  const updateHistory = (modelNumber, vendor) => {
     const { state } = history.location;
     history.replace(
-      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}&description=${description}`,
+      `/viewModel/?modelNumber=${modelNumber}&vendor=${vendor}`,
       state,
     ); // change url because link for view instruments have changed;
   };
@@ -74,7 +74,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
   const handleSubmit = (values) => {
     // Parse information from model information
     const {
-      calibrationFrequency, supportLoadBankCalibration, description, comment, modelNumber, vendor, categories,
+      calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, description, comment, modelNumber, vendor, categories,
     } = values;
 
     // Send actual query to edit model
@@ -86,11 +86,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
       comment,
       calibrationFrequency: parseInt(calibrationFrequency, 10),
       supportLoadBankCalibration,
+      supportKlufeCalibration,
       categories,
       handleResponse: (response) => {
         if (response.success) {
           toast.success(response.message);
-          updateHistory(modelNumber, vendor, description);
+          updateHistory(modelNumber, vendor);
         } else {
           toast.error(response.message);
         }
@@ -105,6 +106,7 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
     comment,
     calibrationFrequency,
     supportLoadBankCalibration,
+    supportKlufeCalibration,
     categories,
   } = model;
 
@@ -121,11 +123,12 @@ export default function EditModel({ initVendor, initModelNumber, handleDelete })
             categories={categories}
             calibrationFrequency={calibrationFrequency}
             supportLoadBankCalibration={supportLoadBankCalibration}
+            supportKlufeCalibration={supportKlufeCalibration}
             handleFormSubmit={handleSubmit}
             validated={false}
             diffSubmit
             viewOnly={!(user.isAdmin || user.modelPermission)}
-            handleDelete={handleDelete}
+            deleteBtn={deleteBtn}
             type="edit"
           />
         </>

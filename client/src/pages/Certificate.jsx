@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import GetUser from '../queries/GetUser';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import { idealCurrents } from '../utils/LoadBank';
+import FindInstrument from '../queries/FindInstrument';
 
 const strftime = require('strftime');
 
@@ -418,28 +419,44 @@ function Certificate() {
   const vendor = urlParams.get('vendor');
   let assetTag = urlParams.get('assetTag');
   assetTag = parseInt(assetTag, 10);
-  const serialNumber = urlParams.get('serialNumber');
-  const description = urlParams.get('description');
-  let calibFrequency = urlParams.get('calibrationFrequency');
-  calibFrequency = parseInt(calibFrequency, 10);
-  let id = urlParams.get('id');
-  id = parseInt(id, 10);
   const [calibUser, setCalibUser] = React.useState('');
+  const [serialNumber, setSerialNumber] = React.useState('');
+  const [calibFrequency, setCalibFrequency] = React.useState(0);
+  const [description, setDescription] = React.useState('');
 
   React.useEffect(() => {
     let active = true;
-    (() => {
+    (async () => {
       if (active) {
-        GetCalibHistory({ id, mostRecent: true }).then((data) => {
-          setCalibEvent(data);
-          return data;
-        }).then((data) => {
-          GetUser({ userName: data.user }).then((value) => {
-            if (value) {
-              setCalibUser(`Username: ${data.user}, First name: ${value.firstName}, Last name: ${value.lastName}`);
+        FindInstrument({
+          assetTag,
+          handleResponse: (response) => {
+            setSerialNumber(response.serialNumber);
+            setDescription(response.description);
+            setCalibFrequency(response.calibrationFrequency);
+            let { id } = response;
+            if (typeof id === 'string') {
+              id = parseInt(id, 10);
             }
-            setHasFetched(true);
-          });
+            GetCalibHistory({
+              id,
+              mostRecent: true,
+            })
+              .then((data) => {
+                setCalibEvent(data);
+                return data;
+              })
+              .then((data) => {
+                GetUser({ userName: data.user }).then((value) => {
+                  if (value) {
+                    setCalibUser(
+                      `Username: ${data.user}, First name: ${value.firstName}, Last name: ${value.lastName}`,
+                    );
+                  }
+                  setHasFetched(true);
+                });
+              });
+          },
         });
       }
     })();

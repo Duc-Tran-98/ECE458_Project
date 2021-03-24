@@ -16,13 +16,15 @@ import Query from './UseQuery';
 const DEBUG = process.env.NODE_ENV.includes('dev');
 
 export default function LoadBankWiz({
-  initModelNumber, initVendor, initSerialNumber, initAssetTag,
+  initModelNumber, initVendor, initSerialNumber, initAssetTag, onFinish = null,
 }) {
   LoadBankWiz.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
     initSerialNumber: PropTypes.string.isRequired,
     initAssetTag: PropTypes.number.isRequired,
+    // eslint-disable-next-line react/require-default-props
+    onFinish: PropTypes.func,
   };
   const user = React.useContext(UserContext);
   const today = new Date().toISOString().split('T')[0];
@@ -153,6 +155,9 @@ export default function LoadBankWiz({
       handleResponse: (response) => {
         if (response.success) {
           toast.success(response.message);
+          if (onFinish) {
+            onFinish();
+          }
         } else {
           toast.error(response.message);
         }
@@ -173,7 +178,7 @@ export default function LoadBankWiz({
     switch (step) {
       case 1:
         return (
-          formState.voltMeterOk && formState.shuntMeterOk && formState.voltMeter !== null && formState.shuntMeter !== null
+          DEBUG || (formState.voltMeterOk && formState.shuntMeterOk && formState.voltMeter !== null && formState.shuntMeter !== null)
         );
       case 2:
         return formState.visualCheckOk;
@@ -624,8 +629,17 @@ export default function LoadBankWiz({
                     getVariables={() => ({ description: 'voltmeter' })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
-                      const voltMeterOk = validateCalibrationDate({ date: v?.recentCalibration[0]?.date, calibrationFrequency: v.calibrationFrequency });
-                      setFormState({ ...formState, voltMeter: v, voltMeterOk });
+                      if (!DEBUG) {
+                        const voltMeterOk = validateCalibrationDate({
+                          date: v?.recentCalibration[0]?.date,
+                          calibrationFrequency: v.calibrationFrequency,
+                        });
+                        setFormState({
+                          ...formState,
+                          voltMeter: v,
+                          voltMeterOk,
+                        });
+                      }
                     }}
                     label="Select a voltmeter"
                     getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
@@ -639,7 +653,8 @@ export default function LoadBankWiz({
               </Form.Group>
               <Form.Group className="col mx-2">
                 <Form.Label className="h6 my-auto">
-                  Current shunt meter to be used: (Vendor-Model number-Asset Tag)
+                  Current shunt meter to be used: (Vendor-Model number-Asset
+                  Tag)
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
@@ -659,14 +674,22 @@ export default function LoadBankWiz({
                       }
                     `)}
                     queryName="getInstrumentsWithFilter"
-                    getVariables={() => ({ description: 'current shunt meter' })}
+                    getVariables={() => ({
+                      description: 'current shunt meter',
+                    })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
-                      const shuntMeterOk = validateCalibrationDate({
-                        date: v?.recentCalibration[0]?.date,
-                        calibrationFrequency: v.calibrationFrequency,
-                      });
-                      setFormState({ ...formState, shuntMeter: v, shuntMeterOk });
+                      if (!DEBUG) {
+                        const shuntMeterOk = validateCalibrationDate({
+                          date: v?.recentCalibration[0]?.date,
+                          calibrationFrequency: v.calibrationFrequency,
+                        });
+                        setFormState({
+                          ...formState,
+                          shuntMeter: v,
+                          shuntMeterOk,
+                        });
+                      }
                     }}
                     label="Select a shunt meter"
                     getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}

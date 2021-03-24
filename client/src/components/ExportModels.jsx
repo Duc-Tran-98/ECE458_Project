@@ -22,7 +22,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
     { label: 'Short-Description', key: 'description' },
     { label: 'Comment', key: 'comment' },
     { label: 'Model-Categories', key: 'categories' },
-    { label: 'Load-Bank-Support', key: 'supportLoadBankCalibration' },
+    { label: 'Special-Calibration-Support', key: 'specialCalibration' },
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
   ];
 
@@ -42,7 +42,8 @@ const ExportModels = ({ setLoading, filterOptions }) => {
         description: row.description.replace(/"/g, '""'),
         comment: row.comment ? row.comment.replace(/"/g, '""') : '',
         calibrationFrequency: row.calibrationFrequency || 'N/A',
-        supportLoadBankCalibration: row.supportLoadBankCalibration ? 'Y' : '',
+        // eslint-disable-next-line no-nested-ternary
+        specialCalibration: row.supportLoadBankCalibration ? 'Load-Bank' : (row.supportKlufeCalibration ? 'Klufe' : ''),
         categories: row.categories.map((item) => item.name).join(' '),
       };
       filteredData.push(updatedRow);
