@@ -48,6 +48,7 @@ export default function CustomUpload({
   const extractData = (data) => data.map((row) => row.data);
 
   const handleOnFileLoad = (data) => {
+    console.log(data);
     hideTable();
     // Validate non empty file
     if (data.length === 0) {
