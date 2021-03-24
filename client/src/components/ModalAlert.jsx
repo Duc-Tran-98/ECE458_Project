@@ -36,7 +36,6 @@ export function StateLessModal({
       dialogClassName={`d-flex justify-content-center ${width}`}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      backdrop="static"
     >
       <ModalHeader>
         <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
@@ -142,7 +141,6 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
         dialogClassName={`d-flex justify-content-center ${width}`}
         aria-labelledby="contained-modal-title-vcenter"
         centered
-        backdrop="static"
       >
         <ModalHeader>
           <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
