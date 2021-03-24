@@ -19,6 +19,7 @@ export default function VerticalLinearStepper({
   forceReset,
   handleRestart,
   onNext,
+  onBack,
 }) {
   VerticalLinearStepper.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of step titles
@@ -30,6 +31,7 @@ export default function VerticalLinearStepper({
     forceReset: PropTypes.bool, // whehter or not the user inputed an error and should be prompted a restart button
     handleRestart: PropTypes.func, // callback fired when the restart button is clicked
     onNext: PropTypes.func,
+    onBack: PropTypes.func,
   };
   VerticalLinearStepper.defaultProps = {
     showResetBtn: false,
@@ -38,6 +40,7 @@ export default function VerticalLinearStepper({
     forceReset: false,
     handleRestart: () => undefined,
     onNext: () => undefined,
+    onBack: () => undefined,
   };
   // const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0); // state that manages our current step
@@ -66,6 +69,7 @@ export default function VerticalLinearStepper({
   };
 
   const handleBack = () => { // handle clicking on the back button
+    onBack(activeStep);
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 

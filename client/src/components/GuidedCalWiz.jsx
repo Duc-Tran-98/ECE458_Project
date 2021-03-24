@@ -118,33 +118,33 @@ export default function GuidedCalWiz({
   const handleNext = (step) => {
     switch (step) {
       case 1:
-        // KlufeOn();
+        KlufeOn();
         break;
       case 4:
       case 7:
       case 9:
       case 11:
       case 13:
-        // KlufeStep({ stepNum: step, stepStart: true });
+        KlufeStep({ stepNum: step, stepStart: true });
         break;
       case 5:
       case 8:
       case 10:
       case 12:
       case 14:
-        // KlufeOff();
+        KlufeOff();
         break;
       default:
     }
   };
-  const handleBck = (step) => {
+  const handleBack = (step) => {
     switch (step) {
       case 5:
       case 8:
       case 10:
       case 12:
       case 14:
-        // KlufeOff();
+        KlufeOff();
         break;
       default:
     }
