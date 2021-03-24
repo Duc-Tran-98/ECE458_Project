@@ -41,13 +41,15 @@ export default function DetailedInstrumentView({ onDelete }) {
   let id = urlParams.get('id');
   id = parseInt(id, 10);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [showWiz, setShowWiz] = React.useState(false);
+  const [showLBWiz, setShowLBWiz] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [supportsGuidedCalWiz, setSupportsGuidedCalWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
   const closeModal = () => {
     setShowDeleteModal(false);
-    setShowWiz(false);
+    setShowLBWiz(false);
   };
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
@@ -202,11 +204,12 @@ export default function DetailedInstrumentView({ onDelete }) {
     return () => {
       active = false;
     };
-  }, [showWiz]); // update calib hist if user opens/closes wizard
+  }, [showLBWiz]); // update calib hist if user opens/closes wizard
 
-  const genCalibButtons = supportsLoadBankWiz ? (
-    <div className="d-flex flex-row">
-      {(user.isAdmin || user.calibrationPermission) && (
+  const genCalibButtons = () => {
+    if (supportsLoadBankWiz) {
+      <div className="d-flex flex-row">
+        {(user.isAdmin || user.calibrationPermission) && (
         <>
           <MouseOverPopover message="Add new calibration event">
             <button type="button" className="btn " onClick={addRow}>
@@ -218,25 +221,48 @@ export default function DetailedInstrumentView({ onDelete }) {
             <button
               type="button"
               className="btn "
-              onClick={() => setShowWiz(true)}
+              onClick={() => setShowLBWiz(true)}
             >
               Add Load Bank Calibration
             </button>
           </MouseOverPopover>
         </>
-      )}
-    </div>
-  ) : (
-    <>
-      {(user.isAdmin || user.calibrationPermission) && (
+        )}
+      </div>;
+    } else if (supportsGuidedCalWiz) {
+      <div className="d-flex flex-row">
+        {(user.isAdmin || user.calibrationPermission) && (
+        <>
+          <MouseOverPopover message="Add new calibration event">
+            <button type="button" className="btn " onClick={addRow}>
+              Add Calibration
+            </button>
+          </MouseOverPopover>
+          <span className="mx-2" />
+          <MouseOverPopover message="Add calibration event via our Guided Hardware Calibration Wizard">
+            <button
+              type="button"
+              className="btn "
+              // onClick={() => setShowGCWiz(true)}
+            >
+              Add Guided Hardware Calibration
+            </button>
+          </MouseOverPopover>
+        </>
+        )}
+      </div>;
+    } else {
+      <>
+        {(user.isAdmin || user.calibrationPermission) && (
         <MouseOverPopover message="Add new calibration event">
           <button type="button" className="btn " onClick={addRow}>
             Add Calibration
           </button>
         </MouseOverPopover>
-      )}
-    </>
-  );
+        )}
+      </>;
+    }
+  };
 
   return (
     <>
@@ -273,7 +299,7 @@ export default function DetailedInstrumentView({ onDelete }) {
         </>
       </ModalAlert>
       <ModalAlert
-        show={showWiz}
+        show={showLBWiz}
         handleClose={closeModal}
         title="Load Bank Wizard"
       >
