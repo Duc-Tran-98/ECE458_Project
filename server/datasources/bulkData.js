@@ -1,3 +1,4 @@
+/* eslint-disable no-multiple-empty-lines */
 /* eslint-disable no-unreachable */
 /* eslint-disable no-loop-func */
 /* eslint-disable no-mixed-operators */
@@ -362,27 +363,6 @@ class BulkDataAPI extends DataSource {
                     },
                   );
                 } else {
-                // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-                // // eslint-disable-next-line max-len
-                // let instrumentCheck = await this.store.instruments.findOne({
-                //   where: { assetTag: newAssetTag },
-                //   include: {
-                //     all: true,
-                //   },
-                //   transaction: t,
-                // }, { transaction: t });
-                // while (instrumentCheck != null) {
-                //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-                //   // eslint-disable-next-line no-await-in-loop
-                //   instrumentCheck = await this.store.instruments.findOne({
-                //     where: { assetTag: newAssetTag },
-                //     include: {
-                //       all: true,
-                //     },
-                //     transaction: t,
-                //   }, { transaction: t });
-                // }
-
                   for (let j = tagsLoop; j < 1000000; j += 1) {
                     if (!tags.includes(j)) {
                       newAssetTag = j;
@@ -473,6 +453,25 @@ class BulkDataAPI extends DataSource {
     }
     return JSON.stringify(response);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*
   * DEPRECATED, no longer in user as of ev 2
