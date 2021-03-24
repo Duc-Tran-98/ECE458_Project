@@ -203,27 +203,6 @@ class BulkDataAPI extends DataSource {
                     },
                   );
                 } else {
-                // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-                // // eslint-disable-next-line max-len
-                // let instrumentCheck = await this.store.instruments.findOne({
-                //   where: { assetTag: newAssetTag },
-                //   include: {
-                //     all: true,
-                //   },
-                //   transaction: t,
-                // }, { transaction: t });
-                // while (instrumentCheck != null) {
-                //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-                //   // eslint-disable-next-line no-await-in-loop
-                //   instrumentCheck = await this.store.instruments.findOne({
-                //     where: { assetTag: newAssetTag },
-                //     include: {
-                //       all: true,
-                //     },
-                //     transaction: t,
-                //   }, { transaction: t });
-                // }
-
                   for (let j = tagsLoop; j < 1000000; j += 1) {
                     if (!tags.includes(j)) {
                       newAssetTag = j;
