@@ -13,7 +13,7 @@ import AsyncSuggest from './AsyncSuggest';
 import { stepInfo } from '../utils/GuidedCal';
 import Query from './UseQuery';
 import {
-  KlufeOn, KlufeOff, KlufeStep, KlufeStatus,
+  KlufeOn, KlufeOff, KlufeStep,
 } from '../queries/KlufeQueries';
 
 const DEBUG = process.env.NODE_ENV.includes('dev');
@@ -115,24 +115,27 @@ export default function GuidedCalWiz({
     });
     handleRestart();
   };
+  const handleResponse = (response) => {
+    console.log(response);
+  };
   const handleNext = (step) => {
     switch (step) {
       case 1:
-        KlufeOn();
+        KlufeOn({ handleResponse });
         break;
       case 4:
       case 7:
       case 9:
       case 11:
       case 13:
-        KlufeStep({ stepNum: step, stepStart: true });
+        KlufeStep({ handleResponse, stepNum: step, stepStart: true });
         break;
       case 5:
       case 8:
       case 10:
       case 12:
       case 14:
-        KlufeOff();
+        KlufeOff({ handleResponse });
         break;
       default:
     }
@@ -486,6 +489,7 @@ export default function GuidedCalWiz({
       showResetBtn
       onFinish={handleFinish}
       onNext={handleNext}
+      onBack={handleBack}
     />
   );
 }

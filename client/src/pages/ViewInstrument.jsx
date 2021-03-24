@@ -44,8 +44,7 @@ export default function DetailedInstrumentView({ onDelete }) {
   const [showLBWiz, setShowLBWiz] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [supportsGuidedCalWiz, setSupportsGuidedCalWiz] = React.useState(false);
+  const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState('');
   const closeModal = () => {
     setShowDeleteModal(false);
@@ -178,6 +177,7 @@ export default function DetailedInstrumentView({ onDelete }) {
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
+              supportKlufeCalibration
             }
           }
         `),
@@ -185,6 +185,7 @@ export default function DetailedInstrumentView({ onDelete }) {
         getVariables: () => ({ modelNumber, vendor }),
         handleResponse: (response) => {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
+          setSupportsKlufeWiz(response.supportKlufeCalibration);
         },
       });
     })();
@@ -229,7 +230,7 @@ export default function DetailedInstrumentView({ onDelete }) {
         </>
         )}
       </div>;
-    } else if (supportsGuidedCalWiz) {
+    } else if (supportsKlufeWiz) {
       <div className="d-flex flex-row">
         {(user.isAdmin || user.calibrationPermission) && (
         <>
