@@ -81,34 +81,12 @@ class BulkDataAPI extends DataSource {
         if (categories) {
           for (let j = 0; j < categories.length; j += 1) {
             const name = categories[j];
-<<<<<<< HEAD
             if (catMap.has(name.toLowerCase())) {
               const modelCategoryId = catMap.get(name.toLowerCase());
               await this.store.modelCategoryRelationships.create({
                 modelId,
                 modelCategoryId,
               }, { transaction: t });
-=======
-            const category = await this.store.modelCategories.findAll(
-              {
-                where: { name },
-                include: {
-                  all: true,
-                },
-                transaction: t,
-              },
-              { transaction: t },
-            );
-            if (category && category[0]) {
-              const modelCategoryId = category[0].dataValues.id;
-              await this.store.modelCategoryRelationships.create(
-                {
-                  modelId,
-                  modelCategoryId,
-                },
-                { transaction: t },
-              );
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
             } else {
               const createdCat = await this.store.modelCategories.create(
                 {
@@ -117,21 +95,11 @@ class BulkDataAPI extends DataSource {
                 { transaction: t },
               );
               const modelCategoryId = createdCat.dataValues.id;
-<<<<<<< HEAD
               catMap.set(name.toLowerCase(), modelCategoryId);
               await this.store.modelCategoryRelationships.create({
                 modelId,
                 modelCategoryId,
               }, { transaction: t });
-=======
-              await this.store.modelCategoryRelationships.create(
-                {
-                  modelId,
-                  modelCategoryId,
-                },
-                { transaction: t },
-              );
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
             }
           }
         }
@@ -255,30 +223,6 @@ class BulkDataAPI extends DataSource {
                       }
                     });
                 } else {
-<<<<<<< HEAD
-=======
-                  // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-                  // // eslint-disable-next-line max-len
-                  // let instrumentCheck = await this.store.instruments.findOne({
-                  //   where: { assetTag: newAssetTag },
-                  //   include: {
-                  //     all: true,
-                  //   },
-                  //   transaction: t,
-                  // }, { transaction: t });
-                  // while (instrumentCheck != null) {
-                  //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-                  //   // eslint-disable-next-line no-await-in-loop
-                  //   instrumentCheck = await this.store.instruments.findOne({
-                  //     where: { assetTag: newAssetTag },
-                  //     include: {
-                  //       all: true,
-                  //     },
-                  //     transaction: t,
-                  //   }, { transaction: t });
-                  // }
-
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
                   for (let j = tagsLoop; j < 1000000; j += 1) {
                     if (!tags.includes(j)) {
                       newAssetTag = j;
@@ -322,34 +266,12 @@ class BulkDataAPI extends DataSource {
                   if (categories) {
                     for (let j = 0; j < categories.length; j += 1) {
                       const name = categories[j];
-<<<<<<< HEAD
                       if (catMap.has(name.toLowerCase())) {
                         const instrumentCategoryId = catMap.get(name.toLowerCase());
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
                         }, { transaction: t });
-=======
-                      const category = await this.store.instrumentCategories.findAll(
-                        {
-                          where: { name },
-                          include: {
-                            all: true,
-                          },
-                          transaction: t,
-                        },
-                        { transaction: t },
-                      );
-                      if (category && category[0]) {
-                        const instrumentCategoryId = category[0].dataValues.id;
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
                       } else {
                         const createdCat = await this.store.instrumentCategories.create(
                           {
@@ -358,21 +280,11 @@ class BulkDataAPI extends DataSource {
                           { transaction: t },
                         );
                         const instrumentCategoryId = createdCat.dataValues.id;
-<<<<<<< HEAD
                         catMap.set(name.toLowerCase(), instrumentCategoryId);
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
                         }, { transaction: t });
-=======
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
                       }
                     }
                   }
@@ -460,30 +372,6 @@ class BulkDataAPI extends DataSource {
                       }
                     });
                 } else {
-<<<<<<< HEAD
-=======
-                  // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-                  // // eslint-disable-next-line max-len
-                  // let instrumentCheck = await this.store.instruments.findOne({
-                  //   where: { assetTag: newAssetTag },
-                  //   include: {
-                  //     all: true,
-                  //   },
-                  //   transaction: t,
-                  // }, { transaction: t });
-                  // while (instrumentCheck != null) {
-                  //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-                  //   // eslint-disable-next-line no-await-in-loop
-                  //   instrumentCheck = await this.store.instruments.findOne({
-                  //     where: { assetTag: newAssetTag },
-                  //     include: {
-                  //       all: true,
-                  //     },
-                  //     transaction: t,
-                  //   }, { transaction: t });
-                  // }
-
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
                   for (let j = tagsLoop; j < 1000000; j += 1) {
                     if (!tags.includes(j)) {
                       newAssetTag = j;
@@ -529,34 +417,12 @@ class BulkDataAPI extends DataSource {
                     for (let j = 0; j < categories.length; j += 1) {
                       // attach categories and create if they don't exist
                       const name = categories[j];
-<<<<<<< HEAD
                       if (catMap.has(name.toLowerCase())) {
                         const instrumentCategoryId = catMap.get(name.toLowerCase());
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
                         }, { transaction: t });
-=======
-                      const category = await this.store.instrumentCategories.findAll(
-                        {
-                          where: { name },
-                          include: {
-                            all: true,
-                          },
-                          transaction: t,
-                        },
-                        { transaction: t },
-                      );
-                      if (category && category[0]) {
-                        const instrumentCategoryId = category[0].dataValues.id;
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
                       } else {
                         const createdCat = await this.store.instrumentCategories.create(
                           {
@@ -565,21 +431,11 @@ class BulkDataAPI extends DataSource {
                           { transaction: t },
                         );
                         const instrumentCategoryId = createdCat.dataValues.id;
-<<<<<<< HEAD
                         catMap.set(name.toLowerCase(), instrumentCategoryId);
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
                         }, { transaction: t });
-=======
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
->>>>>>> a4d6bfb324c8949c5bf67b3d4bc90eddba29e768
                       }
                     }
                   }
