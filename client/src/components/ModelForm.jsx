@@ -194,10 +194,17 @@ export default function ModelForm({
                 className="h5 text-nowrap"
                 label="Calibration Frequency"
                 name="calibrationFrequency"
-                type="number"
+                type="text"
                 required={false}
                 value={values.calibrationFrequency}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const reg = new RegExp('^[0-9]*$');
+                  if (reg.test(input)) {
+                    console.log(`input: ${input} passed regex test`);
+                    handleChange(e);
+                  }
+                }}
                 disabled={disabled}
                 isInvalid={!!errors.calibrationFrequency}
                 error={errors.calibrationFrequency}
