@@ -46,7 +46,12 @@ class BulkDataAPI extends DataSource {
     const t = await this.store.db.transaction();
 
     try {
-      // Then, we do some calls passing this transaction as an option:
+      const catMap = new Map();
+      const cats = await this.store.modelCategories.findAll();
+      for (let i = 0; i < cats.length; i += 1) {
+        catMap.set(cats[i].dataValues.name.toLowerCase(), cats[i].dataValues.id);
+      }
+
       for (let i = 0; i < models.length; i += 1) {
         const currentModel = models[i];
         const vendor = currentModel.vendor;
@@ -71,15 +76,8 @@ class BulkDataAPI extends DataSource {
         if (categories) {
           for (let j = 0; j < categories.length; j += 1) {
             const name = categories[j];
-            const category = await this.store.modelCategories.findAll({
-              where: { name },
-              include: {
-                all: true,
-              },
-              transaction: t,
-            }, { transaction: t });
-            if (category && category[0]) {
-              const modelCategoryId = (category[0]).dataValues.id;
+            if (catMap.has(name.toLowerCase())) {
+              const modelCategoryId = catMap.get(name.toLowerCase());
               await this.store.modelCategoryRelationships.create({
                 modelId,
                 modelCategoryId,
@@ -89,6 +87,7 @@ class BulkDataAPI extends DataSource {
                 name,
               }, { transaction: t });
               const modelCategoryId = createdCat.dataValues.id;
+              catMap.set(name.toLowerCase(), modelCategoryId);
               await this.store.modelCategoryRelationships.create({
                 modelId,
                 modelCategoryId,
@@ -137,7 +136,7 @@ class BulkDataAPI extends DataSource {
       const catMap = new Map();
       const cats = await this.store.instrumentCategories.findAll();
       for (let i = 0; i < cats.length; i += 1) {
-        catMap.set(cats[i].dataValues.name, cats[i].dataValues.id);
+        catMap.set(cats[i].dataValues.name.toLowerCase(), cats[i].dataValues.id);
       }
 
       for (let i = 0; i < instruments.length; i += 1) {
@@ -243,10 +242,9 @@ class BulkDataAPI extends DataSource {
                   }
                   if (categories) {
                     for (let j = 0; j < categories.length; j += 1) {
-                      // attach categories and create if they don't exist
                       const name = categories[j];
-                      if (catMap.has(name)) {
-                        const instrumentCategoryId = catMap.get(name);
+                      if (catMap.has(name.toLowerCase())) {
+                        const instrumentCategoryId = catMap.get(name.toLowerCase());
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
@@ -256,7 +254,7 @@ class BulkDataAPI extends DataSource {
                           name,
                         }, { transaction: t });
                         const instrumentCategoryId = createdCat.dataValues.id;
-                        catMap.set(name, instrumentCategoryId);
+                        catMap.set(name.toLowerCase(), instrumentCategoryId);
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
@@ -378,8 +376,8 @@ class BulkDataAPI extends DataSource {
                     for (let j = 0; j < categories.length; j += 1) {
                       // attach categories and create if they don't exist
                       const name = categories[j];
-                      if (catMap.has(name)) {
-                        const instrumentCategoryId = catMap.get(name);
+                      if (catMap.has(name.toLowerCase())) {
+                        const instrumentCategoryId = catMap.get(name.toLowerCase());
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
@@ -389,7 +387,7 @@ class BulkDataAPI extends DataSource {
                           name,
                         }, { transaction: t });
                         const instrumentCategoryId = createdCat.dataValues.id;
-                        catMap.set(name, instrumentCategoryId);
+                        catMap.set(name.toLowerCase(), instrumentCategoryId);
                         await this.store.instrumentCategoryRelationships.create({
                           instrumentId,
                           instrumentCategoryId,
