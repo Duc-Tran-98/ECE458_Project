@@ -15,6 +15,7 @@ export default async function GetAllInstruments({
   instrumentCategories,
   serialNumber,
   assetTag,
+  orderBy,
 }) {
   GetAllInstruments.propTypes = {
     handleResponse: PropTypes.func,
@@ -27,6 +28,7 @@ export default async function GetAllInstruments({
     instrumentCategories: PropTypes.array,
     serialNumber: PropTypes.string,
     assetTag: PropTypes.number,
+    orderBy: PropTypes.array,
   };
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments(
@@ -39,6 +41,7 @@ export default async function GetAllInstruments({
       $assetTag: Int
       $modelCategories: [String]
       $instrumentCategories: [String]
+      $orderBy: [[String]]
     ) {
       getInstrumentsWithFilter(
         limit: $limit
@@ -50,6 +53,7 @@ export default async function GetAllInstruments({
         assetTag: $assetTag
         modelCategories: $modelCategories
         instrumentCategories: $instrumentCategories
+        orderBy: $orderBy
       ) {
         instruments {
           id
@@ -79,7 +83,7 @@ export default async function GetAllInstruments({
   const queryName = 'getInstrumentsWithFilter';
   const query = print(GET_INSTRUMENTS_QUERY);
   const getVariables = () => ({
-    limit, offset, vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories,
+    limit, offset, vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, orderBy,
   });
   if (handleResponse) {
     Query({

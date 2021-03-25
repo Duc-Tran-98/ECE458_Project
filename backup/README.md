@@ -3,3 +3,5 @@ The purpose of this directory is to test the culling procedure on backup records
 - 7 daily backups
 - 4 weekly backups
 - 12 monthly backups
+
+In order to create files for testing purposes, use createFiles.py with a list of dates to create.

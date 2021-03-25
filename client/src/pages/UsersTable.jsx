@@ -161,7 +161,11 @@ export default function UsersTable() {
             setInitPage(page);
           }
         }}
-        fetchData={(limit, offset) => GetAllUsers({ limit, offset }).then((response) => response)}
+        fetchData={(limit, offset, orderBy) => GetAllUsers({
+          limit,
+          offset,
+          orderBy,
+        }).then((response) => response)}
         showToolBar={false}
         showImport={false}
       />
