@@ -18,6 +18,8 @@ export default function VerticalLinearStepper({
   finishMsg,
   forceReset,
   handleRestart,
+  onNext,
+  onBack,
 }) {
   VerticalLinearStepper.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of step titles
@@ -28,6 +30,8 @@ export default function VerticalLinearStepper({
     finishMsg: PropTypes.string, // the message to display after finishing all the steps; optional
     forceReset: PropTypes.bool, // whehter or not the user inputed an error and should be prompted a restart button
     handleRestart: PropTypes.func, // callback fired when the restart button is clicked
+    onNext: PropTypes.func,
+    onBack: PropTypes.func,
   };
   VerticalLinearStepper.defaultProps = {
     showResetBtn: false,
@@ -35,6 +39,8 @@ export default function VerticalLinearStepper({
     finishMsg: "All steps completed - you're finished",
     forceReset: false,
     handleRestart: () => undefined,
+    onNext: () => undefined,
+    onBack: () => undefined,
   };
   // const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0); // state that manages our current step
@@ -55,6 +61,7 @@ export default function VerticalLinearStepper({
   const handleNext = () => { // handle clicking on the next button
     if (canAdvance(activeStep)) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      if (onNext !== undefined) { onNext(activeStep); }
       if (activeStep === steps.length - 1) {
         onFinish();
       }
@@ -62,6 +69,7 @@ export default function VerticalLinearStepper({
   };
 
   const handleBack = () => { // handle clicking on the back button
+    if (onBack !== undefined) { onBack(activeStep); }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 

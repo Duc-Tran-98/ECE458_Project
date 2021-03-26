@@ -51,7 +51,7 @@ export function StateLessModal({
 }
 
 function ModalAlert({ // use this modal if you're fine with modal controling its own show state
-  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null, altBtn = null, altBtnId = null,
+  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null, altBtn = null, altBtnId = null, onClose = () => undefined,
 }) {
   ModalAlert.propTypes = {
     title: PropTypes.string.isRequired,
@@ -65,6 +65,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     onShow: PropTypes.func, // call back for when user clicks button
     altBtn: PropTypes.node, // if you want to replace btn with something else that user will click on
     altBtnId: PropTypes.string, // id of alt btn so we can assign on click event to it
+    onClose: PropTypes.func,
   };
 
   ModalAlert.defaultProps = {
@@ -79,6 +80,11 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     setShow(true);
   };
 
+  const handleClose = () => {
+    onClose();
+    setShow(false);
+  };
+
   React.useEffect(() => {
     let active = true;
     (async () => {
@@ -88,7 +94,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       if (altCloseBtnId) {
         const alctCloseBtn = document.getElementById(altCloseBtnId);
         if (alctCloseBtn) {
-          alctCloseBtn.onclick = () => setShow(false);
+          alctCloseBtn.onclick = () => handleClose();
         }
       }
     })();
@@ -134,7 +140,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       )}
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={handleClose}
         animation={false}
         contentClassName="bg-theme rounded"
         // dialogClassName="d-flex justify-content-center modal-100w"
@@ -148,7 +154,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
         <Modal.Body className="border-top border-dark">{children}</Modal.Body>
         <ModalFooter className="my-3">
           {footer}
-          <Button className="btn  mx-3" onClick={() => setShow(false)}>
+          <Button className="btn  mx-3" onClick={handleClose}>
             Close
           </Button>
         </ModalFooter>

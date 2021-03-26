@@ -17,6 +17,7 @@ import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
+import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
@@ -31,6 +32,7 @@ export default function DetailedInstrumentView() {
   const urlParams = new URLSearchParams(queryString);
   const [loading, setLoading] = React.useState(false); // loading status of delete query
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
+  const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState(''); // msg from delete query
   const [show, setShow] = React.useState(false); // show add calib event modal or not
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
@@ -221,6 +223,7 @@ export default function DetailedInstrumentView() {
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
+              supportKlufeCalibration
             }
           }
         `),
@@ -228,6 +231,7 @@ export default function DetailedInstrumentView() {
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
+          setSupportsKlufeWiz(response.supportKlufeCalibration);
         },
       });
       FindInstrument({
@@ -303,8 +307,22 @@ export default function DetailedInstrumentView() {
               </ModalAlert>
             </div>
           )}
-          {!supportsLoadBankWiz && (
-            <span className="mx-2" />
+          {supportsKlufeWiz && (
+            <div className="mx-2">
+              <ModalAlert
+                btnText="Add Klufe Calibration"
+                title="Add Klufe Calibration"
+                popOverText="Add calibration via Klufe"
+              >
+                <KlufeWiz
+                  initModelNumber={formState.modelNumber}
+                  initSerialNumber={formState.serialNumber}
+                  initAssetTag={formState.assetTag}
+                  initVendor={formState.vendor}
+                  onFinish={fetchData}
+                />
+              </ModalAlert>
+            </div>
           )}
           {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
             <MouseOverPopover
