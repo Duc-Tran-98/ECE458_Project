@@ -22,6 +22,7 @@ export async function GetCalibHistByAssetTag({
         fileLocation
         fileName
         loadBankData
+        klufeData
       }
     }
   `;
@@ -74,6 +75,7 @@ export default async function GetCalibHistory({
         fileLocation
         fileName
         loadBankData
+        klufeData
       }
     }
   `;

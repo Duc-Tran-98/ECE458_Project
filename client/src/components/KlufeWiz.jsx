@@ -18,7 +18,7 @@ import {
 // const DEBUG = process.env.NODE_ENV.includes('dev');
 
 export default function KlufeWiz({
-  initModelNumber, initVendor, initSerialNumber, initAssetTag, onFinish,
+  initModelNumber, initVendor, initSerialNumber, initAssetTag, onFinish = null,
 }) {
   KlufeWiz.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
@@ -45,7 +45,7 @@ export default function KlufeWiz({
   });
   const [shouldRestart, setRestart] = React.useState(false);
   const [readings, setReadings] = React.useState({
-    4: NaN, 7: NaN, 9: NaN, 11: NaN, 13: NaN,
+    4: '', 7: '', 9: '', 11: '', 13: '',
   });
 
   const handleRestart = (bool = true) => {
@@ -71,7 +71,7 @@ export default function KlufeWiz({
     const {
       assetTag, date, comment, step4ok, step7ok, step9ok, step11ok, step13ok,
     } = formState;
-    const guidedCalData = JSON.stringify({
+    const klufeData = JSON.stringify({
       readings,
       step4ok,
       step7ok,
@@ -103,7 +103,7 @@ export default function KlufeWiz({
         date,
         user: user.userName,
         comment,
-        klufeData: guidedCalData,
+        klufeData,
       }),
       handleResponse: (response) => {
         if (response.success) {
