@@ -176,7 +176,22 @@ export function EditUserForm({
             $modelPermission: Boolean!
             $calibrationPermission: Boolean!
             ) {
-             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission)
+             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission){
+               message
+               success
+               user {
+                 id
+                email
+                firstName
+                lastName
+                userName
+                password
+                isAdmin
+                instrumentPermission
+                modelPermission
+                calibrationPermission
+               }
+             }
            }
          `,
       queryName: 'editPermissions',
@@ -192,10 +207,7 @@ export function EditUserForm({
         if (response.success) {
           toast.success('Successfully updated permissions');
           const { state } = history.location;
-          history.replace(
-            `/viewUser/?userName=${userName}`,
-            state,
-          );
+          history.replace(`/viewUser/?userName=${userName}`, state);
         } else {
           toast.error(response.message);
         }

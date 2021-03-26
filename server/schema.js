@@ -197,6 +197,12 @@ const typeDefs = gql`
     success: Boolean!
   }
 
+  type UserCacheUpdate {
+    user: User
+    message: String!
+    success: Boolean!
+  }
+
   type CalibrationEvent {
     id: ID!
     calibrationHistoryIdReference: Int!
@@ -267,7 +273,7 @@ const typeDefs = gql`
       instrumentPermission: Boolean!
       modelPermission: Boolean!
       calibrationPermission: Boolean!
-    ): String!
+    ): UserCacheUpdate
     deleteUser(userName: String!): String!
 
     # Model related Mutations

@@ -148,15 +148,15 @@ class UserAPI extends DataSource {
     calibrationPermission,
     instrumentPermission,
   }) {
-    const response = { success: false, message: '' };
+    const response = { success: false, message: '', user: null };
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     if (userName !== 'admin') {
-      this.store.users.update({
+      await this.store.users.update({
         isAdmin,
         modelPermission,
         calibrationPermission,
@@ -164,10 +164,11 @@ class UserAPI extends DataSource {
       }, { where: { userName } });
       response.success = true;
       response.message = `Updated user permissions for user ${userName}`;
+      response.user = await this.findUser({ userName });
     } else {
       response.message = 'ERROR: Cannot change local admin permissions';
     }
-    return JSON.stringify(response);
+    return response;
   }
 
   async deleteUser({ userName }) {

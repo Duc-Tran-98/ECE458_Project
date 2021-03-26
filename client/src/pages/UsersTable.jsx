@@ -12,6 +12,7 @@ export default function UsersTable() {
   let urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  // eslint-disable-next-line no-unused-vars
   const [update, setUpdate] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);

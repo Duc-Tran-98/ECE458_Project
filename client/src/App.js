@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import Certificate from './pages/Certificate';
-import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import ListModels from './pages/ListModels';

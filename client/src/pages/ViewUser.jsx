@@ -28,7 +28,7 @@ export default function ViewUser() {
       if (!active) {
         return;
       }
-      GetUser({ userName: urlParams.get('userName'), includeAll: true }).then((response) => {
+      GetUser({ userName: urlParams.get('userName'), includeAll: true, fetchPolicy: 'no-cache' }).then((response) => {
         setFormState(response);
         setFetched(true);
       });
