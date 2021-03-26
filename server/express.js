@@ -216,7 +216,7 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
     return res.status(403).send('Invalid requeset');
   }
 
-  const start = validStartValues === true ? 'on\n' : 'off\n';
+  const start = stepStart === true ? 'on\n' : 'off\n';
 
   let cmd = '';
   switch (stepNum) {
