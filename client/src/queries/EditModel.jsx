@@ -69,6 +69,16 @@ export default function EditModelQuery({
         }
     `;
   const query = EDIT_MODEL;
+  const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
+  console.log(refetch);
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   const queryName = 'editModel';
   const getVariables = () => ({
     description,
@@ -86,5 +96,6 @@ export default function EditModelQuery({
     queryName,
     getVariables,
     handleResponse,
+    refetchQueries,
   });
 }

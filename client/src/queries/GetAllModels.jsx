@@ -55,6 +55,13 @@ export default async function GetAllModels({
   const getVariables = () => ({
     limit, offset, vendor, modelNumber, description, categories, orderBy,
   });
+  window.sessionStorage.setItem(
+    'getModelsWithFilter',
+    JSON.stringify({
+      query,
+      variables: getVariables(),
+    }),
+  );
   const response = await QueryAndThen({ query, queryName, getVariables });
   return response;
 }

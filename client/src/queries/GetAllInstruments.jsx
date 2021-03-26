@@ -84,6 +84,10 @@ export default async function GetAllInstruments({
   const getVariables = () => ({
     limit, offset, vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, orderBy,
   });
+  window.sessionStorage.setItem('getInstrumentsWithFilter', JSON.stringify({
+    query,
+    variables: getVariables(),
+  }));
   if (handleResponse) {
     Query({
       query,
@@ -105,6 +109,6 @@ export async function CountInstruments() {
     }
   `;
   const queryName = 'countAllInstruments';
-  const response = await QueryAndThen({ query, queryName });
+  const response = await QueryAndThen({ query, queryName, fetchPolicy: 'no-cache' });
   return response;
 }

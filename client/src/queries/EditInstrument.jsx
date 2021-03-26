@@ -60,6 +60,14 @@ export default async function EditInstrumentQuery({
     }
   `;
   const query = EDIT_INST;
+  const refetch = JSON.parse(
+    window.sessionStorage.getItem('getInstrumentsWithFilter'),
+  ) || null;
+  console.log(refetch);
+  const refetchQueries = (refetch !== null) ? [{
+    query: refetch.query,
+    variables: refetch.variables,
+  }] : [];
   const queryName = 'editInstrument';
   const getVariables = () => ({
     modelNumber,
@@ -76,9 +84,12 @@ export default async function EditInstrumentQuery({
       queryName,
       getVariables,
       handleResponse,
+      refetchQueries,
     });
   } else {
     // eslint-disable-next-line no-return-await
-    return await QueryAndThen({ query, queryName, getVariables });
+    return await QueryAndThen({
+      query, queryName, getVariables, refetchQueries,
+    });
   }
 }
