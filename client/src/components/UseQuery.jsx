@@ -115,6 +115,7 @@ const Query = ({
         mutation: query,
         variables: getVariables(),
         refetchQueries,
+        fetchPolicy,
         update,
       })
       .then((res) => {
@@ -183,6 +184,7 @@ export async function QueryAndThen({
         mutation: query,
         variables: getVariables(),
         refetchQueries,
+        fetchPolicy,
       })
       .then((res) => (typeof res.data[queryName] === 'string'
         ? JSON.parse(res.data[queryName])

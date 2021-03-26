@@ -18,7 +18,12 @@ export default async function GetModelCategories({ limit, offset }) {
   const query = GET_MODEL_CATEGORIES_QUERY;
   const queryName = 'getAllModelCategories';
   const getVariables = () => ({ limit, offset });
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  const response = await QueryAndThen({
+    query,
+    queryName,
+    getVariables,
+    fetchPolicy: 'no-cache',
+  });
   // console.log(response);
   return response;
 }
@@ -30,7 +35,7 @@ export async function CountModelCategories() {
         }
     `;
   const queryName = 'countModelCategories';
-  const response = await QueryAndThen({ query, queryName });
+  const response = await QueryAndThen({ query, queryName, fetchPolicy: 'no-cache' });
   return response;
 }
 
@@ -42,6 +47,11 @@ export async function CountModelsAttached({ name }) {
     `;
   const getVariables = () => ({ name });
   const queryName = 'countModelsAttachedToCategory';
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  const response = await QueryAndThen({
+    query,
+    queryName,
+    getVariables,
+    fetchPolicy: 'no-cache',
+  });
   return response;
 }

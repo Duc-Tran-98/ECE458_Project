@@ -16,6 +16,10 @@ export default function DeleteInstrumentCategory({ name, handleResponse }) {
   const queryName = 'removeInstrumentCategory';
   const getVariables = () => ({ name });
   Query({
-    query, queryName, getVariables, handleResponse,
+    query,
+    queryName,
+    getVariables,
+    handleResponse,
+    fetchPolicy: 'no-cache',
   });
 }

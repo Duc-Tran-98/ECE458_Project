@@ -123,6 +123,12 @@ const typeDefs = gql`
     name: String!
   }
 
+  type CategoryCacheUpdate {
+    category: Category
+    message: String!
+    success: Boolean!
+  }
+
   type Instrument {
     vendor: String!
     modelNumber: String!
@@ -380,13 +386,19 @@ const typeDefs = gql`
     ): String!
 
     # category related mutations
-    addModelCategory(name: String!): String!
+    addModelCategory(name: String!): CategoryCacheUpdate
     removeModelCategory(name: String!): String!
-    editModelCategory(currentName: String!, updatedName: String!): String!
+    editModelCategory(
+      currentName: String!
+      updatedName: String!
+    ): CategoryCacheUpdate
 
-    addInstrumentCategory(name: String!): String!
+    addInstrumentCategory(name: String!): CategoryCacheUpdate
     removeInstrumentCategory(name: String!): String!
-    editInstrumentCategory(currentName: String!, updatedName: String!): String!
+    editInstrumentCategory(
+      currentName: String!
+      updatedName: String!
+    ): CategoryCacheUpdate
 
     addCategoryToModel(
       vendor: String!

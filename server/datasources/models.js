@@ -447,29 +447,30 @@ class ModelAPI extends DataSource {
   }
 
   async addModelCategory({ name }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, category: null };
     if (hasWhiteSpace(name)) {
       response.message = 'ERROR: category cannot have white spaces';
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
-    await this.getModelCategory({ name }).then((value) => {
+    await this.getModelCategory({ name }).then(async (value) => {
       if (value) {
         response.message = `ERROR: cannot add model category ${name}, it already exists!`;
       } else {
-        this.store.modelCategories.create({
+        await this.store.modelCategories.create({
           name,
         });
         response.success = true;
         response.message = `Added new model category, ${name}, into the DB!`;
+        response.category = await this.getModelCategory({ name });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async removeModelCategory({ name }) {
@@ -503,16 +504,16 @@ class ModelAPI extends DataSource {
   }
 
   async editModelCategory({ currentName, updatedName }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, category: null };
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     let name = currentName;
     await this.getModelCategory({ name }).then(async (value) => {
@@ -520,11 +521,11 @@ class ModelAPI extends DataSource {
         name = updatedName;
         // eslint-disable-next-line prefer-destructuring
         const id = value.dataValues.id;
-        await this.getModelCategory({ name }).then((result) => {
+        await this.getModelCategory({ name }).then(async (result) => {
           if (result) {
             response.message = `ERROR: Cannot change name to ${updatedName}, that category already exists!`;
           } else {
-            this.store.modelCategories.update(
+            await this.store.modelCategories.update(
               {
                 name: updatedName,
               },
@@ -532,13 +533,14 @@ class ModelAPI extends DataSource {
             );
             response.success = true;
             response.message = `Model category ${updatedName} successfully updated!`;
+            response.category = await this.getModelCategory({ name: updatedName });
           }
         });
       } else {
         response.message = `ERROR: Cannot edit model category ${currentName}, it does not exist!`;
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async addCategoryToModel({ vendor, modelNumber, category }) {

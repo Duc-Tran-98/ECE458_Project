@@ -18,7 +18,12 @@ export default async function GetInstrumentCategories({ limit, offset }) {
   const query = GET_INSTRUMENT_CATEGORIES_QUERY;
   const queryName = 'getAllInstrumentCategories';
   const getVariables = () => ({ limit, offset });
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  const response = await QueryAndThen({
+    query,
+    queryName,
+    getVariables,
+    fetchPolicy: 'no-cache',
+  });
   return response;
 }
 
@@ -29,7 +34,11 @@ export async function CountInstrumentCategories() {
         }
     `;
   const queryName = 'countInstrumentCategories';
-  const response = await QueryAndThen({ query, queryName });
+  const response = await QueryAndThen({
+    query,
+    queryName,
+    fetchPolicy: 'no-cache',
+  });
   return response;
 }
 
@@ -41,6 +50,11 @@ export async function CountInstrumentsAttached({ name }) {
     `;
   const getVariables = () => ({ name });
   const queryName = 'countInstrumentsAttachedToCategory';
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  const response = await QueryAndThen({
+    query,
+    queryName,
+    getVariables,
+    fetchPolicy: 'no-cache',
+  });
   return response;
 }

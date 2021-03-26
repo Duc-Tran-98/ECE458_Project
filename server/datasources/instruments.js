@@ -792,29 +792,30 @@ class InstrumentAPI extends DataSource {
   }
 
   async addInstrumentCategory({ name }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, category: null };
     if (hasWhiteSpace(name)) {
       response.message = 'ERROR: category cannot have white spaces';
-      return JSON.stringify(response);
+      return response;
     }
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
-    await this.getInstrumentCategory({ name }).then((value) => {
+    await this.getInstrumentCategory({ name }).then(async (value) => {
       if (value) {
         response.message = `ERROR: cannot add instrument category ${name}, it already exists!`;
       } else {
-        this.store.instrumentCategories.create({
+        await this.store.instrumentCategories.create({
           name,
         });
         response.success = true;
         response.message = `Added new instrument category, ${name}, into the DB!`;
+        response.category = await this.getInstrumentCategory({ name });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async removeInstrumentCategory({ name }) {
@@ -842,14 +843,14 @@ class InstrumentAPI extends DataSource {
   }
 
   async editInstrumentCategory({ currentName, updatedName }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, category: null };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
@@ -859,11 +860,11 @@ class InstrumentAPI extends DataSource {
         name = updatedName;
         // eslint-disable-next-line prefer-destructuring
         const id = value.dataValues.id;
-        await this.getInstrumentCategory({ name }).then((result) => {
+        await this.getInstrumentCategory({ name }).then(async (result) => {
           if (result) {
             response.message = `ERROR: Cannot change name to ${updatedName}, that category already exists!`;
           } else {
-            this.store.instrumentCategories.update(
+            await this.store.instrumentCategories.update(
               {
                 name: updatedName,
               },
@@ -871,13 +872,14 @@ class InstrumentAPI extends DataSource {
             );
             response.success = true;
             response.message = `Instrument category ${updatedName} successfully updated!`;
+            response.category = await this.getInstrumentCategory({ name: updatedName });
           }
         });
       } else {
         response.message = `ERROR: Cannot edit instrument category ${currentName}, it does not exist!`;
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async addCategoryToInstrument({
