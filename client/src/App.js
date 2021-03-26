@@ -79,7 +79,7 @@ function App() {
               <ComponentTest />
             </Route>
             <Route exact path="/">
-              {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
+              {loggedIn ? <ListModels /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewUsers">
               {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
