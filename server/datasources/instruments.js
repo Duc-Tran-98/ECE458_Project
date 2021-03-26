@@ -561,7 +561,7 @@ class InstrumentAPI extends DataSource {
     id,
     categories = [],
   }) {
-    const response = { message: '', success: true };
+    const response = { message: '', success: true, instrument: null };
     const validation = validateInstrument({
       modelNumber,
       vendor,
@@ -571,13 +571,17 @@ class InstrumentAPI extends DataSource {
     });
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
       response.success = false;
-      return JSON.stringify(response);
+      return response;
+    }
+    if (typeof id === 'string') {
+      // eslint-disable-next-line no-param-reassign
+      id = parseInt(id, 10);
     }
     const storeModel = await this.store;
     this.store = storeModel;
@@ -587,7 +591,7 @@ class InstrumentAPI extends DataSource {
     if (model[0] == null) {
       response.message = 'ERROR: New model is not valid!';
       response.success = false;
-      return JSON.stringify(response);
+      return response;
     }
     const instruments = await this.getAllInstrumentsWithModel({
       modelNumber,
@@ -624,7 +628,7 @@ class InstrumentAPI extends DataSource {
       const modelReference = model[0].dataValues.id;
       // eslint-disable-next-line prefer-destructuring
       const description = model[0].dataValues.description;
-      this.store.instruments.update(
+      await this.store.instruments.update(
         {
           modelReference,
           modelNumber,
@@ -637,7 +641,7 @@ class InstrumentAPI extends DataSource {
         },
         { where: { id } },
       );
-      this.store.instrumentCategoryRelationships.destroy({
+      await this.store.instrumentCategoryRelationships.destroy({
         where: {
           instrumentId: id,
         },
@@ -654,8 +658,9 @@ class InstrumentAPI extends DataSource {
         });
       });
       response.message = 'Successfully Editted Instrument!';
+      response.instrument = await this.getInstrumentById({ id });
     }
-    return JSON.stringify(response);
+    return response;
   }
 
   async deleteInstrument({ id }) {
