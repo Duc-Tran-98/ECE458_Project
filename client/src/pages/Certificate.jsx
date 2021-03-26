@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import {
   PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
@@ -7,6 +8,7 @@ import GetUser from '../queries/GetUser';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import { idealCurrents } from '../utils/LoadBank';
 import FindInstrument from '../queries/FindInstrument';
+import { stepInfo } from '../utils/Klufe';
 
 const strftime = require('strftime');
 
@@ -85,17 +87,24 @@ const styles = StyleSheet.create({
     margin: 'auto',
     flexDirection: 'row',
   },
-  tableCol: {
+  tableCell: {
+    margin: 'auto',
+    marginTop: 5,
+    fontSize: 8,
+  },
+  lbTableCol: {
     width: '12.5%',
     borderStyle: 'solid',
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0,
   },
-  tableCell: {
-    margin: 'auto',
-    marginTop: 5,
-    fontSize: 8,
+  klufeTableCol: {
+    width: '25%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
   },
 });
 
@@ -144,7 +153,9 @@ function MyCertificate({
   const evidenceFile = calibEvent ? urlPath : '';
   const evidenceFileType = calibEvent ? getURLExtension(evidenceFile) : '';
   const loadBankData = calibEvent?.loadBankData;
+  const klufeData = calibEvent?.klufeData;
   const loadBankJSON = loadBankData ? JSON.parse(loadBankData) : (null);
+  const klufeJSON = klufeData ? JSON.parse(klufeData) : (null);
 
   const displayLink = (((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx') || (evidenceFileType === 'gif'))) ? (
     <Text style={styles.largeText}>
@@ -164,31 +175,31 @@ function MyCertificate({
   // eslint-disable-next-line max-len
   const loadLevels = ['No Load', '1 x 100A', '2 x 100A', '3 x 100A', '4 x 100A', '5 x 100A', '6 x 100A', '7 x 100A', '8 x 100A', '9 x 100A', '10 x 100A', '10 x 100A + 1 x 20A', '10 x 100A + 2 x 20A', '10 x 100A + 3 x 20A', '10 x 100A + 4 x 20A', '10 x 100A + 5 x 20A', '10 x 100A + 5 x 20A + 1 x 1A', '10 x 100A + 5 x 20A + 2 x 1A', '10 x 100A + 5 x 20A + 3 x 1A', '10 x 100A + 5 x 20A + 4 x 1A', '10 x 100A + 5 x 20A + 5 x 1A', '10 x 100A + 5 x 20A + 6 x 1A', '10 x 100A + 5 x 20A + 7 x 1A', '10 x 100A + 5 x 20A + 8 x 1A', '10 x 100A + 5 x 20A + 9 x 1A', '10 x 100A + 5 x 20A + 10 x 1A', '10 x 100A + 5 x 20A + 11 x 1A', '10 x 100A + 5 x 20A + 12 x 1A', '10 x 100A + 5 x 20A + 13 x 1A', '10 x 100A + 5 x 20A + 14 x 1A', '10 x 100A + 5 x 20A + 15 x 1A', '10 x 100A + 5 x 20A + 16 x 1A', '10 x 100A + 5 x 20A + 17 x 1A', '10 x 100A + 5 x 20A + 18 x 1A', '10 x 100A + 5 x 20A + 19 x 1A', '10 x 100A + 5 x 20A + 20 x 1A'];
 
-  const row = (p, i) => (
+  const lbRow = (p, i) => (
     <View style={styles.tableRow}>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{loadLevels[i]}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{p.currentReadings[i].cr}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{p.currentReadings[i].ca}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{idealCurrents[i]}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{Number(p.currentReadings[i].crError).toFixed(5)}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{p.currentReadings[i].crOk ? 'OK' : 'NOT OK'}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         {/* eslint-disable-next-line no-useless-escape */}
         <Text style={styles.tableCell}>{Number(p.currentReadings[i].caError).toFixed(5)}</Text>
       </View>
-      <View style={styles.tableCol}>
+      <View style={styles.lbTableCol}>
         <Text style={styles.tableCell}>{p.currentReadings[i].caOk ? 'OK' : 'NOT OK'}</Text>
       </View>
     </View>
@@ -196,18 +207,10 @@ function MyCertificate({
 
   function fillTable() {
     const infoList = [];
-    // const keys = Object.keys(data);
-    // for (let i = 0; i < keys.length; i += 1) {
-    //   const key = keys[i];
-    //   const val = data[key];
-    //   console.log(key);
-    //   infoList.push(row(val));
-    // }
-
     for (let i = 0; i < 36; i += 1) {
       for (let j = 0; j < 36; j += 1) {
         if (i === loadBankJSON.currentReadings[j].id) {
-          infoList.push(row(loadBankJSON, i));
+          infoList.push(lbRow(loadBankJSON, i));
           break;
         }
       }
@@ -219,28 +222,28 @@ function MyCertificate({
   const displayLoadBank = (loadBankData) ? (
     <View style={styles.table}>
       <View style={styles.tableRow}>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Load Level</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Current Reported [A]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Current Actual [A]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Ideal Current [A]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>CR Error [%]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>CR ok?</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>CA Error [%]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>CA ok?</Text>
         </View>
       </View>
@@ -248,58 +251,99 @@ function MyCertificate({
     </View>
   ) : (null);
 
+  const klufeRow = (step) => (
+    <View style={styles.tableRow}>
+      <View style={styles.klufeTableCol}>
+        <Text style={styles.tableCell}>{stepInfo[step].source}</Text>
+      </View>
+      <View style={styles.klufeTableCol}>
+        <Text style={styles.tableCell}>{stepInfo[step].range}</Text>
+      </View>
+      <View style={styles.klufeTableCol}>
+        <Text style={styles.tableCell}>{klufeJSON.readings[step]}</Text>
+      </View>
+      <View style={styles.klufeTableCol}>
+        <Text style={styles.tableCell}>OK</Text>
+      </View>
+    </View>
+  );
+
+  const displayKlufe = (klufeData) ? (
+    <View style={styles.table}>
+      <View style={styles.tableRow}>
+        <View style={styles.klufeTableCol}>
+          <Text style={styles.tableCell}>Source</Text>
+        </View>
+        <View style={styles.klufeTableCol}>
+          <Text style={styles.tableCell}>Acceptable Range [V]</Text>
+        </View>
+        <View style={styles.klufeTableCol}>
+          <Text style={styles.tableCell}>Actual Value [V]</Text>
+        </View>
+        <View style={styles.klufeTableCol}>
+          <Text style={styles.tableCell}>OK?</Text>
+        </View>
+      </View>
+      {klufeRow(4)}
+      {klufeRow(7)}
+      {klufeRow(9)}
+      {klufeRow(11)}
+      {klufeRow(13)}
+    </View>
+  ) : (null);
+
   const displayLoadBankVoltage = (loadBankData) ? (
     <View style={styles.table}>
       <View style={styles.tableRow}>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell} />
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Voltage Reported [V]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Voltage Actual [V]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Test Voltage [V]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>VR Error [%]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>VR ok?</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>VA Error [%]</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>VA ok?</Text>
         </View>
       </View>
 
       <View style={styles.tableRow}>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>Voltages with all blanks on:</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vr}</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>{loadBankJSON.voltageReading.va}</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>48</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>{Number(loadBankJSON.voltageReading.vrError).toFixed(5)}</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vrOk ? 'OK' : 'NOT OK'}</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>{Number(loadBankJSON.voltageReading.vaError).toFixed(5)}</Text>
         </View>
-        <View style={styles.tableCol}>
+        <View style={styles.lbTableCol}>
           <Text style={styles.tableCell}>{loadBankJSON.voltageReading.vaOk ? 'OK' : 'NOT OK'}</Text>
         </View>
       </View>
@@ -403,6 +447,13 @@ function MyCertificate({
           </Page>
           <Page style={styles.page}>
             {displayLoadBankVoltage}
+          </Page>
+        </>
+      )}
+      {(klufeData) && (
+        <>
+          <Page style={styles.page}>
+            {displayKlufe}
           </Page>
         </>
       )}
