@@ -5,8 +5,14 @@ const multer = require('multer');
 const Stream = require('stream');
 const { Client } = require('ssh2');
 const SSH2Promise = require('ssh2-promise');
-
+const { createStore, createDB } = require('./util');
+const InstrumentAPI = require('./datasources/instruments');
 const runBarcode = require('./datasources/barcodeGenerator');
+
+let store;
+createDB().then(() => {
+  store = createStore(false);
+});
 
 const {
   // eslint-disable-next-line max-len
@@ -139,18 +145,33 @@ app.post(`${whichRoute}/uploadExcel`, (req, res) => {
 });
 
 app.get(`${whichRoute}/barcodes`, async (req, res) => {
-  const assetTags = [];
-  for (let i = 0; i < req.query.tags.length; i += 1) {
-    assetTags.push(parseInt(req.query.tags[i], 10));
+  let assetTags = [];
+  if (req.query.all) {
+    const vendor = req.query.vendor || null;
+    const modelNumber = req.query.modelNumber || null;
+    const assetTag = req.query.assetTag || null;
+    const serialNumber = req.query.serialNumber || null;
+    const description = req.query.description || null;
+    const modelCategories = req.query.modelCat || null;
+    const instrumentCategories = req.query.instCat || null;
+    const inst = new InstrumentAPI({ store });
+    const tags = await inst.getInstrumentsWithFilter({
+      // eslint-disable-next-line max-len
+      vendor, modelNumber, serialNumber, assetTag, description, modelCategories, instrumentCategories,
+    });
+    assetTags = tags.instruments.map((a) => a.dataValues.assetTag);
+  } else {
+    assetTags = [];
+    for (let i = 0; i < req.query.tags.length; i += 1) {
+      assetTags.push(parseInt(req.query.tags[i], 10));
+    }
   }
   const pdf = await runBarcode({ data: assetTags });
   const filename = 'asset_labels.pdf';
   const readStream = new Stream.PassThrough();
   readStream.end(pdf);
-
   res.set('Content-disposition', `attachment; filename=${filename}`);
   res.set('Content-Type', 'application/pdf');
-
   readStream.pipe(res);
 });
 
