@@ -7,11 +7,7 @@ const typeDefs = gql`
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
-    getAllUsers(
-      limit: Int
-      offset: Int
-      orderBy: [[String]]
-    ): [User]
+    getAllUsers(limit: Int, offset: Int, orderBy: [[String]]): [User]
     countAllUsers: Int!
 
     # Model Related Queries
@@ -20,7 +16,7 @@ const typeDefs = gql`
     getAllModelsWithModelNum(modelNumber: String!): [Model]
     getAllModelsWithVendor(vendor: String!): [Model]
     getModel(modelNumber: String!, vendor: String!): Model
-    getModelById(id: Int!): Model
+    getModelById(id: ID!): Model
     getUniqueVendors: [Model]
     getModelsWithFilter(
       vendor: String
@@ -53,7 +49,7 @@ const typeDefs = gql`
       serialNumber: String!
     ): Instrument
     getInstrumentByAssetTag(assetTag: Int!): Instrument
-    getInstrumentById(id: Int!): Instrument
+    getInstrumentById(id: ID!): Instrument
     getInstrumentsWithFilter(
       vendor: String
       modelNumber: String
@@ -123,7 +119,7 @@ const typeDefs = gql`
   }
 
   type Category {
-    id: Int!
+    id: ID!
     name: String!
   }
 
@@ -136,7 +132,7 @@ const typeDefs = gql`
     comment: String
     instrumentCategories: [Category]
     description: String!
-    id: Int!
+    id: ID!
     assetTag: Int!
     supportLoadBankCalibration: Boolean
     supportKlufeCalibration: Boolean
@@ -151,7 +147,7 @@ const typeDefs = gql`
     calibrationFrequency: Int
     comment: String
     description: String!
-    id: Int!
+    id: ID!
     supportLoadBankCalibration: Boolean
     recentCalibration: [Calibration]
     modelCategories: [Category]
@@ -182,7 +178,7 @@ const typeDefs = gql`
     comment: String
     description: String!
     assetTag: Int!
-    id: Int!
+    id: ID!
     supportLoadBankCalibration: Boolean
     recentCalDate: String
     recentCalUser: String
@@ -191,6 +187,12 @@ const typeDefs = gql`
 
   type ModelCacheUpdate {
     model: Model
+    message: String!
+    success: Boolean!
+  }
+
+  type InstrumentCacheUpdate {
+    instrument: Instrument
     message: String!
     success: Boolean!
   }
@@ -281,7 +283,7 @@ const typeDefs = gql`
     ): String!
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
-      id: Int!
+      id: ID!
       modelNumber: String!
       vendor: String!
       description: String!
@@ -307,10 +309,10 @@ const typeDefs = gql`
       comment: String
       serialNumber: String
       assetTag: Int
-      id: Int!
+      id: ID!
       categories: [String]
-    ): String!
-    deleteInstrument(id: Int!): String!
+    ): InstrumentCacheUpdate
+    deleteInstrument(id: ID!): String!
 
     # Calibration Events related mutations
     addCalibrationEvent(
@@ -363,12 +365,12 @@ const typeDefs = gql`
       user: String!
       comment: String
     ): String!
-    deleteCalibrationEvent(id: Int!): String!
+    deleteCalibrationEvent(id: ID!): String!
     editCalibrationEvent(
       user: String
       date: String
       comment: String
-      id: Int!
+      id: ID!
     ): String!
 
     # category related mutations

@@ -9,7 +9,8 @@ export default function InfinityScroll({
   query, queryName, title, variables, renderItems, titleClassName,
 }) {
   InfinityScroll.propTypes = {
-    query: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    query: PropTypes.object.isRequired,
     queryName: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types

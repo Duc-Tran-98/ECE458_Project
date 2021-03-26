@@ -81,12 +81,14 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
           includeAll: true,
           fetchPolicy: 'no-cache',
         }).then((val) => {
-          console.log('val in userContext: ', val);
           setUserState(val);
           startPolling(val);
         });
       }, 500); // set timeout to give time for new authheader to get applied
     }
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [loggedIn]);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

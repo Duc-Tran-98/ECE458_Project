@@ -71,7 +71,6 @@ export function setAuthHeader(token) { // This is to let backend know request ar
     link: authLink.concat(httpLink),
     cache,
   });
-  client.clearStore();
   console.log('updated client obj');
 }
 

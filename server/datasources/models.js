@@ -119,6 +119,10 @@ class ModelAPI extends DataSource {
       response.message = validation[1];
       return response;
     }
+    if (typeof id === 'string') {
+      // eslint-disable-next-line no-param-reassign
+      id = parseInt(id, 10);
+    }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value && value.id !== id) {
         response.message = 'That model number and vendor pair already exists!';

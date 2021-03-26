@@ -182,6 +182,12 @@ export default function DetailedInstrumentView() {
       assetTag,
       id,
     } = response;
+    if (typeof id === 'undefined') {
+      id = formState.id;
+    }
+    if (typeof id === 'string') {
+      id = parseInt(id, 10);
+    }
     fetchData(null, id);
     comment = comment || '';
     modelNumber = modelNumber || '';
@@ -190,7 +196,6 @@ export default function DetailedInstrumentView() {
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
     description = description || '';
-    id = id || 0;
     setFormState({
       ...formState,
       comment,
