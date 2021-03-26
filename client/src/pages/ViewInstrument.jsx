@@ -17,6 +17,7 @@ import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
+import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
@@ -312,9 +313,14 @@ export default function DetailedInstrumentView() {
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
                 popOverText="Add calibration via Klufe"
-                onClose={() => console.log('closing modal')} // pass function to run on close of modal
               >
-                <>YOUR WIZARD COMPONENT HERE</>
+                <KlufeWiz
+                  initModelNumber={formState.modelNumber}
+                  initSerialNumber={formState.serialNumber}
+                  initAssetTag={formState.assetTag}
+                  initVendor={formState.vendor}
+                  onFinish={fetchData}
+                />
               </ModalAlert>
             </div>
           )}

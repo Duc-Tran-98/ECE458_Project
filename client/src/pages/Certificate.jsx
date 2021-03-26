@@ -313,7 +313,7 @@ function MyCertificate({
         <View style={styles.outerBorder}>
           <View style={styles.innerBorder}>
             <View style={styles.centerView}>
-              <Image style={styles.logo} src="HPT_logo.png" />
+              <Image style={styles.logo} src="/HPT_logo.png" />
             </View>
 
             <Text style={styles.title}>

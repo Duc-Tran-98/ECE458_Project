@@ -197,7 +197,8 @@ app.post(`${whichRoute}/klufeOff`, (req, res) => {
 });
 
 /* STEP MAP:
-4. set dc 3.5
+1. set dc 0
+3. set dc 3.5
 6. set ac 3.513 50
 8. set ac 100 20 kHz
 10. set ac 3.5 10 kHz
@@ -208,7 +209,7 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
   const message = `Klufe Step with stepNum: ${stepNum} and stepStart: ${stepStart}`;
   console.log(message);
 
-  const validStepNumbers = [4, 7, 9, 11, 13];
+  const validStepNumbers = [1, 3, 6, 8, 10, 12];
   const validStartValues = [true, false];
 
   if (!validStepNumbers.includes(stepNum) || !validStartValues.includes(stepStart)) {
@@ -219,19 +220,22 @@ app.post(`${whichRoute}/klufeStep`, (req, res) => {
 
   let cmd = '';
   switch (stepNum) {
-    case 4:
+    case 1:
+      cmd = 'set dc 0\n';
+      break;
+    case 3:
       cmd = 'set dc 3.5\n';
       break;
-    case 7:
+    case 6:
       cmd = 'set ac 3.513 50\n';
       break;
-    case 9:
+    case 8:
       cmd = 'set ac 100 20000\n';
       break;
-    case 11:
+    case 10:
       cmd = 'set ac 3.5 10000\n';
       break;
-    case 13:
+    case 12:
       cmd = 'set ac 3 10000\n';
       break;
     default:

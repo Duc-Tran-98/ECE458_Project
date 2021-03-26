@@ -9,23 +9,23 @@ import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
-import AsyncSuggest from './AsyncSuggest';
-import { stepInfo } from '../utils/GuidedCal';
+import { stepInfo } from '../utils/Klufe';
 import Query from './UseQuery';
 import {
-  KlufeOn, KlufeOff, KlufeStep,
+  KlufeOff, KlufeStep,
 } from '../queries/KlufeQueries';
 
-const DEBUG = process.env.NODE_ENV.includes('dev');
+// const DEBUG = process.env.NODE_ENV.includes('dev');
 
-export default function GuidedCalWiz({
-  initModelNumber, initVendor, initSerialNumber, initAssetTag,
+export default function KlufeWiz({
+  initModelNumber, initVendor, initSerialNumber, initAssetTag, onFinish,
 }) {
-  GuidedCalWiz.propTypes = {
+  KlufeWiz.propTypes = {
     initModelNumber: PropTypes.string.isRequired,
     initVendor: PropTypes.string.isRequired,
     initSerialNumber: PropTypes.string.isRequired,
     initAssetTag: PropTypes.number.isRequired,
+    onFinish: PropTypes.func.isRequired,
   };
   const user = React.useContext(UserContext);
   const today = new Date().toISOString().split('T')[0];
@@ -37,17 +37,17 @@ export default function GuidedCalWiz({
     date: today,
     user: user.userName,
     comment: '',
-    step5ok: false,
-    step8ok: false,
-    step10ok: false,
-    step12ok: false,
-    step14ok: false,
+    step4ok: false,
+    step7ok: false,
+    step9ok: false,
+    step11ok: false,
+    step13ok: false,
   });
-  const [canProgress, setCanProgress] = React.useState(false);
   const [shouldRestart, setRestart] = React.useState(false);
   const [readings, setReadings] = React.useState({
-    5: NaN, 8: NaN, 10: NaN, 12: NaN, 14: NaN,
+    4: NaN, 7: NaN, 9: NaN, 11: NaN, 13: NaN,
   });
+
   const handleRestart = (bool = true) => {
     setRestart(false);
     if (bool) {
@@ -59,54 +59,55 @@ export default function GuidedCalWiz({
         date: today,
         user: user.userName,
         comment: '',
-        step5ok: false,
-        step8ok: false,
-        step10ok: false,
-        step12ok: false,
-        step14ok: false,
+        step4ok: false,
+        step7ok: false,
+        step9ok: false,
+        step11ok: false,
+        step13ok: false,
       });
     }
   };
   const handleFinish = () => {
     const {
-      assetTag, date, comment, step5ok, step8ok, step10ok, step12ok, step14ok,
+      assetTag, date, comment, step4ok, step7ok, step9ok, step11ok, step13ok,
     } = formState;
     const guidedCalData = JSON.stringify({
       readings,
-      step5ok,
-      step8ok,
-      step10ok,
-      step12ok,
-      step14ok,
+      step4ok,
+      step7ok,
+      step9ok,
+      step11ok,
+      step13ok,
     });
-    Query({ // TODO: fix this query for guided cal not load bank
+    Query({
       query: print(gql`
-        mutation AddLoadBankCalib (
+        mutation AddKlufeCalib (
             $assetTag: Int!,
             $date: String!,
             $user: String!,
             $comment: String,
-            $loadBankData: String!,
+            $klufeData: String!,
           ){
-          addLoadBankCalibration(
+          addKlufeCalibration(
             assetTag: $assetTag,
             date: $date,
             user: $user,
             comment: $comment,
-            loadBankData: $loadBankData,
+            klufeData: $klufeData,
           )
         }
       `),
-      queryName: 'addLoadBankCalibration',
+      queryName: 'addKlufeCalibration',
       getVariables: () => ({
         assetTag,
         date,
         user: user.userName,
         comment,
-        guidedCalData,
+        klufeData: guidedCalData,
       }),
       handleResponse: (response) => {
         if (response.success) {
+          onFinish();
           toast.success(response.message);
         } else {
           toast.error(response.message);
@@ -118,23 +119,22 @@ export default function GuidedCalWiz({
   const handleResponse = (response) => {
     console.log(response);
   };
+  React.useEffect(() => () => { KlufeOff({ handleResponse }); }, []);
   const handleNext = (step) => {
     switch (step) {
       case 1:
-        KlufeOn({ handleResponse });
+      case 3:
+      case 6:
+      case 8:
+      case 10:
+      case 12:
+        KlufeStep({ handleResponse, stepNum: step, stepStart: true });
         break;
       case 4:
       case 7:
       case 9:
       case 11:
       case 13:
-        KlufeStep({ handleResponse, stepNum: step, stepStart: true });
-        break;
-      case 5:
-      case 8:
-      case 10:
-      case 12:
-      case 14:
         KlufeOff({ handleResponse });
         break;
       default:
@@ -142,12 +142,13 @@ export default function GuidedCalWiz({
   };
   const handleBack = (step) => {
     switch (step) {
-      case 5:
-      case 8:
-      case 10:
-      case 12:
-      case 14:
-        KlufeOff();
+      case 2:
+      case 4:
+      case 7:
+      case 9:
+      case 11:
+      case 13:
+        KlufeOff({ handleResponse });
         break;
       default:
     }
@@ -156,36 +157,36 @@ export default function GuidedCalWiz({
   const updateReadings = ({ e, step }) => { // update state
     readings[step] = e.target.valueAsNumber;
     switch (step) {
-      case 5:
-        setFormState({ ...formState, step5ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
+      case 4:
+        setFormState({ ...formState, step4ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
         break;
-      case 8:
-        setFormState({ ...formState, step8ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
+      case 7:
+        setFormState({ ...formState, step7ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
         break;
-      case 10:
-        setFormState({ ...formState, step10ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
+      case 9:
+        setFormState({ ...formState, step9ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
         break;
-      case 12:
-        setFormState({ ...formState, step12ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
+      case 11:
+        setFormState({ ...formState, step11ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
         break;
-      case 14:
-        setFormState({ ...formState, step14ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
+      case 13:
+        setFormState({ ...formState, step13ok: isInRange(e.target.valueAsNumber, stepInfo[step].lower, stepInfo[step].upper) });
         break;
       default:
     }
   };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
-      case 5:
-        return formState.step5ok;
-      case 8:
-        return formState.step8ok;
-      case 10:
-        return formState.step10ok;
-      case 12:
-        return formState.step12ok;
-      case 14:
-        return formState.step14ok;
+      case 4:
+        return formState.step4ok;
+      case 7:
+        return formState.step7ok;
+      case 9:
+        return formState.step9ok;
+      case 11:
+        return formState.step11ok;
+      case 13:
+        return formState.step13ok;
       default:
         return true;
     }
@@ -200,20 +201,19 @@ export default function GuidedCalWiz({
   };
   const getSteps = () => [ // outer steps for wizard
     'Calibration Info', // 0
-    'Step 1', // 1
-    'Step 2', // 2
-    'Step 3', // 3
-    'Step 4', // 4
-    'Step 5', // 5
-    'Step 6', // 6
-    'Step 7', // 7
-    'Step 8', // 8
-    'Step 9', // 9
-    'Step 10', // 10
-    'Step 11', // 11
-    'Step 12', // 12
-    'Step 13', // 13
-    'Step 14', // 14
+    'Start Klufe K5700', // 1
+    'Connect Model 87', // 2
+    'Set Source to 3.5V', // 3
+    'Record 3.5V Display', // 4
+    'Change Model 87 Function', // 5
+    'Set Source to 3.513V at 50 Hz', // 6
+    'Record 3.513V at 50 Hz Display', // 7
+    'Set Source to 100V at 20 kHz', // 8
+    'Record 100V at 20 kHz Display', // 9
+    'Set Source to 3.500V at 10 kHz', // 10
+    'Record 3.500V at 10 kHz Display', // 11
+    'Set Source to 35.00V at 10 kHz', // 12
+    'Record 35.00V at 10 kHz Display', // 13
   ];
 
   const inputDisplay = (step) => (
@@ -352,9 +352,13 @@ export default function GuidedCalWiz({
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
               On the Model 87, select the
-              <img src="symbols/V.svg" alt="test" width="12 pt" style={{ marginLeft: 5 }} />
-              <img src="symbols/dc.svg" alt="test" width="12 pt" style={{ marginRight: 5 }} />
-              function.
+              <img src="/symbols/V.svg" alt="test" width="12 pt" style={{ marginLeft: 5 }} />
+              <img src="/symbols/dc.svg" alt="test" width="12 pt" style={{ marginRight: 5 }} />
+              function. Then, connect the source to the Model 87
+              <img src="/symbols/V.svg" alt="test" width="12 pt" style={{ marginLeft: 5 }} />
+              <img src="/symbols/omega.svg" alt="test" width="12 pt" />
+              <img src="/symbols/diode.svg" alt="test" width="15 pt" style={{ marginRight: 5 }} />
+              and COM inputs.
             </div>
           </div>
         );
@@ -362,23 +366,11 @@ export default function GuidedCalWiz({
         return (
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
-              Connect the source to the Model 87
-              <img src="symbols/V.svg" alt="test" width="12 pt" style={{ marginLeft: 5 }} />
-              <img src="symbols/omega.svg" alt="test" width="12 pt" />
-              <img src="symbols/diode.svg" alt="test" width="15 pt" style={{ marginRight: 5 }} />
-              and COM inputs.
-            </div>
-          </div>
-        );
-      case 4:
-        return (
-          <div className="d-flex flex-row my-1">
-            <div className="d-flex flex-row mb-2">
               The calibrator source will be set for 3.500V dc output.
             </div>
           </div>
         );
-      case 5:
+      case 4:
         return (
           <div>
             <div className="d-flex flex-row my-1">
@@ -389,18 +381,18 @@ export default function GuidedCalWiz({
             {inputDisplay(step)}
           </div>
         );
-      case 6:
+      case 5:
         return (
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
               Now set the Model 87 to the
-              <img src="symbols/V.svg" alt="test" width="12 pt" style={{ marginLeft: 5 }} />
-              <img src="symbols/tilde.svg" alt="test" width="12 pt" style={{ marginRight: 5 }} />
+              <img src="/symbols/V.svg" alt="test" width="12 pt" style={{ marginLeft: 5 }} />
+              <img src="/symbols/tilde.svg" alt="test" width="12 pt" style={{ marginRight: 5 }} />
               function.
             </div>
           </div>
         );
-      case 7:
+      case 6:
         return (
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
@@ -408,7 +400,7 @@ export default function GuidedCalWiz({
             </div>
           </div>
         );
-      case 8:
+      case 7:
         return (
           <div>
             <div className="d-flex flex-row my-1">
@@ -419,7 +411,7 @@ export default function GuidedCalWiz({
             {inputDisplay(step)}
           </div>
         );
-      case 9:
+      case 8:
         return (
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
@@ -427,7 +419,7 @@ export default function GuidedCalWiz({
             </div>
           </div>
         );
-      case 10:
+      case 9:
         return (
           <div>
             <div className="d-flex flex-row my-1">
@@ -438,7 +430,7 @@ export default function GuidedCalWiz({
             {inputDisplay(step)}
           </div>
         );
-      case 11:
+      case 10:
         return (
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
@@ -446,7 +438,7 @@ export default function GuidedCalWiz({
             </div>
           </div>
         );
-      case 12:
+      case 11:
         return (
           <div>
             <div className="d-flex flex-row my-1">
@@ -457,7 +449,7 @@ export default function GuidedCalWiz({
             {inputDisplay(step)}
           </div>
         );
-      case 13:
+      case 12:
         return (
           <div className="d-flex flex-row my-1">
             <div className="d-flex flex-row mb-2">
@@ -465,7 +457,7 @@ export default function GuidedCalWiz({
             </div>
           </div>
         );
-      case 14:
+      case 13:
         return (
           <div>
             <div className="d-flex flex-row my-1">

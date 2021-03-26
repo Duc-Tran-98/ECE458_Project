@@ -61,7 +61,7 @@ export default function VerticalLinearStepper({
   const handleNext = () => { // handle clicking on the next button
     if (canAdvance(activeStep)) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      onNext(activeStep);
+      if (onNext !== undefined) { onNext(activeStep); }
       if (activeStep === steps.length - 1) {
         onFinish();
       }
@@ -69,7 +69,7 @@ export default function VerticalLinearStepper({
   };
 
   const handleBack = () => { // handle clicking on the back button
-    onBack(activeStep);
+    if (onBack !== undefined) { onBack(activeStep); }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
