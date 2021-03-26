@@ -15,8 +15,18 @@ export default function DeleteModel({ modelNumber, vendor, handleResponse }) {
     `;
   const query = DEL_MODEL;
   const queryName = 'deleteModel';
+  const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
+  console.log(refetch);
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   const getVariables = () => ({ modelNumber, vendor });
   Query({
-    query, queryName, getVariables, handleResponse,
+    query, queryName, getVariables, handleResponse, refetchQueries,
   });
 }

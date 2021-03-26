@@ -373,6 +373,7 @@ export default function ListInstruments() {
           instrumentCategories,
           serialNumber: filterSerialNumber,
           assetTag,
+          fetchPolicy: 'no-cache',
         }).then((response) => response.total)}
         cellHandler={cellHandler}
         headerElement={(

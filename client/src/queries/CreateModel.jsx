@@ -37,7 +37,23 @@ export default function CreateModel({
           supportLoadBankCalibration: $supportLoadBankCalibration
           supportKlufeCalibration: $supportKlufeCalibration
           categories: $categories
-        )
+        ){
+          message
+          success
+          model {
+            id
+            vendor
+            modelNumber
+            description
+            comment
+            calibrationFrequency
+            categories {
+              name
+            }
+            supportLoadBankCalibration
+            supportKlufeCalibration
+          }
+        }
       }
     `;
   const query = ADD_MODEL;

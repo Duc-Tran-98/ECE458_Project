@@ -228,9 +228,6 @@ export default function DetailedModelView() {
                   ) {
                     total
                     rows {
-                      serialNumber
-                      id
-                      calibrationFrequency
                       assetTag
                     }
                   }

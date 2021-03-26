@@ -103,7 +103,10 @@ function CreateInstrumentPage({ onCreation }) {
       if (response.success) {
         toast.success(response.message);
         resetForm();
-        assetTag = parseInt(response.assetTag, 10);
+        assetTag = response.instrument.assetTag;
+        if (typeof assetTag === 'string') {
+          assetTag = parseInt(assetTag, 10);
+        }
         // If we successfully added new instrument
         const validEvents = calibHist;
         if (validEvents.length > 0 && calibrationFrequency > 0) {

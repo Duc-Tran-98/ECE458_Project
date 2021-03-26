@@ -24,7 +24,7 @@ export default function InfinityScroll({
     titleClassName: '',
   };
   const [items, setItems] = React.useState([]);
-  const [hasMore, setHasMore] = React.useState(false);
+  const [hasMore, setHasMore] = React.useState(true);
   const [total, setTotal] = React.useState(null);
   const getVariables = () => {
     variables.limit = 10;
@@ -34,7 +34,7 @@ export default function InfinityScroll({
   const fetchMoreData = () => {
     if (total && items.length >= total) { // If total not null and length exceeds/equal to total, stop scroll
       setHasMore(false);
-    } else { // else, set total and update state
+    } else if (hasMore) { // else, set total and update state
       QueryAndThen({ query, queryName, getVariables }).then(
         (data) => {
           const newItems = items.concat(data.rows);
@@ -71,7 +71,7 @@ export default function InfinityScroll({
         endMessage={<div className="my-4" />}
       >
         {items.length === 0 && (
-          <div className="my-3 bg-light text-center h5">No Instances</div>
+          <div className="py-3 bg-light text-center h5">No Instances</div>
         )}
         {renderItems === null ? (
           items.map((entry) => (

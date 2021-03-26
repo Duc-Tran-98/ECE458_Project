@@ -406,12 +406,12 @@ class ModelAPI extends DataSource {
     supportKlufeCalibration = false,
     categories = [],
   }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
@@ -420,7 +420,7 @@ class ModelAPI extends DataSource {
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
-      return JSON.stringify(response);
+      return response;
     }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
@@ -440,9 +440,10 @@ class ModelAPI extends DataSource {
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;
+        response.model = await this.getModel({ modelNumber, vendor });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async addModelCategory({ name }) {

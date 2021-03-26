@@ -15,6 +15,7 @@ export default async function GetAllInstruments({
   serialNumber,
   assetTag,
   orderBy,
+  fetchPolicy = null,
 }) {
   GetAllInstruments.propTypes = {
     handleResponse: PropTypes.func,
@@ -28,6 +29,7 @@ export default async function GetAllInstruments({
     serialNumber: PropTypes.string,
     assetTag: PropTypes.number,
     orderBy: PropTypes.array,
+    fetchPolicy: PropTypes.string,
   };
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments(
@@ -94,10 +96,13 @@ export default async function GetAllInstruments({
       queryName,
       handleResponse,
       getVariables,
+      fetchPolicy,
     });
   } else {
     // eslint-disable-next-line no-return-await
-    const response = await QueryAndThen({ query, queryName, getVariables });
+    const response = await QueryAndThen({
+      query, queryName, getVariables, fetchPolicy,
+    });
     return response;
   }
 }

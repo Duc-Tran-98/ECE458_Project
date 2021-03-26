@@ -265,6 +265,7 @@ function ListModels() {
           description: descriptions,
           vendor: vendors,
           categories,
+          fetchPolicy: 'no-cache',
         }).then((response) => response.total)}
         cellHandler={cellHandler}
         headerElement={(

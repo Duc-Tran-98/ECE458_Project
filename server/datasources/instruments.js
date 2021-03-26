@@ -688,7 +688,7 @@ class InstrumentAPI extends DataSource {
     comment,
     categories = [],
   }) {
-    const response = { message: '', success: true, assetTag: 0 };
+    const response = { message: '', success: true, instrument: null };
     const validation = validateInstrument({
       modelNumber,
       vendor,
@@ -698,13 +698,13 @@ class InstrumentAPI extends DataSource {
     });
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
       response.success = false;
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
@@ -720,7 +720,6 @@ class InstrumentAPI extends DataSource {
             }).then(async (instrument) => {
               if (instrument) {
                 response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} already exists`;
-                response.assetTag = -1;
                 response.success = false;
               }
             });
@@ -732,7 +731,6 @@ class InstrumentAPI extends DataSource {
               .then((instrument) => {
                 if (instrument) {
                   response.message = `ERROR: Instrument with Asset Tag ${assetTag} already exists`;
-                  response.assetTag = -1;
                   response.success = false;
                 } else {
                   newAssetTag = assetTag;
@@ -782,16 +780,15 @@ class InstrumentAPI extends DataSource {
               );
             });
             response.message = `Added new instrument ${vendor} ${modelNumber} ${serialNumber}!`;
-            response.assetTag = newAssetTag;
             response.success = true;
+            response.instrument = await this.getInstrumentByAssetTag({ assetTag: newAssetTag });
           }
         } else {
           response.message = `ERROR: Model ${vendor} ${modelNumber} does not exist`;
-          response.assetTag = -1;
           response.success = false;
         }
       });
-    return JSON.stringify(response);
+    return response;
   }
 
   async addInstrumentCategory({ name }) {

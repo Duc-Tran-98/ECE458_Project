@@ -34,7 +34,26 @@ export default async function CreateInstrument({
           comment: $comment
           serialNumber: $serialNumber
           categories: $categories
-        )
+        ){
+          message
+          success
+          instrument {
+            vendor
+            modelNumber
+            serialNumber
+            modelReference
+            calibrationFrequency
+            comment
+            instrumentCategories {
+              name
+            }
+            description
+            id
+            assetTag
+            supportLoadBankCalibration
+            supportKlufeCalibration
+          }
+        }
       }
     `;
   const query = ADD_INSTRUMENT;

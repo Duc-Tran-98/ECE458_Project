@@ -286,7 +286,7 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
-    ): String!
+    ): ModelCacheUpdate
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
       id: ID!
@@ -308,7 +308,7 @@ const typeDefs = gql`
       serialNumber: String
       comment: String
       categories: [String]
-    ): String!
+    ): InstrumentCacheUpdate
     editInstrument(
       modelNumber: String!
       vendor: String!

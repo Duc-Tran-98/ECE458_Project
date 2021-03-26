@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
 export default async function GetAllModels({
-  limit, offset, vendor, modelNumber, description, categories, orderBy,
+  limit, offset, vendor, modelNumber, description, categories, orderBy, fetchPolicy = null,
 }) {
   GetAllModels.propTypes = {
     limit: PropTypes.number,
@@ -14,6 +14,7 @@ export default async function GetAllModels({
     description: PropTypes.string,
     categories: PropTypes.array,
     orderBy: PropTypes.array,
+    fetchPolicy: PropTypes.string,
   };
   const GET_MODELS_QUERY = gql`
     query Models(
@@ -62,7 +63,9 @@ export default async function GetAllModels({
       variables: getVariables(),
     }),
   );
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  const response = await QueryAndThen({
+    query, queryName, getVariables, fetchPolicy,
+  });
   return response;
 }
 
@@ -73,6 +76,6 @@ export async function CountAllModels() {
         }
     `;
   const queryName = 'countAllModels';
-  const response = await QueryAndThen({ query, queryName });
+  const response = await QueryAndThen({ query, queryName, fetchPolicy: 'no-cache' });
   return response;
 }
