@@ -61,7 +61,7 @@ export default function InfinityScroll({
   }, [items, variables]);
   return (
     <>
-      <h2 className={titleClassName}>{title}</h2>
+      <h3 className={titleClassName}>{title}</h3>
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={items.length}
