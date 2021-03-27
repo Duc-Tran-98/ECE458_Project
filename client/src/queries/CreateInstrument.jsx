@@ -61,15 +61,28 @@ export default async function CreateInstrument({
   const getVariables = () => ({
     modelNumber, vendor, assetTag, serialNumber, comment, categories,
   });
+  const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+    || null;
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   if (handleResponse) {
     Query({
       query,
       queryName,
       getVariables,
       handleResponse,
+      refetchQueries,
     });
   } else {
     // eslint-disable-next-line no-return-await
-    return await QueryAndThen({ query, queryName, getVariables });
+    return await QueryAndThen({
+      query, queryName, getVariables, refetchQueries,
+    });
   }
 }

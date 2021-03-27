@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable prefer-const */
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -76,6 +77,37 @@ function CreateInstrumentPage({ onCreation }) {
     setCalibHist(newHistory);
   };
 
+  const addCalibEvents = (assetTag) => {
+    const validEvents = calibHist;
+    if (validEvents.length > 0 && calibrationFrequency > 0) {
+      validEvents.forEach(async (entry) => {
+        const events = [entry];
+        if (entry.file) {
+          await axios
+            .post(path, entry.file, {
+              // receive two    parameter endpoint url ,form data
+            })
+            .then((res) => {
+              // then print response status
+              // eslint-disable-next-line no-param-reassign
+              events[0].fileLocation = res.data.assetName;
+              // eslint-disable-next-line no-param-reassign
+              events[0].fileName = res.data.fileName;
+            })
+            .catch((err) => {
+              console.log(err.message);
+              toast.error(`Could not upload file for event on ${entry.date}`);
+            });
+        }
+        AddCalibEventByAssetTag({
+          events,
+          assetTag,
+          handleResponse: (r) => toast.success(r.message),
+        });
+      });
+    }
+  };
+
   const handleSubmit = (values, resetForm) => {
     // This is to submit all the data
     let {
@@ -108,34 +140,7 @@ function CreateInstrumentPage({ onCreation }) {
           assetTag = parseInt(assetTag, 10);
         }
         // If we successfully added new instrument
-        const validEvents = calibHist;
-        if (validEvents.length > 0 && calibrationFrequency > 0) {
-          validEvents.forEach(async (entry) => {
-            const events = [entry];
-            if (entry.file) {
-              await axios
-                .post(path, entry.file, {
-                  // receive two    parameter endpoint url ,form data
-                })
-                .then((res) => {
-                  // then print response status
-                  // eslint-disable-next-line no-param-reassign
-                  events[0].fileLocation = res.data.assetName;
-                  // eslint-disable-next-line no-param-reassign
-                  events[0].fileName = res.data.fileName;
-                  AddCalibEventByAssetTag({
-                    events,
-                    assetTag,
-                    handleResponse: (r) => toast.success(r.message),
-                  });
-                })
-                .catch((err) => {
-                  console.log(err.message);
-                  toast.error(`Could not upload file for event on ${entry.date}`);
-                });
-            }
-          });
-        }
+        // addCalibEvents(assetTag);
         setcalibrationFrequency(0);
         onCreation();
       } else {
@@ -143,23 +148,25 @@ function CreateInstrumentPage({ onCreation }) {
       }
     });
   };
-  const footer = (calibrationFrequency !== 0 && (user.isAdmin || user.calibrationPermission)) ? (
-    <>
-      <div className="d-flex justify-content-center my-3">
-        <button type="button" className="btn  mx-3" onClick={addRow}>
-          Add Calibration Event
-        </button>
-      </div>
-      <CalibrationTable
-        rows={calibHist}
-        deleteRow={deleteRow}
-        onChangeCalibRow={onChangeCalibRow}
-      />
-    </>
-  ) : (
-    <>
-    </>
-  );
+  // Currently, updating cache is after create instrument and after add calib event doesn't work as expected;
+  // so for the time being, I will disable adding calibration events on creation to solve this issue.
+  // const footer = (calibrationFrequency !== 0 && (user.isAdmin || user.calibrationPermission)) ? (
+  //   <>
+  //     <div className="d-flex justify-content-center my-3">
+  //       <button type="button" className="btn  mx-3" onClick={addRow}>
+  //         Add Calibration Event
+  //       </button>
+  //     </div>
+  //     <CalibrationTable
+  //       rows={calibHist}
+  //       deleteRow={deleteRow}
+  //       onChangeCalibRow={onChangeCalibRow}
+  //     />
+  //   </>
+  // ) : (
+  //   <>
+  //   </>
+  // );
   return (
     <>
       <InstrumentForm
@@ -175,7 +182,7 @@ function CreateInstrumentPage({ onCreation }) {
         updateCalibrationFrequency={(value) => setcalibrationFrequency(value)}
         type="create"
       />
-      {footer}
+      {/* {footer} */}
     </>
   );
 }

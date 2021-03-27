@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
 export default async function AddCalibEventByAssetTag({
-  events, handleResponse, assetTag,
+  events,
+  handleResponse,
+  assetTag,
 }) {
   AddCalibEventByAssetTag.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
@@ -12,26 +14,36 @@ export default async function AddCalibEventByAssetTag({
     assetTag: PropTypes.number.isRequired,
   };
   const ADD_EVENT = gql`
-      mutation AddEvent(
-        $assetTag: Int!
-        $date: String!
-        $user: String! 
-        $comment: String
-        $fileLocation: String
-        $fileName: String
-      ) {
-        addCalibrationEventByAssetTag(
-          assetTag: $assetTag
-          comment: $comment
-          user: $user
-          date: $date
-          fileLocation: $fileLocation
-          fileName: $fileName
-        )
-      }
-    `;
+    mutation AddEvent(
+      $assetTag: Int!
+      $date: String!
+      $user: String!
+      $comment: String
+      $fileLocation: String
+      $fileName: String
+    ) {
+      addCalibrationEventByAssetTag(
+        assetTag: $assetTag
+        comment: $comment
+        user: $user
+        date: $date
+        fileLocation: $fileLocation
+        fileName: $fileName
+      )
+    }
+  `;
   const query = ADD_EVENT;
   const queryName = 'addCalibrationEventByAssetTag';
+  const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+    || null;
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   events.forEach((entry) => {
     const getVariables = () => ({
       assetTag,
@@ -47,6 +59,7 @@ export default async function AddCalibEventByAssetTag({
       getVariables,
       handleResponse,
       fetchPolicy: 'no-cache',
+      refetchQueries,
     });
   });
 }

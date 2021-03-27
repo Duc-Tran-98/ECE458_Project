@@ -82,7 +82,8 @@ const Query = ({
   handleError,
   fetchPolicy = null,
   refetchQueries = [],
-  update = () => null,
+  update = null,
+  awaitRefetchQueries = false,
 }) => {
   Query.propTypes = {
     query: PropTypes.string.isRequired, // This is the gql query printed
@@ -94,6 +95,7 @@ const Query = ({
     // eslint-disable-next-line react/forbid-prop-types
     refetchQueries: PropTypes.array,
     update: PropTypes.func,
+    awaitRefetchQueries: PropTypes.bool,
   };
   let response;
   // const data = getVariables ? { query, variables: getVariables() } : { query };
@@ -117,6 +119,7 @@ const Query = ({
         refetchQueries,
         fetchPolicy,
         update,
+        awaitRefetchQueries,
       })
       .then((res) => {
         response = typeof res.data[queryName] === 'string'
