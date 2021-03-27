@@ -26,9 +26,11 @@ import {
   ImportButton, CreateButton, CategoriesButton,
 } from './CustomMuiIcons';
 import ExportInstruments, { ExportInstrumentsIcon } from './ExportInstruments';
-import ExportModels, { ExportModelsIcon } from './ExportModels';
+import ExportModels from './ExportModels';
+import ExportModelsIcon from './ExportModelsIcon';
+
 // import UserContext from './UserContext';
-import GenerateBarcodes, { GenerateBarcodesIcon } from './GenerateBarcodes';
+import { GenerateBarcodesIcon } from './GenerateBarcodes';
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
