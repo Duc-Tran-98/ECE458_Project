@@ -123,19 +123,37 @@ export default function ListInstruments() {
   const headerClass = 'customMuiHeader';
   const cols = [
     {
-      field: 'vendor', headerName: 'Vendor', width: 100, description: 'Vendor', headerClassName: headerClass,
+      field: 'vendor',
+      headerName: 'Vendor',
+      width: 100,
+      description: 'Vendor',
+      headerClassName: headerClass,
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 170, description: 'Model Number', headerClassName: headerClass,
+      field: 'modelNumber',
+      headerName: 'Model Number',
+      width: 170,
+      description: 'Model Number',
+      headerClassName: headerClass,
     },
     {
-      field: 'assetTag', headerName: 'Asset Tag', width: 140, description: 'Asset Tag', headerClassName: headerClass,
+      field: 'assetTag',
+      headerName: 'Asset Tag',
+      width: 140,
+      description: 'Asset Tag',
+      headerClassName: headerClass,
     },
     {
-      field: 'description', headerName: 'Description', width: 225, description: 'Description',
+      field: 'description',
+      headerName: 'Description',
+      width: 225,
+      description: 'Description',
     },
     {
-      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number',
+      field: 'serialNumber',
+      headerName: 'Serial Number',
+      width: 150,
+      description: 'Serial Number',
     },
     {
       field: 'categories',
@@ -145,7 +163,12 @@ export default function ListInstruments() {
       width: 255,
       sortable: false,
       renderCell: (params) => (
-        <p className="text-overflow my-auto" style={{ width: '255px', maxHeight: '52px', fontSize: '0.75em' }}>{categoriesList(params)}</p>
+        <p
+          className="text-overflow my-auto"
+          style={{ width: '255px', maxHeight: '52px', fontSize: '0.75em' }}
+        >
+          {categoriesList(params)}
+        </p>
       ),
     },
     {
@@ -194,14 +217,14 @@ export default function ListInstruments() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
+                  width="16"
+                  height="16"
                   fill="currentColor"
-                  className="bi bi-emoji-angry-fill"
+                  className="bi bi-exclamation-diamond-fill"
                   viewBox="0 0 16 16"
                 >
                   {/* eslint-disable-next-line max-len */}
-                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM4.053 4.276a.5.5 0 0 1 .67-.223l2 1a.5.5 0 0 1 .166.76c.071.206.111.44.111.687C7 7.328 6.552 8 6 8s-1-.672-1-1.5c0-.408.109-.778.285-1.049l-1.009-.504a.5.5 0 0 1-.223-.67zm.232 8.157a.5.5 0 0 1-.183-.683A4.498 4.498 0 0 1 8 9.5a4.5 4.5 0 0 1 3.898 2.25.5.5 0 1 1-.866.5A3.498 3.498 0 0 0 8 10.5a3.498 3.498 0 0 0-3.032 1.75.5.5 0 0 1-.683.183zM10 8c-.552 0-1-.672-1-1.5 0-.247.04-.48.11-.686a.502.502 0 0 1 .166-.761l2-1a.5.5 0 1 1 .448.894l-1.009.504c.176.27.285.64.285 1.049 0 .828-.448 1.5-1 1.5z" />
+                  <path d="M9.05.435c-.58-.58-1.52-.58-2.1 0L.436 6.95c-.58.58-.58 1.519 0 2.098l6.516 6.516c.58.58 1.519.58 2.098 0l6.516-6.516c.58-.58.58-1.519 0-2.098L9.05.435zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
                 </svg>
               </MouseOverPopover>
             )}
