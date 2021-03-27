@@ -251,7 +251,7 @@ export default function ModelForm({
                   className="form-check-label h5 col"
                   htmlFor="load-bank-support"
                 >
-                  Can model be calibrated with load bank?
+                  Can model be calibrated as load bank?
                 </label>
                 <Form.Control
                   className="form-check-input"
