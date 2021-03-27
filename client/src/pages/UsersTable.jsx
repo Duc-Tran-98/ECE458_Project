@@ -3,7 +3,8 @@ import { useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
 import CreateUser from './CreateUser';
-import ModalAlert from '../components/ModalAlert';
+import ModalAlert, { StateLessModal } from '../components/ModalAlert';
+import ViewUser from './ViewUser';
 // import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
@@ -12,7 +13,8 @@ export default function UsersTable() {
   let urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
-  // eslint-disable-next-line no-unused-vars
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [selectedUser, setSelectedUser] = React.useState('');
   const [update, setUpdate] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
@@ -128,14 +130,26 @@ export default function UsersTable() {
   );
   return (
     <>
+      <StateLessModal
+        width=""
+        title={`You are viewing user: ${selectedUser}`}
+        handleClose={() => {
+          setShowEdit(false);
+        }}
+        show={showEdit}
+      >
+        <ViewUser userName={selectedUser} onDelete={() => { setShowEdit(false); setSelectedUser(''); }} />
+      </StateLessModal>
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
-          const state = { previousUrl: window.location.href };
-          history.push(
-            `/viewUser/?userName=${e.row.userName}`,
-            state,
-          );
+          // const state = { previousUrl: window.location.href };
+          // history.push(
+          //   `/viewUser/?userName=${e.row.userName}`,
+          //   state,
+          // );
+          setSelectedUser(e.row.userName);
+          setShowEdit(true);
         }}
         shouldUpdate={update}
         headerElement={(

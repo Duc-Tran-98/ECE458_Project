@@ -166,6 +166,25 @@ export function ServerPaginationGrid({
   const [ordering, setOrdering] = React.useState(null);
   const history = useHistory();
 
+  const fetchMoreData = async (active) => {
+    setLoading(true);
+    const val = await rowCount();
+    const offset = (initPage - 1) * initLimit;
+    const newRows = await fetchData(initLimit, offset, ordering);
+    if (!active) {
+      return;
+    }
+    setTotal(val);
+    setRows(newRows);
+    if (window.location.href.includes('/viewInstruments')) {
+      setTimeout(() => { // lots of data/queries from this route, so
+        setLoading(false); // GUI needs more time to update
+      }, 10);
+    } else {
+      setLoading(false);
+    }
+  };
+
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
   };
@@ -201,28 +220,26 @@ export function ServerPaginationGrid({
     let active = true;
 
     (async () => {
-      setLoading(true);
-      const val = await rowCount();
-      const offset = (initPage - 1) * initLimit;
-      const newRows = await fetchData(initLimit, offset, ordering);
-      if (!active) {
-        return;
-      }
-      setTotal(val);
-      setRows(newRows);
-      if (window.location.href.includes('/viewInstruments')) {
-        setTimeout(() => { // lots of data/queries from this route, so
-          setLoading(false); // GUI needs more time to update
-        }, 10);
-      } else {
-        setLoading(false);
+      fetchMoreData(active);
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [initLimit, initPage, ordering, fetchData]);
+  React.useEffect(() => {
+    let active = true;
+
+    (async () => {
+      if (shouldUpdate) {
+        fetchMoreData(active);
       }
     })();
 
     return () => {
       active = false;
     };
-  }, [initLimit, initPage, ordering, fetchData, shouldUpdate]);
+  }, [shouldUpdate]);
 
   const [checked, setChecked] = useState('');
   const csvLink = useRef();
