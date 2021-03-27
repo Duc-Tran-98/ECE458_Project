@@ -343,6 +343,7 @@ export default function SearchBar({
           </div>
           {/* This is for matching the spacing of the above row */}
           <div className="m-2 w-25 my-auto pt-1" />
+          {/* TODO: Move search bar to the left */}
           <button className="btn my-auto mx-2 invisible" type="button">
             <SearchIcon />
           </button>

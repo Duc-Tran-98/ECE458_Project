@@ -270,9 +270,9 @@ function ListModels() {
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {(user.isAdmin || user.modelPermission) && (
+            {/* {(user.isAdmin || user.modelPermission) && (
               createBtn
-            )}
+            )} */}
             <SearchBar
               forModelSearch
               onSearch={onSearch}
@@ -308,6 +308,7 @@ function ListModels() {
         filterOptions={filterOptions}
         showToolBar
         showImport={user.isAdmin || user.modelPermission}
+        createBtn={createBtn}
       />
     </>
   );
