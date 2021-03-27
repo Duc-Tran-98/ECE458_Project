@@ -2,6 +2,7 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import UserContext from './UserContext';
 import ProfileIcon from './ProfileIcon';
 
@@ -19,26 +20,6 @@ function NavBar({
     <div className="row" style={{ zIndex: 1, width: '100%' }}>
       <div className="col-auto me-auto">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className="nav-item">
-            <NavLink className="nav-link h5" exact to="/">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="feather feather-home"
-              >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              Dashboard
-            </NavLink>
-          </li>
           <li className="nav-item dropdown">
             <a
               className="nav-link h5 dropdown-toggle"
@@ -184,6 +165,9 @@ function NavBar({
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
           <li className="nav-item">
             <ProfileIcon handleSignOut={handleSignOut} />
+          </li>
+          <li className="nav-item">
+            <HelpOutlineIcon />
           </li>
         </ul>
       </div>
