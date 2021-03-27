@@ -317,7 +317,7 @@ export default function DetailedInstrumentView() {
                 className="btn text-nowrap"
                 to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
               >
-                Certificate
+                View Certificate
               </Link>
             </MouseOverPopover>
           )}
@@ -419,7 +419,7 @@ export default function DetailedInstrumentView() {
           <div>
             <div className="bg-secondary text-light py-2">
               <div className="row px-3">
-                <div className="col-auto me-auto h5 my-auto">Calibration History:</div>
+                <div className="col-auto me-auto h3 my-auto">Calibration History:</div>
                 {formState.calibrationFrequency > 0 && (
                 <div className="col-auto mt-1">{genCalibButtons}</div>
                 )}

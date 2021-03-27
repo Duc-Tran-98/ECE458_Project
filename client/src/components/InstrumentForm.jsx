@@ -197,7 +197,6 @@ export default function InstrumentForm({
                 error={errors.assetTag}
               />
             </div>
-            <div className="col-auto me-auto mt-5">{viewOnly && deleteBtn}</div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
@@ -323,6 +322,9 @@ export default function InstrumentForm({
                             deleteBtn={deleteBtn}
                           />
                         </ModalAlert>
+                      </div>
+                      <div className="col ms-5">
+                        {deleteBtn}
                       </div>
                     </>
                   )}

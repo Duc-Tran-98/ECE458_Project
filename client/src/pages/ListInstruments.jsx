@@ -9,6 +9,7 @@ import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
 import ModalAlert from '../components/ModalAlert';
+// import TagsInput from '../components/TagsInput';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -108,8 +109,8 @@ export default function ListInstruments() {
     const daysLeft = genDaysLeft(date);
     if (daysLeft === 0) { return 'Calibration due today!'; }
     if (daysLeft === 1) { return 'Calibration due tomorrow!'; }
-    if (daysLeft < 0) { return `Calibration EXPIRED by ${daysLeft} days!`; }
-    return `Calibration due in ${daysLeft} days`;
+    if (daysLeft < 0) { return `Calibration EXPIRED ${daysLeft * -1} days ago!`; }
+    return `Calibration due in ${daysLeft} days.`;
   };
   const categoriesList = (categories) => {
     const catArr = [];
@@ -117,6 +118,7 @@ export default function ListInstruments() {
       catArr.push(element.name);
     });
     return catArr.join(', ');
+    // return (<TagsInput tags={catArr} dis />);
   };
   const headerClass = 'customMuiHeader';
   const cols = [
@@ -140,10 +142,10 @@ export default function ListInstruments() {
       headerName: 'Categories',
       description: 'Categories',
       headerClassName: headerClass,
-      width: 250,
+      width: 255,
       sortable: false,
       renderCell: (params) => (
-        <div className="overflow-auto">{categoriesList(params)}</div>
+        <p className="text-overflow my-auto" style={{ width: '255px', maxHeight: '52px', fontSize: '0.75em' }}>{categoriesList(params)}</p>
       ),
     },
     {

@@ -212,7 +212,7 @@ export default function DetailedModelView() {
           <div id="scrollableDiv">
             <InfinityScroll
               title="Instances:"
-              titleClassName="px-3 bg-secondary text-light"
+              titleClassName="px-3 bg-secondary text-light my-auto"
               query={gql`
                 query GetInstrumentFromModel(
                   $modelNumber: String!

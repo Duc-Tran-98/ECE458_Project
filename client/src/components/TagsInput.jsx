@@ -79,7 +79,7 @@ const TagsInput = (props) => {
 
   return (
     <div className="tags-input">
-      <ul id="tags">
+      <ul className="tags">
         {tags && tags.length > 0 ? (
           tags.map((tag, index) => (
             // eslint-disable-next-line react/no-array-index-key

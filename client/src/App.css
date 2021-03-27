@@ -142,7 +142,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
 
 }
 
-#tags {
+.tags {
   display: flex;
   flex-wrap: wrap;
   padding: 0;
@@ -161,7 +161,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
   list-style: none;
   border-radius: 6px;
   margin: 0 8px 8px 0;
-  background: #fca311;
+  background: #AEBFE5;
 }
 .tag-title {
   margin-top: 3px;
