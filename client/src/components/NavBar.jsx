@@ -20,14 +20,10 @@ function NavBar({
     <div className="row" style={{ zIndex: 1, width: '100%' }}>
       <div className="col-auto me-auto">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link h5 dropdown-toggle"
-              href="#"
-              id="navBarDropDown-models"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+          <li className="nav-item">
+            <NavLink
+              className="nav-link h5"
+              to="/viewModels?page=1&limit=25"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -46,44 +42,12 @@ function NavBar({
                 <polyline points="2 12 12 17 22 12" />
               </svg>
               Models
-            </a>
-            <ul
-              className="dropdown-menu"
-              aria-labelledby="navBarDropDown-models"
-            >
-              <li>
-                <NavLink
-                  className="dropdown-item"
-                  to="/viewModels?page=1&limit=25"
-                >
-                  Table
-                </NavLink>
-              </li>
-              {(user.isAdmin || user.modelPermission) && (
-                <>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink
-                      className="dropdown-item"
-                      to="/modelCategories?page=1&limit=25"
-                    >
-                      Categories
-                    </NavLink>
-                  </li>
-                </>
-              )}
-            </ul>
+            </NavLink>
           </li>
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link h5 dropdown-toggle"
-              href="#"
-              id="navBarDropDown-instruments"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+          <li className="nav-item">
+            <NavLink
+              className="nav-link h5"
+              to="/viewInstruments?page=1&limit=25"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -102,35 +66,7 @@ function NavBar({
                 <polyline points="2 12 12 17 22 12" />
               </svg>
               Instruments
-            </a>
-            <ul
-              className="dropdown-menu"
-              aria-labelledby="navBarDropDown-instruments"
-            >
-              <li>
-                <NavLink
-                  className="dropdown-item"
-                  to="/viewInstruments?page=1&limit=25"
-                >
-                  Table
-                </NavLink>
-              </li>
-              {(user.isAdmin || user.instrumentPermission) && (
-                <>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink
-                      className="dropdown-item"
-                      to="/instrumentCategories?page=1&limit=25"
-                    >
-                      Categories
-                    </NavLink>
-                  </li>
-                </>
-              )}
-            </ul>
+            </NavLink>
           </li>
           {user.isAdmin && (
             <li className="nav-item">
@@ -167,7 +103,30 @@ function NavBar({
             <ProfileIcon handleSignOut={handleSignOut} />
           </li>
           <li className="nav-item">
-            <HelpOutlineIcon />
+            <NavLink
+              className="nav-link h5"
+              to="/help"
+            >
+              {/* TODO: Update this to question mark */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-users"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              Help
+            </NavLink>
           </li>
         </ul>
       </div>

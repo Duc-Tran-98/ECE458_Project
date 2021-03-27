@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './App.css';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import {
+  Switch, Route, useHistory, Redirect,
+} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
+import Help from './pages/Help';
 import Certificate from './pages/Certificate';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
@@ -78,7 +81,10 @@ function App() {
               <ComponentTest />
             </Route>
             <Route exact path="/">
-              {loggedIn ? <ListModels /> : <Login handleLogin={handleLogin} />}
+              {loggedIn ? <Redirect to="/viewModels?page=1&limit=25" /> : <Login handleLogin={handleLogin} />}
+            </Route>
+            <Route path="/help">
+              {loggedIn ? <Help /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewUsers">
               {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
