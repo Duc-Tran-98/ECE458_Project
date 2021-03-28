@@ -3,6 +3,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import $ from 'jquery';
 import { QueryAndThen } from './UseQuery';
 
 export default function InfinityScroll({
@@ -41,6 +42,9 @@ export default function InfinityScroll({
           if (data.total < 10) {
             setHasMore(false);
           }
+          if (data.total === 0) {
+            $('#remove-if-empty').first().remove();
+          }
           setItems(newItems);
           setTotal(data.total);
         },
@@ -61,7 +65,7 @@ export default function InfinityScroll({
   }, [items, variables]);
   return (
     <>
-      <h3 className={titleClassName}>{title}</h3>
+      <h3 className={titleClassName} style={{ zIndex: '10' }}>{title}</h3>
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={items.length}
@@ -71,7 +75,7 @@ export default function InfinityScroll({
         endMessage={<div className="my-4" />}
       >
         {items.length === 0 && (
-          <div className="py-3 bg-light text-center h5">No Instances</div>
+          <div className="py-3 bg-light text-center">No Instances</div>
         )}
         {renderItems === null ? (
           items.map((entry) => (

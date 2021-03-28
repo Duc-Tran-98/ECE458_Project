@@ -391,37 +391,55 @@ export default function DetailedInstrumentView() {
       </MouseOverPopover>
     </>
   );
-
+  const ref = React.useRef(null);
   return (
     <>
-      <div className="col">
-        <div className="row">
+      <div className="row">
+        <div className="col p-3 border border-right border-dark">
           {fetched && (
-            <InstrumentForm
-              modelNumber={formState.modelNumber}
-              vendor={formState.vendor}
-              comment={formState.comment}
-              serialNumber={formState.serialNumber}
-              categories={formState.categories}
-              viewOnly
-              description={formState.description}
-              calibrationFrequency={formState.calibrationFrequency}
-              assetTag={formState.assetTag}
-              id={formState.id}
-              type="edit"
-              deleteBtn={deleteBtn}
-              handleFormSubmit={handleSubmit}
-              footer={footer}
-            />
+            <>
+              <h3 className="px-3 bg-secondary text-light my-auto">
+                Instrument Information
+              </h3>
+              <InstrumentForm
+                editBtnRef={ref}
+                modelNumber={formState.modelNumber}
+                vendor={formState.vendor}
+                comment={formState.comment}
+                serialNumber={formState.serialNumber}
+                categories={formState.categories}
+                viewOnly
+                description={formState.description}
+                calibrationFrequency={formState.calibrationFrequency}
+                assetTag={formState.assetTag}
+                id={formState.id}
+                type="edit"
+                deleteBtn={deleteBtn}
+                handleFormSubmit={handleSubmit}
+                footer={footer}
+              />
+            </>
           )}
         </div>
-        <div className="row px-3 mt-3">
-          <div>
-            <div className="bg-secondary text-light py-2">
+        <div
+          className="col p-3 border border-left border-dark"
+          id="remove-if-empty"
+          style={{ maxHeight: '72vh' }}
+        >
+          <div
+            className="h-100 d-inline-block"
+            style={{ overflowY: 'auto', overflowX: 'hidden' }}
+          >
+            <div
+              className="bg-secondary text-light py-2 sticky-top"
+              style={{ zIndex: '1' }}
+            >
               <div className="row px-3">
-                <div className="col-auto me-auto h3 my-auto">Calibration History:</div>
+                <div className="col-auto me-auto h3 my-auto">
+                  Calibration History:
+                </div>
                 {formState.calibrationFrequency > 0 && (
-                <div className="col-auto mt-1">{genCalibButtons}</div>
+                  <div className="col-auto mt-1">{genCalibButtons}</div>
                 )}
               </div>
             </div>
@@ -441,6 +459,7 @@ export default function DetailedInstrumentView() {
           </div>
         </div>
       </div>
+      <div className="d-flex justify-content-center py-3" ref={ref} />
     </>
   );
 }

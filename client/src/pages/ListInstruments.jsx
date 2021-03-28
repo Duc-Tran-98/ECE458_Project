@@ -212,13 +212,13 @@ export default function ListInstruments() {
           <div className="col mt-3">
             {params.value === 'Out of Calibration' && (
               <MouseOverPopover
-                className="mb-3"
+                className="mb-3 ps-2"
                 message="Instrument not calibrated!"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="22"
+                  height="22"
                   fill="currentColor"
                   className="bi bi-exclamation-diamond-fill"
                   viewBox="0 0 16 16"
