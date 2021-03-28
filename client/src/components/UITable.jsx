@@ -390,7 +390,7 @@ export function ServerPaginationGrid({
                 )}
               </>
               )}
-              <CategoriesButton type="models" />
+              <CategoriesButton type={filename} />
             </div>
             <div className="col-auto">
               <GridDensitySelector />
