@@ -190,7 +190,7 @@ export default function CalibrationRow({
               </div>
             )}
             {viewOnly && loadBankData && !fileName && (
-              <div> CALIBRATED BY HPT LOAD BANK </div>
+              <div> CALIBRATED BY HPT LOAD BANK WIZARD </div>
             )}
             {viewOnly && klufeData && !fileName && (
               <div> CALIBRATED BY KLUFE K5700 </div>
