@@ -17,23 +17,22 @@ import EditModelCategory from '../queries/EditModelCategory';
 import UserContext from './UserContext';
 
 function ModelCategories() {
-  const [shouldUpdate, setShouldUpdate] = React.useState(false);
+  const [updateCount, setUpdateCount] = React.useState(0);
   const [category, setCategory] = React.useState('');
   const [num, setNum] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [showDelete, setShowDelete] = React.useState(false);
+  const [showTable, setShowTable] = React.useState(false);
+  const [showCreate, setShowCreate] = React.useState(true);
   const [newCategory, setNewCategory] = React.useState('');
   const user = React.useContext(UserContext);
   const [categories, setCategories] = React.useState(null);
-  const [content, setContent] = React.useState(null);
-  // TODO: Add set title option
 
-  // const handleGetCategories = (response) => {
-
-  // };
   React.useEffect(async () => {
     const response = await GetModelCategories({ limit: 10, offset: 0 });
     setCategories(response);
-  }, [shouldUpdate]);
+  }, [updateCount]);
 
   const getNumAttached = async () => {
     const count = await CountModelsAttached({ name: category });
@@ -41,11 +40,10 @@ function ModelCategories() {
   };
 
   const handleResponse = (response) => {
-    setShouldUpdate(true);
+    setUpdateCount(updateCount + 1);
     if (response.success) {
-      setContent();
-      // setShowEdit(false);
-      // setShowDelete(false);
+      setShowEdit(false);
+      setShowDelete(false);
       toast.success(response.message, {
         toastId: Math.random(),
       });
@@ -58,10 +56,14 @@ function ModelCategories() {
     setLoading(false);
   };
   const handleDelete = () => {
+    setShowDelete(false);
+    setUpdateCount(updateCount + 1);
     setLoading(true);
     DeleteModelCategory({ name: category, handleResponse });
   };
   const handleEdit = (catName) => {
+    setShowEdit(false);
+    setUpdateCount(updateCount + 1);
     setLoading(true);
     EditModelCategory({
       currentName: category,
@@ -96,7 +98,7 @@ function ModelCategories() {
             <button
               className="btn mt-2"
               type="button"
-              onClick={() => setShouldUpdate(true)}
+              onClick={() => setUpdateCount(updateCount + 1)}
             >
               No
             </button>
@@ -106,18 +108,8 @@ function ModelCategories() {
     </>
   );
 
-  // const deleteModal = (
-  //   <StateLessCloseModal
-  //     title="Delete Category"
-  //     show={showDelete}
-  //     handleClose={() => setShowDelete(false)}
-  //   >
-  //     {deleteContent}
-  //   </StateLessCloseModal>
-  // );
-
   const deleteBtn = (
-    <IconButton onClick={() => setContent(deleteContent)}>
+    <IconButton onClick={() => setShowDelete(true)}>
       <DeleteIcon />
     </IconButton>
   );
@@ -139,8 +131,8 @@ function ModelCategories() {
     },
     {
       field: 'delete',
-      headerName: '',
-      width: 120,
+      headerName: ' ',
+      width: 80,
       sortable: false,
       disableColumnMenu: true,
       renderCell: () => (
@@ -151,7 +143,7 @@ function ModelCategories() {
 
   const createCategory = (
     <>
-      <div className="row m4">
+      <div className="row m4 text-center">
         <input
           className="m-2 col-auto my-auto"
           id="cat"
@@ -181,8 +173,6 @@ function ModelCategories() {
       </div>
     </>
   );
-
-  setContent(createCategory);
 
   const editContent = (
     <>
@@ -242,27 +232,36 @@ function ModelCategories() {
     <SimpleGrid
       rows={categories}
       cellHandler={(e) => {
+        console.log(e);
         setCategory(e.row.name);
         getNumAttached();
-        setContent(editContent);
+        if (e.field === 'delete') {
+          setShowDelete(true);
+        } else {
+          setShowEdit(true);
+        }
       }}
       cols={cols}
     />
   );
-  setContent(categoryTable);
 
   React.useEffect(() => {
-    setContent(categoryTable);
-  }, [shouldUpdate]);
+    const show = categories !== null && !showEdit && !showDelete;
+    setShowTable(show);
+  }, [categories, showEdit, showDelete]);
+
+  React.useEffect(() => {
+    const show = (user.isAdmin || user.modelPermission) && !showEdit && !showDelete;
+    setShowCreate(show);
+  }, [categories, showEdit, showDelete]);
 
   // TODO: Add permissions conditional rendering here
   return (
     <>
-      {content}
-      {/* {editModal}
-      {deleteModal} */}
-      {(user.isAdmin || user.modelPermission) && createCategory}
-      {categories !== null && content}
+      {showCreate && createCategory}
+      {showEdit && editContent}
+      {showDelete && deleteContent}
+      {showTable && categoryTable}
     </>
   );
 }
