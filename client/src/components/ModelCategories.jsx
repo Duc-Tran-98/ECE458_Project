@@ -30,7 +30,7 @@ function ModelCategories() {
   const [categories, setCategories] = React.useState(null);
 
   React.useEffect(async () => {
-    const response = await GetModelCategories({ limit: 10, offset: 0 });
+    const response = await GetModelCategories({ limit: 1000, offset: 0 });
     setCategories(response);
   }, [updateCount]);
 
@@ -80,7 +80,7 @@ function ModelCategories() {
     <>
       <div>
         <div className="h5 text-center my-3">
-          {`You are about to delete category ${category}. This category is attached to ${num} model${
+          {`You are about to delete category "${category}" which is attached to ${num} model${
             num === 1 ? '' : 's'
           }. Are you sure?`}
         </div>
@@ -217,16 +217,6 @@ function ModelCategories() {
       </div>
     </>
   );
-
-  // const editModal = (
-  //   <StateLessCloseModal
-  //     title="Edit Category"
-  //     handleClose={() => setShowEdit(false)}
-  //     show={showEdit}
-  //   >
-  //     {editContent}
-  //   </StateLessCloseModal>
-  // );
 
   const categoryTable = (
     <SimpleGrid

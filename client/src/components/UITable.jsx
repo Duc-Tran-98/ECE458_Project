@@ -23,12 +23,13 @@ import Pagination from '@material-ui/lab/Pagination';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Portal from '@material-ui/core/Portal';
 import {
-  ImportButton, CreateButton,
+  ImportButton,
 } from './CustomMuiIcons';
 import ExportModelsIcon from './ExportModelsIcon';
 import ExportInstruments, { ExportInstrumentsIcon } from './ExportInstruments';
 import ExportModels from './ExportModels';
 import CategoriesButton from './CategoriesButton';
+import CreateButton from './CreateButton';
 
 // import UserContext from './UserContext';
 import { GenerateBarcodesIcon } from './GenerateBarcodes';
