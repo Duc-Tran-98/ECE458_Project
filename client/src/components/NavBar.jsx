@@ -22,7 +22,7 @@ function NavBar({
           <li className="nav-item">
             <NavLink
               className="nav-link h5"
-              to="/viewModels?page=1&limit=25&orderBy=id&sortBy=ASC"
+              to="/viewModels?page=1&limit=25&orderBy=vendor&sortBy=ASC"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,7 @@ function NavBar({
           <li className="nav-item">
             <NavLink
               className="nav-link h5"
-              to="/viewInstruments?page=1&limit=25&orderBy=id&sortBy=ASC"
+              to="/viewInstruments?page=1&limit=25&orderBy=assetTag&sortBy=ASC"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
