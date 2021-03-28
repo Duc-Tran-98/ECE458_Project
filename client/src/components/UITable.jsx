@@ -122,8 +122,7 @@ export function ServerPaginationGrid({
   showToolBar,
   showImport,
   shouldUpdate = false,
-  // eslint-disable-next-line no-unused-vars
-  createBtn,
+  onCreate,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -146,7 +145,7 @@ export function ServerPaginationGrid({
     showToolBar: PropTypes.bool.isRequired,
     showImport: PropTypes.bool.isRequired,
     shouldUpdate: PropTypes.bool, // if you want to force update table
-    createBtn: PropTypes.node, // optional create button
+    onCreate: PropTypes.func, // optional create button
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -154,7 +153,7 @@ export function ServerPaginationGrid({
     filename: null,
     filterRowForCSV: null,
     filterOptions: null,
-    createBtn: null,
+    onCreate: null,
   };
   paginationContainer = React.useRef(null);
   const instrumentTable = filename && filename.includes('instrument');
@@ -360,7 +359,7 @@ export function ServerPaginationGrid({
             <div className="col-auto me-auto">
               {showImport && (
               <>
-                <CreateButton type={filename} />
+                <CreateButton type={filename} onCreate={onCreate} />
                 <ImportButton onClick={handleImport} />
               </>
               )}
@@ -391,7 +390,7 @@ export function ServerPaginationGrid({
                 )}
               </>
               )}
-              <CategoriesButton type="models" />
+              <CategoriesButton type={filename} />
             </div>
             <div className="col-auto">
               <GridDensitySelector />

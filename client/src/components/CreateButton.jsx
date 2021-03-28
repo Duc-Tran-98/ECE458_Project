@@ -6,10 +6,10 @@ import { StateLessCloseModal } from './ModalAlert';
 import CreateModel from '../pages/CreateModel';
 import CreateInstrument from '../pages/CreateInstrument';
 
-export default function CreateButton({ type, setUpdate }) {
+export default function CreateButton({ type, onCreate }) {
   CreateButton.propTypes = {
     type: PropTypes.string.isRequired,
-    setUpdate: PropTypes.func.isRequired,
+    onCreate: PropTypes.func.isRequired,
   };
   const [show, setShow] = React.useState(false);
   let title = 'Create ';
@@ -30,16 +30,14 @@ export default function CreateButton({ type, setUpdate }) {
         {type.includes('model')
         && (
         <CreateModel onCreation={() => {
-          setUpdate(true);
-          setUpdate(false);
+          onCreate();
         }}
         />
         )}
         {type.includes('instrument')
         && (
         <CreateInstrument onCreation={() => {
-          setUpdate(true);
-          setUpdate(false);
+          onCreate();
         }}
         />
         )}

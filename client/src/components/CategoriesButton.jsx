@@ -3,7 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { PopOverFragment } from './PopOver';
 import { StateLessCloseModal } from './ModalAlert';
-import ModelCategories from './ModelCategories';
+// import ModelCategories from './ModelCategories';
+import CategoryManager from './CategoryManager';
 
 export default function CategoriesButton({ type }) {
   CategoriesButton.propTypes = {
@@ -27,7 +28,8 @@ export default function CategoriesButton({ type }) {
   return (
     <>
       <StateLessCloseModal handleClose={() => setShow(false)} show={show} title={title}>
-        <ModelCategories />
+        {/* <ModelCategories /> */}
+        <CategoryManager type={type} />
       </StateLessCloseModal>
       <button onClick={handleClick} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall" tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
         <PopOverFragment message="View categories">
