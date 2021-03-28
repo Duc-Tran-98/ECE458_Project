@@ -6,7 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
-import { Button } from '@material-ui/core';
+import Button from 'react-bootstrap/Button';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
