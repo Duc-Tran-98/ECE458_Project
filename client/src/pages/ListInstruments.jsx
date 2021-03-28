@@ -2,14 +2,11 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import CreateInstrument from './CreateInstrument';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
-import ModalAlert from '../components/ModalAlert';
-// import TagsInput from '../components/TagsInput';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -34,10 +31,6 @@ export default function ListInstruments() {
       Buffer.from(urlFilter, 'base64').toString('ascii'),
     );
   }
-  const [showImport, setShowImport] = React.useState(false);
-  React.useEffect(() => {
-    setShowImport(user.isAdmin || user.instrumentPermission);
-  }, user);
   const [update, setUpdate] = React.useState(false);
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
@@ -466,7 +459,7 @@ export default function ListInstruments() {
         filterOptions={filterOptions}
         filename="instruments.csv"
         showToolBar
-        showImport={showImport}
+        showImport={(user.isAdmin || user.instrumentPermission)}
         onCreate={() => {
           setUpdate(true);
           setUpdate(false);
