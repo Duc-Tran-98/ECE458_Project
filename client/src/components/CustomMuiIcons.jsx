@@ -2,21 +2,25 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable import/prefer-default-export */
 import React from 'react';
+import SvgIcon from '@material-ui/core/SvgIcon';
 import { PopOverFragment } from './PopOver';
 
 const showText = false;
+const buttonClass = 'MuiButtonBase-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall';
+const spanClass = 'MuiButton-startIcon MuiButton-iconSizeXLarge';
+const viewBox = '0 0 16 16';
 
 export const ExportButton = ({
   onClick,
 }) => (
-  <button onClick={onClick} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall" tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
+  <button onClick={onClick} className={buttonClass} tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
     <PopOverFragment message="Export all with current filters">
       <span className="MuiButton-label">
-        <span className="MuiButton-startIcon MuiButton-iconSizeSmall">
-          <svg className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true" width="24" height="24">
+        <span className={spanClass}>
+          <SvgIcon className="MuiSvgIcon-root" focusable="false" viewBox={viewBox} aria-hidden="true">
             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
             <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
-          </svg>
+          </SvgIcon>
         </span>
         {showText && 'Export'}
       </span>
@@ -42,18 +46,17 @@ export const ImportButton = ({
     <span className="MuiTouchRipple-root" />
   </button>
 );
-export const CreateButton = ({
-  onClick,
+export const MuiCreateButton = ({
+  handleClick, title,
 }) => (
-  <button onClick={onClick} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall" tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
-    <PopOverFragment message="Create">
+  <button onClick={handleClick} className="MuiButtonBase-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall" tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
+    <PopOverFragment message={title}>
       <span className="MuiButton-label">
-        <span className="MuiButton-startIcon MuiButton-iconSizeSmall">
-          <svg className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+        <span className="MuiButton-startIcon MuiButton-iconSizeXLarge">
+          <SvgIcon className="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-          </svg>
+          </SvgIcon>
         </span>
-        {showText && 'Create'}
       </span>
     </PopOverFragment>
     <span className="MuiTouchRipple-root" />
