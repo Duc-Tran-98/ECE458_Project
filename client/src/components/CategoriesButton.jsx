@@ -11,6 +11,13 @@ export default function CategoriesButton({ type }) {
 
   };
   const [show, setShow] = React.useState(false);
+  let title = '';
+  if (type.includes('model')) {
+    title += 'Model ';
+  } else if (type.includes('instrument')) {
+    title += 'Instrument ';
+  }
+  title += 'Categories';
 
   const handleClick = () => {
     console.log(`clicked button of type: ${type}`);
@@ -19,7 +26,7 @@ export default function CategoriesButton({ type }) {
 
   return (
     <>
-      <StateLessCloseModal handleClose={() => setShow(false)} show={show} title="Model Categories">
+      <StateLessCloseModal handleClose={() => setShow(false)} show={show} title={title}>
         <ModelCategories />
       </StateLessCloseModal>
       <button onClick={handleClick} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall" tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
