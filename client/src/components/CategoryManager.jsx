@@ -124,7 +124,7 @@ export default function CategoryManager({ type }) {
           <CircularProgress />
         ) : (
           <>
-            <button className="btn mt-2" type="button" onClick={handleDelete}>
+            <button className="btn btn-delete mt-2" type="button" onClick={handleDelete}>
               Yes
             </button>
             <span className="mx-3" />
