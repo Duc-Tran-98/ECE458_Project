@@ -371,18 +371,6 @@ export default function ListInstruments() {
     }
   };
 
-  const createBtn = (
-    <ModalAlert
-      title="Create Instrument"
-    >
-      <CreateInstrument onCreation={() => {
-        setUpdate(true);
-        setUpdate(false);
-      }}
-      />
-    </ModalAlert>
-  );
-
   return (
     <>
       <ServerPaginationGrid
@@ -475,7 +463,10 @@ export default function ListInstruments() {
         filename="instruments.csv"
         showToolBar
         showImport={user.isAdmin || user.instrumentPermission}
-        createBtn={createBtn}
+        onCreate={() => {
+          setUpdate(true);
+          setUpdate(false);
+        }}
       />
     </>
   );

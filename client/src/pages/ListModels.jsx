@@ -241,20 +241,6 @@ function ListModels() {
     }
   };
 
-  const createBtn = (
-    <ModalAlert
-      title="Create Model"
-      btnText="Create Model"
-      btnClass="btn m-2 my-auto text-nowrap"
-    >
-      <CreateModel onCreation={() => {
-        setUpdate(true);
-        setUpdate(false);
-      }}
-      />
-    </ModalAlert>
-  );
-
   return (
     <>
       <ServerPaginationGrid
@@ -308,7 +294,11 @@ function ListModels() {
         filterOptions={filterOptions}
         showToolBar
         showImport={user.isAdmin || user.modelPermission}
-        createBtn={createBtn}
+        onCreate={() => {
+          setUpdate(true);
+          setUpdate(false);
+        }}
+
       />
     </>
   );
