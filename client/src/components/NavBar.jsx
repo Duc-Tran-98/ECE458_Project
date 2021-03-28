@@ -73,7 +73,7 @@ function NavBar({
               <li>
                 <NavLink
                   className="dropdown-item"
-                  to="/viewModels?page=1&limit=25"
+                  to="/viewModels?page=1&limit=25&orderBy=id&sortBy=ASC"
                 >
                   Table
                 </NavLink>
@@ -86,7 +86,7 @@ function NavBar({
                   <li>
                     <NavLink
                       className="dropdown-item"
-                      to="/modelCategories?page=1&limit=25"
+                      to="/modelCategories?page=1&limit=25&orderBy=name&sortBy=ASC"
                     >
                       Categories
                     </NavLink>
@@ -129,7 +129,7 @@ function NavBar({
               <li>
                 <NavLink
                   className="dropdown-item"
-                  to="/viewInstruments?page=1&limit=25"
+                  to="/viewInstruments?page=1&limit=25&orderBy=assetTag&sortBy=ASC"
                 >
                   Table
                 </NavLink>
@@ -142,7 +142,7 @@ function NavBar({
                   <li>
                     <NavLink
                       className="dropdown-item"
-                      to="/instrumentCategories?page=1&limit=25"
+                      to="/instrumentCategories?page=1&limit=25&orderBy=name&sortBy=ASC"
                     >
                       Categories
                     </NavLink>
@@ -155,7 +155,7 @@ function NavBar({
             <li className="nav-item">
               <NavLink
                 className="nav-link h5"
-                to="/viewUsers?page=1&limit=25"
+                to="/viewUsers?page=1&limit=25&orderBy=id&sortBy=ASC"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

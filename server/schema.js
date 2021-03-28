@@ -79,8 +79,16 @@ const typeDefs = gql`
     ): [CalibrationEvent]
 
     # category related queries
-    getAllModelCategories(limit: Int, offset: Int): [Category]
-    getAllInstrumentCategories(limit: Int, offset: Int): [Category]
+    getAllModelCategories(
+      limit: Int
+      offset: Int
+      orderBy: [[String]]
+    ): [Category]
+    getAllInstrumentCategories(
+      limit: Int
+      offset: Int
+      orderBy: [[String]]
+    ): [Category]
     countModelCategories: Int!
     countInstrumentCategories: Int!
     countModelsAttachedToCategory(name: String!): Int!
