@@ -8,8 +8,6 @@ import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
-import CreateModel from './CreateModel';
-import ModalAlert from '../components/ModalAlert';
 
 function ListModels() {
   const history = useHistory();
@@ -293,7 +291,7 @@ function ListModels() {
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
-        showImport={user.isAdmin || user.modelPermission}
+        showImport={(user.isAdmin || user.modelPermission)}
         onCreate={() => {
           setUpdate(true);
           setUpdate(false);
