@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/no-autofocus */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
@@ -7,6 +9,7 @@ import { print } from 'graphql';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
+import $ from 'jquery';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
 import { stepInfo } from '../utils/Klufe';
@@ -191,6 +194,17 @@ export default function KlufeWiz({
         return true;
     }
   };
+  React.useEffect(() => {
+    $(document).on('keypress', (e) => {
+      // use e.which instead of e.code
+      if (e.which === 13 && canAdvance) {
+        const nextBtn = document.querySelector('button[class="MuiButtonBase-root MuiButton-root MuiButton-contained btn MuiButton-containedPrimary"]');
+        if (nextBtn) {
+          nextBtn.click();
+        }
+      }
+    });
+  }, []);
   const handleKeyPress = ({ e, canAdvanceStep = false }) => {
     if (e.code === 'Enter' && canAdvanceStep) {
       const nextBtn = document.querySelector('button[class="MuiButtonBase-root MuiButton-root MuiButton-contained btn MuiButton-containedPrimary"]');
@@ -268,7 +282,7 @@ export default function KlufeWiz({
     switch (step) {
       case 0:
         return (
-          <>
+          <div>
             <div className="row my-1">
               <Form.Group className="col">
                 <Form.Label className="h6 my-auto">Model:</Form.Label>
@@ -337,7 +351,7 @@ export default function KlufeWiz({
                 />
               </Form.Group>
             </div>
-          </>
+          </div>
         );
       case 1:
         return (
