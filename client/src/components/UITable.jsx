@@ -365,7 +365,7 @@ export function ServerPaginationGrid({
 
               {handleExport && (
               <>
-                {loadingExport && <CircularProgress />}
+                {/* {loadingExport && <CircularProgress />}
                 {modelTable && (
                 <ExportModelsIcon
                   setLoading={setLoadingExport}
@@ -377,7 +377,7 @@ export function ServerPaginationGrid({
                   setLoading={setLoadingExport}
                   filterOptions={filterOptions}
                 />
-                )}
+                )} */}
                 {instrumentTable && (
                 <GenerateBarcodesIcon
                   filterOptions={filterOptions}

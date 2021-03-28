@@ -6,6 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
+import { Button } from '@material-ui/core';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
@@ -18,7 +19,6 @@ import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
 import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
-import { DeletePopOver } from '../components/CustomMuiIcons';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
@@ -378,7 +378,8 @@ export default function DetailedInstrumentView() {
   );
 
   const deleteBtn = (
-    <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
+    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">Delete</Button>
+    // <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
   );
   const deleteModal = (
     <StateLessCloseModal

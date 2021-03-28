@@ -24,6 +24,11 @@ html body {
   color: white;
 }
 
+.modal .btn.btn-delete{
+  background: #fc2311;
+  color: white;
+}
+
 .start-98 {
     left:98%!important;
 }
