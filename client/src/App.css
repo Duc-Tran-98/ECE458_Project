@@ -24,6 +24,11 @@ html body {
   color: white;
 }
 
+.btn-delete{
+  background: #fc2311!important;
+  color: white!important;
+}
+
 .start-98 {
     left:98%!important;
 }

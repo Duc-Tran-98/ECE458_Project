@@ -6,13 +6,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
+import Button from 'react-bootstrap/Button';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
-import ModalAlert, { StateLessModal } from '../components/ModalAlert';
+import ModalAlert, { StateLessModal, StateLessCloseModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
@@ -26,13 +27,14 @@ const route = process.env.NODE_ENV.includes('dev')
 export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
   const history = useHistory();
+  const [showDelete, setShowDelete] = React.useState(false);
+
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const [loading, setLoading] = React.useState(false); // loading status of delete query
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
   const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
-  const [responseMsg, setResponseMsg] = React.useState(''); // msg from delete query
   const [show, setShow] = React.useState(false); // show add calib event modal or not
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
   const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
@@ -49,10 +51,12 @@ export default function DetailedInstrumentView() {
   });
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
-    setResponseMsg(response.message);
+    setShowDelete(false);
     if (response.success) {
+      toast.success(response.message, {
+        toastId: -1,
+      });
       setTimeout(() => {
-        setResponseMsg('');
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
           history.replace( // This code updates the url to have the correct count
@@ -63,6 +67,10 @@ export default function DetailedInstrumentView() {
           history.replace('/', null);
         }
       }, 1000);
+    } else {
+      toast.error(response.message, {
+        toastId: -8,
+      });
     }
   };
   const handleDelete = () => {
@@ -344,57 +352,43 @@ export default function DetailedInstrumentView() {
     </div>
   );
 
+  const deleteConfirm = (
+    <>
+      <div className="h5 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
+      <div className="d-flex justify-content-center">
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <div className="mt-3">
+              <button className="btn btn-delete" type="button" onClick={handleDelete}>
+                Yes
+              </button>
+            </div>
+            <span className="mx-3" />
+            <div className="mt-3">
+              <button className="btn " type="button" onClick={() => setShowDelete(false)}>
+                No
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+
   const deleteBtn = (
-    <ModalAlert
-      btnText=""
-      altBtnId="delete-intrsument-btn"
-      popOverText="Delete this instrument"
-      altBtn={(
-        <svg
-          id="delete-intrsument-btn"
-          style={{ cursor: 'pointer' }}
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          fill="currentColor"
-          className="bi bi-trash-fill mt-2"
-          viewBox="0 0 16 16"
-        >
-          {/* eslint-disable-next-line max-len */}
-          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
-        </svg>
-        )}
+    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">Delete</Button>
+    // <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
+  );
+  const deleteModal = (
+    <StateLessCloseModal
+      show={showDelete}
+      handleClose={() => setShowDelete(false)}
       title="Delete Instrument"
-      altCloseBtnId="close-del-inst"
-      width=""
     >
-      <>
-        {responseMsg.length === 0 && (
-          <div className="h5 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
-        )}
-        <div className="d-flex justify-content-center">
-          {loading ? (
-            <CircularProgress />
-          ) : responseMsg.length > 0 ? (
-            <div className="mx-5 mt-3 h5">{responseMsg}</div>
-          ) : (
-            <>
-              <div className="mt-3">
-                <button className="btn" type="button" onClick={handleDelete}>
-                  Yes
-                </button>
-              </div>
-              <span className="mx-3" />
-              <div className="mt-3">
-                <button className="btn " type="button" id="close-del-inst">
-                  No
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </>
-    </ModalAlert>
+      {deleteConfirm}
+    </StateLessCloseModal>
   );
 
   const footer = (
@@ -436,6 +430,7 @@ export default function DetailedInstrumentView() {
                 handleFormSubmit={handleSubmit}
                 footer={footer}
               />
+              {deleteModal}
             </>
           )}
         </div>
