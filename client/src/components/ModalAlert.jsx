@@ -10,6 +10,7 @@ import ModalHeader from 'react-bootstrap/ModalHeader';
 // import Portal from '@material-ui/core/Portal';
 import PropTypes from 'prop-types';
 import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import MouseOverPopover from './PopOver';
 
 export function StateLessModal({
@@ -70,6 +71,9 @@ export function StateLessCloseModal({
     <Modal show={show} size={size} centered contentClassName="bg-theme rounded">
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
+        <IconButton onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
         <button type="button" className="close" onClick={handleClose}>
           <CloseIcon />
         </button>

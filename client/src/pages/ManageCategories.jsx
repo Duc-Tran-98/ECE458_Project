@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /*
  This class is for the category table pages
+ THIS FILE IS DEPRECATED AS OF 3/27 DO NOT USE
 */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
