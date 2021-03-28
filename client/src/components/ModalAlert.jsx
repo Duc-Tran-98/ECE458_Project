@@ -67,22 +67,14 @@ export function StateLessCloseModal({
     size: PropTypes.string,
   };
   return (
-    <Modal
-      show={show}
-      size={size}
-      centered
-    >
+    <Modal show={show} size={size} centered contentClassName="bg-theme rounded">
       <Modal.Header>
-        <Modal.Title id="contained-modal-title-vcenter">
-          {title}
-        </Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
         <button type="button" className="close" onClick={handleClose}>
           <CloseIcon />
         </button>
       </Modal.Header>
-      <Modal.Body>
-        {children}
-      </Modal.Body>
+      <Modal.Body>{children}</Modal.Body>
     </Modal>
   );
 }
