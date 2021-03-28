@@ -41,13 +41,16 @@ export function StateLessModal({
     >
       <ModalHeader>
         <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
+        <IconButton onClick={handleClose} className="close">
+          <CloseIcon />
+        </IconButton>
       </ModalHeader>
       <Modal.Body className="border-top border-dark">{children}</Modal.Body>
-      <ModalFooter className="my-3">
+      {/* <ModalFooter className="my-3">
         <Button className="btn  mx-3" onClick={handleClose}>
           Close
         </Button>
-      </ModalFooter>
+      </ModalFooter> */}
     </Modal>
   );
 }
@@ -71,12 +74,12 @@ export function StateLessCloseModal({
     <Modal show={show} size={size} centered contentClassName="bg-theme rounded">
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
-        <IconButton onClick={handleClose}>
+        <IconButton onClick={handleClose} className="close">
           <CloseIcon />
         </IconButton>
-        <button type="button" className="close" onClick={handleClose}>
+        {/* <button type="button" className="close" onClick={handleClose}>
           <CloseIcon />
-        </button>
+        </button> */}
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
     </Modal>
@@ -183,13 +186,16 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       >
         <ModalHeader>
           <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
+          <IconButton onClick={handleClose} className="close">
+            <CloseIcon />
+          </IconButton>
         </ModalHeader>
         <Modal.Body className="border-top border-dark">{children}</Modal.Body>
         <ModalFooter className="my-3">
           {footer}
-          <Button className="btn  mx-3" onClick={handleClose}>
+          {/* <Button className="btn  mx-3" onClick={handleClose}>
             Close
-          </Button>
+          </Button> */}
         </ModalFooter>
       </Modal>
     </>
