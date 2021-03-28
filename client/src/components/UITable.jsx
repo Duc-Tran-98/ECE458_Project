@@ -370,14 +370,12 @@ export function ServerPaginationGrid({
                 <ExportModelsIcon
                   setLoading={setLoadingExport}
                   filterOptions={filterOptions}
-                  showText={false}
                 />
                 )}
                 {instrumentTable && (
                 <ExportInstrumentsIcon
                   setLoading={setLoadingExport}
                   filterOptions={filterOptions}
-                  showText={false}
                 />
                 )}
                 {instrumentTable && (
