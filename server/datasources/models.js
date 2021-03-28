@@ -631,10 +631,14 @@ class ModelAPI extends DataSource {
     return null;
   }
 
-  async getAllModelCategories({ limit = null, offset = null }) {
+  async getAllModelCategories({ limit = null, offset = null, orderBy = [['name', 'ASC']] }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    return await this.store.modelCategories.findAll({ limit, offset });
+    return await this.store.modelCategories.findAll({
+      limit,
+      offset,
+      order: orderBy,
+    });
   }
 
   async countModelCategories() {

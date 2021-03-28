@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/require-default-props */
 import * as React from 'react';
 import {
@@ -38,9 +39,7 @@ export default function DisplayGrid({
   rows, cols, cellHandler,
 }) {
   DisplayGrid.propTypes = {
-    // eslint-disable-next-line react/forbid-prop-types
     rows: PropTypes.array.isRequired,
-    // eslint-disable-next-line react/forbid-prop-types
     cols: PropTypes.array.isRequired,
     cellHandler: PropTypes.func,
   };
@@ -95,13 +94,11 @@ CustomPagination.propTypes = {
    * ApiRef that let you manipulate the grid.
    */
   api: PropTypes.shape({
-    // eslint-disable-next-line react/forbid-prop-types
     current: PropTypes.object.isRequired,
   }).isRequired,
   /**
    * The GridState object containing the current grid state.
    */
-  // eslint-disable-next-line react/forbid-prop-types
   state: PropTypes.object.isRequired,
 };
 
@@ -116,6 +113,8 @@ export function ServerPaginationGrid({
   initLimit,
   onPageChange,
   onPageSizeChange,
+  initialOrder,
+  onSortModelChange,
   rowCount,
   headerElement,
   filterOptions,
@@ -126,21 +125,19 @@ export function ServerPaginationGrid({
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
-    // eslint-disable-next-line react/forbid-prop-types
     cols: PropTypes.array.isRequired, // This is for displaying columns
-    // eslint-disable-next-line react/require-default-props
     cellHandler: PropTypes.func, // callback fired when cell is clicked
     filterRowForCSV: PropTypes.func, // function to filter rows for export
-    // eslint-disable-next-line react/forbid-prop-types
     headers: PropTypes.array, // map db keys to CSV headers
     filename: PropTypes.string, // name the csv file
     initPage: PropTypes.number.isRequired, // which page we're on from URL
     initLimit: PropTypes.number.isRequired, // rows/page from URL
     onPageChange: PropTypes.func.isRequired, // callback fired when page changes
     onPageSizeChange: PropTypes.func.isRequired, // callback fired when page size changes or on refresh
+    initialOrder: PropTypes.array.isRequired,
+    onSortModelChange: PropTypes.func.isRequired,
     rowCount: PropTypes.func.isRequired, // total number of items
     headerElement: PropTypes.node, // what to display in header beside filter options
-    // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object,
     showToolBar: PropTypes.bool.isRequired,
     showImport: PropTypes.bool.isRequired,
@@ -163,7 +160,7 @@ export function ServerPaginationGrid({
   const [loading, setLoading] = React.useState(false);
   const [loadingExport, setLoadingExport] = React.useState(null);
   const [total, setTotal] = React.useState(0);
-  const [ordering, setOrdering] = React.useState(null);
+  const [ordering, setOrdering] = React.useState(initialOrder);
   const history = useHistory();
 
   const fetchMoreData = async (active) => {
@@ -192,13 +189,13 @@ export function ServerPaginationGrid({
     history.push('./import');
   };
 
-  const handlePageSizeChange = (e) => {
+  const handlePageSizeChange = (params) => {
     let actualPage = initPage;
-    const maxPage = Math.ceil(total / e.pageSize);
-    if (e.page > maxPage) { // if you are on page outside page range
+    const maxPage = Math.ceil(total / params.pageSize);
+    if (params.page > maxPage) { // if you are on page outside page range
       actualPage = maxPage; // change page to max page
     }
-    onPageSizeChange(actualPage, e.pageSize);
+    onPageSizeChange(actualPage, params.pageSize);
   };
 
   React.useEffect(() => {
@@ -213,9 +210,11 @@ export function ServerPaginationGrid({
   const handleSortModelChange = (params) => {
     const orderBy = params.sortModel;
     if (orderBy.length === 0) {
-      setOrdering(null);
+      setOrdering([['id', 'ASC']]);
+      onSortModelChange('id', 'ASC');
     } else {
       setOrdering([[orderBy[0].field, orderBy[0].sort.toUpperCase()]]);
+      onSortModelChange(orderBy[0].field, orderBy[0].sort.toUpperCase());
     }
   };
 

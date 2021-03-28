@@ -15,11 +15,17 @@ export default function UsersTable() {
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
   const [showEdit, setShowEdit] = React.useState(false);
   const [selectedUser, setSelectedUser] = React.useState('');
+  const [orderBy, setOrderBy] = React.useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = React.useState(urlParams.get('sortBy'));
   const [update, setUpdate] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
     const pg = parseInt(urlParams.get('page'), 10);
+    const order = urlParams.get('orderBy');
+    const sort = urlParams.get('sortBy');
+    setOrderBy(order);
+    setSortBy(sort);
     if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
       // if user clicks on models nav link or goes back
       setInitLimit(lim);
@@ -159,7 +165,7 @@ export default function UsersTable() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}`;
+          const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -168,7 +174,7 @@ export default function UsersTable() {
           }
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}`;
+          const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -176,10 +182,23 @@ export default function UsersTable() {
             setInitPage(page);
           }
         }}
-        fetchData={(limit, offset, orderBy) => GetAllUsers({
+        initialOrder={() => {
+          if (orderBy) {
+            return [[orderBy, sortBy]];
+          }
+          return null;
+        }}
+        onSortModelChange={(order, sort) => {
+          const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewUsers${searchString}`);
+          }
+        }}
+        fetchData={(limit, offset, ordering) => GetAllUsers({
           limit,
           offset,
-          orderBy,
+          orderBy: ordering,
         }).then((response) => response)}
         showToolBar={false}
         showImport={false}

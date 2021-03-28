@@ -986,10 +986,14 @@ class InstrumentAPI extends DataSource {
     return null;
   }
 
-  async getAllInstrumentCategories({ limit = null, offset = null }) {
+  async getAllInstrumentCategories({ limit = null, offset = null, orderBy = [['name', 'ASC']] }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    return await this.store.instrumentCategories.findAll({ limit, offset });
+    return await this.store.instrumentCategories.findAll({
+      limit,
+      offset,
+      order: orderBy,
+    });
   }
 
   async countInstrumentCategories() {
