@@ -6,6 +6,9 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+
 import { PopOverFragment } from './PopOver';
 
 const showText = false;
@@ -109,5 +112,24 @@ export const MuiDeleteButton = ({ onClick }) => (
 export const MuiAddButton = ({ onClick }) => (
   <IconButton onClick={onClick}>
     <AddIcon />
+  </IconButton>
+);
+
+export const DeletePopOver = ({ title, onClick }) => (
+  <PopOverFragment message={title}>
+    <MuiDeleteButton onClick={onClick} />
+  </PopOverFragment>
+);
+
+export const MuiEditButton = ({ onClick }) => (
+  <IconButton onClick={onClick}>
+    <EditIcon />
+  </IconButton>
+);
+
+// eslint-disable-next-line no-unused-vars
+export const MuiSaveButton = ({ onClick, color }) => (
+  <IconButton onClick={onClick}>
+    <SaveIcon color={color} />
   </IconButton>
 );

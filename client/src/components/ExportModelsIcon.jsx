@@ -1,17 +1,15 @@
 import { CSVLink } from 'react-csv';
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { PopOverFragment } from './PopOver';
 import GetModelsForExport from '../queries/GetModelsForExport';
 import { ExportButton } from './CustomMuiIcons';
 
 // eslint-disable-next-line no-unused-vars
-export default function ExportModelsIcon({ setLoading, filterOptions, showText }) {
+export default function ExportModelsIcon({ setLoading, filterOptions }) {
   ExportModelsIcon.propTypes = {
     setLoading: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object.isRequired,
-    showText: PropTypes.bool.isRequired, // whether or not to show text
   };
 
   const [transactionData, setTransactionData] = useState([]);

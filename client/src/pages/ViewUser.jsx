@@ -3,6 +3,8 @@ import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
 import PropTypes from 'prop-types';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
 import { EditUserForm } from '../components/UserForm';
 import Query from '../components/UseQuery';
 import UserContext from '../components/UserContext';
@@ -72,26 +74,12 @@ export default function ViewUser({ userName, onDelete }) {
   };
   const deleteBtn = (
     <MouseOverPopover message={disabledButtons ? `You cannot delete user ${formState.userName}` : `Delete ${formState.userName}`}>
-      <svg
-        id="delete-user-btn"
-        style={{ cursor: disabledButtons ? 'auto' : 'pointer' }}
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        fill="currentColor"
-        onClick={() => {
-          if (!disabledButtons) setShowDelete(true);
-        }}
-        className={
-            disabledButtons
-              ? 'bi bi-trash-fill mt-3 disabled'
-              : 'bi bi-trash-fill mt-3'
-          }
-        viewBox="0 0 16 16"
+      <IconButton onClick={() => {
+        if (!disabledButtons) setShowDelete(true);
+      }}
       >
-        {/* eslint-disable-next-line max-len */}
-        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
-      </svg>
+        <DeleteIcon style={{ color: disabledButtons ? 'disabled' : '#fc2311', cursor: disabledButtons ? 'auto' : 'pointer' }} />
+      </IconButton>
     </MouseOverPopover>
   );
 

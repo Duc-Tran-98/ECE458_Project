@@ -5,6 +5,7 @@ import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
 import Query from './UseQuery';
 import UserContext from './UserContext';
+import { MuiSaveButton } from './CustomMuiIcons';
 
 export default function UserForm({
   onSubmit, changeHandler, formState, onChangeCheckbox,
@@ -157,7 +158,7 @@ export function EditUserForm({
   };
   const user = useContext(UserContext);
   const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
-  const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled my-auto' : 'btn my-auto';
+  const saveColor = disabledButtons ? 'disabled' : 'primary';
   const [loading, setLoading] = React.useState(false);
   const onSubmit = (e) => {
     e.preventDefault();
@@ -328,23 +329,9 @@ export function EditUserForm({
         {loading ? (
           <CircularProgress />
         ) : (
-          <button
-            className={buttonStyle}
-            type="submit"
-            disabled={disabledButtons}
-          >
-            Save Changes
-          </button>
+          <MuiSaveButton color={saveColor} onClick={onSubmit} />
         )}
-        <div className="ms-5 my-auto pb-3">{deleteBtn}</div>
-        {/* <button
-          className="btn btn-danger"
-          type="button"
-          onClick={onDeleteClick}
-          disabled={disabledButtons}
-        >
-          Delete User
-        </button> */}
+        {deleteBtn}
       </div>
     </form>
   );

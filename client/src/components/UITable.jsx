@@ -365,21 +365,19 @@ export function ServerPaginationGrid({
 
               {handleExport && (
               <>
-                {loadingExport && <CircularProgress />}
+                {/* {loadingExport && <CircularProgress />}
                 {modelTable && (
                 <ExportModelsIcon
                   setLoading={setLoadingExport}
                   filterOptions={filterOptions}
-                  showText={false}
                 />
                 )}
                 {instrumentTable && (
                 <ExportInstrumentsIcon
                   setLoading={setLoadingExport}
                   filterOptions={filterOptions}
-                  showText={false}
                 />
-                )}
+                )} */}
                 {instrumentTable && (
                 <GenerateBarcodesIcon
                   filterOptions={filterOptions}
