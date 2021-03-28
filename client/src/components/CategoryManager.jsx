@@ -45,12 +45,12 @@ export default function CategoryManager({ type }) {
     setCategories(response);
   }, [updateCount]);
 
-  const getNumAttached = async () => {
+  const getNumAttached = async (name) => {
     let response = '';
     if (type.includes('model')) {
-      response = await CountModelsAttached({ name: category });
+      response = await CountModelsAttached({ name });
     } else if (type.includes('instrument')) {
-      response = await CountInstrumentsAttached({ name: category });
+      response = await CountInstrumentsAttached({ name });
     }
     setNum(response);
   };
@@ -250,10 +250,10 @@ export default function CategoryManager({ type }) {
   const categoryTable = (
     <SimpleGrid
       rows={categories}
-      cellHandler={(e) => {
+      cellHandler={async (e) => {
         console.log(e);
         setCategory(e.row.name);
-        getNumAttached();
+        await getNumAttached(e.row.name);
         if (e.field === 'delete') {
           setShowDelete(true);
         } else {
