@@ -61,9 +61,9 @@ export default function CalibrationRow({
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
-    <div className="d-flex justify-content-center">
-      <div className="delete-container rounded">
-        <div className="row mx-3">
+    <div className="d-flex justify-content-center w-100">
+      <div className="delete-container rounded w-100">
+        <div className="row mx-auto w-100">
           <div className="col-4 mt-3">
             <Form.Group>
               <Form.Label className="h5">User</Form.Label>
@@ -115,7 +115,7 @@ export default function CalibrationRow({
               <Form.Label className="h5">Calibration Comment</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={2}
+                rows={3}
                 name="comment"
                 value={comment}
                 onChange={(e) => onChangeCalibRow(e, entry)}
@@ -124,7 +124,7 @@ export default function CalibrationRow({
             </Form.Group>
           </div>
         </div>
-        <div className="row mx-3">
+        <div className="row w-100 mx-auto">
           <div className="col-4">
             {!viewOnly && (
               <MouseOverPopover message="Upload a JPG, PNG, GIF, PDF, or XLSX file">

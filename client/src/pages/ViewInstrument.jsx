@@ -427,19 +427,19 @@ export default function DetailedInstrumentView() {
           style={{ maxHeight: '72vh' }}
         >
           <div
-            className="h-100 d-inline-block"
+            className="h-100"
             style={{ overflowY: 'auto', overflowX: 'hidden' }}
           >
             <div
-              className="bg-secondary text-light py-2 sticky-top"
+              className="bg-secondary text-light sticky-top"
               style={{ zIndex: '1' }}
             >
-              <div className="row px-3">
-                <div className="col-auto me-auto h3 my-auto">
-                  Calibration History:
-                </div>
+              <div className="row px-3 w-100">
+                <h3 className="px-3 bg-secondary text-light my-auto col-auto me-auto">
+                  Calibration History
+                </h3>
                 {formState.calibrationFrequency > 0 && (
-                  <div className="col-auto mt-1">{genCalibButtons}</div>
+                  <div className="col-auto my-2">{genCalibButtons}</div>
                 )}
               </div>
             </div>
