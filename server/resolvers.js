@@ -129,13 +129,15 @@ module.exports = {
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
       calibrationHistoryIdReference,
     }),
-    getAllModelCategories: async (_, { limit, offset }, { dataSources }) => await dataSources.modelAPI.getAllModelCategories({
+    getAllModelCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.modelAPI.getAllModelCategories({
       limit,
       offset,
+      orderBy,
     }),
-    getAllInstrumentCategories: async (_, { limit, offset }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentCategories({
+    getAllInstrumentCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentCategories({
       limit,
       offset,
+      orderBy,
     }),
   },
   Mutation: {

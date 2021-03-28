@@ -3,14 +3,16 @@ import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
-export default async function GetInstrumentCategories({ limit, offset }) {
+export default async function GetInstrumentCategories({ limit, offset, orderBy }) {
   GetInstrumentCategories.propTypes = {
     limit: PropTypes.number,
     offset: PropTypes.number,
+    // eslint-disable-next-line react/forbid-prop-types
+    orderBy: PropTypes.array,
   };
   const GET_INSTRUMENT_CATEGORIES_QUERY = gql`
-    query Instruments($limit: Int, $offset: Int) {
-        getAllInstrumentCategories(limit: $limit, offset: $offset) {
+    query Instruments($limit: Int, $offset: Int, $orderBy: [[String]]) {
+        getAllInstrumentCategories(limit: $limit, offset: $offset, orderBy: $orderBy) {
           id
           name
         }
@@ -18,7 +20,7 @@ export default async function GetInstrumentCategories({ limit, offset }) {
   `;
   const query = print(GET_INSTRUMENT_CATEGORIES_QUERY);
   const queryName = 'getAllInstrumentCategories';
-  const getVariables = () => ({ limit, offset });
+  const getVariables = () => ({ limit, offset, orderBy });
   const response = await QueryAndThen({ query, queryName, getVariables });
   return response;
 }

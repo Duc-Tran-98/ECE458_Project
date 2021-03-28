@@ -31,6 +31,8 @@ function ManageCategories() {
   const [key, setKey] = useState(startTab);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [orderBy, setOrderBy] = React.useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = React.useState(urlParams.get('sortBy'));
   const [category, setCategory] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [num, setNum] = React.useState(0);
@@ -54,7 +56,7 @@ function ManageCategories() {
   };
 
   function updateRow(k, replace = false) {
-    const searchString = `?page=${initPage}&limit=${initLimit}`;
+    const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${orderBy}&sortBy=${sortBy}`;
     if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
       if (replace) {
         history.replace(`/${k}Categories${searchString}`);
@@ -263,6 +265,7 @@ function ManageCategories() {
       field: 'edit',
       headerName: 'Edit',
       width: 120,
+      sortable: false,
       disableColumnMenu: true,
       renderCell: () => (
         editBtn
@@ -272,6 +275,7 @@ function ManageCategories() {
       field: 'delete',
       headerName: 'Delete',
       width: 120,
+      sortable: false,
       disableColumnMenu: true,
       renderCell: () => (
         deleteBtn
@@ -289,13 +293,20 @@ function ManageCategories() {
       urlParams = new URLSearchParams(location.search);
       const lim = parseInt(urlParams.get('limit'), 10);
       const pg = parseInt(urlParams.get('page'), 10);
+      const order = urlParams.get('orderBy');
+      const sort = urlParams.get('sortBy');
       if (lim !== initLimit) {
         setInitLimit(lim);
       }
       if (pg !== initPage) {
         setInitPage(pg);
       }
-
+      if (order !== orderBy) {
+        setOrderBy(order);
+      }
+      if (sort !== sortBy) {
+        setSortBy(sort);
+      }
       if (location.pathname.startsWith('/model')) {
         setKey('model');
       } else {
@@ -321,18 +332,30 @@ function ManageCategories() {
           initPage={initPage}
           initLimit={initLimit}
           onPageChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
           }}
           onPageSizeChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
           }}
-          fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+          initialOrder={() => {
+            if (orderBy) {
+              return [[orderBy, sortBy]];
+            }
+            return null;
+          }}
+          onSortModelChange={(order, sort) => {
+            const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+            if (window.location.search !== searchString) {
+              history.push(`/modelCategories${searchString}`);
+            }
+          }}
+          fetchData={(limit, offset, ordering) => GetModelCategories({ limit, offset, orderBy: ordering }).then((response) => response)}
           showToolBar={false}
           showImport={false}
         />
@@ -350,18 +373,30 @@ function ManageCategories() {
           initPage={initPage}
           initLimit={initLimit}
           onPageChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/instrumentCategories${searchString}`);
             }
           }}
           onPageSizeChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/instrumentCategories${searchString}`);
             }
           }}
-          fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
+          initialOrder={() => {
+            if (orderBy) {
+              return [[orderBy, sortBy]];
+            }
+            return null;
+          }}
+          onSortModelChange={(order, sort) => {
+            const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+            if (window.location.search !== searchString) {
+              history.push(`/instrumentCategories${searchString}`);
+            }
+          }}
+          fetchData={(limit, offset, ordering) => GetInstrumentCategories({ limit, offset, orderBy: ordering }).then(
             (response) => response,
           )}
           showToolBar={false}
