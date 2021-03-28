@@ -8,8 +8,6 @@ import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
-import CreateModel from './CreateModel';
-import ModalAlert from '../components/ModalAlert';
 
 function ListModels() {
   const history = useHistory();
@@ -24,6 +22,10 @@ function ListModels() {
   if (urlFilter) {
     selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
   }
+  const [showImport, setShowImport] = React.useState(false);
+  React.useEffect(() => {
+    setShowImport(user.isAdmin || user.instrumentPermission);
+  }, user);
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
     modelNumbers: selectedFilters ? selectedFilters.modelNumbers : null,
@@ -293,7 +295,7 @@ function ListModels() {
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
-        showImport={user.isAdmin || user.modelPermission}
+        showImport={showImport}
         onCreate={() => {
           setUpdate(true);
           setUpdate(false);

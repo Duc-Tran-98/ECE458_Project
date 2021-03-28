@@ -34,6 +34,10 @@ export default function ListInstruments() {
       Buffer.from(urlFilter, 'base64').toString('ascii'),
     );
   }
+  const [showImport, setShowImport] = React.useState(false);
+  React.useEffect(() => {
+    setShowImport(user.isAdmin || user.instrumentPermission);
+  }, user);
   const [update, setUpdate] = React.useState(false);
   const [filterOptions, setFilterOptions] = React.useState({
     vendors: selectedFilters ? selectedFilters.vendors : null,
@@ -462,7 +466,7 @@ export default function ListInstruments() {
         filterOptions={filterOptions}
         filename="instruments.csv"
         showToolBar
-        showImport={user.isAdmin || user.instrumentPermission}
+        showImport={showImport}
         onCreate={() => {
           setUpdate(true);
           setUpdate(false);

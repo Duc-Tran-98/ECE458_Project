@@ -53,7 +53,9 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
               setUserState(res); // update state
               clearInterval(intervalId); // stop old polling
               startPolling(res); // start new poll with new init val
-              toast('User permission have changed.');
+              toast('User permission have changed.', {
+                toastId: 68,
+              });
             }
           }
         });
