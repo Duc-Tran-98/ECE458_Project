@@ -5,7 +5,6 @@ import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { toast } from 'react-toastify';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
@@ -79,9 +78,7 @@ export default function DetailedInstrumentView() {
       let counter = nextId;
       data.forEach((item) => {
         // console.log(item);
-        // eslint-disable-next-line no-param-reassign
         item.id = counter;
-        // eslint-disable-next-line no-param-reassign
         item.viewOnly = true;
         counter += 1;
       });
@@ -187,6 +184,12 @@ export default function DetailedInstrumentView() {
       assetTag,
       id,
     } = response;
+    if (typeof id === 'undefined') {
+      id = formState.id;
+    }
+    if (typeof id === 'string') {
+      id = parseInt(id, 10);
+    }
     fetchData(null, id);
     comment = comment || '';
     modelNumber = modelNumber || '';
@@ -195,7 +198,6 @@ export default function DetailedInstrumentView() {
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
     description = description || '';
-    id = id || 0;
     setFormState({
       ...formState,
       comment,
@@ -219,14 +221,14 @@ export default function DetailedInstrumentView() {
         return;
       }
       Query({
-        query: print(gql`
+        query: gql`
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
               supportKlufeCalibration
             }
           }
-        `),
+        `,
         queryName: 'getModel',
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
@@ -333,7 +335,7 @@ export default function DetailedInstrumentView() {
                 className="btn text-nowrap"
                 to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
               >
-                Certificate
+                View Certificate
               </Link>
             </MouseOverPopover>
           )}
@@ -407,37 +409,55 @@ export default function DetailedInstrumentView() {
       </MouseOverPopover>
     </>
   );
-
+  const ref = React.useRef(null);
   return (
     <>
-      <div className="col">
-        <div className="row">
+      <div className="row">
+        <div className="col p-3 border border-right border-dark">
           {fetched && (
-            <InstrumentForm
-              modelNumber={formState.modelNumber}
-              vendor={formState.vendor}
-              comment={formState.comment}
-              serialNumber={formState.serialNumber}
-              categories={formState.categories}
-              viewOnly
-              description={formState.description}
-              calibrationFrequency={formState.calibrationFrequency}
-              assetTag={formState.assetTag}
-              id={formState.id}
-              type="edit"
-              deleteBtn={deleteBtn}
-              handleFormSubmit={handleSubmit}
-              footer={footer}
-            />
+            <>
+              <h3 className="px-3 bg-secondary text-light my-auto">
+                Instrument Information
+              </h3>
+              <InstrumentForm
+                editBtnRef={ref}
+                modelNumber={formState.modelNumber}
+                vendor={formState.vendor}
+                comment={formState.comment}
+                serialNumber={formState.serialNumber}
+                categories={formState.categories}
+                viewOnly
+                description={formState.description}
+                calibrationFrequency={formState.calibrationFrequency}
+                assetTag={formState.assetTag}
+                id={formState.id}
+                type="edit"
+                deleteBtn={deleteBtn}
+                handleFormSubmit={handleSubmit}
+                footer={footer}
+              />
+            </>
           )}
         </div>
-        <div className="row px-3 mt-3">
-          <div>
-            <div className="bg-secondary text-light py-2">
-              <div className="row px-3">
-                <div className="col-auto me-auto h5 my-auto">Calibration History:</div>
+        <div
+          className="col p-3 border border-left border-dark"
+          id="remove-if-empty"
+          style={{ maxHeight: '72vh' }}
+        >
+          <div
+            className="h-100"
+            style={{ overflowY: 'auto', overflowX: 'hidden' }}
+          >
+            <div
+              className="bg-secondary text-light sticky-top"
+              style={{ zIndex: '1' }}
+            >
+              <div className="row px-3 w-100">
+                <h3 className="px-3 bg-secondary text-light my-auto col-auto me-auto">
+                  Calibration History
+                </h3>
                 {formState.calibrationFrequency > 0 && (
-                <div className="col-auto mt-1">{genCalibButtons}</div>
+                  <div className="col-auto my-2">{genCalibButtons}</div>
                 )}
               </div>
             </div>
@@ -457,6 +477,7 @@ export default function DetailedInstrumentView() {
           </div>
         </div>
       </div>
+      <div className="d-flex justify-content-center py-3" ref={ref} />
     </>
   );
 }

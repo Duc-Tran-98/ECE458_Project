@@ -42,12 +42,24 @@ export default function SignUp({ onCreation }) {
   };
   const [allUserNames, setAllUserNames] = React.useState(['admin']);
   const user = useContext(UserContext);
-  GetAllUsers({ limit: 100, offset: 0 }).then((response) => {
-    if (response) {
-      const parsedUsernames = response.map((element) => element.userName);
-      setAllUserNames(parsedUsernames);
-    }
-  });
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) {
+        return;
+      }
+      GetAllUsers({ limit: 100, offset: 0 }).then((response) => {
+        if (response) {
+          const parsedUsernames = response.map((element) => element.userName);
+          setAllUserNames(parsedUsernames);
+        }
+      });
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // eslint-disable-next-line no-unused-vars
   const checkUserNameExists = (userName, setFieldError) => {

@@ -1,16 +1,17 @@
 import { CSVLink } from 'react-csv';
-import { Button } from 'react-bootstrap';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import MouseOverPopover from './PopOver';
+import { PopOverFragment } from './PopOver';
 import GetModelsForExport from '../queries/GetModelsForExport';
+import { ExportButton } from './CustomMuiIcons';
 
 // eslint-disable-next-line no-unused-vars
-const ExportModels = ({ setLoading, filterOptions }) => {
-  ExportModels.propTypes = {
+export default function ExportModelsIcon({ setLoading, filterOptions, showText }) {
+  ExportModelsIcon.propTypes = {
     setLoading: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     filterOptions: PropTypes.object.isRequired,
+    showText: PropTypes.bool.isRequired, // whether or not to show text
   };
 
   const [transactionData, setTransactionData] = useState([]);
@@ -51,17 +52,23 @@ const ExportModels = ({ setLoading, filterOptions }) => {
     return filteredData;
   };
 
-  const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
+  // const csvLink = useRef < { link: HTMLAnchorElement } > (null); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
+  const csvLink = useRef();
   useEffect(() => {
-    console.log('csvLink inside ExportModels: ');
+    console.log('csvLink inside ExportModelsIcon: ');
     console.log(csvLink);
   }, [csvLink]);
 
   const getTransactionData = async () => {
+    console.log('csvLink: ');
+    console.log(csvLink);
+    console.log('Getting transaction data');
     setLoading(true);
     await getData()
       .then((r) => {
+        console.log('Got transaction data');
         const filteredData = filterTransactionData(r);
+        console.log(filteredData);
         setTransactionData(filteredData);
       })
       .catch((e) => console.log(e));
@@ -73,13 +80,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
 
   return (
     <>
-      <Button onClick={getTransactionData} variant="dark" className="ms-3">
-        <MouseOverPopover message="Export all models with current filters" place="top">
-          <div>
-            Export Models
-          </div>
-        </MouseOverPopover>
-      </Button>
+      <ExportButton onClick={getTransactionData} />
       <CSVLink
         data={transactionData}
         headers={headers}
@@ -90,6 +91,4 @@ const ExportModels = ({ setLoading, filterOptions }) => {
       />
     </>
   );
-};
-
-export default ExportModels;
+}

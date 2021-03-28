@@ -3,13 +3,15 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import $ from 'jquery';
 import { QueryAndThen } from './UseQuery';
 
 export default function InfinityScroll({
   query, queryName, title, variables, renderItems, titleClassName,
 }) {
   InfinityScroll.propTypes = {
-    query: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    query: PropTypes.object.isRequired,
     queryName: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
@@ -23,7 +25,7 @@ export default function InfinityScroll({
     titleClassName: '',
   };
   const [items, setItems] = React.useState([]);
-  const [hasMore, setHasMore] = React.useState(false);
+  const [hasMore, setHasMore] = React.useState(true);
   const [total, setTotal] = React.useState(null);
   const getVariables = () => {
     variables.limit = 10;
@@ -33,12 +35,15 @@ export default function InfinityScroll({
   const fetchMoreData = () => {
     if (total && items.length >= total) { // If total not null and length exceeds/equal to total, stop scroll
       setHasMore(false);
-    } else { // else, set total and update state
+    } else if (hasMore) { // else, set total and update state
       QueryAndThen({ query, queryName, getVariables }).then(
         (data) => {
           const newItems = items.concat(data.rows);
           if (data.total < 10) {
             setHasMore(false);
+          }
+          if (data.total === 0) {
+            $('#remove-if-empty').first().remove();
           }
           setItems(newItems);
           setTotal(data.total);
@@ -60,7 +65,7 @@ export default function InfinityScroll({
   }, [items, variables]);
   return (
     <>
-      <h2 className={titleClassName}>{title}</h2>
+      <h3 className={titleClassName} style={{ zIndex: '10' }}>{title}</h3>
       <InfiniteScroll
         scrollableTarget="scrollableDiv"
         dataLength={items.length}
@@ -70,7 +75,7 @@ export default function InfinityScroll({
         endMessage={<div className="my-4" />}
       >
         {items.length === 0 && (
-          <div className="my-3 bg-light text-center h5">No Instances</div>
+          <div className="py-3 bg-light text-center">No Instances</div>
         )}
         {renderItems === null ? (
           items.map((entry) => (

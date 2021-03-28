@@ -1,11 +1,10 @@
 /* eslint-disable react/forbid-prop-types */
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
 export default async function GetAllModels({
-  limit, offset, vendor, modelNumber, description, categories, orderBy,
+  limit, offset, vendor, modelNumber, description, categories, orderBy, fetchPolicy = null,
 }) {
   GetAllModels.propTypes = {
     limit: PropTypes.number,
@@ -15,6 +14,7 @@ export default async function GetAllModels({
     description: PropTypes.string,
     categories: PropTypes.array,
     orderBy: PropTypes.array,
+    fetchPolicy: PropTypes.string,
   };
   const GET_MODELS_QUERY = gql`
     query Models(
@@ -51,22 +51,31 @@ export default async function GetAllModels({
       }
     }
   `;
-  const query = print(GET_MODELS_QUERY);
+  const query = GET_MODELS_QUERY;
   const queryName = 'getModelsWithFilter';
   const getVariables = () => ({
     limit, offset, vendor, modelNumber, description, categories, orderBy,
   });
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  window.sessionStorage.setItem(
+    'getModelsWithFilter',
+    JSON.stringify({
+      query,
+      variables: getVariables(),
+    }),
+  );
+  const response = await QueryAndThen({
+    query, queryName, getVariables, fetchPolicy,
+  });
   return response;
 }
 
 export async function CountAllModels() {
-  const query = print(gql`
+  const query = gql`
         query CountModels{
             countAllModels
         }
-    `);
+    `;
   const queryName = 'countAllModels';
-  const response = await QueryAndThen({ query, queryName });
+  const response = await QueryAndThen({ query, queryName, fetchPolicy: 'no-cache' });
   return response;
 }

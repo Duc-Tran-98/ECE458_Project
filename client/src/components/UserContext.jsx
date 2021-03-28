@@ -16,7 +16,6 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
   };
 
   const [user, setUserState] = React.useState({
-    isLoggedIn: false,
     isAdmin: false,
     modelPermission: false,
     calibrationPermission: false,
@@ -35,16 +34,18 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         GetUser({ // poll user info
           userName: Buffer.from(token, 'base64').toString('ascii'),
           includeAll: true,
+          fetchPolicy: 'no-cache',
         }).then((res) => {
           if (typeof res === 'undefined') {
             // undefined => user got deleted
-            toast.error('This account has been deleted! Signing you out.');
+            toast.error('This account has been deleted! Signing you out.', {
+              toastId: 0,
+            });
             clearInterval(intervalId);
             handleSignOut(); // stop polling, and sign out user
           } else {
             // res !== undefined => user still exsits, so let's check if
             // their permissions change
-            res.isLoggedIn = true;
             const hasChanged = JSON.stringify(res) !== JSON.stringify(initVal);
             // console.log(hasChanged);
             if (hasChanged) {
@@ -52,7 +53,9 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
               setUserState(res); // update state
               clearInterval(intervalId); // stop old polling
               startPolling(res); // start new poll with new init val
-              toast('User permission have changed.');
+              toast('User permission have changed.', {
+                toastId: 68,
+              });
             }
           }
         });
@@ -64,7 +67,6 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
     token = window.sessionStorage.getItem('token');
     if (token === null) { // user signed out
       setUserState({
-        isLoggedIn: false,
         isAdmin: false,
         userName: '',
         firstName: '',
@@ -81,14 +83,16 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         GetUser({
           userName: Buffer.from(token, 'base64').toString('ascii'),
           includeAll: true,
+          fetchPolicy: 'no-cache',
         }).then((val) => {
-          // eslint-disable-next-line no-param-reassign
-          val.isLoggedIn = true;
           setUserState(val);
           startPolling(val);
         });
-      }, 20); // set timeout to give time for new authheader to get applied
+      }, 100); // set timeout to give time for new authheader to get applied
     }
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [loggedIn]);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

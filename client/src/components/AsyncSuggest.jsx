@@ -71,7 +71,9 @@ export default function AsyncSuggest({
       return undefined;
     }
     (async () => {
-      const response = await QueryAndThen({ query, queryName, getVariables });
+      const response = await QueryAndThen({
+        query, queryName, getVariables, fetchPolicy: 'no-cache',
+      });
       if (active) {
         if (queryName === 'getInstrumentsWithFilter') {
           setOptions(response.instruments);

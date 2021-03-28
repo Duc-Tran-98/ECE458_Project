@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /*
  This class is for the category table pages
+ THIS FILE IS DEPRECATED AS OF 3/27 DO NOT USE
 */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -38,6 +39,7 @@ function ManageCategories() {
   const [num, setNum] = React.useState(0);
   const [newCategory, setNewCategory] = React.useState('');
   const [showEdit, setShowEdit] = React.useState(false);
+  const [showDelete, setShowDelete] = React.useState(false);
   const user = React.useContext(UserContext);
 
   const getNumAttached = async () => {
@@ -69,6 +71,7 @@ function ManageCategories() {
   const handleResponse = (response) => {
     if (response.success) {
       setShowEdit(false);
+      setShowDelete(false);
       toast.success(response.message, {
         toastId: Math.random(),
       });
@@ -161,90 +164,13 @@ function ManageCategories() {
   );
 
   const deleteBtn = (
-    <ModalAlert
-      title="Delete Category"
-      width=" "
-      btnText="Delete"
-      btnClass="btn btn-danger"
-      altCloseBtnId="close-cat-mod"
-    >
-      <div>
-        <div className="h5 text-center my-3">
-          {`You are about to delete category ${category}. This category is attached to ${num} ${key}${
-            num === 1 ? '' : 's'
-          }. Are you sure?`}
-        </div>
-      </div>
-
-      <div className="d-flex justify-content-center">
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            <button
-              className="btn mt-2"
-              type="button"
-              onClick={handleDelete}
-            >
-              Yes
-            </button>
-            <span className="mx-3" />
-            <button className="btn mt-2" type="button" id="close-cat-mod">
-              No
-            </button>
-          </>
-        )}
-      </div>
-    </ModalAlert>
+    <button type="button" className="btn btn-danger" onClick={() => setShowDelete(true)}>Delete</button>
   );
 
   const editBtn = (
-    <>
-      <button type="button" className="btn" onClick={() => setShowEdit(true)}>
-        Edit
-      </button>
-      <StateLessModal title="Edit Category" width="" handleClose={() => setShowEdit(false)} show={showEdit}>
-        <div className="d-flex flex-row text-center m-3">
-          <h5>{`Change name of category: ${category}`}</h5>
-        </div>
-        <div className="d-flex justify-content-center">
-          {loading ? (
-            <CircularProgress />
-          ) : (
-            <>
-              <div className="row">
-                <input
-                  id="editCat"
-                  value={newCategory}
-                  className="m-2 col-auto my-auto"
-                  onChange={(e) => {
-                    if (!e.target.value.includes(' ')) {
-                      setNewCategory(e.target.value);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.code === 'Enter' && newCategory.length > 0) {
-                      setNewCategory('');
-                      handleEdit(document.getElementById('editCat').value);
-                    }
-                  }}
-                />
-                <button
-                  className="btn m-3 col"
-                  type="button"
-                  onClick={() => {
-                    setNewCategory('');
-                    handleEdit(document.getElementById('editCat').value);
-                  }}
-                >
-                  Save
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </StateLessModal>
-    </>
+    <button type="button" className="btn" onClick={() => setShowEdit(true)}>
+      Edit
+    </button>
   );
 
   const cols = [
@@ -321,12 +247,92 @@ function ManageCategories() {
 
   return (
     <>
+      <StateLessModal
+        title="Edit Category"
+        width=""
+        handleClose={() => setShowEdit(false)}
+        show={showEdit}
+      >
+        <div className="d-flex flex-row text-center m-3">
+          <h5>{`Change name of category: ${category}`}</h5>
+        </div>
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <div className="row">
+                <input
+                  id="editCat"
+                  value={newCategory}
+                  className="m-2 col-auto my-auto"
+                  onChange={(e) => {
+                    if (!e.target.value.includes(' ')) {
+                      setNewCategory(e.target.value);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.code === 'Enter' && newCategory.length > 0) {
+                      setNewCategory('');
+                      handleEdit(document.getElementById('editCat').value);
+                    }
+                  }}
+                />
+                <button
+                  className="btn m-3 col"
+                  type="button"
+                  onClick={() => {
+                    setNewCategory('');
+                    handleEdit(document.getElementById('editCat').value);
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </StateLessModal>
+      <StateLessModal
+        title="Delete Category"
+        width=" "
+        show={showDelete}
+        handleClose={() => setShowDelete(false)}
+      >
+        <div>
+          <div className="h5 text-center my-3">
+            {`You are about to delete category ${category}. This category is attached to ${num} ${key}${
+              num === 1 ? '' : 's'
+            }. Are you sure?`}
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <button className="btn mt-2" type="button" onClick={handleDelete}>
+                Yes
+              </button>
+              <span className="mx-3" />
+              <button
+                className="btn mt-2"
+                type="button"
+                onClick={() => setShowDelete(false)}
+              >
+                No
+              </button>
+            </>
+          )}
+        </div>
+      </StateLessModal>
       {key === 'model' && (
         <ServerPaginationGrid
           rowCount={() => CountModelCategories().then((val) => val)}
           cellHandler={cellHandler}
           headerElement={
-            <div>{(user.isAdmin || user.modelPermission) && createBtn }</div>
+            <div>{(user.isAdmin || user.modelPermission) && createBtn}</div>
           }
           cols={cols}
           initPage={initPage}
@@ -366,7 +372,7 @@ function ManageCategories() {
           cellHandler={cellHandler}
           headerElement={(
             <div>
-              {(user.isAdmin || user.instrumentPermission) && createBtn }
+              {(user.isAdmin || user.instrumentPermission) && createBtn}
             </div>
           )}
           cols={cols}

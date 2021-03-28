@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -17,7 +16,7 @@ export default function ChangePassword({
         changePassword(userName: $userName, oldPassword: $oldPassword, newPassword: $newPassword)
     }
   `;
-  const query = print(CHANGE_PASS);
+  const query = CHANGE_PASS;
   const queryName = 'changePassword';
   const getVariables = () => ({ userName, oldPassword, newPassword });
   Query({

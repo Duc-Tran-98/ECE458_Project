@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import {
+  Switch, Route, useHistory, Redirect,
+} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
+import Help from './pages/Help';
 import Certificate from './pages/Certificate';
-import Home from './pages/Home';
 import ComponentTest from './pages/ComponentTest';
 import { UserProvider } from './components/UserContext';
 import ListModels from './pages/ListModels';
@@ -40,11 +42,13 @@ function App() {
     setLoggedIn(false);
   };
   const handleLogin = async (newJwt) => {
-    setLoggedIn(true);
     jwt = newJwt;
     setAuthHeader(jwt);
     console.log(`set auth header = ${jwt}`);
     window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
+    setTimeout(() => {
+      setLoggedIn(true);
+    }, 100);
   };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) {
@@ -79,7 +83,10 @@ function App() {
               <ComponentTest />
             </Route>
             <Route exact path="/">
-              {loggedIn ? <Home /> : <Login handleLogin={handleLogin} />}
+              {loggedIn ? <Redirect to="/viewModels?page=1&limit=25" /> : <Login handleLogin={handleLogin} />}
+            </Route>
+            <Route path="/help">
+              {loggedIn ? <Help /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewUsers">
               {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}

@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import UserContext from '../components/UserContext';
 
-function Home() {
+export default function Help() {
   const user = useContext(UserContext);
 
   return (
@@ -97,5 +97,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

@@ -4,7 +4,7 @@ body {
 }
 
 #root .btn{
- background: #fca311;
+ background: #fedca6; /* #fca311;*/
   font-weight: bold;
   color: black;
   border: 1px solid black;
@@ -28,6 +28,10 @@ html body {
     left:98%!important;
 }
 
+.start-36 {
+  left: 36%!important;
+}
+
 .delete-container {
   width: 80%;
   /*border-radius: 25px;*/
@@ -49,7 +53,7 @@ html body {
 }
 
 .modal .btn{
-  background: #fca311;
+  background: #fedca6;
   font-weight: bold;
   color: black;
   border: 1px solid black;
@@ -91,7 +95,7 @@ textarea:disabled{ /* Styling for disabled textarea*/
 
 /* Selected page */
 button.MuiButtonBase-root.MuiPaginationItem-root.MuiPaginationItem-page.Mui-selected{
-  background: #fca311;
+  background: #fedca6;
   font-weight: bold;
   color: black;
   /*border-radius: 25px;*/
@@ -142,7 +146,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
 
 }
 
-#tags {
+.tags {
   display: flex;
   flex-wrap: wrap;
   padding: 0;
@@ -161,7 +165,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
   list-style: none;
   border-radius: 6px;
   margin: 0 8px 8px 0;
-  background: #fca311;
+  background: #AEBFE5;
 }
 .tag-title {
   margin-top: 3px;

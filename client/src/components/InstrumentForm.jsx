@@ -4,11 +4,11 @@ import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Portal } from '@material-ui/core';
 import { CustomInput, CustomButton } from './CustomFormComponents';
 import UserContext from './UserContext';
 import ModalAlert from './ModalAlert';
@@ -29,7 +29,7 @@ const GET_MODELS_QUERY = gql`
     }
   }
 `;
-const query = print(GET_MODELS_QUERY);
+const query = GET_MODELS_QUERY;
 const queryName = 'getAllModels';
 
 const charLimits = {
@@ -75,6 +75,7 @@ export default function InstrumentForm({
   footer,
   updateCalibrationFrequency,
   id = null,
+  editBtnRef = null,
 }) {
   InstrumentForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -92,6 +93,7 @@ export default function InstrumentForm({
     footer: PropTypes.node,
     updateCalibrationFrequency: PropTypes.func,
     id: PropTypes.number,
+    editBtnRef: PropTypes.object,
   };
   InstrumentForm.defaultProps = {
     handleFormSubmit: null,
@@ -105,6 +107,44 @@ export default function InstrumentForm({
   const formatSelected = (option, value) => option.modelNumber === value.modelNumber && option.vendor === value.vendor;
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && (user.isAdmin || user.instrumentPermission);
+  const footerBtns = (handleSubmit, isSubmitting) => (
+    <div className="row">
+      {!viewOnly
+                    && (isSubmitting ? (
+                      <CircularProgress />
+                    ) : (
+                      <CustomButton
+                        onClick={handleSubmit}
+                        divClass="col"
+                        buttonClass="btn text-nowrap"
+                        buttonLabel="Save Changes"
+                      />
+                    ))}
+      {viewOnly && (
+        <>
+          <div className="col me-3">
+            <ModalAlert
+              btnText="Edit Instrument"
+              title="Edit Instrument"
+              btnClass="btn my-auto text-nowrap"
+            >
+              <EditInstrument
+                initVendor={vendor}
+                initModelNumber={modelNumber}
+                initSerialNumber={serialNumber}
+                id={id}
+                description={description}
+                footer={footer}
+                initAssetTag={assetTag}
+                deleteBtn={deleteBtn}
+              />
+            </ModalAlert>
+          </div>
+          <div className="col ms-3">{deleteBtn}</div>
+        </>
+      )}
+    </div>
+  );
   return (
     <Formik
       initialValues={{
@@ -198,7 +238,6 @@ export default function InstrumentForm({
                 error={errors.assetTag}
               />
             </div>
-            <div className="col-auto me-auto mt-5">{viewOnly && deleteBtn}</div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
@@ -290,47 +329,17 @@ export default function InstrumentForm({
             </div>
           )}
 
-          <div className="d-flex justify-content-center my-3">
-            <div className="row">
-              {showFooter && ( // showfooter = type = edit && user has permissions
-                <>
-                  {!viewOnly
-                    && (isSubmitting ? (
-                      <CircularProgress />
-                    ) : (
-                      <CustomButton
-                        onClick={handleSubmit}
-                        divClass="col"
-                        buttonClass="btn text-nowrap"
-                        buttonLabel="Save Changes"
-                      />
-                    ))}
-                  {viewOnly && (
-                    <>
-                      <div className="col">
-                        <ModalAlert
-                          btnText="Edit Instrument"
-                          title="Edit Instrument"
-                          btnClass="btn my-auto text-nowrap"
-                        >
-                          <EditInstrument
-                            initVendor={vendor}
-                            initModelNumber={modelNumber}
-                            initSerialNumber={serialNumber}
-                            id={id}
-                            description={description}
-                            footer={footer}
-                            initAssetTag={assetTag}
-                            deleteBtn={deleteBtn}
-                          />
-                        </ModalAlert>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
+          {showFooter
+            && editBtnRef === null && ( // showfooter = type = edit && user has permissions
+              <div className="d-flex justify-content-center my-3">
+                {footerBtns(handleSubmit, isSubmitting)}
+              </div>
+          )}
+          {showFooter && editBtnRef !== null && (
+          <Portal container={editBtnRef.current}>
+            {footerBtns(handleSubmit, isSubmitting)}
+          </Portal>
+          )}
         </Form>
       )}
     </Formik>

@@ -8,8 +8,6 @@ import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
-import CreateModel from './CreateModel';
-import ModalAlert from '../components/ModalAlert';
 
 function ListModels() {
   const history = useHistory();
@@ -89,10 +87,16 @@ function ListModels() {
       description: 'Vendor',
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 150, description: 'Model Number',
+      field: 'modelNumber',
+      headerName: 'Model Number',
+      width: 150,
+      description: 'Model Number',
     },
     {
-      field: 'description', headerName: 'Description', width: 350, description: 'Description',
+      field: 'description',
+      headerName: 'Description',
+      width: 350,
+      description: 'Description',
     },
     {
       field: 'comment',
@@ -260,20 +264,6 @@ function ListModels() {
     }
   };
 
-  const createBtn = (
-    <ModalAlert
-      title="Create Model"
-      btnText="Create Model"
-      btnClass="btn m-2 my-auto text-nowrap"
-    >
-      <CreateModel onCreation={() => {
-        setUpdate(true);
-        setUpdate(false);
-      }}
-      />
-    </ModalAlert>
-  );
-
   return (
     <>
       <ServerPaginationGrid
@@ -284,13 +274,14 @@ function ListModels() {
           description: descriptions,
           vendor: vendors,
           categories,
+          fetchPolicy: 'no-cache',
         }).then((response) => response.total)}
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {(user.isAdmin || user.modelPermission) && (
+            {/* {(user.isAdmin || user.modelPermission) && (
               createBtn
-            )}
+            )} */}
             <SearchBar
               forModelSearch
               onSearch={onSearch}
@@ -334,7 +325,12 @@ function ListModels() {
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
-        showImport={user.isAdmin || user.modelPermission}
+        showImport={(user.isAdmin || user.modelPermission)}
+        onCreate={() => {
+          setUpdate(true);
+          setUpdate(false);
+        }}
+
       />
     </>
   );

@@ -40,13 +40,14 @@ const server = new ApolloServer({
     const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
     const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
-    const { query } = req.body;
-    if (!user && !(query.includes('mutation LoginMutation') || query.includes('mutation OAuthSignOn'))) {
-      // and query !== login, then that's invalid access
-      console.log('invalid access');
-      throw new AuthenticationError('you must be logged in');
-    }
-    // if decode ok
+    // let { query } = req.body;
+    // query = JSON.stringify(query);
+    // if (!user && !(query.includes('mutation LoginMutation') || query.includes('mutation OAuthSignOn'))) {
+    //   // and query !== login, then that's invalid access
+    //   console.log('invalid access');
+    //   throw new AuthenticationError('you must be logged in');
+    // }
+    // // if decode ok
     const storeModel = await store;
     const userVals = await storeModel.users.findAll({ where: { userName: user?.userName || req.body?.variables?.userName } }).then((val) => {
       if (val && val[0]) { // look up user and return their info
