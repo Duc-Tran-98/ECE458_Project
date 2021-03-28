@@ -131,7 +131,7 @@ export default function CategoryManager({ type }) {
             <button
               className="btn mt-2"
               type="button"
-              onClick={() => setUpdateCount(updateCount + 1)}
+              onClick={() => setShowDelete(false)}
             >
               No
             </button>
