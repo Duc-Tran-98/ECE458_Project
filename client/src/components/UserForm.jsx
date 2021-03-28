@@ -330,24 +330,8 @@ export function EditUserForm({
           <CircularProgress />
         ) : (
           <MuiSaveButton color={saveColor} onClick={onSubmit} />
-          // <button
-          //   className={buttonStyle}
-          //   type="submit"
-          //   disabled={disabledButtons}
-          // >
-          //   Save Changes
-          // </button>
         )}
         {deleteBtn}
-        {/* <div className="ms-5 my-auto pb-3">{deleteBtn}</div> */}
-        {/* <button
-          className="btn btn-danger"
-          type="button"
-          onClick={onDeleteClick}
-          disabled={disabledButtons}
-        >
-          Delete User
-        </button> */}
       </div>
     </form>
   );
