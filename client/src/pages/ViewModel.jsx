@@ -150,13 +150,13 @@ export default function DetailedModelView() {
         ) : (
           <>
             <div className="mt-3">
-              <button className="btn" type="button" onClick={handleDelete}>
+              <button className="btn btn-delete" type="button" onClick={handleDelete}>
                 Yes
               </button>
             </div>
             <span className="mx-3" />
             <div className="mt-3">
-              <button className="btn " type="button" id="close-delete-modal">
+              <button className="btn " type="button" onClick={() => setShowDelete(false)}>
                 No
               </button>
             </div>
