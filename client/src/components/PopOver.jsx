@@ -30,3 +30,29 @@ export default function MouseOverPopover({
     </div>
   );
 }
+
+export function PopOverFragment({
+  children, message, place,
+}) {
+  PopOverFragment.propTypes = {
+    children: PropTypes.node.isRequired,
+    message: PropTypes.string.isRequired,
+    place: PropTypes.string,
+  };
+  PopOverFragment.defaultProps = {
+    place: 'bottom',
+  };
+
+  return (
+    <>
+      <OverlayTrigger
+        placement={place}
+        delay={{ show: 150, hide: 100 }}
+        trigger={['hover', 'hover']} // duplicated 'hover' as workaround to remove repeated unneccesary warnings
+        overlay={<Tooltip id="tooltip-bottom">{message}</Tooltip>}
+      >
+        {children}
+      </OverlayTrigger>
+    </>
+  );
+}

@@ -9,6 +9,7 @@ import {
 import ModalHeader from 'react-bootstrap/ModalHeader';
 // import Portal from '@material-ui/core/Portal';
 import PropTypes from 'prop-types';
+import CloseIcon from '@material-ui/icons/Close';
 import MouseOverPopover from './PopOver';
 
 export function StateLessModal({
@@ -46,6 +47,42 @@ export function StateLessModal({
           Close
         </Button>
       </ModalFooter>
+    </Modal>
+  );
+}
+
+export function StateLessCloseModal({
+  handleClose,
+  show,
+  title,
+  children,
+  size = 'medium',
+}) {
+  // used with simple x button
+  StateLessCloseModal.propTypes = {
+    handleClose: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+    size: PropTypes.string,
+  };
+  return (
+    <Modal
+      show={show}
+      size={size}
+      centered
+    >
+      <Modal.Header>
+        <Modal.Title id="contained-modal-title-vcenter">
+          {title}
+        </Modal.Title>
+        <button type="button" className="close" onClick={handleClose}>
+          <CloseIcon />
+        </button>
+      </Modal.Header>
+      <Modal.Body>
+        {children}
+      </Modal.Body>
     </Modal>
   );
 }

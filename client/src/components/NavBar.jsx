@@ -2,7 +2,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import UserContext from './UserContext';
 import ProfileIcon from './ProfileIcon';
 
@@ -107,11 +106,10 @@ function NavBar({
               className="nav-link h5"
               to="/help"
             >
-              {/* TODO: Fine tune this question mark - ask Angel for input */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
+                width="30"
+                height="30"
                 fill="currentColor"
                 className="bi bi-info-circle"
                 viewBox="0 0 24 24"

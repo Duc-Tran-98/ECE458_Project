@@ -374,8 +374,6 @@ export default function ListInstruments() {
   const createBtn = (
     <ModalAlert
       title="Create Instrument"
-      btnText="Create Instrument"
-      btnClass="btn m-2 my-auto text-nowrap"
     >
       <CreateInstrument onCreation={() => {
         setUpdate(true);
@@ -403,9 +401,9 @@ export default function ListInstruments() {
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {(user.isAdmin || user.instrumentPermission) && (
+            {/* {(user.isAdmin || user.instrumentPermission) && (
               createBtn
-            )}
+            )} */}
             <SearchBar
               onSearch={onSearch}
               forModelSearch={false}
@@ -477,6 +475,7 @@ export default function ListInstruments() {
         filename="instruments.csv"
         showToolBar
         showImport={user.isAdmin || user.instrumentPermission}
+        createBtn={createBtn}
       />
     </>
   );

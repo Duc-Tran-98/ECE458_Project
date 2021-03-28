@@ -22,10 +22,17 @@ import { CSVLink } from 'react-csv';
 import Pagination from '@material-ui/lab/Pagination';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Portal from '@material-ui/core/Portal';
-import ExportInstruments from './ExportInstruments';
+import {
+  ImportButton,
+} from './CustomMuiIcons';
+import ExportModelsIcon from './ExportModelsIcon';
+import ExportInstruments, { ExportInstrumentsIcon } from './ExportInstruments';
 import ExportModels from './ExportModels';
+import CategoriesButton from './CategoriesButton';
+import CreateButton from './CreateButton';
+
 // import UserContext from './UserContext';
-import GenerateBarcodes from './GenerateBarcodes';
+import { GenerateBarcodesIcon } from './GenerateBarcodes';
 
 export default function DisplayGrid({
   rows, cols, cellHandler,
@@ -98,18 +105,6 @@ CustomPagination.propTypes = {
   state: PropTypes.object.isRequired,
 };
 
-function CustomToolBar(show) {
-  if (!show) {
-    return null;
-  }
-  return (
-    <GridToolbarContainer>
-      <GridDensitySelector />
-      <GridColumnsToolbarButton />
-    </GridToolbarContainer>
-  );
-}
-
 export function ServerPaginationGrid({
   fetchData,
   cols,
@@ -127,6 +122,7 @@ export function ServerPaginationGrid({
   showToolBar,
   showImport,
   shouldUpdate = false,
+  createBtn,
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -149,6 +145,7 @@ export function ServerPaginationGrid({
     showToolBar: PropTypes.bool.isRequired,
     showImport: PropTypes.bool.isRequired,
     shouldUpdate: PropTypes.bool, // if you want to force update table
+    createBtn: PropTypes.node, // optional create button
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -156,8 +153,11 @@ export function ServerPaginationGrid({
     filename: null,
     filterRowForCSV: null,
     filterOptions: null,
+    createBtn: null,
   };
   paginationContainer = React.useRef(null);
+  const instrumentTable = filename && filename.includes('instrument');
+  const modelTable = filename && filename.includes('model');
   const [rows, setRows] = React.useState([]);
   const [tags, setTags] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -187,6 +187,9 @@ export function ServerPaginationGrid({
 
   const handlePageChange = (params) => {
     onPageChange(params.page, initLimit);
+  };
+  const handleImport = () => {
+    history.push('./import');
   };
 
   const handlePageSizeChange = (e) => {
@@ -348,7 +351,56 @@ export function ServerPaginationGrid({
           }}
           components={{
             Pagination: CustomPagination,
-            Toolbar: () => CustomToolBar(showToolBar),
+            Toolbar: () => (
+              <>
+                {showToolBar
+          && (
+          <GridToolbarContainer className="row">
+            <div className="col-auto me-auto">
+              {showImport && (
+              <>
+                <CreateButton type={filename} />
+                <ImportButton onClick={handleImport} />
+              </>
+              )}
+
+              {handleExport && (
+              <>
+                {loadingExport && <CircularProgress />}
+                {modelTable && (
+                <ExportModelsIcon
+                  setLoading={setLoadingExport}
+                  filterOptions={filterOptions}
+                  showText={false}
+                />
+                )}
+                {instrumentTable && (
+                <ExportInstrumentsIcon
+                  setLoading={setLoadingExport}
+                  filterOptions={filterOptions}
+                  showText={false}
+                />
+                )}
+                {instrumentTable && (
+                <GenerateBarcodesIcon
+                  filterOptions={filterOptions}
+                  assetTags={tags}
+                  getAll={tags.length === rows.length}
+                />
+                )}
+              </>
+              )}
+              <CategoriesButton type="models" />
+            </div>
+            <div className="col-auto">
+              <GridDensitySelector />
+              <GridColumnsToolbarButton />
+            </div>
+
+          </GridToolbarContainer>
+          )}
+              </>
+            ),
             LoadingOverlay: () => null,
           }}
         />
@@ -358,17 +410,6 @@ export function ServerPaginationGrid({
         <div className="col-auto me-auto" ref={paginationContainer} />
         {/* This is container for the custom pagination */}
         <div className="col-auto">
-          {showImport && (
-            <button
-              type="button"
-              className="btn ms-3"
-              onClick={() => {
-                history.push('/import');
-              }}
-            >
-              Import
-            </button>
-          )}
           {handleExport && (
             <>
               {loadingExport && <CircularProgress />}
@@ -382,13 +423,6 @@ export function ServerPaginationGrid({
                 <ExportInstruments
                   setLoading={setLoadingExport}
                   filterOptions={filterOptions}
-                />
-              )}
-              {filename && filename.includes('instrument') && (
-                <GenerateBarcodes
-                  filterOptions={filterOptions}
-                  assetTags={tags}
-                  getAll={tags.length === rows.length}
                 />
               )}
               <span className="ms-3" />
