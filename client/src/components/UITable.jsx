@@ -188,11 +188,12 @@ export function ServerPaginationGrid({
   const handleSortModelChange = (params) => {
     const orderBy = params.sortModel;
     if (orderBy.length === 0) {
-      setOrdering(null);
+      setOrdering([['id', 'ASC']]);
+      onSortModelChange('id', 'ASC');
     } else {
       setOrdering([[orderBy[0].field, orderBy[0].sort.toUpperCase()]]);
+      onSortModelChange(orderBy[0].field, orderBy[0].sort.toUpperCase());
     }
-    onSortModelChange(orderBy[0].field, orderBy[0].sort.toUpperCase());
   };
 
   React.useEffect(() => {
