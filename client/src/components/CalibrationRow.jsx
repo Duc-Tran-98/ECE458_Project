@@ -19,6 +19,7 @@ export default function CalibrationRow({
   fileName,
   fileLocation,
   loadBankData,
+  klufeData,
   // eslint-disable-next-line no-unused-vars
   file,
   date,
@@ -35,6 +36,7 @@ export default function CalibrationRow({
     fileName: PropTypes.string.isRequired,
     fileLocation: PropTypes.string.isRequired,
     loadBankData: PropTypes.string.isRequired,
+    klufeData: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     file: PropTypes.object,
@@ -189,6 +191,9 @@ export default function CalibrationRow({
             )}
             {viewOnly && loadBankData && !fileName && (
               <div> CALIBRATED BY HPT LOAD BANK </div>
+            )}
+            {viewOnly && klufeData && !fileName && (
+              <div> CALIBRATED BY KLUFE K5700 </div>
             )}
             {fileNameDisplay.length > 0 && (
               <div>
