@@ -23,11 +23,12 @@ import Pagination from '@material-ui/lab/Pagination';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Portal from '@material-ui/core/Portal';
 import {
-  ImportButton, CreateButton, CategoriesButton,
+  ImportButton, CreateButton,
 } from './CustomMuiIcons';
 import ExportModelsIcon from './ExportModelsIcon';
 import ExportInstruments, { ExportInstrumentsIcon } from './ExportInstruments';
 import ExportModels from './ExportModels';
+import CategoriesButton from './CategoriesButton';
 
 // import UserContext from './UserContext';
 import { GenerateBarcodesIcon } from './GenerateBarcodes';
@@ -393,10 +394,7 @@ export function ServerPaginationGrid({
                 )}
               </>
               )}
-              <CategoriesButton onClick={() => {
-                console.log('Viewing categories...');
-              }}
-              />
+              <CategoriesButton type="models" />
             </div>
             <div className="col-auto">
               <GridDensitySelector />
