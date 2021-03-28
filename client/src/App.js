@@ -42,11 +42,13 @@ function App() {
     setLoggedIn(false);
   };
   const handleLogin = async (newJwt) => {
-    setLoggedIn(true);
     jwt = newJwt;
     setAuthHeader(jwt);
     console.log(`set auth header = ${jwt}`);
     window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
+    setTimeout(() => {
+      setLoggedIn(true);
+    }, 100);
   };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) {

@@ -86,7 +86,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
           setUserState(val);
           startPolling(val);
         });
-      }, 500); // set timeout to give time for new authheader to get applied
+      }, 100); // set timeout to give time for new authheader to get applied
     }
     return () => {
       clearInterval(intervalId);

@@ -46,10 +46,11 @@ export default function ViewUser({ userName, onDelete }) {
           ...formState, modelPermission: event.target.checked, instrumentPermission: event.target.checked, calibrationPermission: event.target.checked, isAdmin: event.target.checked,
         });
       } else if (event.target.name === 'modelPermission') {
+        const { instrumentPermission } = formState;
         setFormState({
-          ...formState,
+          ...formState, // TODO: UNCHECK ADMIN STATUS IF CLICK OF ANYTHING WHILE ADMIN STATUS = TRUE
           modelPermission: event.target.checked,
-          instrumentPermission: event.target.checked,
+          instrumentPermission: instrumentPermission || event.target.checked,
         });
       } else {
         setFormState({ ...formState, [event.target.name]: event.target.checked });
