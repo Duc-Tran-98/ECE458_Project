@@ -20,33 +20,9 @@ function NavBar({
       <div className="col-auto me-auto">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
           <li className="nav-item">
-            <NavLink className="nav-link h5" exact to="/">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="feather feather-home"
-              >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-              Dashboard
-            </NavLink>
-          </li>
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link h5 dropdown-toggle"
-              href="#"
-              id="navBarDropDown-models"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+            <NavLink
+              className="nav-link h5"
+              to="/viewModels?page=1&limit=25&orderBy=id&sortBy=ASC"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -65,44 +41,12 @@ function NavBar({
                 <polyline points="2 12 12 17 22 12" />
               </svg>
               Models
-            </a>
-            <ul
-              className="dropdown-menu"
-              aria-labelledby="navBarDropDown-models"
-            >
-              <li>
-                <NavLink
-                  className="dropdown-item"
-                  to="/viewModels?page=1&limit=25"
-                >
-                  Table
-                </NavLink>
-              </li>
-              {(user.isAdmin || user.modelPermission) && (
-                <>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink
-                      className="dropdown-item"
-                      to="/modelCategories?page=1&limit=25"
-                    >
-                      Categories
-                    </NavLink>
-                  </li>
-                </>
-              )}
-            </ul>
+            </NavLink>
           </li>
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link h5 dropdown-toggle"
-              href="#"
-              id="navBarDropDown-instruments"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+          <li className="nav-item">
+            <NavLink
+              className="nav-link h5"
+              to="/viewInstruments?page=1&limit=25&orderBy=id&sortBy=ASC"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -121,41 +65,13 @@ function NavBar({
                 <polyline points="2 12 12 17 22 12" />
               </svg>
               Instruments
-            </a>
-            <ul
-              className="dropdown-menu"
-              aria-labelledby="navBarDropDown-instruments"
-            >
-              <li>
-                <NavLink
-                  className="dropdown-item"
-                  to="/viewInstruments?page=1&limit=25"
-                >
-                  Table
-                </NavLink>
-              </li>
-              {(user.isAdmin || user.instrumentPermission) && (
-                <>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink
-                      className="dropdown-item"
-                      to="/instrumentCategories?page=1&limit=25"
-                    >
-                      Categories
-                    </NavLink>
-                  </li>
-                </>
-              )}
-            </ul>
+            </NavLink>
           </li>
           {user.isAdmin && (
             <li className="nav-item">
               <NavLink
                 className="nav-link h5"
-                to="/viewUsers?page=1&limit=25"
+                to="/viewUsers?page=1&limit=25&orderBy=id&sortBy=ASC"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -184,6 +100,28 @@ function NavBar({
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
           <li className="nav-item">
             <ProfileIcon handleSignOut={handleSignOut} />
+          </li>
+          <li className="nav-item">
+            <NavLink
+              className="nav-link h5"
+              to="/help"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                fill="currentColor"
+                className="bi bi-info-circle"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+              </svg>
+              {/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-info-square" viewBox="0 0 24 24">
+                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+              </svg> */}
+            </NavLink>
           </li>
         </ul>
       </div>

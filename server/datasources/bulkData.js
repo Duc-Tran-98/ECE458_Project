@@ -1,3 +1,4 @@
+/* eslint-disable no-multiple-empty-lines */
 /* eslint-disable no-unreachable */
 /* eslint-disable no-loop-func */
 /* eslint-disable no-mixed-operators */
@@ -47,7 +48,12 @@ class BulkDataAPI extends DataSource {
     const t = await this.store.db.transaction();
 
     try {
-      // Then, we do some calls passing this transaction as an option:
+      const catMap = new Map();
+      const cats = await this.store.modelCategories.findAll();
+      for (let i = 0; i < cats.length; i += 1) {
+        catMap.set(cats[i].dataValues.name.toLowerCase(), cats[i].dataValues.id);
+      }
+
       for (let i = 0; i < models.length; i += 1) {
         const currentModel = models[i];
         const vendor = currentModel.vendor;
@@ -75,25 +81,12 @@ class BulkDataAPI extends DataSource {
         if (categories) {
           for (let j = 0; j < categories.length; j += 1) {
             const name = categories[j];
-            const category = await this.store.modelCategories.findAll(
-              {
-                where: { name },
-                include: {
-                  all: true,
-                },
-                transaction: t,
-              },
-              { transaction: t },
-            );
-            if (category && category[0]) {
-              const modelCategoryId = category[0].dataValues.id;
-              await this.store.modelCategoryRelationships.create(
-                {
-                  modelId,
-                  modelCategoryId,
-                },
-                { transaction: t },
-              );
+            if (catMap.has(name.toLowerCase())) {
+              const modelCategoryId = catMap.get(name.toLowerCase());
+              await this.store.modelCategoryRelationships.create({
+                modelId,
+                modelCategoryId,
+              }, { transaction: t });
             } else {
               const createdCat = await this.store.modelCategories.create(
                 {
@@ -102,13 +95,11 @@ class BulkDataAPI extends DataSource {
                 { transaction: t },
               );
               const modelCategoryId = createdCat.dataValues.id;
-              await this.store.modelCategoryRelationships.create(
-                {
-                  modelId,
-                  modelCategoryId,
-                },
-                { transaction: t },
-              );
+              catMap.set(name.toLowerCase(), modelCategoryId);
+              await this.store.modelCategoryRelationships.create({
+                modelId,
+                modelCategoryId,
+              }, { transaction: t });
             }
           }
         }
@@ -143,7 +134,6 @@ class BulkDataAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const t = await this.store.db.transaction();
-    console.log('importing instruments');
 
     try {
       // Then, we do some calls passing this transaction as an option:
@@ -153,6 +143,11 @@ class BulkDataAPI extends DataSource {
       // eslint-disable-next-line prefer-const
       let tags = assetTags.map((item) => item.dataValues.assetTag);
       let tagsLoop = 100000;
+      const catMap = new Map();
+      const cats = await this.store.instrumentCategories.findAll();
+      for (let i = 0; i < cats.length; i += 1) {
+        catMap.set(cats[i].dataValues.name.toLowerCase(), cats[i].dataValues.id);
+      }
 
       for (let i = 0; i < instruments.length; i += 1) {
         const currentInstrument = instruments[i];
@@ -228,27 +223,6 @@ class BulkDataAPI extends DataSource {
                       }
                     });
                 } else {
-                  // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-                  // // eslint-disable-next-line max-len
-                  // let instrumentCheck = await this.store.instruments.findOne({
-                  //   where: { assetTag: newAssetTag },
-                  //   include: {
-                  //     all: true,
-                  //   },
-                  //   transaction: t,
-                  // }, { transaction: t });
-                  // while (instrumentCheck != null) {
-                  //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-                  //   // eslint-disable-next-line no-await-in-loop
-                  //   instrumentCheck = await this.store.instruments.findOne({
-                  //     where: { assetTag: newAssetTag },
-                  //     include: {
-                  //       all: true,
-                  //     },
-                  //     transaction: t,
-                  //   }, { transaction: t });
-                  // }
-
                   for (let j = tagsLoop; j < 1000000; j += 1) {
                     if (!tags.includes(j)) {
                       newAssetTag = j;
@@ -277,7 +251,6 @@ class BulkDataAPI extends DataSource {
                     { transaction: t },
                   );
                   const instrumentId = created.dataValues.id;
-
                   // add calibration event if included
                   if (calibrationUser != null) {
                     await this.store.calibrationEvents.create(
@@ -292,27 +265,13 @@ class BulkDataAPI extends DataSource {
                   }
                   if (categories) {
                     for (let j = 0; j < categories.length; j += 1) {
-                      // attach categories and create if they don't exist
                       const name = categories[j];
-                      const category = await this.store.instrumentCategories.findAll(
-                        {
-                          where: { name },
-                          include: {
-                            all: true,
-                          },
-                          transaction: t,
-                        },
-                        { transaction: t },
-                      );
-                      if (category && category[0]) {
-                        const instrumentCategoryId = category[0].dataValues.id;
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
+                      if (catMap.has(name.toLowerCase())) {
+                        const instrumentCategoryId = catMap.get(name.toLowerCase());
+                        await this.store.instrumentCategoryRelationships.create({
+                          instrumentId,
+                          instrumentCategoryId,
+                        }, { transaction: t });
                       } else {
                         const createdCat = await this.store.instrumentCategories.create(
                           {
@@ -321,13 +280,11 @@ class BulkDataAPI extends DataSource {
                           { transaction: t },
                         );
                         const instrumentCategoryId = createdCat.dataValues.id;
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
+                        catMap.set(name.toLowerCase(), instrumentCategoryId);
+                        await this.store.instrumentCategoryRelationships.create({
+                          instrumentId,
+                          instrumentCategoryId,
+                        }, { transaction: t });
                       }
                     }
                   }
@@ -415,27 +372,6 @@ class BulkDataAPI extends DataSource {
                       }
                     });
                 } else {
-                  // newAssetTag = Math.floor(Math.random() * 900000) + 100000;
-                  // // eslint-disable-next-line max-len
-                  // let instrumentCheck = await this.store.instruments.findOne({
-                  //   where: { assetTag: newAssetTag },
-                  //   include: {
-                  //     all: true,
-                  //   },
-                  //   transaction: t,
-                  // }, { transaction: t });
-                  // while (instrumentCheck != null) {
-                  //   newAssetTag = Math.floor(Math.floor(Math.random() * 900000) + 100000);
-                  //   // eslint-disable-next-line no-await-in-loop
-                  //   instrumentCheck = await this.store.instruments.findOne({
-                  //     where: { assetTag: newAssetTag },
-                  //     include: {
-                  //       all: true,
-                  //     },
-                  //     transaction: t,
-                  //   }, { transaction: t });
-                  // }
-
                   for (let j = tagsLoop; j < 1000000; j += 1) {
                     if (!tags.includes(j)) {
                       newAssetTag = j;
@@ -481,25 +417,12 @@ class BulkDataAPI extends DataSource {
                     for (let j = 0; j < categories.length; j += 1) {
                       // attach categories and create if they don't exist
                       const name = categories[j];
-                      const category = await this.store.instrumentCategories.findAll(
-                        {
-                          where: { name },
-                          include: {
-                            all: true,
-                          },
-                          transaction: t,
-                        },
-                        { transaction: t },
-                      );
-                      if (category && category[0]) {
-                        const instrumentCategoryId = category[0].dataValues.id;
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
+                      if (catMap.has(name.toLowerCase())) {
+                        const instrumentCategoryId = catMap.get(name.toLowerCase());
+                        await this.store.instrumentCategoryRelationships.create({
+                          instrumentId,
+                          instrumentCategoryId,
+                        }, { transaction: t });
                       } else {
                         const createdCat = await this.store.instrumentCategories.create(
                           {
@@ -508,13 +431,11 @@ class BulkDataAPI extends DataSource {
                           { transaction: t },
                         );
                         const instrumentCategoryId = createdCat.dataValues.id;
-                        await this.store.instrumentCategoryRelationships.create(
-                          {
-                            instrumentId,
-                            instrumentCategoryId,
-                          },
-                          { transaction: t },
-                        );
+                        catMap.set(name.toLowerCase(), instrumentCategoryId);
+                        await this.store.instrumentCategoryRelationships.create({
+                          instrumentId,
+                          instrumentCategoryId,
+                        }, { transaction: t });
                       }
                     }
                   }
@@ -546,6 +467,25 @@ class BulkDataAPI extends DataSource {
     }
     return JSON.stringify(response);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*
    * DEPRECATED, no longer in user as of ev 2

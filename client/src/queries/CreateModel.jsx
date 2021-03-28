@@ -37,11 +37,36 @@ export default function CreateModel({
           supportLoadBankCalibration: $supportLoadBankCalibration
           supportKlufeCalibration: $supportKlufeCalibration
           categories: $categories
-        )
+        ){
+          message
+          success
+          model {
+            id
+            vendor
+            modelNumber
+            description
+            comment
+            calibrationFrequency
+            categories {
+              name
+            }
+            supportLoadBankCalibration
+            supportKlufeCalibration
+          }
+        }
       }
     `;
   const query = ADD_MODEL;
   const queryName = 'addModel';
+  const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   const getVariables = () => ({
     modelNumber,
     vendor,
@@ -53,6 +78,6 @@ export default function CreateModel({
     categories,
   });
   Query({
-    query, queryName, getVariables, handleResponse,
+    query, queryName, getVariables, handleResponse, refetchQueries,
   });
 }

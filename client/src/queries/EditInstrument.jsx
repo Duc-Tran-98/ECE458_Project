@@ -20,11 +20,54 @@ export default async function EditInstrumentQuery({
     handleResponse: null,
   };
   const EDIT_INST = gql`
-    mutation EditInst($modelNumber: String!, $vendor: String!, $assetTag: Int!, $serialNumber: String!, $comment: String, $categories: [String], $id: Int!) {
-      editInstrument(modelNumber: $modelNumber, vendor: $vendor, assetTag: $assetTag, serialNumber: $serialNumber, comment: $comment, categories: $categories, id: $id)
+    mutation EditInst(
+      $modelNumber: String!
+      $vendor: String!
+      $assetTag: Int!
+      $serialNumber: String!
+      $comment: String
+      $categories: [String]
+      $id: ID!
+    ) {
+      editInstrument(
+        modelNumber: $modelNumber
+        vendor: $vendor
+        assetTag: $assetTag
+        serialNumber: $serialNumber
+        comment: $comment
+        categories: $categories
+        id: $id
+      ) {
+        message
+        success
+        instrument {
+          vendor
+          modelNumber
+          serialNumber
+          modelReference
+          calibrationFrequency
+          comment
+          description
+          id
+          assetTag
+          supportLoadBankCalibration
+          supportKlufeCalibration
+          instrumentCategories {
+            name
+          }
+        }
+      }
     }
   `;
   const query = EDIT_INST;
+  const refetch = JSON.parse(
+    window.sessionStorage.getItem('getInstrumentsWithFilter'),
+  ) || null;
+  console.log(refetch);
+  const refetchQueries = (refetch !== null) ? [{
+    query: refetch.query,
+    variables: refetch.variables,
+  }] : [];
   const queryName = 'editInstrument';
   const getVariables = () => ({
     modelNumber,
@@ -41,9 +84,12 @@ export default async function EditInstrumentQuery({
       queryName,
       getVariables,
       handleResponse,
+      refetchQueries,
     });
   } else {
     // eslint-disable-next-line no-return-await
-    return await QueryAndThen({ query, queryName, getVariables });
+    return await QueryAndThen({
+      query, queryName, getVariables, refetchQueries,
+    });
   }
 }

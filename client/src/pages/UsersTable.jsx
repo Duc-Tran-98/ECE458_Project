@@ -3,7 +3,8 @@ import { useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
 import CreateUser from './CreateUser';
-import ModalAlert from '../components/ModalAlert';
+import ModalAlert, { StateLessModal } from '../components/ModalAlert';
+import ViewUser from './ViewUser';
 // import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
@@ -12,11 +13,19 @@ export default function UsersTable() {
   let urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [selectedUser, setSelectedUser] = React.useState('');
+  const [orderBy, setOrderBy] = React.useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = React.useState(urlParams.get('sortBy'));
   const [update, setUpdate] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
     const pg = parseInt(urlParams.get('page'), 10);
+    const order = urlParams.get('orderBy');
+    const sort = urlParams.get('sortBy');
+    setOrderBy(order);
+    setSortBy(sort);
     if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
       // if user clicks on models nav link or goes back
       setInitLimit(lim);
@@ -127,14 +136,26 @@ export default function UsersTable() {
   );
   return (
     <>
+      <StateLessModal
+        width=""
+        title={`You are viewing user: ${selectedUser}`}
+        handleClose={() => {
+          setShowEdit(false);
+        }}
+        show={showEdit}
+      >
+        <ViewUser userName={selectedUser} onDelete={() => { setShowEdit(false); setSelectedUser(''); }} />
+      </StateLessModal>
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
-          const state = { previousUrl: window.location.href };
-          history.push(
-            `/viewUser/?userName=${e.row.userName}`,
-            state,
-          );
+          // const state = { previousUrl: window.location.href };
+          // history.push(
+          //   `/viewUser/?userName=${e.row.userName}`,
+          //   state,
+          // );
+          setSelectedUser(e.row.userName);
+          setShowEdit(true);
         }}
         shouldUpdate={update}
         headerElement={(
@@ -144,7 +165,7 @@ export default function UsersTable() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}`;
+          const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -153,7 +174,7 @@ export default function UsersTable() {
           }
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}`;
+          const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -161,10 +182,23 @@ export default function UsersTable() {
             setInitPage(page);
           }
         }}
-        fetchData={(limit, offset, orderBy) => GetAllUsers({
+        initialOrder={() => {
+          if (orderBy) {
+            return [[orderBy, sortBy]];
+          }
+          return null;
+        }}
+        onSortModelChange={(order, sort) => {
+          const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewUsers${searchString}`);
+          }
+        }}
+        fetchData={(limit, offset, ordering) => GetAllUsers({
           limit,
           offset,
-          orderBy,
+          orderBy: ordering,
         }).then((response) => response)}
         showToolBar={false}
         showImport={false}

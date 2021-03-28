@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { gql } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Query from './UseQuery';
 import UserContext from './UserContext';
@@ -157,9 +156,8 @@ export function EditUserForm({
     onChangeCheckbox: () => undefined,
   };
   const user = useContext(UserContext);
-  const history = useHistory();
   const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
-  const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled' : 'btn';
+  const buttonStyle = formState.userName === 'admin' ? 'btn text-muted disabled my-auto' : 'btn my-auto';
   const [loading, setLoading] = React.useState(false);
   const onSubmit = (e) => {
     e.preventDefault();
@@ -176,7 +174,22 @@ export function EditUserForm({
             $modelPermission: Boolean!
             $calibrationPermission: Boolean!
             ) {
-             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission)
+             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission){
+               message
+               success
+               user {
+                 id
+                email
+                firstName
+                lastName
+                userName
+                password
+                isAdmin
+                instrumentPermission
+                modelPermission
+                calibrationPermission
+               }
+             }
            }
          `,
       queryName: 'editPermissions',
@@ -191,11 +204,6 @@ export function EditUserForm({
         setLoading(false);
         if (response.success) {
           toast.success('Successfully updated permissions');
-          const { state } = history.location;
-          history.replace(
-            `/viewUser/?userName=${userName}`,
-            state,
-          );
         } else {
           toast.error(response.message);
         }
@@ -205,8 +213,8 @@ export function EditUserForm({
   return (
     <form className="needs-validation" noValidate onSubmit={onSubmit}>
       <div className="mx-3 py-1">
-        <div className="row mt-3">
-          <div className="col">
+        <div className="d-flex justify-content-center">
+          <div className="">
             <label htmlFor="validationCustomUsername" className="h5">
               Username
             </label>
@@ -227,18 +235,18 @@ export function EditUserForm({
               />
             </div>
           </div>
-          <div className="col-auto me-auto mt-4">
-            {deleteBtn}
-          </div>
         </div>
-        <div className="d-flex flex-row mx-auto">
-          <div className="d-flex flex-column mx-auto">
-            <div className="form-check form-switch mt-3">
-              <label className="form-check-label h5" htmlFor="adminCheck">
+        <div className="row">
+          <div className="col">
+            <div className="form-check form-switch mt-3 position-relative text-center">
+              <label
+                className="form-check-label h5"
+                htmlFor="adminCheck"
+              >
                 Admin user?
               </label>
               <input
-                className="form-check-input"
+                className="form-check-input position-absolute top-0 start-36 translate-middle-x"
                 type="checkbox"
                 id="adminCheck"
                 name="isAdmin"
@@ -250,7 +258,7 @@ export function EditUserForm({
                 <strong>{formState.isAdmin ? 'Yes' : 'No'}</strong>
               </div>
             </div>
-            <div className="form-check form-switch mt-3">
+            <div className="form-check form-switch mt-3 text-center position-relative">
               <label
                 className="form-check-label h5"
                 htmlFor="modelPermissionCheck"
@@ -258,7 +266,7 @@ export function EditUserForm({
                 Model Permissions?
               </label>
               <input
-                className="form-check-input"
+                className="form-check-input position-absolute top-0 start-36 translate-middle-x"
                 type="checkbox"
                 id="modelPermissionCheck"
                 name="modelPermission"
@@ -270,17 +278,15 @@ export function EditUserForm({
                 <strong>{formState.modelPermission ? 'Yes' : 'No'}</strong>
               </div>
             </div>
-          </div>
-          <div className="d-flex flex-column mx-auto">
-            <div className="form-check form-switch mt-3">
+            <div className="form-check form-switch mt-3 position-relative text-center">
               <label
-                className="form-check-label h5"
+                className="form-check-label h5 ps-5"
                 htmlFor="instrumentPermissionCheck"
               >
                 Instrument Permissions?
               </label>
               <input
-                className="form-check-input"
+                className="form-check-input position-absolute top-0 start-36 translate-middle-x"
                 type="checkbox"
                 id="instrumentPermissionCheck"
                 name="instrumentPermission"
@@ -292,15 +298,15 @@ export function EditUserForm({
                 <strong>{formState.instrumentPermission ? 'Yes' : 'No'}</strong>
               </div>
             </div>
-            <div className="form-check form-switch mt-3">
+            <div className="form-check form-switch mt-3 position-relative text-center">
               <label
-                className="form-check-label h5"
+                className="form-check-label h5 ps-5"
                 htmlFor="calibrationPermissionCheck"
               >
                 Calibration Permissions?
               </label>
               <input
-                className="form-check-input"
+                className="form-check-input position-absolute top-0 start-36 translate-middle-x"
                 type="checkbox"
                 id="calibrationPermissionCheck"
                 name="calibrationPermission"
@@ -315,6 +321,7 @@ export function EditUserForm({
               </div>
             </div>
           </div>
+          <div className="d-flex flex-column mx-auto" />
         </div>
       </div>
       <div className="d-flex justify-content-center py-3">
@@ -329,6 +336,7 @@ export function EditUserForm({
             Save Changes
           </button>
         )}
+        <div className="ms-5 my-auto pb-3">{deleteBtn}</div>
         {/* <button
           className="btn btn-danger"
           type="button"

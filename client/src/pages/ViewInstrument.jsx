@@ -16,6 +16,7 @@ import ModalAlert, { StateLessModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
+import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
@@ -30,6 +31,7 @@ export default function DetailedInstrumentView() {
   const urlParams = new URLSearchParams(queryString);
   const [loading, setLoading] = React.useState(false); // loading status of delete query
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
+  const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
   const [responseMsg, setResponseMsg] = React.useState(''); // msg from delete query
   const [show, setShow] = React.useState(false); // show add calib event modal or not
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
@@ -182,6 +184,12 @@ export default function DetailedInstrumentView() {
       assetTag,
       id,
     } = response;
+    if (typeof id === 'undefined') {
+      id = formState.id;
+    }
+    if (typeof id === 'string') {
+      id = parseInt(id, 10);
+    }
     fetchData(null, id);
     comment = comment || '';
     modelNumber = modelNumber || '';
@@ -190,7 +198,6 @@ export default function DetailedInstrumentView() {
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
     description = description || '';
-    id = id || 0;
     setFormState({
       ...formState,
       comment,
@@ -218,6 +225,7 @@ export default function DetailedInstrumentView() {
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
+              supportKlufeCalibration
             }
           }
         `,
@@ -225,6 +233,7 @@ export default function DetailedInstrumentView() {
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
+          setSupportsKlufeWiz(response.supportKlufeCalibration);
         },
       });
       FindInstrument({
@@ -300,8 +309,22 @@ export default function DetailedInstrumentView() {
               </ModalAlert>
             </div>
           )}
-          {!supportsLoadBankWiz && (
-            <span className="mx-2" />
+          {supportsKlufeWiz && (
+            <div className="mx-2">
+              <ModalAlert
+                btnText="Add Klufe Calibration"
+                title="Add Klufe Calibration"
+                popOverText="Add calibration via Klufe"
+              >
+                <KlufeWiz
+                  initModelNumber={formState.modelNumber}
+                  initSerialNumber={formState.serialNumber}
+                  initAssetTag={formState.assetTag}
+                  initVendor={formState.vendor}
+                  onFinish={fetchData}
+                />
+              </ModalAlert>
+            </div>
           )}
           {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
             <MouseOverPopover
@@ -312,7 +335,7 @@ export default function DetailedInstrumentView() {
                 className="btn text-nowrap"
                 to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
               >
-                Certificate
+                View Certificate
               </Link>
             </MouseOverPopover>
           )}
@@ -386,37 +409,55 @@ export default function DetailedInstrumentView() {
       </MouseOverPopover>
     </>
   );
-
+  const ref = React.useRef(null);
   return (
     <>
-      <div className="col">
-        <div className="row">
+      <div className="row">
+        <div className="col p-3 border border-right border-dark">
           {fetched && (
-            <InstrumentForm
-              modelNumber={formState.modelNumber}
-              vendor={formState.vendor}
-              comment={formState.comment}
-              serialNumber={formState.serialNumber}
-              categories={formState.categories}
-              viewOnly
-              description={formState.description}
-              calibrationFrequency={formState.calibrationFrequency}
-              assetTag={formState.assetTag}
-              id={formState.id}
-              type="edit"
-              deleteBtn={deleteBtn}
-              handleFormSubmit={handleSubmit}
-              footer={footer}
-            />
+            <>
+              <h3 className="px-3 bg-secondary text-light my-auto">
+                Instrument Information
+              </h3>
+              <InstrumentForm
+                editBtnRef={ref}
+                modelNumber={formState.modelNumber}
+                vendor={formState.vendor}
+                comment={formState.comment}
+                serialNumber={formState.serialNumber}
+                categories={formState.categories}
+                viewOnly
+                description={formState.description}
+                calibrationFrequency={formState.calibrationFrequency}
+                assetTag={formState.assetTag}
+                id={formState.id}
+                type="edit"
+                deleteBtn={deleteBtn}
+                handleFormSubmit={handleSubmit}
+                footer={footer}
+              />
+            </>
           )}
         </div>
-        <div className="row px-3 mt-3">
-          <div>
-            <div className="bg-secondary text-light py-2">
-              <div className="row px-3">
-                <div className="col-auto me-auto h5 my-auto">Calibration History:</div>
+        <div
+          className="col p-3 border border-left border-dark"
+          id="remove-if-empty"
+          style={{ maxHeight: '72vh' }}
+        >
+          <div
+            className="h-100"
+            style={{ overflowY: 'auto', overflowX: 'hidden' }}
+          >
+            <div
+              className="bg-secondary text-light sticky-top"
+              style={{ zIndex: '1' }}
+            >
+              <div className="row px-3 w-100">
+                <h3 className="px-3 bg-secondary text-light my-auto col-auto me-auto">
+                  Calibration History
+                </h3>
                 {formState.calibrationFrequency > 0 && (
-                <div className="col-auto mt-1">{genCalibButtons}</div>
+                  <div className="col-auto my-2">{genCalibButtons}</div>
                 )}
               </div>
             </div>
@@ -436,6 +477,7 @@ export default function DetailedInstrumentView() {
           </div>
         </div>
       </div>
+      <div className="d-flex justify-content-center py-3" ref={ref} />
     </>
   );
 }

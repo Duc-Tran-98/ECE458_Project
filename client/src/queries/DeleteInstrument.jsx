@@ -10,17 +10,29 @@ export default function DeleteInstrument({
     handleResponse: PropTypes.func.isRequired,
   };
   const DEL_INST = gql`
-    mutation DeleteInstrument($id: Int!) {
+    mutation DeleteInstrument($id: ID!) {
       deleteInstrument(id: $id)
     }
   `;
   const query = DEL_INST;
   const queryName = 'deleteInstrument';
   const getVariables = () => ({ id });
+  const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+    || null;
+  console.log(refetch);
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   Query({
     query,
     queryName,
     getVariables,
     handleResponse,
+    refetchQueries,
   });
 }

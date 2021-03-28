@@ -37,7 +37,7 @@ export default function EditModelQuery({
             $supportLoadBankCalibration: Boolean!
             $supportKlufeCalibration: Boolean!
             $categories: [String]
-            $id: Int!
+            $id: ID!
         ) {
             editModel(
             modelNumber: $modelNumber
@@ -49,10 +49,36 @@ export default function EditModelQuery({
             supportKlufeCalibration: $supportKlufeCalibration
             categories: $categories
             id: $id
-            )
+            ){
+              message
+              success
+              model {
+                id
+                vendor
+                modelNumber
+                description
+                comment
+                calibrationFrequency
+                categories {
+                  name
+                }
+                supportLoadBankCalibration
+                supportKlufeCalibration
+              }
+            }
         }
     `;
   const query = EDIT_MODEL;
+  const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
+  console.log(refetch);
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   const queryName = 'editModel';
   const getVariables = () => ({
     description,
@@ -70,5 +96,6 @@ export default function EditModelQuery({
     queryName,
     getVariables,
     handleResponse,
+    refetchQueries,
   });
 }

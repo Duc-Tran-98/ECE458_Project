@@ -16,6 +16,10 @@ export default function DeleteModelCategory({ name, handleResponse }) {
   const queryName = 'removeModelCategory';
   const getVariables = () => ({ name });
   Query({
-    query, queryName, getVariables, handleResponse,
+    query,
+    queryName,
+    getVariables,
+    handleResponse,
+    fetchPolicy: 'no-cache',
   });
 }

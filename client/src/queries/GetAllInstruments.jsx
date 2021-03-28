@@ -15,6 +15,7 @@ export default async function GetAllInstruments({
   serialNumber,
   assetTag,
   orderBy,
+  fetchPolicy = null,
 }) {
   GetAllInstruments.propTypes = {
     handleResponse: PropTypes.func,
@@ -28,6 +29,7 @@ export default async function GetAllInstruments({
     serialNumber: PropTypes.string,
     assetTag: PropTypes.number,
     orderBy: PropTypes.array,
+    fetchPolicy: PropTypes.string,
   };
   const GET_INSTRUMENTS_QUERY = gql`
     query Instruments(
@@ -84,16 +86,23 @@ export default async function GetAllInstruments({
   const getVariables = () => ({
     limit, offset, vendor, modelNumber, description, serialNumber, assetTag, modelCategories, instrumentCategories, orderBy,
   });
+  window.sessionStorage.setItem('getInstrumentsWithFilter', JSON.stringify({
+    query,
+    variables: getVariables(),
+  }));
   if (handleResponse) {
     Query({
       query,
       queryName,
       handleResponse,
       getVariables,
+      fetchPolicy,
     });
   } else {
     // eslint-disable-next-line no-return-await
-    const response = await QueryAndThen({ query, queryName, getVariables });
+    const response = await QueryAndThen({
+      query, queryName, getVariables, fetchPolicy,
+    });
     return response;
   }
 }
@@ -105,6 +114,6 @@ export async function CountInstruments() {
     }
   `;
   const queryName = 'countAllInstruments';
-  const response = await QueryAndThen({ query, queryName });
+  const response = await QueryAndThen({ query, queryName, fetchPolicy: 'no-cache' });
   return response;
 }

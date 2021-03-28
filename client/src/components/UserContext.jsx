@@ -38,7 +38,9 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         }).then((res) => {
           if (typeof res === 'undefined') {
             // undefined => user got deleted
-            toast.error('This account has been deleted! Signing you out.');
+            toast.error('This account has been deleted! Signing you out.', {
+              toastId: 0,
+            });
             clearInterval(intervalId);
             handleSignOut(); // stop polling, and sign out user
           } else {
@@ -51,7 +53,9 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
               setUserState(res); // update state
               clearInterval(intervalId); // stop old polling
               startPolling(res); // start new poll with new init val
-              toast('User permission have changed.');
+              toast('User permission have changed.', {
+                toastId: 68,
+              });
             }
           }
         });
@@ -81,12 +85,14 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
           includeAll: true,
           fetchPolicy: 'no-cache',
         }).then((val) => {
-          console.log('val in userContext: ', val);
           setUserState(val);
           startPolling(val);
         });
-      }, 500); // set timeout to give time for new authheader to get applied
+      }, 100); // set timeout to give time for new authheader to get applied
     }
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [loggedIn]);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

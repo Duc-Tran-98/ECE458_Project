@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React, { useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
@@ -6,6 +7,7 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Portal } from '@material-ui/core';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
@@ -62,7 +64,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -80,6 +82,8 @@ export default function ModelForm({
     diffSubmit: PropTypes.bool, // whether or not to display own submit button
     deleteBtn: PropTypes.node,
     type: PropTypes.string,
+    // eslint-disable-next-line react/forbid-prop-types
+    editBtnRef: PropTypes.object,
   };
   ModelForm.defaultProps = {
     modelNumber: '',
@@ -102,6 +106,40 @@ export default function ModelForm({
   const disabled = !((typeof viewOnly === 'undefined' || !viewOnly));
   const formatOption = (option) => `${option.vendor}`;
   const formatSelected = (option, value) => option.vendor === value.vendor;
+  const footerBtns = (handleSubmit, isSubmitting) => (
+    <div className="row">
+      {/* <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" /> */}
+      {!viewOnly
+          && (isSubmitting ? (
+            <CircularProgress />
+          ) : (
+            <CustomButton
+              onClick={handleSubmit}
+              divClass="col"
+              buttonClass="btn text-nowrap"
+              buttonLabel="Save Changes"
+            />
+          ))}
+      {viewOnly && (
+      <>
+        <div className="col me-3">
+          <ModalAlert
+            btnText="Edit Model"
+            title="Edit Model"
+            btnClass="btn my-auto text-nowrap"
+          >
+            <EditModel
+              initModelNumber={modelNumber}
+              initVendor={vendor}
+              deleteBtn={deleteBtn}
+            />
+          </ModalAlert>
+        </div>
+        <div className="col-auto ms-3">{deleteBtn}</div>
+      </>
+      )}
+    </div>
+  );
   return (
     <Formik
       initialValues={{
@@ -132,7 +170,7 @@ export default function ModelForm({
         errors,
         touched,
       }) => (
-        <Form noValidate onSubmit={handleSubmit}>
+        <Form noValidate onSubmit={handleSubmit} className="col">
           <div className="row mx-3">
             <div className="col mt-3">
               <Form.Group>
@@ -160,7 +198,11 @@ export default function ModelForm({
                     label="Choose a vendor"
                     getOptionSelected={formatSelected}
                     getOptionLabel={formatOption}
-                    value={values.vendor.length > 0 ? { vendor: values.vendor } : null}
+                    value={
+                      values.vendor.length > 0
+                        ? { vendor: values.vendor }
+                        : null
+                    }
                     isInvalid={touched.vendor && !!errors.vendor}
                     allowAdditions
                   />
@@ -182,9 +224,6 @@ export default function ModelForm({
                 error={errors.modelNumber}
               />
             </div>
-            {viewOnly && (
-              <div className="col-auto me-auto mt-5">{deleteBtn}</div>
-            )}
           </div>
           {/* TODO: Calibration frequency ONLY accept numeric values */}
           <div className="row mx-3 border-top border-dark mt-3">
@@ -251,7 +290,7 @@ export default function ModelForm({
                   className="form-check-label h5 col"
                   htmlFor="load-bank-support"
                 >
-                  Can model be calibrated with load bank?
+                  Can model be calibrated as load bank?
                 </label>
                 <Form.Control
                   className="form-check-input"
@@ -320,39 +359,14 @@ export default function ModelForm({
                 )}
               </div>
           )}
-          {showFooter && (
+          {showFooter && editBtnRef !== null && (
+            <Portal container={editBtnRef.current}>
+              {footerBtns(handleSubmit, isSubmitting)}
+            </Portal>
+          )}
+          {showFooter && editBtnRef === null && (
             <div className="d-flex justify-content-center my-3">
-              <div className="row">
-                {/* <CustomButton onClick={handleDelete} divClass="col" buttonClass="btn btn-danger" buttonLabel="Delete Model" /> */}
-                {!viewOnly
-                  && (isSubmitting ? (
-                    <CircularProgress />
-                  ) : (
-                    <CustomButton
-                      onClick={handleSubmit}
-                      divClass="col"
-                      buttonClass="btn text-nowrap"
-                      buttonLabel="Save Changes"
-                    />
-                  ))}
-                {viewOnly && (
-                  <>
-                    <div className="col">
-                      <ModalAlert
-                        btnText="Edit Model"
-                        title="Edit Model"
-                        btnClass="btn my-auto text-nowrap"
-                      >
-                        <EditModel
-                          initModelNumber={modelNumber}
-                          initVendor={vendor}
-                          deleteBtn={deleteBtn}
-                        />
-                      </ModalAlert>
-                    </div>
-                  </>
-                )}
-              </div>
+              {footerBtns(handleSubmit, isSubmitting)}
             </div>
           )}
         </Form>

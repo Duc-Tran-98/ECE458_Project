@@ -77,7 +77,9 @@ export function GetAllUsers({ limit, offset, orderBy }) {
   const query = GET_USERS;
   const queryName = 'getAllUsers';
   const getVariables = () => ({ limit, offset, orderBy });
-  const response = QueryAndThen({ query, queryName, getVariables });
+  const response = QueryAndThen({
+    query, queryName, getVariables, fetchPolicy: 'no-cache',
+  });
   return response;
 }
 
@@ -88,6 +90,6 @@ export function CountAllUsers() {
     }
   `;
   const queryName = 'countAllUsers';
-  const response = QueryAndThen({ query, queryName });
+  const response = QueryAndThen({ query, queryName, fetchPolicy: 'no-cache' });
   return response;
 }

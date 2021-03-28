@@ -71,7 +71,6 @@ export function setAuthHeader(token) { // This is to let backend know request ar
     link: authLink.concat(httpLink),
     cache,
   });
-  client.clearStore();
   console.log('updated client obj');
 }
 
@@ -83,6 +82,8 @@ const Query = ({
   handleError,
   fetchPolicy = null,
   refetchQueries = [],
+  update = null,
+  awaitRefetchQueries = false,
 }) => {
   Query.propTypes = {
     query: PropTypes.string.isRequired, // This is the gql query printed
@@ -93,6 +94,8 @@ const Query = ({
     fetchPolicy: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
     refetchQueries: PropTypes.array,
+    update: PropTypes.func,
+    awaitRefetchQueries: PropTypes.bool,
   };
   let response;
   // const data = getVariables ? { query, variables: getVariables() } : { query };
@@ -114,6 +117,9 @@ const Query = ({
         mutation: query,
         variables: getVariables(),
         refetchQueries,
+        fetchPolicy,
+        update,
+        awaitRefetchQueries,
       })
       .then((res) => {
         response = typeof res.data[queryName] === 'string'
@@ -181,6 +187,7 @@ export async function QueryAndThen({
         mutation: query,
         variables: getVariables(),
         refetchQueries,
+        fetchPolicy,
       })
       .then((res) => (typeof res.data[queryName] === 'string'
         ? JSON.parse(res.data[queryName])
