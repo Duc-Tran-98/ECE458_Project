@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { PopOverFragment } from './PopOver';
 import { StateLessCloseModal } from './ModalAlert';
 import CreateModel from '../pages/CreateModel';
+import CreateInstrument from '../pages/CreateInstrument';
 
 export default function CreateButton({ type, setUpdate }) {
   CreateButton.propTypes = {
@@ -11,7 +12,12 @@ export default function CreateButton({ type, setUpdate }) {
     setUpdate: PropTypes.func.isRequired,
   };
   const [show, setShow] = React.useState(false);
-  const title = 'Create Model';
+  let title = 'Create ';
+  if (type.includes('model')) {
+    title += 'Model';
+  } else if (type.includes('instrument')) {
+    title += 'Instrument';
+  }
 
   const handleClick = () => {
     console.log(`clicked button of type: ${type}`);
@@ -20,12 +26,23 @@ export default function CreateButton({ type, setUpdate }) {
 
   return (
     <>
-      <StateLessCloseModal handleClose={() => setShow(false)} show={show} title={title}>
+      <StateLessCloseModal handleClose={() => setShow(false)} show={show} title={title} size="xl">
+        {type.includes('model')
+        && (
         <CreateModel onCreation={() => {
           setUpdate(true);
           setUpdate(false);
         }}
         />
+        )}
+        {type.includes('instrument')
+        && (
+        <CreateInstrument onCreation={() => {
+          setUpdate(true);
+          setUpdate(false);
+        }}
+        />
+        )}
       </StateLessCloseModal>
       <button onClick={handleClick} className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall" tabIndex="0" type="button" aria-haspopup="menu" aria-labelledby="mui-5057" id="mui-33928">
         <PopOverFragment message={title}>

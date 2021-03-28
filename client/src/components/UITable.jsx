@@ -359,12 +359,7 @@ export function ServerPaginationGrid({
             <div className="col-auto me-auto">
               {showImport && (
               <>
-                <CreateButton onClick={() => {
-                  console.log('Creating something...');
-                }}
-                >
-                  {createBtn}
-                </CreateButton>
+                <CreateButton type={filename} />
                 <ImportButton onClick={handleImport} />
               </>
               )}
