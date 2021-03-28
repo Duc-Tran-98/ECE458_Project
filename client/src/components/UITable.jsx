@@ -122,6 +122,7 @@ export function ServerPaginationGrid({
   showToolBar,
   showImport,
   shouldUpdate = false,
+  // eslint-disable-next-line no-unused-vars
   createBtn,
 }) {
   ServerPaginationGrid.propTypes = {
