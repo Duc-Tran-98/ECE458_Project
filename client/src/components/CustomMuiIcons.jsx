@@ -3,6 +3,9 @@
 /* eslint-disable import/prefer-default-export */
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
 import { PopOverFragment } from './PopOver';
 
 const showText = false;
@@ -95,4 +98,16 @@ export const MuiCategoriesButton = ({
       </>
   )}
   />
+);
+
+export const MuiDeleteButton = ({ onClick }) => (
+  <IconButton onClick={onClick}>
+    <DeleteIcon style={{ color: '#fc2311' }} />
+  </IconButton>
+);
+
+export const MuiAddButton = ({ onClick }) => (
+  <IconButton onClick={onClick}>
+    <AddIcon />
+  </IconButton>
 );

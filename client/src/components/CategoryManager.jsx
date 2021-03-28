@@ -6,9 +6,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { toast } from 'react-toastify';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
+import { MuiDeleteButton, MuiAddButton } from './CustomMuiIcons';
 import SimpleGrid from './SimpleGrid';
 
 import GetModelCategories, { CountModelsAttached } from '../queries/GetModelCategories';
@@ -144,9 +142,7 @@ export default function CategoryManager({ type }) {
   );
 
   const deleteBtn = (
-    <IconButton onClick={() => setShowDelete(true)}>
-      <DeleteIcon />
-    </IconButton>
+    <MuiDeleteButton onClick={() => setShowDelete(true)} />
   );
 
   const cols = [
@@ -197,13 +193,11 @@ export default function CategoryManager({ type }) {
           placeholder="Enter category name"
         />
         <div className="col">
-          <IconButton onClick={() => {
+          <MuiAddButton onClick={() => {
             setNewCategory('');
             handleCreate(document.getElementById('cat').value);
           }}
-          >
-            <AddIcon />
-          </IconButton>
+          />
         </div>
       </div>
     </>
