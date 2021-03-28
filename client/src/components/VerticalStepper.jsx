@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
+import $ from 'jquery';
 
 export default function VerticalLinearStepper({
   getSteps,
@@ -60,6 +61,9 @@ export default function VerticalLinearStepper({
 
   const handleNext = () => { // handle clicking on the next button
     if (canAdvance(activeStep)) {
+      setTimeout(() => $('#nextbtn').removeAttr('disabled'), 500);
+      $('#nextbtn').attr('disabled', 'disabled');
+      console.log($('#nextbtn'));
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       if (onNext !== undefined) { onNext(activeStep); }
       if (activeStep === steps.length - 1) {
@@ -95,6 +99,7 @@ export default function VerticalLinearStepper({
     </Button>
   ) : (
     <Button
+      id="nextbtn"
       variant="contained"
       color="primary"
       onClick={handleNext}
