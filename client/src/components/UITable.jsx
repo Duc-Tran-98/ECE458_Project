@@ -25,9 +25,9 @@ import Portal from '@material-ui/core/Portal';
 import {
   ImportButton, CreateButton, CategoriesButton,
 } from './CustomMuiIcons';
+import ExportModelsIcon from './ExportModelsIcon';
 import ExportInstruments, { ExportInstrumentsIcon } from './ExportInstruments';
 import ExportModels from './ExportModels';
-import ExportModelsIcon from './ExportModelsIcon';
 
 // import UserContext from './UserContext';
 import { GenerateBarcodesIcon } from './GenerateBarcodes';
