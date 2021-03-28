@@ -185,34 +185,39 @@ export default function DetailedModelView() {
       </>
     </ModalAlert>
   );
+  const ref = React.useRef(null);
   return (
     <>
-      <div className="col">
-        <div className="row">
+      <div className="row">
+        <div className="col p-3 border border-right border-dark">
           {fetched && (
-            <ModelForm
-              modelNumber={modelNumber}
-              vendor={vendor}
-              description={description}
-              comment={comment}
-              categories={categories}
-              calibrationFrequency={calibrationFrequency}
-              supportLoadBankCalibration={supportLoadBankCalibration}
-              supportKlufeCalibration={supportKlufeCalibration}
-              handleFormSubmit={() => undefined}
-              validated={false}
-              diffSubmit
-              viewOnly
-              deleteBtn={deleteBtn}
-              type="edit"
-            />
+            <>
+              <h3 className="px-3 bg-secondary text-light my-auto">Model Information</h3>
+              <ModelForm
+                editBtnRef={ref}
+                modelNumber={modelNumber}
+                vendor={vendor}
+                description={description}
+                comment={comment}
+                categories={categories}
+                calibrationFrequency={calibrationFrequency}
+                supportLoadBankCalibration={supportLoadBankCalibration}
+                supportKlufeCalibration={supportKlufeCalibration}
+                handleFormSubmit={() => undefined}
+                validated={false}
+                diffSubmit
+                viewOnly
+                deleteBtn={deleteBtn}
+                type="edit"
+              />
+            </>
           )}
         </div>
-        <div className="row px-3">
-          <div id="scrollableDiv">
+        <div className="col p-3 border border-left border-dark" id="remove-if-empty">
+          <div id="scrollableDiv" style={{ maxHeight: '72vh', overflowY: 'auto', minHeight: '72vh' }}>
             <InfinityScroll
               title="Instances:"
-              titleClassName="px-3 bg-secondary text-light my-auto"
+              titleClassName="px-3 bg-secondary text-light my-auto sticky-top"
               query={gql`
                 query GetInstrumentFromModel(
                   $modelNumber: String!
@@ -229,6 +234,8 @@ export default function DetailedModelView() {
                     total
                     rows {
                       assetTag
+                      serialNumber
+                      id
                     }
                   }
                 }
@@ -237,7 +244,7 @@ export default function DetailedModelView() {
               variables={{ modelNumber, vendor }}
               renderItems={(items) => items.map((entry) => (
                 <li className="list-group-item" key={entry.id}>
-                  <div className="row">
+                  <div className="row w-100">
                     <span className="col">
                       Serial #:
                       {' '}
@@ -266,6 +273,7 @@ export default function DetailedModelView() {
           </div>
         </div>
       </div>
+      <div className="d-flex justify-content-center py-3" ref={ref} />
     </>
   );
 }
