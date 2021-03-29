@@ -42,11 +42,12 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
               toastId: 0,
             });
             clearInterval(intervalId);
-            handleSignOut(); // stop polling, and sign out user
+            handleSignOut(intervalId); // stop polling, and sign out user
           } else {
             // res !== undefined => user still exsits, so let's check if
             // their permissions change
             const hasChanged = JSON.stringify(res) !== JSON.stringify(initVal);
+            console.log(res, initVal);
             // console.log(hasChanged);
             if (hasChanged) {
               // initVal and newly polled val don't match

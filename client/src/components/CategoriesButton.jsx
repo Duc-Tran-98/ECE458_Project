@@ -1,6 +1,7 @@
 import React from 'react';
 
 import PropTypes from 'prop-types';
+// eslint-disable-next-line no-unused-vars
 import { PopOverFragment } from './PopOver';
 import { StateLessCloseModal } from './ModalAlert';
 // import ModelCategories from './ModelCategories';

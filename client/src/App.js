@@ -33,13 +33,16 @@ function App() {
     window.sessionStorage.setItem('jwt', token);
   };
   const [loggedIn, setLoggedIn] = useState(false);
-  const handleSignOut = () => {
+  const handleSignOut = (intervalId = null) => {
     window.addEventListener('beforeunload', () => window.sessionStorage.clear());
     jwt = '';
     setAuthHeader(jwt);
     window.sessionStorage.clear();
     history.push('/');
     setLoggedIn(false);
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
   };
   const handleLogin = async (newJwt) => {
     jwt = newJwt;
