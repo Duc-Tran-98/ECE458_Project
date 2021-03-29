@@ -142,7 +142,13 @@ export default function CategoryManager({ type }) {
   );
 
   const deleteBtn = (
-    <MuiDeleteButton onClick={() => setShowDelete(true)} />
+    <MuiDeleteButton onClick={() => {
+      if (showCreate) {
+        setShowDelete(true);
+      }
+      toast.error('You do not have permission to modify categories');
+    }}
+    />
   );
 
   const cols = [
@@ -254,9 +260,9 @@ export default function CategoryManager({ type }) {
         console.log(e);
         setCategory(e.row.name);
         await getNumAttached(e.row.name);
-        if (e.field === 'delete') {
+        if (e.field === 'delete' && showCreate) {
           setShowDelete(true);
-        } else {
+        } else if (showCreate) {
           setShowEdit(true);
         }
       }}
