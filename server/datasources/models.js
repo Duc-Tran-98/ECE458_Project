@@ -200,9 +200,9 @@ class ModelAPI extends DataSource {
             model: this.store.modelCategories,
             as: 'categories',
             through: 'modelCategoryRelationships',
-            where: {
-              name: categories,
-            },
+            // where: {
+            //   name: categories,
+            // },
           },
         ];
       } else {
