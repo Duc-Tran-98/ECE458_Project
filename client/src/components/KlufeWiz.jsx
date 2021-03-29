@@ -68,6 +68,13 @@ export default function KlufeWiz({
         step11ok: false,
         step13ok: false,
       });
+      setReadings({
+        4: '',
+        7: '',
+        9: '',
+        11: '',
+        13: '',
+      });
     }
   };
   const handleFinish = () => {

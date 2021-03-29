@@ -243,10 +243,21 @@ export default function ImportInstruments() {
     }
 
     // File has been validated, now push to database
+    const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+      || null;
+    const refetchQueries = refetch !== null
+      ? [
+        {
+          query: refetch.query,
+          variables: refetch.variables,
+        },
+      ]
+      : [];
     const getVariables = () => ({ instruments });
     Query({
       query,
       queryName,
+      refetchQueries,
       getVariables,
       handleResponse: (response) => {
         if (response.success) {

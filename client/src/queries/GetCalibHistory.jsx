@@ -80,6 +80,7 @@ export default async function GetCalibHistory({
         fileName
         loadBankData
         klufeData
+        id
       }
     }
   `;
@@ -97,9 +98,16 @@ export default async function GetCalibHistory({
       getVariables,
       fetchPolicy: 'no-cache',
     });
-    const copyOfRes = JSON.parse(JSON.stringify(response));
-    if (copyOfRes) { // If response isn't null
-      copyOfRes.sort((a, b) => new Date(b.date) - new Date(a.date)); // This will sort calib events by date (most recent to least recent)
+    let copyOfRes;
+    if (response) { // If response isn't null
+      response.sort((a, b) => {
+        const timeDiff = new Date(b.date) - new Date(a.date);
+        if (timeDiff === 0) {
+          return b.id - a.id;
+        }
+        return timeDiff;
+      }); // This will sort calib events by date (most recent to least recent)
+      copyOfRes = JSON.parse(JSON.stringify(response));
       if (mostRecent) { // If you asked for most recent, return it
         return copyOfRes[0];
       }

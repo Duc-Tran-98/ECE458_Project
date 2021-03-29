@@ -235,10 +235,20 @@ export default function ImportModels() {
     console.log('Sending import models request with data: ');
     console.log(models);
     const getVariables = () => ({ models });
+    const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
+    const refetchQueries = refetch !== null
+      ? [
+        {
+          query: refetch.query,
+          variables: refetch.variables,
+        },
+      ]
+      : [];
     Query({
       query,
       queryName,
       getVariables,
+      refetchQueries,
       handleResponse: (response) => {
         if (response.success) {
           toast.success(`Successfully imported ${models.length} models!`, {

@@ -301,7 +301,7 @@ export default function DetailedInstrumentView() {
             />
           </StateLessModal>
           {supportsLoadBankWiz && (
-            <div className="mx-2">
+            <div className="ms-2">
               <ModalAlert
                 btnText="Add Load Bank Calibration"
                 title="Load Bank Wizard"
@@ -318,7 +318,7 @@ export default function DetailedInstrumentView() {
             </div>
           )}
           {supportsKlufeWiz && (
-            <div className="mx-2">
+            <div className="ms-2">
               <ModalAlert
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
@@ -336,7 +336,7 @@ export default function DetailedInstrumentView() {
           )}
           {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
             <MouseOverPopover
-              className=""
+              className="ms-2"
               message="View instrument's calibration certificate"
             >
               <Link
@@ -447,12 +447,12 @@ export default function DetailedInstrumentView() {
               className="bg-secondary text-light sticky-top"
               style={{ zIndex: '1' }}
             >
-              <div className="row px-3 w-100">
-                <h3 className="px-3 bg-secondary text-light my-auto col-auto me-auto">
+              <div className="col px-3 w-100">
+                <h3 className="px-3 bg-secondary text-light my-auto row">
                   Calibration History
                 </h3>
                 {formState.calibrationFrequency > 0 && (
-                  <div className="col-auto my-2">{genCalibButtons}</div>
+                  <div className="row py-2">{genCalibButtons}</div>
                 )}
               </div>
             </div>
