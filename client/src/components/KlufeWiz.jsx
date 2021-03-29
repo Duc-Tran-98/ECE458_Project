@@ -108,6 +108,7 @@ export default function KlufeWiz({
         comment,
         klufeData,
       }),
+      fetchPolicy: 'no-cache',
       handleResponse: (response) => {
         if (response.success) {
           onFinish();
