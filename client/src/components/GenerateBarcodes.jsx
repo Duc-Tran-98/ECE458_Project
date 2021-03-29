@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import MouseOverPopover, { PopOverFragment } from './PopOver';
 import ExpressQuery from '../queries/ExpressQuery';
 import { GetAssetTags } from '../queries/GetInstrumentsForExport';
@@ -148,7 +149,12 @@ export const GenerateBarcodesIcon = ({ filterOptions, assetTags, getAll }) => {
 
   return (
     <>
-      <BarcodesButton onClick={barcodeQuery} />
+      {loading ? (
+        <CircularProgress size="1rem" variant="indeterminate" />
+      )
+        : (
+          <BarcodesButton onClick={barcodeQuery} />
+        )}
     </>
   );
 };
