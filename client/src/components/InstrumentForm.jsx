@@ -170,10 +170,11 @@ export default function InstrumentForm({
         handleSubmit,
         handleChange,
         setFieldValue,
+        setFieldTouched,
         isSubmitting,
         values,
         errors,
-        // touched,
+        touched,
       }) => (
         <Form noValidate onSubmit={handleSubmit}>
           <div className="row mx-3">
@@ -200,6 +201,7 @@ export default function InstrumentForm({
                       query={query}
                       queryName={queryName}
                       onInputChange={(e, v) => {
+                        setFieldTouched('vendor', true);
                         setFieldValue('vendor', v.vendor);
                         setFieldValue('modelNumber', v.modelNumber);
                         setFieldValue(
@@ -216,8 +218,11 @@ export default function InstrumentForm({
                         modelNumber: values.modelNumber,
                         vendor: values.vendor,
                       }}
-                      isInvalid={false}
+                      isInvalid={values.vendor === '' && touched.vendor}
                     />
+                    {/* <Form.Control.Feedback type="invalid">
+                      {errors.vendor}
+                    </Form.Control.Feedback> */}
                   </>
                 )}
               </Form.Group>
