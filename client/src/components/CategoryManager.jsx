@@ -145,8 +145,9 @@ export default function CategoryManager({ type }) {
     <MuiDeleteButton onClick={() => {
       if (showCreate) {
         setShowDelete(true);
+      } else {
+        toast.error('You do not have permission to modify categories');
       }
-      toast.error('You do not have permission to modify categories');
     }}
     />
   );
