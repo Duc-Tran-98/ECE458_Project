@@ -363,7 +363,7 @@ export function ServerPaginationGrid({
                 <ImportButton onClick={handleImport} />
               </>
               )}
-
+              <CategoriesButton type={filename} />
               {handleExport && (
               <>
                 {/* {loadingExport && <CircularProgress />}
@@ -388,7 +388,7 @@ export function ServerPaginationGrid({
                 )}
               </>
               )}
-              <CategoriesButton type={filename} />
+
             </div>
             <div className="col-auto">
               <GridDensitySelector />
