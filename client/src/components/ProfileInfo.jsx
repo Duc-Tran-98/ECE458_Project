@@ -31,7 +31,7 @@ export default function ProfileInfo() {
       </div>
       <div className="row mx-3">
         <BasicLabel groupClass="col mt-3" className="p" label="User Name" formName="userName" value={userName} />
-        <BasicLabel groupClass="col mt-3" className="p" label="eMail" formName="eMail" value={email} />
+        <BasicLabel groupClass="col mt-3" className="p" label="Email" formName="eMail" value={email} />
       </div>
     </div>
   );

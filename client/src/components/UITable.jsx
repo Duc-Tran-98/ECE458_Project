@@ -296,9 +296,10 @@ export function ServerPaginationGrid({
       <div
         className="rounded"
         style={{
-          maxHeight: '77vh',
+          // maxHeight: '77vh',
           overflowY: 'auto',
           width: '100%',
+          overflowX: 'hidden',
         }}
       >
         {headers && filename && (

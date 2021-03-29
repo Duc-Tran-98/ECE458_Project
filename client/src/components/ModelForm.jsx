@@ -204,6 +204,7 @@ export default function ModelForm({
                         : null
                     }
                     isInvalid={touched.vendor && !!errors.vendor}
+                    invalidMsg="Please select a vendor"
                     allowAdditions
                   />
                 )}
