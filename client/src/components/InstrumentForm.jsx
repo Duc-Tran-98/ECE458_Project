@@ -219,10 +219,8 @@ export default function InstrumentForm({
                         vendor: values.vendor,
                       }}
                       isInvalid={values.vendor === '' && touched.vendor}
+                      invalidMsg="Please select a model"
                     />
-                    {/* <Form.Control.Feedback type="invalid">
-                      {errors.vendor}
-                    </Form.Control.Feedback> */}
                   </>
                 )}
               </Form.Group>
