@@ -36,7 +36,9 @@ export default function InfinityScroll({
     if (total && items.length >= total) { // If total not null and length exceeds/equal to total, stop scroll
       setHasMore(false);
     } else if (hasMore) { // else, set total and update state
-      QueryAndThen({ query, queryName, getVariables }).then(
+      QueryAndThen({
+        query, queryName, getVariables, fetchPolicy: 'no-cache',
+      }).then(
         (data) => {
           const newItems = items.concat(data.rows);
           if (data.total < 10) {
