@@ -7,28 +7,28 @@ function validateModel({
   modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false,
 }) {
   if (vendor.length > 30) {
-    return [false, 'Vendor input must be under 30 characters!'];
+    return [false, 'ERROR: Vendor input must be under 30 characters!'];
   }
   if (modelNumber.length > 40) {
-    return [false, 'Model number must be under 40 characters!'];
+    return [false, 'ERROR: Model number must be under 40 characters!'];
   }
   if (description.length > 100) {
-    return [false, 'Description input must be under 100 characters!'];
+    return [false, 'ERROR: Description input must be under 100 characters!'];
   }
   if (vendor.length < 1) {
-    return [false, 'Vendor input must be included!'];
+    return [false, 'ERROR: Vendor input must be included!'];
   }
   if (modelNumber.length < 1) {
-    return [false, 'Model number must be included!'];
+    return [false, 'ERROR: Model number must be included!'];
   }
   if (description.length < 1) {
-    return [false, 'Description input must be included!'];
+    return [false, 'ERROR: Description input must be included!'];
   }
   if (comment != null && comment.length > 2000) {
-    return [false, 'Comment input must be under 2000 characters!'];
+    return [false, 'ERROR: Comment input must be under 2000 characters!'];
   }
   if (klufe && loadBank) {
-    return [false, 'Model cannot be calibratable by Load Bank and Klufe Calibrator!'];
+    return [false, 'ERROR: Model cannot support calibration via load bank wizard and Klufe 5700!'];
   }
   return [true];
 }
