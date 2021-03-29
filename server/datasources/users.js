@@ -155,6 +155,14 @@ class UserAPI extends DataSource {
       response.message = 'ERROR: User does not have permission.';
       return response;
     }
+    if (isAdmin && (!modelPermission || !instrumentPermission || !calibrationPermission)) {
+      response.message = 'ERROR: admin permission must imply all other permissions';
+      return response;
+    }
+    if (modelPermission && !instrumentPermission) {
+      response.message = 'ERROR: model permission must imply instrument permission';
+      return response;
+    }
     if (userName !== 'admin') {
       await this.store.users.update({
         isAdmin,
