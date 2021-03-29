@@ -299,6 +299,7 @@ export function ServerPaginationGrid({
           maxHeight: '77vh',
           overflowY: 'auto',
           width: '100%',
+          overflowX: 'hidden',
         }}
       >
         {headers && filename && (
