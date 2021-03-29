@@ -83,7 +83,7 @@ export default function KlufeWiz({
       step13ok,
     });
     Query({
-      query: print(gql`
+      query: gql`
         mutation AddKlufeCalib (
             $assetTag: Int!,
             $date: String!,
@@ -99,7 +99,7 @@ export default function KlufeWiz({
             klufeData: $klufeData,
           )
         }
-      `),
+      `,
       queryName: 'addKlufeCalibration',
       getVariables: () => ({
         assetTag,
