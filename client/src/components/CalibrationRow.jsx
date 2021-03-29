@@ -60,6 +60,8 @@ export default function CalibrationRow({
   const val = { userName: entry.user };
   const [fileNameDisplay, setFileNameDisplay] = useState('');
   const [displayError, setDisplayError] = useState('');
+  const maxCalibrationComment = 2000;
+  const isValidForm = () => comment.length <= maxCalibrationComment;
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
@@ -122,7 +124,11 @@ export default function CalibrationRow({
                 value={comment}
                 onChange={(e) => onChangeCalibRow(e, entry)}
                 disabled={viewOnly}
+                isInvalid={comment.length > maxCalibrationComment}
               />
+              <Form.Control.Feedback type="invalid">
+                Please enter a shorter calibration comment.
+              </Form.Control.Feedback>
             </Form.Group>
           </div>
         </div>
@@ -224,7 +230,11 @@ export default function CalibrationRow({
                 <button
                   type="button"
                   className="btn w-100"
-                  onClick={() => onSaveClick(entry)}
+                  onClick={() => {
+                    if (isValidForm()) {
+                      onSaveClick(entry);
+                    }
+                  }}
                   id={`save-btn-${entry.id}`}
                 >
                   Save
