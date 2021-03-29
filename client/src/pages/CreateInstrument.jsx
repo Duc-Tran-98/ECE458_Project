@@ -121,7 +121,8 @@ function CreateInstrumentPage({ onCreation }) {
     } = values;
     // check validation here in backend?
     if (typeof assetTag === 'string') {
-      assetTag = null;
+      assetTag = parseInt(assetTag, 10);
+      // assetTag = null;
     }
 
     CreateInstrument({

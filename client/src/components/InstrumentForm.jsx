@@ -232,10 +232,17 @@ export default function InstrumentForm({
                 className="h5"
                 label="Asset Tag"
                 name="assetTag"
-                type="number"
+                type="text"
                 required
                 value={values.assetTag}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const input = e.target.value;
+                  const reg = new RegExp('^[0-9]*$');
+                  if (reg.test(input)) {
+                    console.log(`input: ${input} passed regex test`);
+                    handleChange(e);
+                  }
+                }}
                 disabled={disabled}
                 isInvalid={!!errors.assetTag}
                 error={errors.assetTag}
