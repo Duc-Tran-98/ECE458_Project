@@ -26,13 +26,16 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
     email: '',
   });
   let token = window.sessionStorage.getItem('token');
-  const startPolling = (initVal) => {
+  const startPolling = (initVal, userName) => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
     intervalId = setInterval(() => {
       // add polling to check if user exists or not
       token = window.sessionStorage.getItem('token');
       if (token) { // If there's token (user needs to have signed in first)
         GetUser({ // poll user info
-          userName: Buffer.from(token, 'base64').toString('ascii'),
+          userName,
           includeAll: true,
           fetchPolicy: 'no-cache',
         }).then((res) => {
@@ -47,13 +50,17 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
             // res !== undefined => user still exsits, so let's check if
             // their permissions change
             const hasChanged = JSON.stringify(res) !== JSON.stringify(initVal);
-            console.log(res, initVal);
+            // if (res.userName !== initVal.userName) {
+            //   console.log('userNames dont match');
+            // }
+            // console.log(res, initVal);
             // console.log(hasChanged);
             if (hasChanged) {
               // initVal and newly polled val don't match
               setUserState(res); // update state
               clearInterval(intervalId); // stop old polling
-              startPolling(res); // start new poll with new init val
+              // console.log('starting poll cus user changed');
+              startPolling(res, res.userName); // start new poll with new init val
               toast('User permission have changed.', {
                 toastId: 68,
               });
@@ -62,6 +69,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         });
       }
     }, pollingPeriod); // every 3s, check if user still exists
+    // console.log(intervalId);
   };
 
   useEffect(() => {
@@ -87,7 +95,8 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
           fetchPolicy: 'no-cache',
         }).then((val) => {
           setUserState(val);
-          startPolling(val);
+          // console.log('starting poll from logged in being true');
+          startPolling(val, Buffer.from(token, 'base64').toString('ascii'));
         });
       }, 100); // set timeout to give time for new authheader to get applied
     }
