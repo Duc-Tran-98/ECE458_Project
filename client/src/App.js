@@ -4,6 +4,7 @@ import {
   Switch, Route, useHistory, Redirect,
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import $ from 'jquery';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import Help from './pages/Help';
@@ -26,15 +27,17 @@ import { setAuthHeader } from './components/UseQuery';
 
 function App() {
   const history = useHistory();
+  const [loggedIn, setLoggedIn] = useState(false);
   let jwt = '';
   const handlePageRefresh = async (token) => {
     // this will save token in local storage before reloading page
-    console.log(`handle page refresh called jwt = ${token}`);
     window.sessionStorage.setItem('jwt', token);
   };
-  const [loggedIn, setLoggedIn] = useState(false);
+  const eventListenerFunc = () => {
+    handlePageRefresh(jwt);
+  };
   const handleSignOut = (intervalId = null) => {
-    window.addEventListener('beforeunload', () => window.sessionStorage.clear());
+    $(window).off('beforeunload');
     jwt = '';
     setAuthHeader(jwt);
     window.sessionStorage.clear();
@@ -47,11 +50,11 @@ function App() {
   const handleLogin = async (newJwt) => {
     jwt = newJwt;
     setAuthHeader(jwt);
-    console.log(`set auth header = ${jwt}`);
-    window.addEventListener('beforeunload', () => handlePageRefresh(jwt));
+    // console.log(`set auth header = ${jwt}`);
+    $(window).on('beforeunload', eventListenerFunc);
     setTimeout(() => {
       setLoggedIn(true);
-    }, 100);
+    }, 50);
   };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) {
