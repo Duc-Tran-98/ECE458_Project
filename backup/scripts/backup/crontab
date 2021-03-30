@@ -1,0 +1,1 @@
+5 0 * * * /usr/local/bin/culling.sh 2>&1 | mail -s "Completed Culling Script" ms724@duke.edu angel.hui>
