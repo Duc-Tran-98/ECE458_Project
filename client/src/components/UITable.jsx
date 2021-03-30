@@ -358,6 +358,10 @@ export function ServerPaginationGrid({
           && (
           <GridToolbarContainer className="row">
             <div className="col-auto me-auto">
+              <GridDensitySelector />
+              <GridColumnsToolbarButton />
+            </div>
+            <div className="col-auto">
               {showImport && (
               <>
                 <CreateButton type={filename} onCreate={onCreate} />
@@ -390,10 +394,6 @@ export function ServerPaginationGrid({
               </>
               )}
 
-            </div>
-            <div className="col-auto">
-              <GridDensitySelector />
-              <GridColumnsToolbarButton />
             </div>
 
           </GridToolbarContainer>

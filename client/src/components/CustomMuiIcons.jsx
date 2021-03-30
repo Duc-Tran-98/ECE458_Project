@@ -103,11 +103,20 @@ export const MuiCategoriesButton = ({
   />
 );
 
-export const MuiDeleteButton = ({ onClick }) => (
-  <IconButton onClick={onClick}>
-    <DeleteIcon style={{ color: '#fc2311' }} />
-  </IconButton>
-);
+export const MuiDeleteButton = ({ onClick, user }) => {
+  let color = '#fc2311';
+  if (window.location.href.includes('Model') && !(user.isAdmin || user.modelPermission)) {
+    color = '#665c5b';
+  }
+  if (window.location.href.includes('Instrument') && !(user.isAdmin || user.instrumentPermission)) {
+    color = '#665c5b';
+  }
+  return (
+    <IconButton onClick={onClick}>
+      <DeleteIcon style={{ color }} />
+    </IconButton>
+  );
+};
 
 export const MuiAddButton = ({ onClick }) => (
   <IconButton onClick={onClick}>

@@ -438,7 +438,6 @@ export default function DetailedInstrumentView() {
         <div
           className="col p-3 border border-left border-dark"
           id="remove-if-empty"
-          style={{ maxHeight: '72vh' }}
         >
           <div
             className="h-100"

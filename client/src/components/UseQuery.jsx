@@ -79,7 +79,7 @@ const Query = ({
   getVariables,
   handleResponse,
   handleError,
-  fetchPolicy = null,
+  fetchPolicy = null, // fetchPolicy: 'no-cache' for no caching of results
   refetchQueries = [],
   update = null,
   awaitRefetchQueries = false,

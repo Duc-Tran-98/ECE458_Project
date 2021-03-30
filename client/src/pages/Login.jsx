@@ -116,7 +116,7 @@ const Login = ({ handleLogin }) => {
         </div> */}
       <div className="d-flex flex-column my-3">
         <button className="btn mx-auto" type="submit">
-          Log In
+          Login
         </button>
         <div className="mx-auto my-3">
           <OAuthLogin />

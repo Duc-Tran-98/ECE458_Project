@@ -171,7 +171,25 @@ export default function SearchBar({
 
   const baseSearchRow = () => (
     <>
-      <div className="m-2 w-25 my-auto pt-1">
+      <button
+        className="btn my-auto mx-2"
+        type="button"
+        onClick={() => onSearch({
+          vendors: vendors?.vendor || null,
+          modelNumbers: modelNumbers?.modelNumber || null,
+          descriptions: descriptions?.description || null,
+          modelCategories,
+          instrumentCategories,
+          filterSerialNumber: serialNumber?.serialNumber || null,
+          assetTag: assetTag?.assetTag || null,
+        })}
+      >
+        <SearchIcon />
+      </button>
+      <div
+        className="m-2 w-25 my-auto pt-1 rounded"
+        style={{ background: '#539ce6' }}
+      >
         <AsyncSuggest
           query={gql`
             query Models {
@@ -191,7 +209,7 @@ export default function SearchBar({
           handleKeyPress={handleKeyPress}
         />
       </div>
-      <div className="m-2 w-25 my-auto pt-1">
+      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
         <AsyncSuggest
           query={gql`
             query GetModelNumbers {
@@ -211,7 +229,7 @@ export default function SearchBar({
           handleKeyPress={handleKeyPress}
         />
       </div>
-      <div className="m-2 w-25 my-auto pt-1">
+      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
         <AsyncSuggest
           query={gql`
             query GetCategories {
@@ -233,7 +251,7 @@ export default function SearchBar({
           handleKeyPress={handleKeyPress}
         />
       </div>
-      <div className="m-2 w-25 my-auto pt-1">
+      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
         <AsyncSuggest
           query={gql`
             query GetModelNumbers {
@@ -254,21 +272,6 @@ export default function SearchBar({
         />
       </div>
       {/* {dropdownMenu} */}
-      <button
-        className="btn my-auto mx-2"
-        type="button"
-        onClick={() => onSearch({
-          vendors: vendors?.vendor || null,
-          modelNumbers: modelNumbers?.modelNumber || null,
-          descriptions: descriptions?.description || null,
-          modelCategories,
-          instrumentCategories,
-          filterSerialNumber: serialNumber?.serialNumber || null,
-          assetTag: assetTag?.assetTag || null,
-        })}
-      >
-        <SearchIcon />
-      </button>
     </>
   );
 
@@ -280,7 +283,15 @@ export default function SearchBar({
       <div className="d-flex flex-column w-100">
         <div className="d-flex flex-row w-100">{baseSearchRow()}</div>
         <div className="d-flex flex-row w-100 pt-2">
-          <div className="m-2 w-25 my-auto pt-1">
+          {/* This is for matching the spacing of the above row */}
+          {/* TODO: Move search bar to the left */}
+          <button className="btn my-auto mx-2 invisible" type="button">
+            <SearchIcon />
+          </button>
+          <div
+            className="m-2 w-25 my-auto pt-1"
+            style={{ background: '#539ce6' }}
+          >
             <AsyncSuggest
               query={gql`
                 query getSerialNumbs {
@@ -301,7 +312,10 @@ export default function SearchBar({
               handleKeyPress={handleKeyPress}
             />
           </div>
-          <div className="m-2 w-25 my-auto pt-1">
+          <div
+            className="m-2 w-25 my-auto pt-1"
+            style={{ background: '#539ce6' }}
+          >
             <AsyncSuggest
               query={gql`
                 query getSerialNumbs {
@@ -321,7 +335,10 @@ export default function SearchBar({
               handleKeyPress={handleKeyPress}
             />
           </div>
-          <div className="m-2 w-25 my-auto pt-1">
+          <div
+            className="m-2 w-25 my-auto pt-1"
+            style={{ background: '#539ce6' }}
+          >
             <AsyncSuggest
               query={gql`
                 query getInstCats {
@@ -344,9 +361,7 @@ export default function SearchBar({
           {/* This is for matching the spacing of the above row */}
           <div className="m-2 w-25 my-auto pt-1" />
           {/* TODO: Move search bar to the left */}
-          <button className="btn my-auto mx-2 invisible" type="button">
-            <SearchIcon />
-          </button>
+
         </div>
       </div>
     </>

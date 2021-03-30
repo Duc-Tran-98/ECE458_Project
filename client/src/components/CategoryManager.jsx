@@ -142,13 +142,15 @@ export default function CategoryManager({ type }) {
   );
 
   const deleteBtn = (
-    <MuiDeleteButton onClick={() => {
-      if (showCreate) {
-        setShowDelete(true);
-      } else {
-        toast.error('You do not have permission to modify categories');
-      }
-    }}
+    <MuiDeleteButton
+      onClick={() => {
+        if (showCreate) {
+          setShowDelete(true);
+        } else {
+          toast.error('You do not have permission to modify categories');
+        }
+      }}
+      user={user}
     />
   );
 
