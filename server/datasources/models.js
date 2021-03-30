@@ -85,7 +85,7 @@ class ModelAPI extends DataSource {
       } else {
         await this.store.models.destroy({ where: { modelNumber, vendor } });
         await this.store.modelCategoryRelationships.destroy({ where: { modelId: modelReference } });
-        response.message = 'Model deleted!';
+        response.message = `Deleted model ${vendor}-${modelNumber}`;
         response.success = true;
       }
     });

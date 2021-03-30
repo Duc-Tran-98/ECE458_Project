@@ -105,7 +105,12 @@ function ListModels() {
       width: 400,
       // hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">{params.value}</div>
+        <span
+          className="text-wrap"
+          style={{ lineHeight: '1.1', fontSize: '0.79em' }}
+        >
+          {params.value}
+        </span>
       ),
     },
     {

@@ -48,7 +48,9 @@ export default function LoadBankWiz({
   });
   const [canProgress, setCanProgress] = React.useState(false);
   const [shouldRestart, setRestart] = React.useState(false);
-  const [currentReadings, setCurrentReadings] = React.useState(DEBUG ? devCurrents : defaultCurrents);
+  let copyDevCurrents = JSON.parse(JSON.stringify(devCurrents));
+  let copyDefaultCurrents = JSON.parse(JSON.stringify(defaultCurrents));
+  const [currentReadings, setCurrentReadings] = React.useState(DEBUG ? copyDevCurrents : copyDefaultCurrents);
   const [voltageReading, setVoltageReading] = React.useState({
     va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
   });
@@ -109,7 +111,9 @@ export default function LoadBankWiz({
         va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
       },
     );
-    setCurrentReadings(DEBUG ? devCurrents : defaultCurrents);
+    copyDevCurrents = JSON.parse(JSON.stringify(devCurrents));
+    copyDefaultCurrents = JSON.parse(JSON.stringify(defaultCurrents));
+    setCurrentReadings(DEBUG ? copyDevCurrents : copyDefaultCurrents);
   };
   const handleFinish = () => {
     const {

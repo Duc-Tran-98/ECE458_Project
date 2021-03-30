@@ -671,11 +671,12 @@ class InstrumentAPI extends DataSource {
       response.message = 'ERROR: User does not have permission.';
       return JSON.stringify(response);
     }
+    const instrument = await this.getInstrumentById({ id });
     await this.store.instruments.destroy({ where: { id } });
     await this.store.calibrationEvents.destroy({
       where: { calibrationHistoryIdReference: id },
     });
-    response.message = `Deleted Instrument with ID: ${id}`;
+    response.message = `Deleted Instrument with asset tag: ${instrument.assetTag}`;
     response.success = true;
     return JSON.stringify(response);
   }

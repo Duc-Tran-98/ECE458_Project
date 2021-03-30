@@ -165,8 +165,8 @@ export default function ListInstruments() {
       sortable: false,
       renderCell: (params) => (
         <p
-          className="text-overflow my-auto"
-          style={{ width: '255px', maxHeight: '52px', fontSize: '0.75em' }}
+          className="text-wrap"
+          style={{ fontSize: '0.79em', lineHeight: '1.1' }}
         >
           {categoriesList(params)}
         </p>
