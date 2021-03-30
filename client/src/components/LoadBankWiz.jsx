@@ -60,6 +60,7 @@ export default function LoadBankWiz({
   };
   const isVRError = () => calcVRError() >= 1;
   const calcVAError = () => 100 * (Math.abs(voltageReading.va - 48) / 48); // calculate va error
+  const ivVAError = () => calcVAError() >= 10;
   const updateVoltageReadings = ({ e }) => { // update state
     const {
       va, vr, vaOk, vrOk, vaError, vrError,
@@ -350,7 +351,7 @@ export default function LoadBankWiz({
                         setFieldTouched('va', true);
                         updateVoltageReadings({ e });
                       }}
-                      isInvalid={touched.vr && voltageReading.va < 43.2}
+                      isInvalid={touched.vr && ivVAError()}
                     />
                     <Form.Control.Feedback type="invalid">
                       Too much sag. Check DC source and redo calibration
