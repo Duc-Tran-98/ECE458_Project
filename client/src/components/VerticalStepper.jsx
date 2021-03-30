@@ -63,7 +63,6 @@ export default function VerticalLinearStepper({
     if (canAdvance(activeStep)) {
       setTimeout(() => $('#nextbtn').removeAttr('disabled'), 500);
       $('#nextbtn').attr('disabled', 'disabled');
-      console.log($('#nextbtn'));
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       if (onNext !== undefined) { onNext(activeStep); }
       if (activeStep === steps.length - 1) {

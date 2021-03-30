@@ -5,8 +5,9 @@ import {
 } from '../queries/KlufeQueries';
 
 export default function KlufeCalibrator() {
+  // eslint-disable-next-line no-unused-vars
   const handleResponse = (response) => {
-    console.log(response);
+    // console.log(response);
   };
 
   return (

@@ -66,8 +66,9 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
         const filteredData = filterTransactionData(r);
         setTransactionData(filteredData);
       })
+      // eslint-disable-next-line no-unused-vars
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
       });
     setLoading(false);
     csvLink.current.link.click();
@@ -154,8 +155,9 @@ export const ExportInstrumentsIcon = ({ setLoading, filterOptions }) => {
         const filteredData = filterTransactionData(r);
         setTransactionData(filteredData);
       })
+      // eslint-disable-next-line no-unused-vars
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
       });
     setLoading(false);
     csvLink.current.link.click();

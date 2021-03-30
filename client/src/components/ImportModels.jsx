@@ -149,7 +149,6 @@ export default function ImportModels() {
     if (calibrationSupport === null) { return false; }
     if (typeof (calibrationSupport) !== 'string') { return false; }
     const lower = calibrationSupport.toLowerCase();
-    console.log(`lower: ${lower}`);
     return !(lower === 'load-bank' || lower === 'klufe');
   };
 
@@ -232,8 +231,6 @@ export default function ImportModels() {
 
     // File has been validated, now push to database
     const models = filterData(fileInfo);
-    console.log('Sending import models request with data: ');
-    console.log(models);
     const getVariables = () => ({ models });
     const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
     const refetchQueries = refetch !== null

@@ -239,7 +239,6 @@ export default function InstrumentForm({
                   const input = e.target.value;
                   const reg = new RegExp('^[0-9]*$');
                   if (reg.test(input)) {
-                    console.log(`input: ${input} passed regex test`);
                     handleChange(e);
                   }
                 }}
