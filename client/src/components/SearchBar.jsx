@@ -171,6 +171,21 @@ export default function SearchBar({
 
   const baseSearchRow = () => (
     <>
+      <button
+        className="btn my-auto mx-2"
+        type="button"
+        onClick={() => onSearch({
+          vendors: vendors?.vendor || null,
+          modelNumbers: modelNumbers?.modelNumber || null,
+          descriptions: descriptions?.description || null,
+          modelCategories,
+          instrumentCategories,
+          filterSerialNumber: serialNumber?.serialNumber || null,
+          assetTag: assetTag?.assetTag || null,
+        })}
+      >
+        <SearchIcon />
+      </button>
       <div className="m-2 w-25 my-auto pt-1">
         <AsyncSuggest
           query={gql`
@@ -254,21 +269,6 @@ export default function SearchBar({
         />
       </div>
       {/* {dropdownMenu} */}
-      <button
-        className="btn my-auto mx-2"
-        type="button"
-        onClick={() => onSearch({
-          vendors: vendors?.vendor || null,
-          modelNumbers: modelNumbers?.modelNumber || null,
-          descriptions: descriptions?.description || null,
-          modelCategories,
-          instrumentCategories,
-          filterSerialNumber: serialNumber?.serialNumber || null,
-          assetTag: assetTag?.assetTag || null,
-        })}
-      >
-        <SearchIcon />
-      </button>
     </>
   );
 
