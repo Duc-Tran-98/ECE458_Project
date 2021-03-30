@@ -111,22 +111,12 @@ export default function ImportInstruments() {
       field: 'comment',
       headerName: 'Comment',
       width: 300,
-      renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
-      ),
     },
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
       field: 'calibrationComment',
       headerName: 'Calib-Comment',
       width: 300,
-      renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
-      ),
     },
 
   ];

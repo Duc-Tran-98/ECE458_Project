@@ -107,11 +107,6 @@ export default function ImportModels() {
       field: 'comment',
       headerName: 'Comment',
       width: 300,
-      renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
-      ),
     }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
   ];
 
