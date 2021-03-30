@@ -52,6 +52,7 @@ export default function LoadBankWiz({
   const [voltageReading, setVoltageReading] = React.useState({
     va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
   });
+  const maxCalibrationComment = 2000;
   const calcVRError = () => { // calculate vr error given va and vr
     if (voltageReading.va > 0) {
       return 100 * (Math.abs(voltageReading.va - voltageReading.vr) / voltageReading.va);
@@ -173,6 +174,14 @@ export default function LoadBankWiz({
       return (Math.round((todayToo.getTime() - calibDate.getTime()) / (1000 * 3600 * 24)) <= calibrationFrequency);
     }
     return false;
+  };
+  const validateDate = (date) => {
+    const input = new Date(Date.parse(date));
+    const maxDay = new Date(Date.now());
+    input.setHours(0, 0, 0, 0);
+    maxDay.setHours(0, 0, 0, 0);
+    console.log(input <= maxDay, input, maxDay, date);
+    return input >= maxDay;
   };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
@@ -585,7 +594,11 @@ export default function LoadBankWiz({
                   required
                   value={formState.date}
                   className=""
+                  isInvalid={validateDate(formState.date)}
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter a valid date in the form YYYY-MM-DD. Dates cannot be in the future.
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="col">
                 <Form.Label className="h6 my-auto">Engineer: </Form.Label>
@@ -605,7 +618,11 @@ export default function LoadBankWiz({
                   name="comment"
                   value={formState.comment}
                   onChange={(e) => setFormState({ ...formState, comment: e.target.value })}
+                  isInvalid={formState.comment.length > maxCalibrationComment}
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter a shorter calibration comment.
+                </Form.Control.Feedback>
               </Form.Group>
             </div>
           </>
