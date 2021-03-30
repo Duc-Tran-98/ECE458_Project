@@ -103,7 +103,7 @@ function ListModels() {
       headerName: 'Comment',
       description: 'Comment',
       width: 400,
-      // hide: true,
+      hide: true,
       renderCell: (params) => (
         <span
           className="text-wrap"
