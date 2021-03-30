@@ -1,0 +1,1 @@
+0 0 * * * /usr/local/bin/backup.sh 2>&1 | mail -s "Completed Daily Backup Script" ms724@duke.edu angel>

@@ -63,9 +63,7 @@ export default function SignUp({ onCreation }) {
 
   // eslint-disable-next-line no-unused-vars
   const checkUserNameExists = (userName, setFieldError) => {
-    console.log('checking if username exists');
     if (allUserNames.includes(userName)) {
-      console.log('Found userName collsion! Setting error');
       setFieldError('userName', 'Username already exists');
       return true;
     }

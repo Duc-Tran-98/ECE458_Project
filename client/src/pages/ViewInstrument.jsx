@@ -150,8 +150,9 @@ export default function DetailedInstrumentView() {
         entry.fileLocation = res.data.assetName;
         // eslint-disable-next-line no-param-reassign
         entry.fileName = res.data.fileName;
+      // eslint-disable-next-line no-unused-vars
       }).catch((err) => {
-        console.log(err.message);
+        // console.log(err.message);
       });
     }
     AddCalibEventByAssetTag({

@@ -19,7 +19,6 @@ export default function DeleteInstrument({
   const getVariables = () => ({ id });
   const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
     || null;
-  console.log(refetch);
   const refetchQueries = refetch !== null
     ? [
       {

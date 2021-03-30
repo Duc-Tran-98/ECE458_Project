@@ -129,7 +129,7 @@ export default function KlufeWiz({
     handleRestart();
   };
   const handleResponse = (response) => {
-    console.log(response);
+    // console.log(response);
   };
   React.useEffect(() => () => { KlufeOff({ handleResponse }); }, []);
   const handleNext = (step) => {
@@ -348,7 +348,7 @@ export default function KlufeWiz({
                   isInvalid={validateDate(formState.date)}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please enter a valid date in the form YYYY-MM-DD. Dates cannot be in the future.
+                  Please enter a valid date. Dates cannot be in the future.
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="col">

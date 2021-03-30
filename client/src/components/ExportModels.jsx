@@ -53,8 +53,8 @@ const ExportModels = ({ setLoading, filterOptions }) => {
 
   const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
   useEffect(() => {
-    console.log('csvLink inside ExportModels: ');
-    console.log(csvLink);
+    // console.log('csvLink inside ExportModels: ');
+    // console.log(csvLink);
   }, [csvLink]);
 
   const getTransactionData = async () => {
@@ -66,8 +66,8 @@ const ExportModels = ({ setLoading, filterOptions }) => {
       })
       .catch((e) => console.log(e));
     setLoading(false);
-    console.log('csvLink: ');
-    console.log(csvLink);
+    // console.log('csvLink: ');
+    // console.log(csvLink);
     csvLink.current.link.click();
   };
 

@@ -70,7 +70,6 @@ export default function EditModelQuery({
     `;
   const query = EDIT_MODEL;
   const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
-  console.log(refetch);
   const refetchQueries = refetch !== null
     ? [
       {
