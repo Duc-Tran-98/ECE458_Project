@@ -20,7 +20,6 @@ export default function CreateButton({ type, onCreate }) {
   }
 
   const handleClick = () => {
-    console.log(`clicked button of type: ${type}`);
     setShow(true);
   };
 

@@ -71,7 +71,6 @@ export function setAuthHeader(token) { // This is to let backend know request ar
     link: authLink.concat(httpLink),
     cache,
   });
-  console.log('updated client obj');
 }
 
 const Query = ({
@@ -110,7 +109,6 @@ const Query = ({
   //     console.error(err);
   //     console.error(err.response);
   //   });
-  console.log(`use query called for query: ${queryName}`);
   if (print(query).includes('mutation')) {
     client
       .mutate({
@@ -180,7 +178,6 @@ export async function QueryAndThen({
   //     console.error(err);
   //     console.error(err.response);
   //   });
-  console.log(`queryAndThen called for query: ${queryName}`);
   if (print(query).includes('mutation')) {
     return client
       .mutate({

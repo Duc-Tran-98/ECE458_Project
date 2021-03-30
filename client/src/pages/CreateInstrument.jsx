@@ -95,7 +95,6 @@ function CreateInstrumentPage({ onCreation }) {
               events[0].fileName = res.data.fileName;
             })
             .catch((err) => {
-              console.log(err.message);
               toast.error(`Could not upload file for event on ${entry.date}`);
             });
         }

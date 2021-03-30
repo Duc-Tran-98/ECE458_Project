@@ -17,9 +17,10 @@ export default function ExpressQuery({
     .then((response) => {
       handleResponse(response);
     })
+    // eslint-disable-next-line no-unused-vars
     .catch((err) => {
-      console.log(err);
-      console.log(err.name);
-      console.log(err.message);
+      // console.log(err);
+      // console.log(err.name);
+      // console.log(err.message);
     });
 }

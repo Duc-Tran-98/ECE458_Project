@@ -258,7 +258,6 @@ export default function CategoryManager({ type }) {
     <SimpleGrid
       rows={categories}
       cellHandler={async (e) => {
-        console.log(e);
         setCategory(e.row.name);
         await getNumAttached(e.row.name);
         if (e.field === 'delete' && showCreate) {

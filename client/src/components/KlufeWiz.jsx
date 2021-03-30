@@ -128,7 +128,7 @@ export default function KlufeWiz({
     handleRestart();
   };
   const handleResponse = (response) => {
-    console.log(response);
+    // console.log(response);
   };
   React.useEffect(() => () => { KlufeOff({ handleResponse }); }, []);
   const handleNext = (step) => {

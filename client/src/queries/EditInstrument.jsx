@@ -63,7 +63,6 @@ export default async function EditInstrumentQuery({
   const refetch = JSON.parse(
     window.sessionStorage.getItem('getInstrumentsWithFilter'),
   ) || null;
-  console.log(refetch);
   const refetchQueries = (refetch !== null) ? [{
     query: refetch.query,
     variables: refetch.variables,

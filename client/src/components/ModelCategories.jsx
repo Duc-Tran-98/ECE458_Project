@@ -222,7 +222,7 @@ function ModelCategories() {
     <SimpleGrid
       rows={categories}
       cellHandler={(e) => {
-        console.log(e);
+        // console.log(e);
         setCategory(e.row.name);
         getNumAttached();
         if (e.field === 'delete') {
