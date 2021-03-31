@@ -1,14 +1,12 @@
 import React from 'react';
-// import XGridTest from '../components/XGridTest';
-import KlufeCalibrator from '../components/KlufeCalibrator';
-import KlufeWiz from '../components/KlufeWiz';
+import AppBarDemo from '../components/AppBarDemo';
+import NavIcons from '../components/NavIcons';
 
 export default function ComponentTest() {
   return (
     <>
-      <KlufeWiz />
-      <KlufeCalibrator />
-      {/* <XGridTest /> */}
+      <AppBarDemo />
+      <NavIcons />
     </>
   );
 }
