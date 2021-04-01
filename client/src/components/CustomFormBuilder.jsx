@@ -20,6 +20,7 @@ export default function CustomFormBuilder() {
   const initState = new Map().set(0, emptyState); // TODO: Make shallow copy of state
   const [state, setState] = React.useState(initState);
   const [formSteps, setFormSteps] = React.useState([]);
+  const [size, setSize] = React.useState(1);
   const linkedList = new LinkedList(0);
 
   const handleSubmit = () => {
@@ -45,6 +46,7 @@ export default function CustomFormBuilder() {
     console.log(nextState);
     console.log(linkedList);
     nextId += 1;
+    setSize(linkedList.size());
   };
   const deleteStep = (id) => {
     console.log(`deleteStep from id: ${id}`);
@@ -53,6 +55,7 @@ export default function CustomFormBuilder() {
     setState(nextState);
     linkedList.deleteNode(id);
     console.log(linkedList);
+    setSize(linkedList.size());
   };
 
   const generateKeysArray = () => {
@@ -86,6 +89,7 @@ export default function CustomFormBuilder() {
   return (
     <>
       <h1 className="m-2">Custom Form Builder</h1>
+      <h3 className="m-2">{`Total Steps: ${size}`}</h3>
       {formSteps}
       <button type="submit" className="btn" onClick={handleSubmit}>Review Form</button>
     </>

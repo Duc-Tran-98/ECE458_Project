@@ -5,22 +5,13 @@ export default class LinkedList {
     this.head = new ListNode(value);
   }
 
-  // TODO: Test me (fix after value)
   insertAfter(prev, value) {
-    console.log(`insertinng value: ${value} after ${prev}`);
     let node = this.head;
     while (node) {
       if (node.data === prev) {
-        console.log('found value in linked list, inserting after');
-        const { next } = node;
         const insert = new ListNode(value);
-        console.log('node, insert, next: ');
-        console.log(node);
-        console.log(insert);
-        console.log(next);
-
+        insert.next = node.next;
         node.next = insert;
-        insert.next = next;
         return;
       }
       node = node.next;
@@ -39,5 +30,15 @@ export default class LinkedList {
       cur = cur.next;
       prev = prev.next;
     }
+  }
+
+  size() {
+    let node = this.head;
+    let count = 0;
+    while (node) {
+      count += 1;
+      node = node.next;
+    }
+    return count;
   }
 }
