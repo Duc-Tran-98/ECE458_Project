@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
 export default function CreateModel({
-  modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, handleResponse, categories,
+  modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm, handleResponse, categories,
 }) {
   CreateModel.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -11,6 +11,9 @@ export default function CreateModel({
     calibrationFrequency: PropTypes.number.isRequired,
     supportLoadBankCalibration: PropTypes.bool.isRequired,
     supportKlufeCalibration: PropTypes.bool.isRequired,
+    supportCustomCalibration: PropTypes.bool.isRequired,
+    requiresCalibrationApproval: PropTypes.bool.isRequired,
+    customForm: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
@@ -24,8 +27,11 @@ export default function CreateModel({
         $description: String!
         $comment: String
         $calibrationFrequency: Int
+        $requiresCalibrationApproval: Boolean!
         $supportLoadBankCalibration: Boolean!
         $supportKlufeCalibration: Boolean!
+        $supportCustomCalibration: Boolean!
+        $customForm: String
         $categories: [String]
       ) {
         addModel(
@@ -36,6 +42,9 @@ export default function CreateModel({
           calibrationFrequency: $calibrationFrequency
           supportLoadBankCalibration: $supportLoadBankCalibration
           supportKlufeCalibration: $supportKlufeCalibration
+          requiresCalibrationApproval: $requiresCalibrationApproval
+          supportCustomCalibration: $supportCustomCalibration
+          customForm: $customForm
           categories: $categories
         ){
           message
@@ -52,6 +61,9 @@ export default function CreateModel({
             }
             supportLoadBankCalibration
             supportKlufeCalibration
+            supportCustomCalibration
+            requiresCalibrationApproval
+            customForm
           }
         }
       }
@@ -75,6 +87,9 @@ export default function CreateModel({
     calibrationFrequency,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    supportCustomCalibration,
+    requiresCalibrationApproval,
+    customForm,
     categories,
   });
   Query({

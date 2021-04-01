@@ -25,6 +25,9 @@ export default function DetailedModelView() {
     calibrationFrequency: '',
     supportLoadBankCalibration: false,
     supportKlufeCalibration: false,
+    supportCustomCalibration: false,
+    requiresCalibrationApproval: false,
+    customForm: '',
     categories: [],
   });
   const [loading, setLoading] = React.useState(false);
@@ -35,7 +38,7 @@ export default function DetailedModelView() {
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
     const {
-      description, comment, supportLoadBankCalibration, supportKlufeCalibration,
+      description, comment, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm,
     } = response;
     let { calibrationFrequency, id } = response;
     if (calibrationFrequency !== null) {
@@ -52,6 +55,9 @@ export default function DetailedModelView() {
       categories,
       calibrationFrequency,
       supportLoadBankCalibration,
+      supportCustomCalibration,
+      requiresCalibrationApproval,
+      customForm,
       supportKlufeCalibration,
     });
     setUpdate(false);
@@ -135,6 +141,9 @@ export default function DetailedModelView() {
     calibrationFrequency,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    supportCustomCalibration,
+    requiresCalibrationApproval,
+    customForm,
     categories,
   } = model;
   const handleDelete = () => {
@@ -198,6 +207,9 @@ export default function DetailedModelView() {
                 categories={categories}
                 calibrationFrequency={calibrationFrequency}
                 supportLoadBankCalibration={supportLoadBankCalibration}
+                supportCustomCalibration={supportCustomCalibration}
+                requiresCalibrationApproval={requiresCalibrationApproval}
+                customForm={customForm}
                 supportKlufeCalibration={supportKlufeCalibration}
                 handleFormSubmit={() => undefined}
                 validated={false}

@@ -19,6 +19,9 @@ export default function FindModel({
         calibrationFrequency
         supportLoadBankCalibration
         supportKlufeCalibration
+        supportCustomCalibration
+        requiresCalibrationApproval
+        customForm
         categories {
             name
         }
@@ -52,6 +55,9 @@ export function FindModelById({ id, handleResponse }) {
         calibrationFrequency
         supportLoadBankCalibration
         supportKlufeCalibration
+        supportCustomCalibration
+        requiresCalibrationApproval
+        customForm
         categories {
           name
         }
