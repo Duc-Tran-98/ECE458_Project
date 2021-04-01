@@ -154,6 +154,9 @@ const typeDefs = gql`
     assetTag: Int!
     supportLoadBankCalibration: Boolean
     supportKlufeCalibration: Boolean
+    requiresCalibrationApproval: Boolean!
+    supportCustomCalibration: Boolean!
+    customForm: String
   }
 
   type FilteredInstrument {
