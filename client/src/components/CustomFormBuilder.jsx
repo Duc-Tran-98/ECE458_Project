@@ -1,9 +1,5 @@
 import React from 'react';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
 import CustomFormStep from './CustomFormStep';
-import { PopOverFragment } from './PopOver';
 import LinkedList from '../objects/LinkedList';
 
 // TODO: Lift state from form step into parent
@@ -59,21 +55,6 @@ export default function CustomFormBuilder() {
     console.log(linkedList);
   };
 
-  const addButton = (id) => (
-    <PopOverFragment message="Add Step">
-      <IconButton onClick={() => createStep(id)}>
-        <AddCircleIcon style={{ color: '#11fc85' }} />
-      </IconButton>
-    </PopOverFragment>
-  );
-  const deleteButton = (id) => (
-    <PopOverFragment message="Delete Step">
-      <IconButton onClick={() => deleteStep(id)}>
-        <DeleteIcon style={{ color: '#fc2311' }} />
-      </IconButton>
-    </PopOverFragment>
-  );
-
   const generateKeysArray = () => {
     const arr = [];
     let node = linkedList.head;
@@ -92,8 +73,8 @@ export default function CustomFormBuilder() {
         id={key}
         state={state.get(key)}
         updateState={updateState}
-        addButton={addButton}
-        deleteButton={deleteButton}
+        createStep={createStep}
+        deleteStep={deleteStep}
       />
     ));
     console.log('formSteps: ');

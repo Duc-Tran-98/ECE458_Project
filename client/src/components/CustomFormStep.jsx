@@ -5,6 +5,10 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Switch from '@material-ui/core/Switch';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import { PopOverFragment } from './PopOver';
 
 const useStylesText = makeStyles((theme) => ({
   root: {
@@ -29,15 +33,15 @@ const useStylesText = makeStyles((theme) => ({
 }));
 
 export default function CustomFormStep({
-  id, state, updateState, addButton, deleteButton,
+  id, state, updateState, createStep, deleteStep,
 }) {
   CustomFormStep.propTypes = {
     id: PropTypes.number.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     state: PropTypes.object.isRequired,
     updateState: PropTypes.func.isRequired,
-    addButton: PropTypes.node.isRequired,
-    deleteButton: PropTypes.node.isRequired,
+    createStep: PropTypes.func.isRequired,
+    deleteStep: PropTypes.func.isRequired,
   };
   const classes = useStylesText();
   const errors = {
@@ -162,9 +166,16 @@ export default function CustomFormStep({
           )}
           </FormGroup>
         </div>
-        {/* <button type="submit" className="btn" onClick={handleSubmit}>Submit</button> */}
-        {addButton}
-        {deleteButton}
+        <PopOverFragment message="Add Step">
+          <IconButton onClick={() => createStep(id)}>
+            <AddCircleIcon style={{ color: '#11fc85' }} />
+          </IconButton>
+        </PopOverFragment>
+        <PopOverFragment message="Delete Step">
+          <IconButton onClick={() => deleteStep(id)}>
+            <DeleteIcon style={{ color: '#fc2311' }} />
+          </IconButton>
+        </PopOverFragment>
       </div>
     </div>
   );
