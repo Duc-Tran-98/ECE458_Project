@@ -74,6 +74,8 @@ class BulkDataAPI extends DataSource {
             calibrationFrequency,
             supportLoadBankCalibration,
             supportKlufeCalibration,
+            supportCustomCalibration: false,
+            requiresCalibrationApproval: false,
           },
           { transaction: t },
         );
