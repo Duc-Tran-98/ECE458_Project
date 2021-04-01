@@ -304,6 +304,9 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      requiresCalibrationApproval: Boolean!
+      supportCustomCalibration: Boolean!
+      customForm: String
     ): ModelCacheUpdate
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
@@ -316,6 +319,9 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      requiresCalibrationApproval: Boolean!
+      supportCustomCalibration: Boolean!
+      customForm: String
     ): ModelCacheUpdate
 
     # Instrument related mutations

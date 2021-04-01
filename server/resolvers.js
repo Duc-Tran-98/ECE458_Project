@@ -172,6 +172,9 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
@@ -184,6 +187,9 @@ module.exports = {
       supportKlufeCalibration,
       calibrationFrequency,
       categories,
+      requiresCalibrationApproval,
+      supportCustomCalibration,
+      customForm,
     }),
     addModel: async (
       _,
@@ -196,6 +202,9 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       },
       { dataSources },
     ) => {
@@ -208,6 +217,9 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       });
       return response;
     },
