@@ -98,6 +98,10 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      calibrationApproverPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {
@@ -514,6 +518,7 @@ module.exports.createStore = async (useTestDB) => {
       password: hash,
       isAdmin: true,
       calibrationPermission: true,
+      calibrationApproverPermission: true,
       modelPermission: true,
       instrumentPermission: true,
     });
