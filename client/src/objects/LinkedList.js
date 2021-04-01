@@ -6,16 +6,21 @@ export default class LinkedList {
   }
 
   insertAfter(prev, value) {
+    console.log(`insertAfter(${prev}, ${value})`);
+    console.log('LinkedList before insert: ');
+    console.log(this.head);
     let node = this.head;
     while (node) {
       if (node.data === prev) {
         const insert = new ListNode(value);
         insert.next = node.next;
         node.next = insert;
-        return;
+        break;
       }
       node = node.next;
     }
+    console.log('LinkedList after insert: ');
+    console.log(this.head);
   }
 
   // TODO: Test me (null pointers, delete last?)

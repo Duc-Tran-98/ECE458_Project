@@ -38,14 +38,18 @@ export default function CustomFormBuilder() {
     map.set(id, Object.create(emptyState));
     linkedList.insertAfter(id, nextId);
     nextId += 1;
+    setUpdate(update + 1);
   };
   const deleteStep = (id) => {
     console.log(`deleteStep with id: ${id}`);
     map.delete(id);
     linkedList.deleteNode(id);
+    setUpdate(update + 1);
   };
 
   const generateKeysArray = () => {
+    console.log('generatingKeysArray with linkedList: ');
+    console.log(linkedList);
     const arr = [];
     let node = linkedList.head;
     while (node) {
@@ -72,7 +76,7 @@ export default function CustomFormBuilder() {
     console.log(steps);
     setFormSteps(steps);
     setSize(linkedList.size());
-  }, update);
+  }, [update]);
 
   return (
     <>
