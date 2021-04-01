@@ -205,3 +205,12 @@ div.MuiPaper-root.MuiPaper-elevation0{
 .MuiDataGrid-row:hover {
   cursor: pointer;
 }
+
+.customFormBox {
+  width: 50vw;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  border-radius: 25px;
+  border: 2px solid #14213d;
+}
