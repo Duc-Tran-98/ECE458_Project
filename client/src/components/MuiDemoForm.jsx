@@ -16,7 +16,7 @@ const useStylesText = makeStyles((theme) => ({
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '50ch',
+    width: '25ch',
   },
 }));
 
@@ -76,6 +76,7 @@ export default function MuiDemoForm({ editing }) {
           InputLabelProps={{
             shrink: true,
           }}
+          name="header"
           label={errors.header === true ? 'Please enter a header' : ''}
           error={errors.header}
           onChange={handleTextChange}
@@ -88,6 +89,7 @@ export default function MuiDemoForm({ editing }) {
           disabled={!editing}
           margin="normal"
           onChange={handleTextChange}
+          name="plaintext"
           value={state.plaintext}
           multiline
           rows={4}
@@ -110,6 +112,7 @@ export default function MuiDemoForm({ editing }) {
               className={classes.textField}
               disabled={!editing}
               margin="normal"
+              name="numericLabel"
               type="text"
               onChange={handleTextChange}
               value={state.numericLabel}
@@ -120,6 +123,7 @@ export default function MuiDemoForm({ editing }) {
               className={classes.textField}
               disabled={!editing}
               margin="normal"
+              name="low"
               type="number"
               onChange={handleTextChange}
               value={state.low}
@@ -131,6 +135,7 @@ export default function MuiDemoForm({ editing }) {
               className={classes.textField}
               disabled={!editing}
               margin="normal"
+              name="high"
               type="number"
               onChange={handleTextChange}
               value={state.high}
@@ -154,6 +159,7 @@ export default function MuiDemoForm({ editing }) {
               disabled={!editing}
               margin="normal"
               type="text"
+              name="textLabel"
               onChange={handleTextChange}
               value={state.textLabel}
             />
