@@ -99,8 +99,11 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    requiresCalibrationApproval,
+    supportCustomCalibration,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    customForm,
     categories,
   }) {
     const response = { message: '', success: false, model: null };
@@ -134,6 +137,9 @@ class ModelAPI extends DataSource {
             description,
             comment,
             calibrationFrequency,
+            requiresCalibrationApproval,
+            supportCustomCalibration,
+            customForm,
             supportLoadBankCalibration,
             supportKlufeCalibration,
           },
@@ -402,8 +408,11 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    requiresCalibrationApproval = false,
     supportLoadBankCalibration = false,
     supportKlufeCalibration = false,
+    supportCustomCalibration = false,
+    customForm,
     categories = [],
   }) {
     const response = { message: '', success: false, model: null };
@@ -432,6 +441,9 @@ class ModelAPI extends DataSource {
           description,
           comment,
           calibrationFrequency,
+          requiresCalibrationApproval,
+          supportCustomCalibration,
+          customForm,
           supportLoadBankCalibration,
           supportKlufeCalibration,
         });
