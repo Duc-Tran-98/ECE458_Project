@@ -12,6 +12,7 @@ export default function CreateUser({
   modelPermission,
   instrumentPermission,
   calibrationPermission,
+  calibrationApproverPermission,
   handleResponse,
 }) {
   CreateUser.propTypes = {
@@ -25,6 +26,7 @@ export default function CreateUser({
     modelPermission: PropTypes.bool.isRequired,
     instrumentPermission: PropTypes.bool.isRequired,
     calibrationPermission: PropTypes.bool.isRequired,
+    calibrationApproverPermission: PropTypes.bool.isRequired,
   };
   const SIGNUP_MUTATION = gql`
     mutation SignupMutation(
@@ -37,6 +39,7 @@ export default function CreateUser({
       $modelPermission: Boolean!
       $instrumentPermission: Boolean!
       $calibrationPermission: Boolean!
+      $calibrationApproverPermission: Boolean!
     ) {
       signup(
         email: $email
@@ -48,6 +51,7 @@ export default function CreateUser({
         modelPermission: $modelPermission
         instrumentPermission: $instrumentPermission
         calibrationPermission: $calibrationPermission
+        calibrationApproverPermission: $calibrationApproverPermission
       )
     }
   `;
@@ -61,6 +65,7 @@ export default function CreateUser({
     modelPermission,
     instrumentPermission,
     calibrationPermission,
+    calibrationApproverPermission,
   });
   const query = SIGNUP_MUTATION;
   const queryName = 'signup';
