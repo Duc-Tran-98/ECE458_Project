@@ -120,6 +120,9 @@ const typeDefs = gql`
     categories: [Category]
     supportLoadBankCalibration: Boolean!
     supportKlufeCalibration: Boolean!
+    requiresCalibrationApproval: Boolean!
+    supportCustomCalibration: Boolean!
+    customForm: String
   }
 
   type ModelOutput {
