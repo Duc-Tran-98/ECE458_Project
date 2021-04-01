@@ -13,10 +13,20 @@ const useStylesText = makeStyles((theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
-  textField: {
+  textFieldLarge: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '25ch',
+    width: '100ch',
+  },
+  textFieldMedium: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '50ch',
+  },
+  textFieldSmall: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '20ch',
   },
 }));
 
@@ -41,6 +51,7 @@ export default function MuiDemoForm({ editing }) {
   };
 
   const [state, setState] = React.useState(emptyForm);
+  // TODO: Update low and high to floats (from text)
   const handleSubmit = () => {
     console.log('submitting form with state: ');
     console.log(state);
@@ -66,26 +77,22 @@ export default function MuiDemoForm({ editing }) {
     <>
       <div className={classes.root}>
         <TextField
+          label="Header"
           id="standard-full-width"
-          style={{ margin: 8 }}
-          placeholder="Header"
+          className={classes.textFieldLarge}
           autoFocus
           disabled={!editing}
           fullWidth
           margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
           name="header"
-          label={errors.header === true ? 'Please enter a header' : ''}
           error={errors.header}
           onChange={handleTextChange}
           value={state.header}
         />
         <TextField
-          placeholder="User prompt"
+          label="User prompt"
           id="margin-normal"
-          className={classes.textField}
+          className={classes.textFieldLarge}
           disabled={!editing}
           margin="normal"
           onChange={handleTextChange}
@@ -109,7 +116,7 @@ export default function MuiDemoForm({ editing }) {
             <TextField
               label="Label"
               id="margin-normal"
-              className={classes.textField}
+              className={classes.textFieldSmall}
               disabled={!editing}
               margin="normal"
               name="numericLabel"
@@ -120,7 +127,7 @@ export default function MuiDemoForm({ editing }) {
             <TextField
               label="Min"
               id="margin-normal"
-              className={classes.textField}
+              className={classes.textFieldSmall}
               disabled={!editing}
               margin="normal"
               name="low"
@@ -129,10 +136,9 @@ export default function MuiDemoForm({ editing }) {
               value={state.low}
             />
             <TextField
-              placeholder=""
               label="Max"
               id="margin-normal"
-              className={classes.textField}
+              className={classes.textFieldSmall}
               disabled={!editing}
               margin="normal"
               name="high"
@@ -155,7 +161,7 @@ export default function MuiDemoForm({ editing }) {
             <TextField
               label="Text Label"
               id="margin-normal"
-              className={classes.textField}
+              className={classes.textFieldMedium}
               disabled={!editing}
               margin="normal"
               type="text"
