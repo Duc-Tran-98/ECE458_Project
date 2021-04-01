@@ -2,13 +2,11 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import CreateInstrument from './CreateInstrument';
 import { ServerPaginationGrid } from '../components/UITable';
 import GetAllInstruments from '../queries/GetAllInstruments';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
-import ModalAlert from '../components/ModalAlert';
 
 // eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days) { // This allows you to add days to a date object and get a new date object
@@ -23,9 +21,9 @@ export default function ListInstruments() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
-  const [initLimit, setInitLimit] = useState(
-    parseInt(urlParams.get('limit'), 10),
-  );
+  const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  const [orderBy, setOrderBy] = useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = useState(urlParams.get('sortBy'));
   let urlFilter = urlParams.get('filters');
   let selectedFilters = null;
   if (urlFilter) {
@@ -47,9 +45,13 @@ export default function ListInstruments() {
     const urlVals = new URLSearchParams(search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
+    const order = urlVals.get('orderBy');
+    const sort = urlVals.get('sortBy');
     urlFilter = urlVals.get('filters');
     setInitLimit(lim);
     setInitPage(pg);
+    setOrderBy(order);
+    setSortBy(sort);
     if (urlFilter) {
       selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
     } else {
@@ -108,8 +110,8 @@ export default function ListInstruments() {
     const daysLeft = genDaysLeft(date);
     if (daysLeft === 0) { return 'Calibration due today!'; }
     if (daysLeft === 1) { return 'Calibration due tomorrow!'; }
-    if (daysLeft < 0) { return `Calibration EXPIRED by ${daysLeft} days!`; }
-    return `Calibration due in ${daysLeft} days`;
+    if (daysLeft < 0) { return `Calibration EXPIRED ${daysLeft * -1} days ago!`; }
+    return `Calibration due in ${daysLeft} days.`;
   };
   const categoriesList = (categories) => {
     const catArr = [];
@@ -117,34 +119,57 @@ export default function ListInstruments() {
       catArr.push(element.name);
     });
     return catArr.join(', ');
+    // return (<TagsInput tags={catArr} dis />);
   };
   const headerClass = 'customMuiHeader';
   const cols = [
     {
-      field: 'vendor', headerName: 'Vendor', width: 100, description: 'Vendor', headerClassName: headerClass,
+      field: 'vendor',
+      headerName: 'Vendor',
+      width: 120,
+      description: 'Vendor',
+      headerClassName: headerClass,
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 170, description: 'Model Number', headerClassName: headerClass,
+      field: 'modelNumber',
+      headerName: 'Model Number',
+      width: 170,
+      description: 'Model Number',
+      headerClassName: headerClass,
     },
     {
-      field: 'assetTag', headerName: 'Asset Tag', width: 140, description: 'Asset Tag', headerClassName: headerClass,
+      field: 'assetTag',
+      headerName: 'Asset Tag',
+      width: 140,
+      description: 'Asset Tag',
+      headerClassName: headerClass,
     },
     {
-      field: 'description', headerName: 'Description', width: 225, description: 'Description',
+      field: 'description',
+      headerName: 'Description',
+      width: 225,
+      description: 'Description',
     },
     {
-      field: 'serialNumber', headerName: 'Serial Number', width: 150, description: 'Serial Number',
+      field: 'serialNumber',
+      headerName: 'Serial Number',
+      width: 150,
+      description: 'Serial Number',
     },
     {
       field: 'categories',
       headerName: 'Categories',
       description: 'Categories',
       headerClassName: headerClass,
-      width: 250,
-      sortable: false, // TODO: Verify this works (does on demo)
-      // hide: true,
+      width: 255,
+      sortable: false,
       renderCell: (params) => (
-        <div className="overflow-auto">{categoriesList(params)}</div>
+        <p
+          className="text-wrap"
+          style={{ fontSize: '0.79em', lineHeight: '1.1' }}
+        >
+          {categoriesList(params)}
+        </p>
       ),
     },
     {
@@ -162,6 +187,7 @@ export default function ListInstruments() {
       headerName: 'Calib Date',
       description: 'Calibration Date',
       width: 140,
+      sortable: false,
       type: 'date',
     },
     {
@@ -170,6 +196,7 @@ export default function ListInstruments() {
       description: 'Calibration Comment',
       width: 300,
       hide: true,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{params.value}</div>
       ),
@@ -179,25 +206,26 @@ export default function ListInstruments() {
       headerName: 'Calib Exp',
       description: 'Calibration Expiration',
       width: 120,
+      sortable: false,
       type: 'date',
       renderCell: (params) => (
         <div className="row">
           <div className="col mt-3">
             {params.value === 'Out of Calibration' && (
               <MouseOverPopover
-                className="mb-3"
+                className="mb-3 ps-2"
                 message="Instrument not calibrated!"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="currentColor"
-                  className="bi bi-emoji-angry-fill"
+                  width="22"
+                  height="22"
+                  fill="red"
+                  className="bi bi-exclamation-diamond-fill"
                   viewBox="0 0 16 16"
                 >
                   {/* eslint-disable-next-line max-len */}
-                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM4.053 4.276a.5.5 0 0 1 .67-.223l2 1a.5.5 0 0 1 .166.76c.071.206.111.44.111.687C7 7.328 6.552 8 6 8s-1-.672-1-1.5c0-.408.109-.778.285-1.049l-1.009-.504a.5.5 0 0 1-.223-.67zm.232 8.157a.5.5 0 0 1-.183-.683A4.498 4.498 0 0 1 8 9.5a4.5 4.5 0 0 1 3.898 2.25.5.5 0 1 1-.866.5A3.498 3.498 0 0 0 8 10.5a3.498 3.498 0 0 0-3.032 1.75.5.5 0 0 1-.683.183zM10 8c-.552 0-1-.672-1-1.5 0-.247.04-.48.11-.686a.502.502 0 0 1 .166-.761l2-1a.5.5 0 1 1 .448.894l-1.009.504c.176.27.285.64.285 1.049 0 .828-.448 1.5-1 1.5z" />
+                  <path d="M9.05.435c-.58-.58-1.52-.58-2.1 0L.436 6.95c-.58.58-.58 1.519 0 2.098l6.516 6.516c.58.58 1.519.58 2.098 0l6.516-6.516c.58-.58.58-1.519 0-2.098L9.05.435zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
                 </svg>
               </MouseOverPopover>
             )}
@@ -276,6 +304,7 @@ export default function ListInstruments() {
       }),
       'ascii',
     ).toString('base64');
+    let route = '';
     if (
       (!vendors)
       && (modelCategories === null || modelCategories?.length === 0)
@@ -285,11 +314,11 @@ export default function ListInstruments() {
       && (!filterSerialNumber)
       && (!assetTag)
     ) {
-      history.push(`/viewInstruments?page=1&limit=${initLimit}`);
+      route = `/viewInstruments?page=1&limit=${initLimit}&orderBy=${orderBy}&sortBy=${sortBy}`;
+      history.push(route);
     } else {
-      history.push(
-        `/viewInstruments?page=1&limit=${initLimit}&filters=${filters}`,
-      );
+      route = `/viewInstruments?page=1&limit=${initLimit}&orderBy=${orderBy}&sortBy=${sortBy}&filters=${filters}`;
+      history.push(route);
     }
   };
 
@@ -316,10 +345,12 @@ export default function ListInstruments() {
       assetTag,
     });
   };
+
   const {
     vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, filterSerialNumber, assetTag,
   } = filterOptions;
-  const updateUrl = (page, limit) => {
+
+  const updateUrlOnPageChange = (page, limit) => {
     const filters = Buffer.from(
       JSON.stringify({
         vendors,
@@ -332,9 +363,9 @@ export default function ListInstruments() {
       }),
       'ascii',
     ).toString('base64');
-    let searchString = `?page=${page}&limit=${limit}`;
+    let searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
     if (window.location.search.includes('filters')) {
-      searchString = `?page=${page}&limit=${limit}&filters=${filters}`;
+      searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}&filters=${filters}`;
     }
     if (window.location.search !== searchString) {
       // If current location != next location, update url
@@ -342,19 +373,29 @@ export default function ListInstruments() {
     }
   };
 
-  const createBtn = (
-    <ModalAlert
-      title="Create Instrument"
-      btnText="Create Instrument"
-      btnClass="btn m-2 my-auto text-nowrap"
-    >
-      <CreateInstrument onCreation={() => {
-        setUpdate(true);
-        setUpdate(false);
-      }}
-      />
-    </ModalAlert>
-  );
+  const updateUrlOnOrderChange = (order, sort) => { // this is passed to the on page change and on page size change
+    // handlers of the server pagination grid
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        modelCategories,
+        instrumentCategories,
+        filterSerialNumber,
+        assetTag,
+      }),
+      'ascii',
+    ).toString('base64');
+    let searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+    if (window.location.search.includes('filters')) {
+      searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}&filters=${filters}`;
+    }
+    if (window.location.search !== searchString) {
+      // If current location != next location, update url
+      history.push(`/viewInstruments${searchString}`);
+    }
+  };
 
   return (
     <>
@@ -369,13 +410,14 @@ export default function ListInstruments() {
           instrumentCategories,
           serialNumber: filterSerialNumber,
           assetTag,
+          fetchPolicy: 'no-cache',
         }).then((response) => response.total)}
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {(user.isAdmin || user.instrumentPermission) && (
+            {/* {(user.isAdmin || user.instrumentPermission) && (
               createBtn
-            )}
+            )} */}
             <SearchBar
               onSearch={onSearch}
               forModelSearch={false}
@@ -394,12 +436,21 @@ export default function ListInstruments() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          updateUrl(page, limit);
+          updateUrlOnPageChange(page, limit);
         }}
         onPageSizeChange={(page, limit) => {
-          updateUrl(page, limit);
+          updateUrlOnPageChange(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllInstruments({
+        initialOrder={() => {
+          if (orderBy) {
+            return [[orderBy, sortBy]];
+          }
+          return null;
+        }}
+        onSortModelChange={(order, sort) => {
+          updateUrlOnOrderChange(order, sort);
+        }}
+        fetchData={(limit, offset, ordering) => GetAllInstruments({
           limit,
           offset,
           vendor: vendors,
@@ -409,9 +460,11 @@ export default function ListInstruments() {
           instrumentCategories,
           serialNumber: filterSerialNumber,
           assetTag,
+          orderBy: ordering,
         }).then((response) => {
           if (response !== null) {
-            response.instruments.forEach((element) => {
+            const copyOfRes = JSON.parse(JSON.stringify(response)); // make deep copy of response b/c cannot add new properties to response
+            copyOfRes.instruments.forEach((element) => {
               if (element !== null) {
                 element.categories = element.modelCategories.concat(element.instrumentCategories);
                 element.calibrationStatus = element.calibrationFrequency === null
@@ -435,7 +488,7 @@ export default function ListInstruments() {
                 }
               }
             });
-            return response.instruments;
+            return copyOfRes.instruments;
           }
           return [];
         })}
@@ -444,7 +497,11 @@ export default function ListInstruments() {
         filterOptions={filterOptions}
         filename="instruments.csv"
         showToolBar
-        showImport={user.isAdmin || user.instrumentPermission}
+        showImport={(user.isAdmin || user.instrumentPermission)}
+        onCreate={() => {
+          setUpdate(true);
+          setUpdate(false);
+        }}
       />
     </>
   );

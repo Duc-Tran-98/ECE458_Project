@@ -83,11 +83,7 @@ export default function CustomUpload({
   };
 
   // TODO: What can cause an error here?
-  const handleOnError = (err, file, inputElem, reason) => {
-    console.log(err);
-    console.log(file);
-    console.log(inputElem);
-    console.log(reason);
+  const handleOnError = () => {
     toast.error('Sorry, something went wrong, please try again', {
       toastId: 4,
     });

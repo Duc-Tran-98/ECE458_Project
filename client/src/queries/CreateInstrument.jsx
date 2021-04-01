@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query, { QueryAndThen } from '../components/UseQuery';
 
@@ -35,23 +34,55 @@ export default async function CreateInstrument({
           comment: $comment
           serialNumber: $serialNumber
           categories: $categories
-        )
+        ){
+          message
+          success
+          instrument {
+            vendor
+            modelNumber
+            serialNumber
+            modelReference
+            calibrationFrequency
+            comment
+            instrumentCategories {
+              name
+            }
+            description
+            id
+            assetTag
+            supportLoadBankCalibration
+            supportKlufeCalibration
+          }
+        }
       }
     `;
-  const query = print(ADD_INSTRUMENT);
+  const query = ADD_INSTRUMENT;
   const queryName = 'addInstrument';
   const getVariables = () => ({
     modelNumber, vendor, assetTag, serialNumber, comment, categories,
   });
+  const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+    || null;
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   if (handleResponse) {
     Query({
       query,
       queryName,
       getVariables,
       handleResponse,
+      refetchQueries,
     });
   } else {
     // eslint-disable-next-line no-return-await
-    return await QueryAndThen({ query, queryName, getVariables });
+    return await QueryAndThen({
+      query, queryName, getVariables, refetchQueries,
+    });
   }
 }

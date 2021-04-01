@@ -1,3 +1,9 @@
-#!/usr/env/bin
+#!/bin/sh
 
-sudo docker-compose -f docker-compose.prod.yaml up -d --build
+sudo docker-compose down -v
+sudo docker-compose -f docker-compose.prod.yml up -d --build
+
+
+
+
+

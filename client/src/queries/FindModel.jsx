@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -26,7 +25,7 @@ export default function FindModel({
         }
     }
     `;
-  const query = print(FIND_MODEL);
+  const query = FIND_MODEL;
   const queryName = 'getModel';
   const getVariables = () => ({
     modelNumber,
@@ -59,7 +58,7 @@ export function FindModelById({ id, handleResponse }) {
       }
     }
   `;
-  const query = print(FIND_MODEL);
+  const query = FIND_MODEL;
   const queryName = 'getModelById';
   const getVariables = () => ({
     id,

@@ -3,7 +3,6 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
@@ -49,10 +48,13 @@ export default function LoadBankWiz({
   });
   const [canProgress, setCanProgress] = React.useState(false);
   const [shouldRestart, setRestart] = React.useState(false);
-  const [currentReadings, setCurrentReadings] = React.useState(DEBUG ? devCurrents : defaultCurrents);
+  let copyDevCurrents = JSON.parse(JSON.stringify(devCurrents));
+  let copyDefaultCurrents = JSON.parse(JSON.stringify(defaultCurrents));
+  const [currentReadings, setCurrentReadings] = React.useState(DEBUG ? copyDevCurrents : copyDefaultCurrents);
   const [voltageReading, setVoltageReading] = React.useState({
     va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
   });
+  const maxCalibrationComment = 2000;
   const calcVRError = () => { // calculate vr error given va and vr
     if (voltageReading.va > 0) {
       return 100 * (Math.abs(voltageReading.va - voltageReading.vr) / voltageReading.va);
@@ -61,6 +63,7 @@ export default function LoadBankWiz({
   };
   const isVRError = () => calcVRError() >= 1;
   const calcVAError = () => 100 * (Math.abs(voltageReading.va - 48) / 48); // calculate va error
+  const ivVAError = () => calcVAError() >= 10;
   const updateVoltageReadings = ({ e }) => { // update state
     const {
       va, vr, vaOk, vrOk, vaError, vrError,
@@ -108,7 +111,9 @@ export default function LoadBankWiz({
         va: 0, vr: 0, vaOk: false, vrOk: false, vaError: 0, vrError: 0,
       },
     );
-    setCurrentReadings(DEBUG ? devCurrents : defaultCurrents);
+    copyDevCurrents = JSON.parse(JSON.stringify(devCurrents));
+    copyDefaultCurrents = JSON.parse(JSON.stringify(defaultCurrents));
+    setCurrentReadings(DEBUG ? copyDevCurrents : copyDefaultCurrents);
   };
   const handleFinish = () => {
     const {
@@ -127,7 +132,7 @@ export default function LoadBankWiz({
       printerOk,
     });
     Query({
-      query: print(gql`
+      query: gql`
         mutation AddLoadBankCalib (
             $assetTag: Int!,
             $date: String!,
@@ -143,7 +148,7 @@ export default function LoadBankWiz({
             loadBankData: $loadBankData,
           )
         }
-      `),
+      `,
       queryName: 'addLoadBankCalibration',
       getVariables: () => ({
         assetTag,
@@ -173,6 +178,14 @@ export default function LoadBankWiz({
       return (Math.round((todayToo.getTime() - calibDate.getTime()) / (1000 * 3600 * 24)) <= calibrationFrequency);
     }
     return false;
+  };
+  const validateDate = (date) => {
+    const input = new Date(Date.parse(date));
+    const maxDay = new Date(Date.now());
+    input.setHours(0, 0, 0, 0);
+    maxDay.setHours(0, 0, 0, 0);
+    console.log(input <= maxDay, input, maxDay, date);
+    return input >= maxDay;
   };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
@@ -318,6 +331,11 @@ export default function LoadBankWiz({
                       type="number"
                       className="w-50"
                       autoFocus
+                      onFocus={(e) => {
+                        if (!touched.vr) {
+                          e.target.value = ''; // clear on focus
+                        }
+                      }}
                       min={0}
                       value={voltageReading.vr}
                       onKeyDown={(e) => handleKeyPress({ e, canAdvanceStep: canAdvanceLoadStep(36) })}
@@ -346,7 +364,7 @@ export default function LoadBankWiz({
                         setFieldTouched('va', true);
                         updateVoltageReadings({ e });
                       }}
-                      isInvalid={touched.vr && voltageReading.va < 43.2}
+                      isInvalid={touched.vr && ivVAError()}
                     />
                     <Form.Control.Feedback type="invalid">
                       Too much sag. Check DC source and redo calibration
@@ -424,6 +442,11 @@ export default function LoadBankWiz({
                       min={0}
                       className="w-50"
                       autoFocus
+                      onFocus={(e) => {
+                        if (!touched.cr) {
+                          e.target.value = ''; // clear on focus!
+                        }
+                      }}
                       value={currentReadings.filter((element) => element.id === step)[0].cr}
                       onChange={(e) => {
                         setFieldTouched('cr', true);
@@ -575,7 +598,11 @@ export default function LoadBankWiz({
                   required
                   value={formState.date}
                   className=""
+                  isInvalid={validateDate(formState.date)}
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter a valid date. Dates cannot be in the future.
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group className="col">
                 <Form.Label className="h6 my-auto">Engineer: </Form.Label>
@@ -595,7 +622,11 @@ export default function LoadBankWiz({
                   name="comment"
                   value={formState.comment}
                   onChange={(e) => setFormState({ ...formState, comment: e.target.value })}
+                  isInvalid={formState.comment.length > maxCalibrationComment}
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please enter a shorter calibration comment.
+                </Form.Control.Feedback>
               </Form.Group>
             </div>
           </>
@@ -610,7 +641,7 @@ export default function LoadBankWiz({
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
-                    query={print(gql`
+                    query={gql`
                       query Instruments($description: String) {
                         getInstrumentsWithFilter(description: $description) {
                           instruments {
@@ -624,7 +655,7 @@ export default function LoadBankWiz({
                           }
                         }
                       }
-                    `)}
+                    `}
                     queryName="getInstrumentsWithFilter"
                     getVariables={() => ({ description: 'voltmeter' })}
                     // eslint-disable-next-line no-unused-vars
@@ -634,7 +665,11 @@ export default function LoadBankWiz({
                           date: v?.recentCalibration[0]?.date,
                           calibrationFrequency: v.calibrationFrequency,
                         });
-                        setFormState({ ...formState, voltMeter: v, voltMeterOk });
+                        setFormState({
+                          ...formState,
+                          voltMeter: v,
+                          voltMeterOk,
+                        });
                       }
                     }}
                     label="Select a voltmeter"
@@ -649,11 +684,12 @@ export default function LoadBankWiz({
               </Form.Group>
               <Form.Group className="col mx-2">
                 <Form.Label className="h6 my-auto">
-                  Current shunt meter to be used: (Vendor-Model number-Asset Tag)
+                  Current shunt meter to be used: (Vendor-Model number-Asset
+                  Tag)
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
-                    query={print(gql`
+                    query={gql`
                       query Instruments($description: String) {
                         getInstrumentsWithFilter(description: $description) {
                           instruments {
@@ -667,9 +703,11 @@ export default function LoadBankWiz({
                           }
                         }
                       }
-                    `)}
+                    `}
                     queryName="getInstrumentsWithFilter"
-                    getVariables={() => ({ description: 'current shunt meter' })}
+                    getVariables={() => ({
+                      description: 'current shunt meter',
+                    })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
                       if (!DEBUG) {
@@ -677,7 +715,11 @@ export default function LoadBankWiz({
                           date: v?.recentCalibration[0]?.date,
                           calibrationFrequency: v.calibrationFrequency,
                         });
-                        setFormState({ ...formState, shuntMeter: v, shuntMeterOk });
+                        setFormState({
+                          ...formState,
+                          shuntMeter: v,
+                          shuntMeterOk,
+                        });
                       }
                     }}
                     label="Select a shunt meter"

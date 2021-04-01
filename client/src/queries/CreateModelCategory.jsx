@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -10,13 +9,20 @@ export default function CreateModelCategory({ name, handleResponse }) {
   };
   const CREATE_MODEL = gql`
       mutation AddModelCategory($name: String!) {
-        addModelCategory(name: $name)
+        addModelCategory(name: $name){
+          message
+          success
+          category {
+            name
+            id
+          }
+        }
       }
     `;
-  const query = print(CREATE_MODEL);
+  const query = CREATE_MODEL;
   const queryName = 'addModelCategory';
   const getVariables = () => ({ name });
   Query({
-    query, queryName, getVariables, handleResponse,
+    query, queryName, getVariables, handleResponse, fetchPolicy: 'no-cache',
   });
 }

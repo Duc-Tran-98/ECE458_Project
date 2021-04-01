@@ -1,7 +1,6 @@
 /* eslint-disable react/require-default-props */
 import React from 'react';
 import {
-  Button,
   Modal,
   ModalTitle,
   ModalFooter,
@@ -9,6 +8,8 @@ import {
 import ModalHeader from 'react-bootstrap/ModalHeader';
 // import Portal from '@material-ui/core/Portal';
 import PropTypes from 'prop-types';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import MouseOverPopover from './PopOver';
 
 export function StateLessModal({
@@ -36,23 +37,56 @@ export function StateLessModal({
       dialogClassName={`d-flex justify-content-center ${width}`}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      backdrop="static"
     >
       <ModalHeader>
         <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
+        <IconButton onClick={handleClose} className="close">
+          <CloseIcon />
+        </IconButton>
       </ModalHeader>
       <Modal.Body className="border-top border-dark">{children}</Modal.Body>
-      <ModalFooter className="my-3">
+      {/* <ModalFooter className="my-3">
         <Button className="btn  mx-3" onClick={handleClose}>
           Close
         </Button>
-      </ModalFooter>
+      </ModalFooter> */}
+    </Modal>
+  );
+}
+
+export function StateLessCloseModal({
+  handleClose,
+  show,
+  title,
+  children,
+  size = 'medium',
+}) {
+  // used with simple x button
+  StateLessCloseModal.propTypes = {
+    handleClose: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+    size: PropTypes.string,
+  };
+  return (
+    <Modal show={show} size={size} centered contentClassName="bg-theme rounded">
+      <Modal.Header>
+        <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
+        <IconButton onClick={handleClose} className="close">
+          <CloseIcon />
+        </IconButton>
+        {/* <button type="button" className="close" onClick={handleClose}>
+          <CloseIcon />
+        </button> */}
+      </Modal.Header>
+      <Modal.Body>{children}</Modal.Body>
     </Modal>
   );
 }
 
 function ModalAlert({ // use this modal if you're fine with modal controling its own show state
-  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null, altBtn = null, altBtnId = null,
+  title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null, altBtn = null, altBtnId = null, onClose = () => undefined,
 }) {
   ModalAlert.propTypes = {
     title: PropTypes.string.isRequired,
@@ -66,6 +100,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     onShow: PropTypes.func, // call back for when user clicks button
     altBtn: PropTypes.node, // if you want to replace btn with something else that user will click on
     altBtnId: PropTypes.string, // id of alt btn so we can assign on click event to it
+    onClose: PropTypes.func,
   };
 
   ModalAlert.defaultProps = {
@@ -80,6 +115,11 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
     setShow(true);
   };
 
+  const handleClose = () => {
+    onClose();
+    setShow(false);
+  };
+
   React.useEffect(() => {
     let active = true;
     (async () => {
@@ -89,7 +129,7 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       if (altCloseBtnId) {
         const alctCloseBtn = document.getElementById(altCloseBtnId);
         if (alctCloseBtn) {
-          alctCloseBtn.onclick = () => setShow(false);
+          alctCloseBtn.onclick = () => handleClose();
         }
       }
     })();
@@ -135,24 +175,26 @@ function ModalAlert({ // use this modal if you're fine with modal controling its
       )}
       <Modal
         show={show}
-        onHide={() => setShow(false)}
+        onHide={handleClose}
         animation={false}
         contentClassName="bg-theme rounded"
         // dialogClassName="d-flex justify-content-center modal-100w"
         dialogClassName={`d-flex justify-content-center ${width}`}
         aria-labelledby="contained-modal-title-vcenter"
         centered
-        backdrop="static"
       >
         <ModalHeader>
           <ModalTitle id="contained-modal-title-vcenter">{title}</ModalTitle>
+          <IconButton onClick={handleClose} className="close">
+            <CloseIcon />
+          </IconButton>
         </ModalHeader>
         <Modal.Body className="border-top border-dark">{children}</Modal.Body>
         <ModalFooter className="my-3">
           {footer}
-          <Button className="btn  mx-3" onClick={() => setShow(false)}>
+          {/* <Button className="btn  mx-3" onClick={handleClose}>
             Close
-          </Button>
+          </Button> */}
         </ModalFooter>
       </Modal>
     </>

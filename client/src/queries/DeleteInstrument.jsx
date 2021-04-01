@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
@@ -11,17 +10,28 @@ export default function DeleteInstrument({
     handleResponse: PropTypes.func.isRequired,
   };
   const DEL_INST = gql`
-    mutation DeleteInstrument($id: Int!) {
+    mutation DeleteInstrument($id: ID!) {
       deleteInstrument(id: $id)
     }
   `;
-  const query = print(DEL_INST);
+  const query = DEL_INST;
   const queryName = 'deleteInstrument';
   const getVariables = () => ({ id });
+  const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+    || null;
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   Query({
     query,
     queryName,
     getVariables,
     handleResponse,
+    refetchQueries,
   });
 }

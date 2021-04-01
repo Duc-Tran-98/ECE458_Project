@@ -3,7 +3,6 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
 import { StateLessModal } from './ModalAlert';
@@ -69,7 +68,7 @@ export default function ImportModels() {
       bulkImportModels(models: $models)
     }
   `;
-  const query = print(IMPORT_MODELS);
+  const query = IMPORT_MODELS;
   const queryName = 'bulkImportModels';
 
   const isNA = (calibrationFrequency) => {
@@ -108,6 +107,7 @@ export default function ImportModels() {
       field: 'comment',
       headerName: 'Comment',
       width: 300,
+<<<<<<< HEAD
       renderCell: (params) => (
         <div className="overflow-auto">
           {params.value}
@@ -119,6 +119,9 @@ export default function ImportModels() {
       width: 200,
       renderCell: (params) => ((params.value >= 0) ? params.value : ' '),
     },
+=======
+    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+>>>>>>> 43f6ee102f4e31c7f3c9f08178815d4a2e9301e4
   ];
 
   const characterLimits = {
@@ -238,13 +241,21 @@ export default function ImportModels() {
     setImportStatus('Registering');
     // File has been validated, now push to database
     const models = filterData(fileInfo);
-    console.log('Sending import models request with data: ');
-    console.log(models);
     const getVariables = () => ({ models });
+    const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
+    const refetchQueries = refetch !== null
+      ? [
+        {
+          query: refetch.query,
+          variables: refetch.variables,
+        },
+      ]
+      : [];
     Query({
       query,
       queryName,
       getVariables,
+      refetchQueries,
       handleResponse: (response) => {
         if (response.success) {
           toast.success(`Successfully imported ${models.length} models!`, {

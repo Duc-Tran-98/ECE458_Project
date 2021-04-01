@@ -4,7 +4,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { print } from 'graphql';
 import { gql } from '@apollo/client';
 import AsyncSuggest from './AsyncSuggest';
 
@@ -13,7 +12,8 @@ const TagsInput = (props) => {
   // eslint-disable-next-line prefer-const
   let [tags, setTags] = React.useState(props.tags);
   const [removed, setRemoved] = React.useState(['']);
-  const [update, setUpdate] = React.useState(false);
+  const [selectedCat, setSelectedCat] = React.useState(null);
+  // const [update, setUpdate] = React.useState(false);
   const models = React.useState(props.models);
   // eslint-disable-next-line prefer-destructuring
   const dis = props.dis;
@@ -34,10 +34,10 @@ const TagsInput = (props) => {
     }
     `;
   if (models[0]) {
-    query = print(GET_MODELS_CAT);
+    query = GET_MODELS_CAT;
     queryName = 'getAllModelCategories';
   } else {
-    query = print(GET_INST_CAT);
+    query = GET_INST_CAT;
     queryName = 'getAllInstrumentCategories';
   }
 
@@ -46,6 +46,7 @@ const TagsInput = (props) => {
       setRemoved([...removed, tags[indexToRemove]]);
       setTags([...tags.filter((_, index) => index !== indexToRemove)]);
       props.selectedTags([...tags.filter((_, index) => index !== indexToRemove)]);
+      setSelectedCat(null);
     }
   };
   const addTags = (tag) => {
@@ -60,6 +61,7 @@ const TagsInput = (props) => {
   const formatSelected = (option, value) => option.name === value.name;
   const onInputChange = (e, v) => {
     addTags(v.name);
+    setSelectedCat(v);
   };
 
   if (startTags) {
@@ -68,31 +70,36 @@ const TagsInput = (props) => {
     });
   }
 
+  React.useEffect(() => {
+    if (props.tags.length === 0) {
+      setTags([]);
+      setSelectedCat(null);
+    }
+  }, [props.tags]);
+
   return (
     <div className="tags-input">
-      <ul id="tags">
-        {tags && tags.length > 0 ? (tags.map((tag, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <li key={index} className="tag">
-            <span className="tag-title">{tag}</span>
-            <span
-              className="tag-close-icon"
-              onClick={() => removeTags(index)}
-            >
-              X
-            </span>
-          </li>
-        ))) : (<p>No categories attached</p>)}
+      <ul className="tags">
+        {tags && tags.length > 0 ? (
+          tags.map((tag, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={index} className="tag">
+              <span className="tag-title">{tag}</span>
+              {!dis && (
+                <span
+                  className="tag-close-icon"
+                  onClick={() => removeTags(index)}
+                >
+                  X
+                </span>
+              )}
+            </li>
+          ))
+        ) : (
+          <p>No categories attached</p>
+        )}
       </ul>
-      {dis ? (
-        <input
-          type="text"
-          // onKeyUp={(event) => (event.key === 'Enter' ? addTags(event) : null)}
-          placeholder={dis ? '' : 'Select Categories'}
-          className="form-control"
-          disabled={dis}
-        />
-      ) : (
+      {!dis && (
         <AsyncSuggest
           query={query}
           queryName={queryName}
@@ -102,6 +109,7 @@ const TagsInput = (props) => {
           getOptionLabel={formatOption}
           allowAdditions={false}
           isInvalid={props.isInvalid}
+          value={selectedCat}
         />
       )}
     </div>

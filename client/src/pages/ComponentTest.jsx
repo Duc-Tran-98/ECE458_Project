@@ -1,8 +1,12 @@
 import React from 'react';
-import XGridTest from '../components/XGridTest';
+import AppBarDemo from '../components/AppBarDemo';
+import NavIcons from '../components/NavIcons';
 
 export default function ComponentTest() {
   return (
-    <XGridTest />
+    <>
+      <AppBarDemo />
+      <NavIcons />
+    </>
   );
 }

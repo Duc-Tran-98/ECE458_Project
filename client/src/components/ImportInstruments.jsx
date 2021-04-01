@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { camelCase } from 'lodash';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import moment from 'moment';
 import Query from './UseQuery';
 import CustomUpload from './CustomUpload';
@@ -73,7 +72,7 @@ export default function ImportInstruments() {
       bulkImportInstruments(instruments: $instruments)
     }
     `;
-  const query = print(IMPORT_INSTRUMENTS);
+  const query = IMPORT_INSTRUMENTS;
   const queryName = 'bulkImportInstruments';
   const renderTable = (instruments) => {
     const filteredData = instruments.map((obj) => ({
@@ -112,22 +111,12 @@ export default function ImportInstruments() {
       field: 'comment',
       headerName: 'Comment',
       width: 300,
-      renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
-      ),
     },
     { field: 'calibrationDate', headerName: 'Calib-Date', width: 150 },
     {
       field: 'calibrationComment',
       headerName: 'Calib-Comment',
       width: 300,
-      renderCell: (params) => (
-        <div className="overflow-auto">
-          {params.value}
-        </div>
-      ),
     },
 
   ];
@@ -245,10 +234,21 @@ export default function ImportInstruments() {
 
     setImportStatus('Registering');
     // File has been validated, now push to database
+    const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+      || null;
+    const refetchQueries = refetch !== null
+      ? [
+        {
+          query: refetch.query,
+          variables: refetch.variables,
+        },
+      ]
+      : [];
     const getVariables = () => ({ instruments });
     Query({
       query,
       queryName,
+      refetchQueries,
       getVariables,
       handleResponse: (response) => {
         if (response.success) {

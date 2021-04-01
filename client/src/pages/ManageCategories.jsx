@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /*
  This class is for the category table pages
+ THIS FILE IS DEPRECATED AS OF 3/27 DO NOT USE
 */
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -31,11 +32,14 @@ function ManageCategories() {
   const [key, setKey] = useState(startTab);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [orderBy, setOrderBy] = React.useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = React.useState(urlParams.get('sortBy'));
   const [category, setCategory] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [num, setNum] = React.useState(0);
   const [newCategory, setNewCategory] = React.useState('');
   const [showEdit, setShowEdit] = React.useState(false);
+  const [showDelete, setShowDelete] = React.useState(false);
   const user = React.useContext(UserContext);
 
   const getNumAttached = async () => {
@@ -54,7 +58,7 @@ function ManageCategories() {
   };
 
   function updateRow(k, replace = false) {
-    const searchString = `?page=${initPage}&limit=${initLimit}`;
+    const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${orderBy}&sortBy=${sortBy}`;
     if (!window.location.href.includes(`/${k}Categories${searchString}`)) {
       if (replace) {
         history.replace(`/${k}Categories${searchString}`);
@@ -67,6 +71,7 @@ function ManageCategories() {
   const handleResponse = (response) => {
     if (response.success) {
       setShowEdit(false);
+      setShowDelete(false);
       toast.success(response.message, {
         toastId: Math.random(),
       });
@@ -159,49 +164,95 @@ function ManageCategories() {
   );
 
   const deleteBtn = (
-    <ModalAlert
-      title="Delete Category"
-      width=" "
-      btnText="Delete"
-      btnClass="btn btn-danger"
-      altCloseBtnId="close-cat-mod"
-    >
-      <div>
-        <div className="h5 text-center my-3">
-          {`You are about to delete category ${category}. This category is attached to ${num} ${key}${
-            num === 1 ? '' : 's'
-          }. Are you sure?`}
-        </div>
-      </div>
-
-      <div className="d-flex justify-content-center">
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            <button
-              className="btn mt-2"
-              type="button"
-              onClick={handleDelete}
-            >
-              Yes
-            </button>
-            <span className="mx-3" />
-            <button className="btn mt-2" type="button" id="close-cat-mod">
-              No
-            </button>
-          </>
-        )}
-      </div>
-    </ModalAlert>
+    <button type="button" className="btn btn-danger" onClick={() => setShowDelete(true)}>Delete</button>
   );
 
   const editBtn = (
+    <button type="button" className="btn" onClick={() => setShowEdit(true)}>
+      Edit
+    </button>
+  );
+
+  const cols = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 60,
+      hide: true,
+      disableColumnMenu: true,
+      type: 'number',
+    },
+    {
+      field: 'name',
+      headerName: 'Category',
+      width: 200,
+    },
+    {
+      field: 'edit',
+      headerName: 'Edit',
+      width: 120,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: () => (
+        editBtn
+      ),
+    },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      width: 120,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: () => (
+        deleteBtn
+      ),
+    },
+  ];
+
+  history.listen((location) => {
+    let active = true;
+
+    (async () => {
+      if (!active) {
+        return;
+      }
+      urlParams = new URLSearchParams(location.search);
+      const lim = parseInt(urlParams.get('limit'), 10);
+      const pg = parseInt(urlParams.get('page'), 10);
+      const order = urlParams.get('orderBy');
+      const sort = urlParams.get('sortBy');
+      if (lim !== initLimit) {
+        setInitLimit(lim);
+      }
+      if (pg !== initPage) {
+        setInitPage(pg);
+      }
+      if (order !== orderBy) {
+        setOrderBy(order);
+      }
+      if (sort !== sortBy) {
+        setSortBy(sort);
+      }
+      if (location.pathname.startsWith('/model')) {
+        setKey('model');
+      } else {
+        setKey('instrument');
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  });
+
+  return (
     <>
-      <button type="button" className="btn" onClick={() => setShowEdit(true)}>
-        Edit
-      </button>
-      <StateLessModal title="Edit Category" width="" handleClose={() => setShowEdit(false)} show={showEdit}>
+      <StateLessModal
+        title="Edit Category"
+        width=""
+        handleClose={() => setShowEdit(false)}
+        show={showEdit}
+      >
         <div className="d-flex flex-row text-center m-3">
           <h5>{`Change name of category: ${category}`}</h5>
         </div>
@@ -242,97 +293,75 @@ function ManageCategories() {
           )}
         </div>
       </StateLessModal>
-    </>
-  );
+      <StateLessModal
+        title="Delete Category"
+        width=" "
+        show={showDelete}
+        handleClose={() => setShowDelete(false)}
+      >
+        <div>
+          <div className="h5 text-center my-3">
+            {`You are about to delete category ${category}. This category is attached to ${num} ${key}${
+              num === 1 ? '' : 's'
+            }. Are you sure?`}
+          </div>
+        </div>
 
-  const cols = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 60,
-      hide: true,
-      disableColumnMenu: true,
-      type: 'number',
-    },
-    {
-      field: 'name',
-      headerName: 'Category',
-      width: 200,
-    },
-    {
-      field: 'edit',
-      headerName: 'Edit',
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: () => (
-        editBtn
-      ),
-    },
-    {
-      field: 'delete',
-      headerName: 'Delete',
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: () => (
-        deleteBtn
-      ),
-    },
-  ];
-
-  history.listen((location) => {
-    let active = true;
-
-    (async () => {
-      if (!active) {
-        return;
-      }
-      urlParams = new URLSearchParams(location.search);
-      const lim = parseInt(urlParams.get('limit'), 10);
-      const pg = parseInt(urlParams.get('page'), 10);
-      if (lim !== initLimit) {
-        setInitLimit(lim);
-      }
-      if (pg !== initPage) {
-        setInitPage(pg);
-      }
-
-      if (location.pathname.startsWith('/model')) {
-        setKey('model');
-      } else {
-        setKey('instrument');
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  });
-
-  return (
-    <>
+        <div className="d-flex justify-content-center">
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <button className="btn mt-2" type="button" onClick={handleDelete}>
+                Yes
+              </button>
+              <span className="mx-3" />
+              <button
+                className="btn mt-2"
+                type="button"
+                onClick={() => setShowDelete(false)}
+              >
+                No
+              </button>
+            </>
+          )}
+        </div>
+      </StateLessModal>
       {key === 'model' && (
         <ServerPaginationGrid
           rowCount={() => CountModelCategories().then((val) => val)}
           cellHandler={cellHandler}
           headerElement={
-            <div>{(user.isAdmin || user.modelPermission) && createBtn }</div>
+            <div>{(user.isAdmin || user.modelPermission) && createBtn}</div>
           }
           cols={cols}
           initPage={initPage}
           initLimit={initLimit}
           onPageChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
           }}
           onPageSizeChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
           }}
-          fetchData={(limit, offset) => GetModelCategories({ limit, offset }).then((response) => response)}
+          initialOrder={() => {
+            if (orderBy) {
+              return [[orderBy, sortBy]];
+            }
+            return null;
+          }}
+          onSortModelChange={(order, sort) => {
+            const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+            if (window.location.search !== searchString) {
+              history.push(`/modelCategories${searchString}`);
+            }
+          }}
+          fetchData={(limit, offset, ordering) => GetModelCategories({ limit, offset, orderBy: ordering }).then((response) => response)}
           showToolBar={false}
           showImport={false}
         />
@@ -343,25 +372,37 @@ function ManageCategories() {
           cellHandler={cellHandler}
           headerElement={(
             <div>
-              {(user.isAdmin || user.instrumentPermission) && createBtn }
+              {(user.isAdmin || user.instrumentPermission) && createBtn}
             </div>
           )}
           cols={cols}
           initPage={initPage}
           initLimit={initLimit}
           onPageChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/instrumentCategories${searchString}`);
             }
           }}
           onPageSizeChange={(page, limit) => {
-            const searchString = `?page=${page}&limit=${limit}`;
+            const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
             if (window.location.search !== searchString) {
               history.push(`/instrumentCategories${searchString}`);
             }
           }}
-          fetchData={(limit, offset) => GetInstrumentCategories({ limit, offset }).then(
+          initialOrder={() => {
+            if (orderBy) {
+              return [[orderBy, sortBy]];
+            }
+            return null;
+          }}
+          onSortModelChange={(order, sort) => {
+            const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+            if (window.location.search !== searchString) {
+              history.push(`/instrumentCategories${searchString}`);
+            }
+          }}
+          fetchData={(limit, offset, ordering) => GetInstrumentCategories({ limit, offset, orderBy: ordering }).then(
             (response) => response,
           )}
           showToolBar={false}

@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import PropTypes from 'prop-types';
 import { QueryAndThen } from '../components/UseQuery';
 
@@ -36,7 +35,7 @@ export default async function GetModelsForExport({ filterOptions }) {
       }
     }
   `;
-  const query = print(GET_MODELS_QUERY);
+  const query = GET_MODELS_QUERY;
   const queryName = 'getModelsWithFilter';
   const vendor = typeof filterOptions.vendors === 'undefined' ? null : filterOptions.vendors;
   const modelNumber = typeof filterOptions.modelNumbers === 'undefined' ? null : filterOptions.modelNumbers;

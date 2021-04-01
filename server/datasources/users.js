@@ -39,6 +39,9 @@ class UserAPI extends DataSource {
 
   checkPermissions() {
     const { user } = this.context;
+    if (process.env.NODE_ENV.includes('dev')) {
+      return true;
+    }
     return user.isAdmin;
   }
 
@@ -82,7 +85,9 @@ class UserAPI extends DataSource {
     const salt = bcrypt.genSaltSync(saltRounds);
     const password = bcrypt.hashSync(netId, salt);
 
-    const response = { success: true, message: '', userName };
+    const response = {
+      success: true, message: '', userName, jwt: '',
+    };
     await this.findUser({ userName }).then((value) => {
       if (value) {
         response.message = 'Account already exists';
@@ -99,6 +104,14 @@ class UserAPI extends DataSource {
           calibrationPermission: false,
         });
         response.message = 'Created account for user';
+        // 1 day = 8.64e7 ms
+        const signSync = createSigner({
+          key: 'secret',
+          expiresIn: 8.64e7,
+        });
+        response.jwt = signSync({
+          userName,
+        });
       }
     });
     return JSON.stringify(response);
@@ -135,15 +148,23 @@ class UserAPI extends DataSource {
     calibrationPermission,
     instrumentPermission,
   }) {
-    const response = { success: false, message: '' };
+    const response = { success: false, message: '', user: null };
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
+    }
+    if (isAdmin && (!modelPermission || !instrumentPermission || !calibrationPermission)) {
+      response.message = 'ERROR: admin permission must imply all other permissions';
+      return response;
+    }
+    if (modelPermission && !instrumentPermission) {
+      response.message = 'ERROR: model permission must imply instrument permission';
+      return response;
     }
     if (userName !== 'admin') {
-      this.store.users.update({
+      await this.store.users.update({
         isAdmin,
         modelPermission,
         calibrationPermission,
@@ -151,10 +172,11 @@ class UserAPI extends DataSource {
       }, { where: { userName } });
       response.success = true;
       response.message = `Updated user permissions for user ${userName}`;
+      response.user = await this.findUser({ userName });
     } else {
       response.message = 'ERROR: Cannot change local admin permissions';
     }
-    return JSON.stringify(response);
+    return response;
   }
 
   async deleteUser({ userName }) {
@@ -198,10 +220,14 @@ class UserAPI extends DataSource {
     return exists ? user[0] : null;
   }
 
-  async getAllUsers({ limit = null, offset = null }) {
+  async getAllUsers({ limit = null, offset = null, orderBy = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const users = await this.store.users.findAll({ limit, offset });
+    const users = await this.store.users.findAll({
+      limit,
+      offset,
+      order: orderBy,
+    });
     return users;
   }
 

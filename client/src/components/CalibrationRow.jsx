@@ -19,6 +19,7 @@ export default function CalibrationRow({
   fileName,
   fileLocation,
   loadBankData,
+  klufeData,
   // eslint-disable-next-line no-unused-vars
   file,
   date,
@@ -35,6 +36,7 @@ export default function CalibrationRow({
     fileName: PropTypes.string.isRequired,
     fileLocation: PropTypes.string.isRequired,
     loadBankData: PropTypes.string.isRequired,
+    klufeData: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     file: PropTypes.object,
@@ -58,12 +60,14 @@ export default function CalibrationRow({
   const val = { userName: entry.user };
   const [fileNameDisplay, setFileNameDisplay] = useState('');
   const [displayError, setDisplayError] = useState('');
+  const maxCalibrationComment = 2000;
+  const isValidForm = () => comment.length <= maxCalibrationComment;
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
-    <div className="d-flex justify-content-center">
-      <div className="delete-container rounded">
-        <div className="row mx-3">
+    <div className="d-flex justify-content-center w-100">
+      <div className="delete-container rounded w-100">
+        <div className="row mx-auto w-100">
           <div className="col-4 mt-3">
             <Form.Group>
               <Form.Label className="h5">User</Form.Label>
@@ -115,16 +119,20 @@ export default function CalibrationRow({
               <Form.Label className="h5">Calibration Comment</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={2}
+                rows={3}
                 name="comment"
                 value={comment}
                 onChange={(e) => onChangeCalibRow(e, entry)}
                 disabled={viewOnly}
+                isInvalid={comment.length > maxCalibrationComment}
               />
+              <Form.Control.Feedback type="invalid">
+                Please enter a shorter calibration comment.
+              </Form.Control.Feedback>
             </Form.Group>
           </div>
         </div>
-        <div className="row mx-3">
+        <div className="row w-100 mx-auto">
           <div className="col-4">
             {!viewOnly && (
               <MouseOverPopover message="Upload a JPG, PNG, GIF, PDF, or XLSX file">
@@ -188,7 +196,10 @@ export default function CalibrationRow({
               </div>
             )}
             {viewOnly && loadBankData && !fileName && (
-              <div> CALIBRATED BY HPT LOAD BANK </div>
+              <div> CALIBRATED BY HPT LOAD BANK WIZARD </div>
+            )}
+            {viewOnly && klufeData && !fileName && (
+              <div> CALIBRATED BY KLUFE K5700 </div>
             )}
             {fileNameDisplay.length > 0 && (
               <div>
@@ -219,7 +230,11 @@ export default function CalibrationRow({
                 <button
                   type="button"
                   className="btn w-100"
-                  onClick={() => onSaveClick(entry)}
+                  onClick={() => {
+                    if (isValidForm()) {
+                      onSaveClick(entry);
+                    }
+                  }}
                   id={`save-btn-${entry.id}`}
                 >
                   Save

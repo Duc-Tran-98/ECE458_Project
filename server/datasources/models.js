@@ -7,28 +7,28 @@ function validateModel({
   modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false,
 }) {
   if (vendor.length > 30) {
-    return [false, 'Vendor input must be under 30 characters!'];
+    return [false, 'ERROR: Vendor input must be under 30 characters!'];
   }
   if (modelNumber.length > 40) {
-    return [false, 'Model number must be under 40 characters!'];
+    return [false, 'ERROR: Model number must be under 40 characters!'];
   }
   if (description.length > 100) {
-    return [false, 'Description input must be under 100 characters!'];
+    return [false, 'ERROR: Description input must be under 100 characters!'];
   }
   if (vendor.length < 1) {
-    return [false, 'Vendor input must be included!'];
+    return [false, 'ERROR: Vendor input must be included!'];
   }
   if (modelNumber.length < 1) {
-    return [false, 'Model number must be included!'];
+    return [false, 'ERROR: Model number must be included!'];
   }
   if (description.length < 1) {
-    return [false, 'Description input must be included!'];
+    return [false, 'ERROR: Description input must be included!'];
   }
   if (comment != null && comment.length > 2000) {
-    return [false, 'Comment input must be under 2000 characters!'];
+    return [false, 'ERROR: Comment input must be under 2000 characters!'];
   }
   if (klufe && loadBank) {
-    return [false, 'Model cannot be calibratable by Load Bank and Klufe Calibrator!'];
+    return [false, 'ERROR: Model cannot support calibration via load bank wizard and Klufe 5700!'];
   }
   return [true];
 }
@@ -55,6 +55,9 @@ class ModelAPI extends DataSource {
 
   checkPermissions() {
     const { user } = this.context;
+    if (process.env.NODE_ENV.includes('dev')) {
+      return true;
+    }
     return user.isAdmin || user.modelPermission;
   }
 
@@ -82,7 +85,7 @@ class ModelAPI extends DataSource {
       } else {
         await this.store.models.destroy({ where: { modelNumber, vendor } });
         await this.store.modelCategoryRelationships.destroy({ where: { modelId: modelReference } });
-        response.message = 'Model deleted!';
+        response.message = `Deleted model ${vendor}-${modelNumber}`;
         response.success = true;
       }
     });
@@ -100,12 +103,12 @@ class ModelAPI extends DataSource {
     supportKlufeCalibration,
     categories,
   }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission';
-      return JSON.stringify(response);
+      return response;
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
@@ -114,7 +117,11 @@ class ModelAPI extends DataSource {
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
-      return JSON.stringify(response);
+      return response;
+    }
+    if (typeof id === 'string') {
+      // eslint-disable-next-line no-param-reassign
+      id = parseInt(id, 10);
     }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value && value.id !== id) {
@@ -158,18 +165,15 @@ class ModelAPI extends DataSource {
         }
         response.message = 'Model Updated Successfully!';
         response.success = true;
+        response.model = await this.getModelById({ id });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async getAllModels({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({
       limit,
       offset,
@@ -183,15 +187,11 @@ class ModelAPI extends DataSource {
   }
 
   async getModelsWithFilter({
-    vendor, modelNumber, description, categories, limit = null, offset = null,
+    vendor, modelNumber, description, categories, limit = null, offset = null, orderBy = [['id', 'ASC']],
   }) {
     const response = { models: [], total: 0 };
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return response;
-    // }
     if (categories) {
       let includeData;
       if (categories) {
@@ -200,9 +200,9 @@ class ModelAPI extends DataSource {
             model: this.store.modelCategories,
             as: 'categories',
             through: 'modelCategoryRelationships',
-            where: {
-              name: categories,
-            },
+            // where: {
+            //   name: categories,
+            // },
           },
         ];
       } else {
@@ -224,6 +224,7 @@ class ModelAPI extends DataSource {
       let models = await this.store.models.findAndCountAll({
         include: includeData,
         where: filters,
+        order: orderBy,
       });
       response.models = models.rows;
       response.total = models.count;
@@ -259,7 +260,6 @@ class ModelAPI extends DataSource {
           ],
         },
       ];
-      // }
 
       // eslint-disable-next-line prefer-const
       let filters = [];
@@ -273,6 +273,7 @@ class ModelAPI extends DataSource {
         limit,
         offset,
         subQuery: false,
+        order: orderBy,
       });
       for (let j = 0; j < models.rows.length; j += 1) {
         const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
@@ -298,6 +299,7 @@ class ModelAPI extends DataSource {
           include: includeData,
           where: filters,
           subQuery: false,
+          order: orderBy,
         });
         for (let j = 0; j < models.rows.length; j += 1) {
           const mtmcr = models.rows[j].mtmcr.map((a) => a.dataValues);
@@ -342,10 +344,6 @@ class ModelAPI extends DataSource {
   async getAllModelsWithModelNum({ modelNumber }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ where: { modelNumber } });
     return models;
   }
@@ -353,10 +351,6 @@ class ModelAPI extends DataSource {
   async getAllModelsWithVendor({ vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ where: { vendor } });
     return models;
   }
@@ -364,10 +358,6 @@ class ModelAPI extends DataSource {
   async getUniqueVendors() {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
     const models = await this.store.models.findAll({ attributes: [[SQL.fn('DISTINCT', SQL.col('vendor')), 'vendor']] });
     return models;
   }
@@ -375,10 +365,6 @@ class ModelAPI extends DataSource {
   async getModelById({ id }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const model = await this.store.models.findAll({
       where: { id },
       include: {
@@ -396,10 +382,6 @@ class ModelAPI extends DataSource {
   async getModel({ modelNumber, vendor }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
       include: {
@@ -424,12 +406,12 @@ class ModelAPI extends DataSource {
     supportKlufeCalibration = false,
     categories = [],
   }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
@@ -438,7 +420,7 @@ class ModelAPI extends DataSource {
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
       response.message = validation[1];
-      return JSON.stringify(response);
+      return response;
     }
     await this.getModel({ modelNumber, vendor }).then(async (value) => {
       if (value) {
@@ -458,35 +440,37 @@ class ModelAPI extends DataSource {
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;
+        response.model = await this.getModel({ modelNumber, vendor });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async addModelCategory({ name }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, category: null };
     if (hasWhiteSpace(name)) {
       response.message = 'ERROR: category cannot have white spaces';
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
-    await this.getModelCategory({ name }).then((value) => {
+    await this.getModelCategory({ name }).then(async (value) => {
       if (value) {
         response.message = `ERROR: cannot add model category ${name}, it already exists!`;
       } else {
-        this.store.modelCategories.create({
+        await this.store.modelCategories.create({
           name,
         });
         response.success = true;
         response.message = `Added new model category, ${name}, into the DB!`;
+        response.category = await this.getModelCategory({ name });
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async removeModelCategory({ name }) {
@@ -520,16 +504,16 @@ class ModelAPI extends DataSource {
   }
 
   async editModelCategory({ currentName, updatedName }) {
-    const response = { message: '', success: false };
+    const response = { message: '', success: false, category: null };
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
-      return JSON.stringify(response);
+      return response;
     }
     const storeModel = await this.store;
     this.store = storeModel;
     if (!this.checkPermissions()) {
       response.message = 'ERROR: User does not have permission.';
-      return JSON.stringify(response);
+      return response;
     }
     let name = currentName;
     await this.getModelCategory({ name }).then(async (value) => {
@@ -537,11 +521,11 @@ class ModelAPI extends DataSource {
         name = updatedName;
         // eslint-disable-next-line prefer-destructuring
         const id = value.dataValues.id;
-        await this.getModelCategory({ name }).then((result) => {
+        await this.getModelCategory({ name }).then(async (result) => {
           if (result) {
             response.message = `ERROR: Cannot change name to ${updatedName}, that category already exists!`;
           } else {
-            this.store.modelCategories.update(
+            await this.store.modelCategories.update(
               {
                 name: updatedName,
               },
@@ -549,13 +533,14 @@ class ModelAPI extends DataSource {
             );
             response.success = true;
             response.message = `Model category ${updatedName} successfully updated!`;
+            response.category = await this.getModelCategory({ name: updatedName });
           }
         });
       } else {
         response.message = `ERROR: Cannot edit model category ${currentName}, it does not exist!`;
       }
     });
-    return JSON.stringify(response);
+    return response;
   }
 
   async addCategoryToModel({ vendor, modelNumber, category }) {
@@ -637,10 +622,6 @@ class ModelAPI extends DataSource {
   async getModelCategory({ name }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return null;
-    // }
     const category = await this.store.modelCategories.findAll({
       where: { name },
     });
@@ -650,14 +631,14 @@ class ModelAPI extends DataSource {
     return null;
   }
 
-  async getAllModelCategories({ limit = null, offset = null }) {
+  async getAllModelCategories({ limit = null, offset = null, orderBy = [['name', 'ASC']] }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    // const { user } = this.context;
-    // if (!user) {
-    //   return [];
-    // }
-    return await this.store.modelCategories.findAll({ limit, offset });
+    return await this.store.modelCategories.findAll({
+      limit,
+      offset,
+      order: orderBy,
+    });
   }
 
   async countModelCategories() {

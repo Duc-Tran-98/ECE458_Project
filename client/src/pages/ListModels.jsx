@@ -8,8 +8,6 @@ import GetAllModels from '../queries/GetAllModels';
 import MouseOverPopover from '../components/PopOver';
 import SearchBar from '../components/SearchBar';
 import UserContext from '../components/UserContext';
-import CreateModel from './CreateModel';
-import ModalAlert from '../components/ModalAlert';
 
 function ListModels() {
   const history = useHistory();
@@ -18,6 +16,8 @@ function ListModels() {
   const urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = useState(parseInt(urlParams.get('limit'), 10));
+  const [orderBy, setOrderBy] = useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = useState(urlParams.get('sortBy'));
   const [update, setUpdate] = useState(false);
   let urlFilter = urlParams.get('filters');
   let selectedFilters = null;
@@ -34,9 +34,13 @@ function ListModels() {
     const urlVals = new URLSearchParams(search || window.location.search);
     const lim = parseInt(urlVals.get('limit'), 10);
     const pg = parseInt(urlVals.get('page'), 10);
+    const order = urlVals.get('orderBy');
+    const sort = urlVals.get('sortBy');
     urlFilter = urlVals.get('filters');
     setInitLimit(lim);
     setInitPage(pg);
+    setOrderBy(order);
+    setSortBy(sort);
     if (urlFilter) {
       selectedFilters = JSON.parse(Buffer.from(urlFilter, 'base64').toString('ascii'));
     } else {
@@ -83,10 +87,16 @@ function ListModels() {
       description: 'Vendor',
     },
     {
-      field: 'modelNumber', headerName: 'Model Number', width: 150, description: 'Model Number',
+      field: 'modelNumber',
+      headerName: 'Model Number',
+      width: 150,
+      description: 'Model Number',
     },
     {
-      field: 'description', headerName: 'Description', width: 350, description: 'Description',
+      field: 'description',
+      headerName: 'Description',
+      width: 350,
+      description: 'Description',
     },
     {
       field: 'comment',
@@ -95,7 +105,12 @@ function ListModels() {
       width: 400,
       hide: true,
       renderCell: (params) => (
-        <div className="overflow-auto">{params.value}</div>
+        <span
+          className="text-wrap"
+          style={{ lineHeight: '1.1', fontSize: '0.79em' }}
+        >
+          {params.value}
+        </span>
       ),
     },
     {
@@ -134,6 +149,7 @@ function ListModels() {
       headerName: 'Categories',
       description: 'Categories',
       width: 350,
+      sortable: false,
       renderCell: (params) => (
         <div className="overflow-auto">{categoriesList(params)}</div>
       ),
@@ -183,13 +199,11 @@ function ListModels() {
       && (!modelNumbers)
       && (!descriptions)
     ) {
-      route = `/viewModels?page=1&limit=${initLimit}`;
+      route = `/viewModels?page=1&limit=${initLimit}&orderBy=${orderBy}&sortBy=${sortBy}`;
       history.push(route);
     } else {
-      route = `/viewModels?page=1&limit=${initLimit}&filters=${filters}`;
-      history.push(
-        route,
-      );
+      route = `/viewModels?page=1&limit=${initLimit}&orderBy=${orderBy}&sortBy=${sortBy}&filters=${filters}`;
+      history.push(route);
     }
   };
 
@@ -208,10 +222,12 @@ function ListModels() {
       categories: actualCategories,
     });
   };
+
   const {
     vendors, modelNumbers, descriptions, categories,
   } = filterOptions;
-  const updateUrl = (page, limit) => { // this is passed to the on page change and on page size change
+
+  const updateUrlOnPageChange = (page, limit) => { // this is passed to the on page change and on page size change
     // handlers of the server pagination grid
     const filters = Buffer.from(
       JSON.stringify({
@@ -222,28 +238,36 @@ function ListModels() {
       }),
       'ascii',
     ).toString('base64');
-    let searchString = `?page=${page}&limit=${limit}`;
+    let searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
     if (window.location.search.includes('filters')) {
-      searchString = `?page=${page}&limit=${limit}&filters=${filters}`;
+      searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}&filters=${filters}`;
     }
     if (window.location.search !== searchString) {
       // If current location != next location, update url
       history.push(`/viewModels${searchString}`);
     }
   };
-  const createBtn = (
-    <ModalAlert
-      title="Create Model"
-      btnText="Create Model"
-      btnClass="btn m-2 my-auto text-nowrap"
-    >
-      <CreateModel onCreation={() => {
-        setUpdate(true);
-        setUpdate(false);
-      }}
-      />
-    </ModalAlert>
-  );
+
+  const updateUrlOnOrderChange = (order, sort) => { // this is passed to the on page change and on page size change
+    // handlers of the server pagination grid
+    const filters = Buffer.from(
+      JSON.stringify({
+        vendors,
+        modelNumbers,
+        descriptions,
+        categories,
+      }),
+      'ascii',
+    ).toString('base64');
+    let searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+    if (window.location.search.includes('filters')) {
+      searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}&filters=${filters}`;
+    }
+    if (window.location.search !== searchString) {
+      // If current location != next location, update url
+      history.push(`/viewModels${searchString}`);
+    }
+  };
 
   return (
     <>
@@ -255,13 +279,14 @@ function ListModels() {
           description: descriptions,
           vendor: vendors,
           categories,
+          fetchPolicy: 'no-cache',
         }).then((response) => response.total)}
         cellHandler={cellHandler}
         headerElement={(
           <div className="d-flex justify-content-between py-2">
-            {(user.isAdmin || user.modelPermission) && (
+            {/* {(user.isAdmin || user.modelPermission) && (
               createBtn
-            )}
+            )} */}
             <SearchBar
               forModelSearch
               onSearch={onSearch}
@@ -277,25 +302,40 @@ function ListModels() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          updateUrl(page, limit);
+          updateUrlOnPageChange(page, limit);
         }}
         onPageSizeChange={(page, limit) => {
-          updateUrl(page, limit);
+          updateUrlOnPageChange(page, limit);
         }}
-        fetchData={(limit, offset) => GetAllModels({
+        initialOrder={() => {
+          if (orderBy) {
+            return [[orderBy, sortBy]];
+          }
+          return null;
+        }}
+        onSortModelChange={(order, sort) => {
+          updateUrlOnOrderChange(order, sort);
+        }}
+        fetchData={(limit, offset, ordering) => GetAllModels({
           limit,
           offset,
           vendor: vendors,
           modelNumber: modelNumbers,
           description: descriptions,
           categories,
+          orderBy: ordering,
         }).then((response) => response.models)}
         filterRowForCSV={filterRowForCSV}
         headers={headers}
         filename="models.csv"
         filterOptions={filterOptions}
         showToolBar
-        showImport={user.isAdmin || user.modelPermission}
+        showImport={(user.isAdmin || user.modelPermission)}
+        onCreate={() => {
+          setUpdate(true);
+          setUpdate(false);
+        }}
+
       />
     </>
   );

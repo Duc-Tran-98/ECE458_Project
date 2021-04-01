@@ -36,7 +36,7 @@ export default function OAuthConsume({ handleLogin }) {
       'token',
       Buffer.from(response.userName, 'ascii').toString('base64'),
     );
-    handleLogin();
+    handleLogin(response.jwt);
     window.location.href = '/';
   };
 

@@ -2,12 +2,13 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { useHistory, Link } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from 'react-bootstrap/Button';
+import { toast } from 'react-toastify';
 import ModelForm from '../components/ModelForm';
 import InfinityScroll from '../components/InfiniteScroll';
-import ModalAlert from '../components/ModalAlert';
+import { StateLessCloseModal } from '../components/ModalAlert';
 import DeleteModel from '../queries/DeleteModel';
 import FindModel, { FindModelById } from '../queries/FindModel';
 
@@ -27,7 +28,7 @@ export default function DetailedModelView() {
     categories: [],
   });
   const [loading, setLoading] = React.useState(false);
-  const [responseMsg, setResponseMsg] = React.useState('');
+  const [showDelete, setShowDelete] = React.useState(false);
   const [fetched, setFetched] = React.useState(false);
   const [update, setUpdate] = React.useState(false);
   const handleFindModel = (response) => {
@@ -105,10 +106,11 @@ export default function DetailedModelView() {
   }, [update]);
   const handleResponse = (response) => {
     setLoading(false);
-    setResponseMsg(response.message);
     if (response.success) {
+      toast.success(response.message, {
+        toastId: 101,
+      });
       setTimeout(() => {
-        setResponseMsg('');
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
           history.replace( // This code updates the url to have the correct count
@@ -119,6 +121,10 @@ export default function DetailedModelView() {
           history.replace('/', null);
         }
       }, 1000);
+    } else {
+      toast.error(response.message, {
+        toastId: 102,
+      });
     }
   };
   const {
@@ -135,86 +141,80 @@ export default function DetailedModelView() {
     setLoading(true);
     DeleteModel({ modelNumber, vendor, handleResponse });
   };
-  const deleteBtn = (
-    <ModalAlert
-      btnText=""
-      title="Delete Model"
-      altBtnId="delete-model-btn"
-      popOverText="Delete this model"
-      altBtn={(
-        <svg
-          id="delete-model-btn"
-          style={{ cursor: 'pointer' }}
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          fill="currentColor"
-          className="bi bi-trash-fill mt-2"
-          viewBox="0 0 16 16"
-        >
-          {/* eslint-disable-next-line max-len */}
-          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
-        </svg>
-      )}
-      altCloseBtnId="close-delete-modal"
-    >
-      <>
-        {responseMsg.length === 0 && (
-          <div className="h5 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
+  const deleteConfirm = (
+    <>
+      <div className="h5 text-center my-3">{`You are about to delete model ${vendor}:${modelNumber}. Are you sure?`}</div>
+      <div className="d-flex justify-content-center">
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <div className="mt-3">
+              <button className="btn btn-delete" type="button" onClick={handleDelete}>
+                Yes
+              </button>
+            </div>
+            <span className="mx-3" />
+            <div className="mt-3">
+              <button className="btn " type="button" onClick={() => setShowDelete(false)}>
+                No
+              </button>
+            </div>
+          </>
         )}
-        <div className="d-flex justify-content-center">
-          {loading ? (
-            <CircularProgress />
-          ) : responseMsg.length > 0 ? (
-            <div className="mx-5 mt-3 h5">{responseMsg}</div>
-          ) : (
+      </div>
+    </>
+  );
+
+  const deleteBtn = (
+    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">Delete</Button>
+    // <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
+  );
+  const deleteModal = (
+    <StateLessCloseModal
+      show={showDelete}
+      handleClose={() => setShowDelete(false)}
+      title="Delete Instrument"
+    >
+      {deleteConfirm}
+    </StateLessCloseModal>
+  );
+
+  const ref = React.useRef(null);
+  return (
+    <>
+      <div className="row">
+        <div className="col p-3 border border-right border-dark">
+          {fetched && (
             <>
-              <div className="mt-3">
-                <button className="btn" type="button" onClick={handleDelete}>
-                  Yes
-                </button>
-              </div>
-              <span className="mx-3" />
-              <div className="mt-3">
-                <button className="btn " type="button" id="close-delete-modal">
-                  No
-                </button>
-              </div>
+              <h3 className="px-3 bg-secondary text-light my-auto">Model Information</h3>
+              {deleteModal}
+              <ModelForm
+                editBtnRef={ref}
+                modelNumber={modelNumber}
+                vendor={vendor}
+                description={description}
+                comment={comment}
+                categories={categories}
+                calibrationFrequency={calibrationFrequency}
+                supportLoadBankCalibration={supportLoadBankCalibration}
+                supportKlufeCalibration={supportKlufeCalibration}
+                handleFormSubmit={() => undefined}
+                validated={false}
+                diffSubmit
+                viewOnly
+                deleteBtn={deleteBtn}
+                type="edit"
+              />
             </>
           )}
         </div>
-      </>
-    </ModalAlert>
-  );
-  return (
-    <>
-      <div className="col">
-        <div className="row">
-          {fetched && (
-            <ModelForm
-              modelNumber={modelNumber}
-              vendor={vendor}
-              description={description}
-              comment={comment}
-              categories={categories}
-              calibrationFrequency={calibrationFrequency}
-              supportLoadBankCalibration={supportLoadBankCalibration}
-              supportKlufeCalibration={supportKlufeCalibration}
-              handleFormSubmit={() => undefined}
-              validated={false}
-              diffSubmit
-              viewOnly
-              deleteBtn={deleteBtn}
-              type="edit"
-            />
-          )}
-        </div>
-        <div className="row px-3">
-          <div id="scrollableDiv">
+        <div className="col p-3 border border-left border-dark" id="remove-if-empty">
+          <div id="scrollableDiv" style={{ maxHeight: '72vh', overflowY: 'auto', minHeight: '72vh' }}>
             <InfinityScroll
               title="Instances:"
-              titleClassName="px-3 bg-secondary text-light"
-              query={print(gql`
+              titleClassName="px-3 bg-secondary text-light my-auto sticky-top"
+              query={gql`
                 query GetInstrumentFromModel(
                   $modelNumber: String!
                   $vendor: String!
@@ -229,19 +229,18 @@ export default function DetailedModelView() {
                   ) {
                     total
                     rows {
+                      assetTag
                       serialNumber
                       id
-                      calibrationFrequency
-                      assetTag
                     }
                   }
                 }
-              `)}
+              `}
               queryName="getAllInstrumentsWithModel"
               variables={{ modelNumber, vendor }}
               renderItems={(items) => items.map((entry) => (
                 <li className="list-group-item" key={entry.id}>
-                  <div className="row">
+                  <div className="row w-100">
                     <span className="col">
                       Serial #:
                       {' '}
@@ -270,6 +269,7 @@ export default function DetailedModelView() {
           </div>
         </div>
       </div>
+      <div className="d-flex justify-content-center py-3" ref={ref} />
     </>
   );
 }

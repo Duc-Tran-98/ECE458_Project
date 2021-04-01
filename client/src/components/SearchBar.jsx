@@ -2,7 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import SearchIcon from '@material-ui/icons/Search';
 import AsyncSuggest from './AsyncSuggest';
 
@@ -172,89 +171,6 @@ export default function SearchBar({
 
   const baseSearchRow = () => (
     <>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query Models {
-              getUniqueVendors {
-                vendor
-              }
-            }
-          `)}
-          queryName="getUniqueVendors"
-          onInputChange={(_e, v) => setVendors(v)}
-          label="Filter by Vendor"
-          getOptionLabel={(option) => `${option.vendor}`}
-          getOptionSelected={(option, value) => option.vendor === value.vendor}
-          value={vendors}
-          isComboBox
-          isInvalid={false}
-          handleKeyPress={handleKeyPress}
-        />
-      </div>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query GetModelNumbers {
-              getAllModels {
-                modelNumber
-              }
-            }
-          `)}
-          queryName="getAllModels"
-          onInputChange={(_e, v) => setModelNumbers(v)}
-          label="Filter by Model Number"
-          getOptionLabel={(option) => `${option.modelNumber}`}
-          getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
-          value={modelNumbers}
-          isComboBox
-          isInvalid={false}
-          handleKeyPress={handleKeyPress}
-        />
-      </div>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query GetCategories {
-              getAllModelCategories {
-                name
-              }
-            }
-          `)}
-          queryName="getAllModelCategories"
-          onInputChange={(_e, v) => setModelCategories(v)}
-          label={
-            forModelSearch ? 'Filter by Category' : 'Filter by Model Category'
-          }
-          getOptionLabel={(option) => `${option.name}`}
-          getOptionSelected={() => undefined}
-          multiple
-          multipleValues={modelCategories}
-          isInvalid={false}
-          handleKeyPress={handleKeyPress}
-        />
-      </div>
-      <div className="m-2 w-25 my-auto pt-1">
-        <AsyncSuggest
-          query={print(gql`
-            query GetModelNumbers {
-              getAllModels {
-                description
-              }
-            }
-          `)}
-          queryName="getAllModels"
-          onInputChange={(_e, v) => setDescriptions(v)}
-          label="Filter by Description"
-          getOptionLabel={(option) => `${option.description}`}
-          getOptionSelected={(option, value) => option.description === value.description}
-          value={descriptions}
-          isComboBox
-          isInvalid={false}
-          handleKeyPress={handleKeyPress}
-        />
-      </div>
-      {/* {dropdownMenu} */}
       <button
         className="btn my-auto mx-2"
         type="button"
@@ -270,6 +186,92 @@ export default function SearchBar({
       >
         <SearchIcon />
       </button>
+      <div
+        className="m-2 w-25 my-auto pt-1 rounded"
+        style={{ background: '#539ce6' }}
+      >
+        <AsyncSuggest
+          query={gql`
+            query Models {
+              getUniqueVendors {
+                vendor
+              }
+            }
+          `}
+          queryName="getUniqueVendors"
+          onInputChange={(_e, v) => setVendors(v)}
+          label="Filter by Vendor"
+          getOptionLabel={(option) => `${option.vendor}`}
+          getOptionSelected={(option, value) => option.vendor === value.vendor}
+          value={vendors}
+          isComboBox
+          isInvalid={false}
+          handleKeyPress={handleKeyPress}
+        />
+      </div>
+      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
+        <AsyncSuggest
+          query={gql`
+            query GetModelNumbers {
+              getAllModels {
+                modelNumber
+              }
+            }
+          `}
+          queryName="getAllModels"
+          onInputChange={(_e, v) => setModelNumbers(v)}
+          label="Filter by Model Number"
+          getOptionLabel={(option) => `${option.modelNumber}`}
+          getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
+          value={modelNumbers}
+          isComboBox
+          isInvalid={false}
+          handleKeyPress={handleKeyPress}
+        />
+      </div>
+      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
+        <AsyncSuggest
+          query={gql`
+            query GetCategories {
+              getAllModelCategories {
+                name
+              }
+            }
+          `}
+          queryName="getAllModelCategories"
+          onInputChange={(_e, v) => setModelCategories(v)}
+          label={
+            forModelSearch ? 'Filter by Category' : 'Filter by Model Category'
+          }
+          getOptionLabel={(option) => `${option.name}`}
+          getOptionSelected={() => undefined}
+          multiple
+          multipleValues={modelCategories}
+          isInvalid={false}
+          handleKeyPress={handleKeyPress}
+        />
+      </div>
+      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
+        <AsyncSuggest
+          query={gql`
+            query GetModelNumbers {
+              getAllModels {
+                description
+              }
+            }
+          `}
+          queryName="getAllModels"
+          onInputChange={(_e, v) => setDescriptions(v)}
+          label="Filter by Description"
+          getOptionLabel={(option) => `${option.description}`}
+          getOptionSelected={(option, value) => option.description === value.description}
+          value={descriptions}
+          isComboBox
+          isInvalid={false}
+          handleKeyPress={handleKeyPress}
+        />
+      </div>
+      {/* {dropdownMenu} */}
     </>
   );
 
@@ -281,15 +283,23 @@ export default function SearchBar({
       <div className="d-flex flex-column w-100">
         <div className="d-flex flex-row w-100">{baseSearchRow()}</div>
         <div className="d-flex flex-row w-100 pt-2">
-          <div className="m-2 w-25 my-auto pt-1">
+          {/* This is for matching the spacing of the above row */}
+          {/* TODO: Move search bar to the left */}
+          <button className="btn my-auto mx-2 invisible" type="button">
+            <SearchIcon />
+          </button>
+          <div
+            className="m-2 w-25 my-auto pt-1"
+            style={{ background: '#539ce6' }}
+          >
             <AsyncSuggest
-              query={print(gql`
+              query={gql`
                 query getSerialNumbs {
                   getAllInstruments {
                     serialNumber
                   }
                 }
-              `)}
+              `}
               filterRes={(entry) => entry.serialNumber.length > 0}
               queryName="getAllInstruments"
               onInputChange={(_e, v) => setSerialNumber(v)}
@@ -302,15 +312,18 @@ export default function SearchBar({
               handleKeyPress={handleKeyPress}
             />
           </div>
-          <div className="m-2 w-25 my-auto pt-1">
+          <div
+            className="m-2 w-25 my-auto pt-1"
+            style={{ background: '#539ce6' }}
+          >
             <AsyncSuggest
-              query={print(gql`
+              query={gql`
                 query getSerialNumbs {
                   getAllInstruments {
                     assetTag
                   }
                 }
-              `)}
+              `}
               queryName="getAllInstruments"
               onInputChange={(_e, v) => setAssetTag(v)}
               label="Filter by Asset Tag"
@@ -322,15 +335,18 @@ export default function SearchBar({
               handleKeyPress={handleKeyPress}
             />
           </div>
-          <div className="m-2 w-25 my-auto pt-1">
+          <div
+            className="m-2 w-25 my-auto pt-1"
+            style={{ background: '#539ce6' }}
+          >
             <AsyncSuggest
-              query={print(gql`
+              query={gql`
                 query getInstCats {
                   getAllInstrumentCategories {
                     name
                   }
                 }
-              `)}
+              `}
               queryName="getAllInstrumentCategories"
               onInputChange={(_e, v) => setInstrumentCategories(v)}
               label="Filter by Instrument Category"
@@ -344,9 +360,8 @@ export default function SearchBar({
           </div>
           {/* This is for matching the spacing of the above row */}
           <div className="m-2 w-25 my-auto pt-1" />
-          <button className="btn my-auto mx-2 invisible" type="button">
-            <SearchIcon />
-          </button>
+          {/* TODO: Move search bar to the left */}
+
         </div>
       </div>
     </>

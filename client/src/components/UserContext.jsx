@@ -16,7 +16,6 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
   };
 
   const [user, setUserState] = React.useState({
-    isLoggedIn: false,
     isAdmin: false,
     modelPermission: false,
     calibrationPermission: false,
@@ -27,44 +26,56 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
     email: '',
   });
   let token = window.sessionStorage.getItem('token');
-  const startPolling = (initVal) => {
+  const startPolling = (initVal, userName) => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
     intervalId = setInterval(() => {
       // add polling to check if user exists or not
       token = window.sessionStorage.getItem('token');
       if (token) { // If there's token (user needs to have signed in first)
         GetUser({ // poll user info
-          userName: Buffer.from(token, 'base64').toString('ascii'),
+          userName,
           includeAll: true,
+          fetchPolicy: 'no-cache',
         }).then((res) => {
           if (typeof res === 'undefined') {
             // undefined => user got deleted
-            toast.error('This account has been delted! Signing you out.');
+            toast.error('This account has been deleted! Signing you out.', {
+              toastId: 0,
+            });
             clearInterval(intervalId);
-            handleSignOut(); // stop polling, and sign out user
+            handleSignOut(intervalId); // stop polling, and sign out user
           } else {
             // res !== undefined => user still exsits, so let's check if
             // their permissions change
-            res.isLoggedIn = true;
             const hasChanged = JSON.stringify(res) !== JSON.stringify(initVal);
+            // if (res.userName !== initVal.userName) {
+            //   console.log('userNames dont match');
+            // }
+            // console.log(res, initVal);
             // console.log(hasChanged);
             if (hasChanged) {
               // initVal and newly polled val don't match
               setUserState(res); // update state
               clearInterval(intervalId); // stop old polling
-              startPolling(res); // start new poll with new init val
-              toast('User permission have changed.');
+              // console.log('starting poll cus user changed');
+              startPolling(res, res.userName); // start new poll with new init val
+              toast('User permission have changed.', {
+                toastId: 68,
+              });
             }
           }
         });
       }
     }, pollingPeriod); // every 3s, check if user still exists
+    // console.log(intervalId);
   };
 
   useEffect(() => {
     token = window.sessionStorage.getItem('token');
     if (token === null) { // user signed out
       setUserState({
-        isLoggedIn: false,
         isAdmin: false,
         userName: '',
         firstName: '',
@@ -81,14 +92,17 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
         GetUser({
           userName: Buffer.from(token, 'base64').toString('ascii'),
           includeAll: true,
+          fetchPolicy: 'no-cache',
         }).then((val) => {
-          // eslint-disable-next-line no-param-reassign
-          val.isLoggedIn = true;
           setUserState(val);
-          startPolling(val);
+          // console.log('starting poll from logged in being true');
+          startPolling(val, Buffer.from(token, 'base64').toString('ascii'));
         });
-      }, 20); // set timeout to give time for new authheader to get applied
+      }, 100); // set timeout to give time for new authheader to get applied
     }
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [loggedIn]);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

@@ -1,6 +1,6 @@
 import { CSVLink } from 'react-csv';
 import { Button } from 'react-bootstrap';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import MouseOverPopover from './PopOver';
 import GetModelsForExport from '../queries/GetModelsForExport';
@@ -52,6 +52,10 @@ const ExportModels = ({ setLoading, filterOptions }) => {
   };
 
   const csvLink = useRef(); // setup the ref that we'll use for the hidden CsvLink click once we've updated the data
+  useEffect(() => {
+    // console.log('csvLink inside ExportModels: ');
+    // console.log(csvLink);
+  }, [csvLink]);
 
   const getTransactionData = async () => {
     setLoading(true);
@@ -62,6 +66,8 @@ const ExportModels = ({ setLoading, filterOptions }) => {
       })
       .catch((e) => console.log(e));
     setLoading(false);
+    // console.log('csvLink: ');
+    // console.log(csvLink);
     csvLink.current.link.click();
   };
 

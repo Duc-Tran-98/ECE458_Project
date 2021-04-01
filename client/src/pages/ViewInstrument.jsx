@@ -5,18 +5,19 @@ import { Link, useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from 'axios';
 import { gql } from '@apollo/client';
-import { print } from 'graphql';
 import { toast } from 'react-toastify';
+import Button from 'react-bootstrap/Button';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
-import ModalAlert, { StateLessModal } from '../components/ModalAlert';
+import ModalAlert, { StateLessModal, StateLessCloseModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
+import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
 
 const route = process.env.NODE_ENV.includes('dev')
@@ -26,12 +27,14 @@ const route = process.env.NODE_ENV.includes('dev')
 export default function DetailedInstrumentView() {
   const user = React.useContext(UserContext);
   const history = useHistory();
+  const [showDelete, setShowDelete] = React.useState(false);
+
   // This code is getting params from url
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const [loading, setLoading] = React.useState(false); // loading status of delete query
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
-  const [responseMsg, setResponseMsg] = React.useState(''); // msg from delete query
+  const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
   const [show, setShow] = React.useState(false); // show add calib event modal or not
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
   const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
@@ -48,10 +51,12 @@ export default function DetailedInstrumentView() {
   });
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
-    setResponseMsg(response.message);
+    setShowDelete(false);
     if (response.success) {
+      toast.success(response.message, {
+        toastId: -1,
+      });
       setTimeout(() => {
-        setResponseMsg('');
         if (history.location.state?.previousUrl) {
           const path = history.location.state.previousUrl.split(window.location.host)[1];
           history.replace( // This code updates the url to have the correct count
@@ -62,6 +67,10 @@ export default function DetailedInstrumentView() {
           history.replace('/', null);
         }
       }, 1000);
+    } else {
+      toast.error(response.message, {
+        toastId: -8,
+      });
     }
   };
   const handleDelete = () => {
@@ -77,9 +86,7 @@ export default function DetailedInstrumentView() {
       let counter = nextId;
       data.forEach((item) => {
         // console.log(item);
-        // eslint-disable-next-line no-param-reassign
         item.id = counter;
-        // eslint-disable-next-line no-param-reassign
         item.viewOnly = true;
         counter += 1;
       });
@@ -143,8 +150,9 @@ export default function DetailedInstrumentView() {
         entry.fileLocation = res.data.assetName;
         // eslint-disable-next-line no-param-reassign
         entry.fileName = res.data.fileName;
+      // eslint-disable-next-line no-unused-vars
       }).catch((err) => {
-        console.log(err.message);
+        // console.log(err.message);
       });
     }
     AddCalibEventByAssetTag({
@@ -185,6 +193,12 @@ export default function DetailedInstrumentView() {
       assetTag,
       id,
     } = response;
+    if (typeof id === 'undefined') {
+      id = formState.id;
+    }
+    if (typeof id === 'string') {
+      id = parseInt(id, 10);
+    }
     fetchData(null, id);
     comment = comment || '';
     modelNumber = modelNumber || '';
@@ -193,7 +207,6 @@ export default function DetailedInstrumentView() {
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
     description = description || '';
-    id = id || 0;
     setFormState({
       ...formState,
       comment,
@@ -217,17 +230,19 @@ export default function DetailedInstrumentView() {
         return;
       }
       Query({
-        query: print(gql`
+        query: gql`
           query GetCalibSupport($modelNumber: String!, $vendor: String!) {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
+              supportKlufeCalibration
             }
           }
-        `),
+        `,
         queryName: 'getModel',
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
+          setSupportsKlufeWiz(response.supportKlufeCalibration);
         },
       });
       FindInstrument({
@@ -287,7 +302,7 @@ export default function DetailedInstrumentView() {
             />
           </StateLessModal>
           {supportsLoadBankWiz && (
-            <div className="mx-2">
+            <div className="ms-2">
               <ModalAlert
                 btnText="Add Load Bank Calibration"
                 title="Load Bank Wizard"
@@ -303,19 +318,33 @@ export default function DetailedInstrumentView() {
               </ModalAlert>
             </div>
           )}
-          {!supportsLoadBankWiz && (
-            <span className="mx-2" />
+          {supportsKlufeWiz && (
+            <div className="ms-2">
+              <ModalAlert
+                btnText="Add Klufe Calibration"
+                title="Add Klufe Calibration"
+                popOverText="Add calibration via Klufe"
+              >
+                <KlufeWiz
+                  initModelNumber={formState.modelNumber}
+                  initSerialNumber={formState.serialNumber}
+                  initAssetTag={formState.assetTag}
+                  initVendor={formState.vendor}
+                  onFinish={fetchData}
+                />
+              </ModalAlert>
+            </div>
           )}
           {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
             <MouseOverPopover
-              className=""
+              className="ms-2"
               message="View instrument's calibration certificate"
             >
               <Link
                 className="btn text-nowrap"
                 to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
               >
-                Certificate
+                View Certificate
               </Link>
             </MouseOverPopover>
           )}
@@ -324,57 +353,43 @@ export default function DetailedInstrumentView() {
     </div>
   );
 
+  const deleteConfirm = (
+    <>
+      <div className="h5 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
+      <div className="d-flex justify-content-center">
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <div className="mt-3">
+              <button className="btn btn-delete" type="button" onClick={handleDelete}>
+                Yes
+              </button>
+            </div>
+            <span className="mx-3" />
+            <div className="mt-3">
+              <button className="btn " type="button" onClick={() => setShowDelete(false)}>
+                No
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+
   const deleteBtn = (
-    <ModalAlert
-      btnText=""
-      altBtnId="delete-intrsument-btn"
-      popOverText="Delete this instrument"
-      altBtn={(
-        <svg
-          id="delete-intrsument-btn"
-          style={{ cursor: 'pointer' }}
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          fill="currentColor"
-          className="bi bi-trash-fill mt-2"
-          viewBox="0 0 16 16"
-        >
-          {/* eslint-disable-next-line max-len */}
-          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
-        </svg>
-        )}
+    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">Delete</Button>
+    // <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
+  );
+  const deleteModal = (
+    <StateLessCloseModal
+      show={showDelete}
+      handleClose={() => setShowDelete(false)}
       title="Delete Instrument"
-      altCloseBtnId="close-del-inst"
-      width=""
     >
-      <>
-        {responseMsg.length === 0 && (
-          <div className="h5 text-center my-3">{`You are about to delete ${formState.vendor}:${formState.modelNumber}:${formState.assetTag}. Are you sure?`}</div>
-        )}
-        <div className="d-flex justify-content-center">
-          {loading ? (
-            <CircularProgress />
-          ) : responseMsg.length > 0 ? (
-            <div className="mx-5 mt-3 h5">{responseMsg}</div>
-          ) : (
-            <>
-              <div className="mt-3">
-                <button className="btn" type="button" onClick={handleDelete}>
-                  Yes
-                </button>
-              </div>
-              <span className="mx-3" />
-              <div className="mt-3">
-                <button className="btn " type="button" id="close-del-inst">
-                  No
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </>
-    </ModalAlert>
+      {deleteConfirm}
+    </StateLessCloseModal>
   );
 
   const footer = (
@@ -389,37 +404,55 @@ export default function DetailedInstrumentView() {
       </MouseOverPopover>
     </>
   );
-
+  const ref = React.useRef(null);
   return (
     <>
-      <div className="col">
-        <div className="row">
+      <div className="row">
+        <div className="col p-3 border border-right border-dark">
           {fetched && (
-            <InstrumentForm
-              modelNumber={formState.modelNumber}
-              vendor={formState.vendor}
-              comment={formState.comment}
-              serialNumber={formState.serialNumber}
-              categories={formState.categories}
-              viewOnly
-              description={formState.description}
-              calibrationFrequency={formState.calibrationFrequency}
-              assetTag={formState.assetTag}
-              id={formState.id}
-              type="edit"
-              deleteBtn={deleteBtn}
-              handleFormSubmit={handleSubmit}
-              footer={footer}
-            />
+            <>
+              <h3 className="px-3 bg-secondary text-light my-auto">
+                Instrument Information
+              </h3>
+              <InstrumentForm
+                editBtnRef={ref}
+                modelNumber={formState.modelNumber}
+                vendor={formState.vendor}
+                comment={formState.comment}
+                serialNumber={formState.serialNumber}
+                categories={formState.categories}
+                viewOnly
+                description={formState.description}
+                calibrationFrequency={formState.calibrationFrequency}
+                assetTag={formState.assetTag}
+                id={formState.id}
+                type="edit"
+                deleteBtn={deleteBtn}
+                handleFormSubmit={handleSubmit}
+                footer={footer}
+              />
+              {deleteModal}
+            </>
           )}
         </div>
-        <div className="row px-3 mt-3">
-          <div>
-            <div className="bg-secondary text-light py-2">
-              <div className="row px-3">
-                <div className="col-auto me-auto h5 my-auto">Calibration History:</div>
+        <div
+          className="col p-3 border border-left border-dark"
+          id="remove-if-empty"
+        >
+          <div
+            className="h-100"
+            style={{ overflowY: 'auto', overflowX: 'hidden' }}
+          >
+            <div
+              className="bg-secondary text-light sticky-top"
+              style={{ zIndex: '1' }}
+            >
+              <div className="col px-3 w-100">
+                <h3 className="px-3 bg-secondary text-light my-auto row">
+                  Calibration History
+                </h3>
                 {formState.calibrationFrequency > 0 && (
-                <div className="col-auto mt-1">{genCalibButtons}</div>
+                  <div className="row py-2">{genCalibButtons}</div>
                 )}
               </div>
             </div>
@@ -439,6 +472,7 @@ export default function DetailedInstrumentView() {
           </div>
         </div>
       </div>
+      <div className="d-flex justify-content-center py-3" ref={ref} />
     </>
   );
 }

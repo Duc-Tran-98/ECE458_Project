@@ -1,10 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { ServerPaginationGrid } from '../components/UITable';
 import { GetAllUsers, CountAllUsers } from '../queries/GetUser';
 import CreateUser from './CreateUser';
-import ModalAlert from '../components/ModalAlert';
+import ModalAlert, { StateLessModal } from '../components/ModalAlert';
+import ViewUser from './ViewUser';
 // import MouseOverPopover from '../components/PopOver';
 
 export default function UsersTable() {
@@ -13,19 +13,52 @@ export default function UsersTable() {
   let urlParams = new URLSearchParams(queryString);
   const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
   const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [selectedUser, setSelectedUser] = React.useState('');
+  const [orderBy, setOrderBy] = React.useState(urlParams.get('orderBy'));
+  const [sortBy, setSortBy] = React.useState(urlParams.get('sortBy'));
   const [update, setUpdate] = React.useState(false);
   history.listen((location, action) => {
     urlParams = new URLSearchParams(location.search);
     const lim = parseInt(urlParams.get('limit'), 10);
     const pg = parseInt(urlParams.get('page'), 10);
+    const order = urlParams.get('orderBy');
+    const sort = urlParams.get('sortBy');
+    setOrderBy(order);
+    setSortBy(sort);
     if ((action === 'PUSH' && lim === 25 && pg === 1) || action === 'POP') {
       // if user clicks on models nav link or goes back
       setInitLimit(lim);
       setInitPage(pg);
     }
   });
-  // FIXME: Style icon in center, currently div does nothing...
-  const showTableBoolean = (params) => (params.value ? <div className="text-center"><CheckCircleIcon /></div> : <div> </div>);
+  const showTableBoolean = (params) => (params.value ? (
+    <div className="position-relative w-50 h-100">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="MediumSeaGreen"
+        className="bi bi-check-circle-fill position-absolute top-50 start-50 translate-middle"
+        viewBox="0 0 16 16"
+      >
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+      </svg>
+    </div>
+  ) : (
+    <div className="position-relative w-50 h-100">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="tomato"
+        className="bi bi-x-circle-fill position-absolute top-50 start-50 translate-middle"
+        viewBox="0 0 16 16"
+      >
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+      </svg>
+    </div>
+  ));
   const headerClass = 'customMuiHeader';
   const cols = [
     {
@@ -103,14 +136,26 @@ export default function UsersTable() {
   );
   return (
     <>
+      <StateLessModal
+        width=""
+        title={`You are viewing user: ${selectedUser}`}
+        handleClose={() => {
+          setShowEdit(false);
+        }}
+        show={showEdit}
+      >
+        <ViewUser userName={selectedUser} onDelete={() => { setShowEdit(false); setSelectedUser(''); }} />
+      </StateLessModal>
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
         cellHandler={(e) => {
-          const state = { previousUrl: window.location.href };
-          history.push(
-            `/viewUser/?userName=${e.row.userName}`,
-            state,
-          );
+          // const state = { previousUrl: window.location.href };
+          // history.push(
+          //   `/viewUser/?userName=${e.row.userName}`,
+          //   state,
+          // );
+          setSelectedUser(e.row.userName);
+          setShowEdit(true);
         }}
         shouldUpdate={update}
         headerElement={(
@@ -120,7 +165,7 @@ export default function UsersTable() {
         initPage={initPage}
         initLimit={initLimit}
         onPageChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}`;
+          const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -129,7 +174,7 @@ export default function UsersTable() {
           }
         }}
         onPageSizeChange={(page, limit) => {
-          const searchString = `?page=${page}&limit=${limit}`;
+          const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
           if (window.location.search !== searchString) {
             // If current location != next location, update url
             history.push(`/viewUsers${searchString}`);
@@ -137,7 +182,24 @@ export default function UsersTable() {
             setInitPage(page);
           }
         }}
-        fetchData={(limit, offset) => GetAllUsers({ limit, offset }).then((response) => response)}
+        initialOrder={() => {
+          if (orderBy) {
+            return [[orderBy, sortBy]];
+          }
+          return null;
+        }}
+        onSortModelChange={(order, sort) => {
+          const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
+          if (window.location.search !== searchString) {
+            // If current location != next location, update url
+            history.push(`/viewUsers${searchString}`);
+          }
+        }}
+        fetchData={(limit, offset, ordering) => GetAllUsers({
+          limit,
+          offset,
+          orderBy: ordering,
+        }).then((response) => response)}
         showToolBar={false}
         showImport={false}
       />
