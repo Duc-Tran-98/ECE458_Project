@@ -24,6 +24,7 @@ export default function CustomFormBuilder() {
   let nextId = 1;
   const initState = new Map().set(0, emptyState); // TODO: Make shallow copy of state
   const [state, setState] = React.useState(initState);
+  const [formSteps, setFormSteps] = React.useState([]);
   const linkedList = new LinkedList(0);
   console.log(linkedList);
 
@@ -46,6 +47,7 @@ export default function CustomFormBuilder() {
     nextState.set(nextId, emptyState);
     setState(nextState);
     linkedList.insertAfter(id, nextId);
+    console.log(linkedList);
     nextId += 1;
   };
   const deleteStep = (id) => {
@@ -54,6 +56,7 @@ export default function CustomFormBuilder() {
     nextState.delete(id);
     setState(nextState);
     linkedList.deleteNode(id);
+    console.log(linkedList);
   };
 
   const addButton = (id) => (
@@ -71,23 +74,31 @@ export default function CustomFormBuilder() {
     </PopOverFragment>
   );
 
-  let formSteps;
+  const generateKeysArray = () => {
+    const arr = [];
+    let node = linkedList.head;
+    while (node) {
+      arr.push(node.data);
+      node = node.next;
+    }
+    console.log('created array from linked list: ');
+    console.log(arr);
+    return arr;
+  };
   React.useEffect(() => {
-    console.log('Updating render of formSteps');
-    formSteps = [];
-    const iterator = state.entries();
-    while (iterator.next()) {
-      const tuple = iterator.next();
-      const key = tuple[0];
-      const value = tuple[1];
-      formSteps.push(<CustomFormStep
+    const arr = generateKeysArray();
+    const steps = arr.map((key) => (
+      <CustomFormStep
         id={key}
-        state={value}
+        state={state.get(key)}
         updateState={updateState}
         addButton={addButton}
         deleteButton={deleteButton}
-      />);
-    }
+      />
+    ));
+    console.log('formSteps: ');
+    console.log(steps);
+    setFormSteps(steps);
   }, state);
 
   return (
