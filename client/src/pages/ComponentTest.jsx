@@ -1,12 +1,10 @@
 import React from 'react';
-import AppBarDemo from '../components/AppBarDemo';
-import NavIcons from '../components/NavIcons';
+import CustomFormBuilder from '../components/CustomFormStep';
 
 export default function ComponentTest() {
   return (
     <>
-      <AppBarDemo />
-      <NavIcons />
+      <CustomFormBuilder />
     </>
   );
 }
