@@ -107,7 +107,6 @@ export default function ImportModels() {
       field: 'comment',
       headerName: 'Comment',
       width: 300,
-<<<<<<< HEAD
       renderCell: (params) => (
         <div className="overflow-auto">
           {params.value}
@@ -119,9 +118,6 @@ export default function ImportModels() {
       width: 200,
       renderCell: (params) => ((params.value >= 0) ? params.value : ' '),
     },
-=======
-    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
->>>>>>> 43f6ee102f4e31c7f3c9f08178815d4a2e9301e4
   ];
 
   const characterLimits = {
