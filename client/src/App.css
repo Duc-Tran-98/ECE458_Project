@@ -215,4 +215,5 @@ div.MuiPaper-root.MuiPaper-elevation0{
   border: 2px solid #14213d;
   padding: 10px;
   background-color: whitesmoke;
+  box-shadow: 3px 3px 5px 6px #ccc;
 }
