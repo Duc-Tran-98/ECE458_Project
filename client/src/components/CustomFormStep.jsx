@@ -52,6 +52,7 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
 
   const [state, setState] = React.useState(emptyForm);
   // TODO: Update low and high to floats (from text)
+  // eslint-disable-next-line no-unused-vars
   const handleSubmit = () => {
     console.log('submitting form with state: ');
     console.log(state);
@@ -74,43 +75,44 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
   };
 
   return (
-    <div className="customFormBox">
-      <div className={classes.root}>
-        <TextField
-          label="Header"
-          id="standard-full-width"
-          className={classes.textFieldLarge}
-          autoFocus
-          disabled={!editing}
-          fullWidth
-          margin="normal"
-          name="header"
-          error={errors.header}
-          onChange={handleTextChange}
-          value={state.header}
-        />
-        <TextField
-          label="User prompt"
-          id="margin-normal"
-          className={classes.textFieldLarge}
-          disabled={!editing}
-          margin="normal"
-          onChange={handleTextChange}
-          name="plaintext"
-          value={state.plaintext}
-          multiline
-          rows={4}
-          rowsMax={4}
-        />
-
-      </div>
-      <div className="m-2">
-        <FormGroup row>
-          <FormControlLabel
-            control={<Switch checked={state.numeric} onChange={handleCheckedChange} name="numeric" color="primary" />}
-            label="Numeric"
+    <div className="m-5">
+      <div className="customFormBox">
+        <div className={classes.root}>
+          <TextField
+            label="Header"
+            id="standard-full-width"
+            className={classes.textFieldLarge}
+            autoFocus
+            disabled={!editing}
+            fullWidth
+            margin="normal"
+            name="header"
+            error={errors.header}
+            onChange={handleTextChange}
+            value={state.header}
           />
-          {state.numeric
+          <TextField
+            label="User prompt"
+            id="margin-normal"
+            className={classes.textFieldLarge}
+            disabled={!editing}
+            margin="normal"
+            onChange={handleTextChange}
+            name="plaintext"
+            value={state.plaintext}
+            multiline
+            rows={4}
+            rowsMax={4}
+          />
+
+        </div>
+        <div className="m-2">
+          <FormGroup row>
+            <FormControlLabel
+              control={<Switch checked={state.numeric} onChange={handleCheckedChange} name="numeric" color="primary" />}
+              label="Numeric"
+            />
+            {state.numeric
           && (
           <>
             <TextField
@@ -148,15 +150,15 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
             />
           </>
           )}
-        </FormGroup>
-      </div>
-      <div className="m-2">
-        <FormGroup row>
-          <FormControlLabel
-            control={<Switch checked={state.text} onChange={handleCheckedChange} name="text" color="primary" />}
-            label="Text"
-          />
-          {state.text
+          </FormGroup>
+        </div>
+        <div className="m-2">
+          <FormGroup row>
+            <FormControlLabel
+              control={<Switch checked={state.text} onChange={handleCheckedChange} name="text" color="primary" />}
+              label="Text"
+            />
+            {state.text
           && (
             <TextField
               label="Text Label"
@@ -170,11 +172,12 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
               value={state.textLabel}
             />
           )}
-        </FormGroup>
+          </FormGroup>
+        </div>
+        {/* <button type="submit" className="btn" onClick={handleSubmit}>Submit</button> */}
+        {addButton}
+        {deleteButton}
       </div>
-      <button type="submit" className="btn" onClick={handleSubmit}>Submit</button>
-      {addButton}
-      {deleteButton}
     </div>
   );
 }
