@@ -3,20 +3,25 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import CustomFormStep from './CustomFormStep';
+import { PopOverFragment } from './PopOver';
 
 export default function CustomFormBuilder() {
   const createNewStep = () => {
     console.log('Creating new step');
   };
   const addButton = (
-    <IconButton onClick={createNewStep}>
-      <AddCircleIcon style={{ color: '#11fc85' }} />
-    </IconButton>
+    <PopOverFragment message="Add Step">
+      <IconButton onClick={createNewStep}>
+        <AddCircleIcon style={{ color: '#11fc85' }} />
+      </IconButton>
+    </PopOverFragment>
   );
   const deleteButton = (
-    <IconButton onClick={createNewStep}>
-      <DeleteIcon style={{ color: '#fc2311' }} />
-    </IconButton>
+    <PopOverFragment message="Delete Step">
+      <IconButton onClick={createNewStep}>
+        <DeleteIcon style={{ color: '#fc2311' }} />
+      </IconButton>
+    </PopOverFragment>
   );
 
   return (
