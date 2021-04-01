@@ -16,13 +16,11 @@ export default function CustomFormBuilder() {
     text: false,
     textLabel: '',
   };
-  // eslint-disable-next-line no-unused-vars
   let nextId = 1;
   const initState = new Map().set(0, emptyState); // TODO: Make shallow copy of state
   const [state, setState] = React.useState(initState);
   const [formSteps, setFormSteps] = React.useState([]);
   const linkedList = new LinkedList(0);
-  console.log(linkedList);
 
   const handleSubmit = () => {
     console.log('submitting form with state: ');
@@ -43,6 +41,8 @@ export default function CustomFormBuilder() {
     nextState.set(nextId, emptyState);
     setState(nextState);
     linkedList.insertAfter(id, nextId);
+    console.log('nextState and then linkedList');
+    console.log(nextState);
     console.log(linkedList);
     nextId += 1;
   };
@@ -70,6 +70,7 @@ export default function CustomFormBuilder() {
     const arr = generateKeysArray();
     const steps = arr.map((key) => (
       <CustomFormStep
+        key={key}
         id={key}
         state={state.get(key)}
         updateState={updateState}

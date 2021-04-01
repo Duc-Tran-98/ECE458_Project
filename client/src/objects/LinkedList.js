@@ -7,13 +7,20 @@ export default class LinkedList {
 
   // TODO: Test me (fix after value)
   insertAfter(prev, value) {
+    console.log(`insertinng value: ${value} after ${prev}`);
     let node = this.head;
     while (node) {
       if (node.data === prev) {
-        const next = { node };
+        console.log('found value in linked list, inserting after');
+        const { next } = node;
         const insert = new ListNode(value);
-        insert.next = next;
+        console.log('node, insert, next: ');
+        console.log(node);
+        console.log(insert);
+        console.log(next);
+
         node.next = insert;
+        insert.next = next;
         return;
       }
       node = node.next;
