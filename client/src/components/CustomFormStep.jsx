@@ -28,20 +28,14 @@ const useStylesText = makeStyles((theme) => ({
   },
 }));
 
-const emptyForm = {
-  header: '',
-  plaintext: '',
-  numeric: false,
-  numericLabel: '',
-  low: 0,
-  high: 0,
-  text: false,
-  textLabel: '',
-};
-
-export default function CustomFormStep({ editing, addButton, deleteButton }) {
+export default function CustomFormStep({
+  id, state, updateState, addButton, deleteButton,
+}) {
   CustomFormStep.propTypes = {
-    editing: PropTypes.bool.isRequired,
+    id: PropTypes.number.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    state: PropTypes.object.isRequired,
+    updateState: PropTypes.func.isRequired,
     addButton: PropTypes.node.isRequired,
     deleteButton: PropTypes.node.isRequired,
   };
@@ -50,28 +44,14 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
     header: false,
   };
 
-  const [state, setState] = React.useState(emptyForm);
   // TODO: Update low and high to floats (from text)
   // eslint-disable-next-line no-unused-vars
   const handleSubmit = () => {
     console.log('submitting form with state: ');
     console.log(state);
   };
-  const handleTextChange = (event) => {
-    console.log(`changeHandler ${event.target.name} --> ${event.target.value}`);
-    setState({
-      ...state,
-      [event.target.name]: event.target.value,
-    });
-    console.log(state);
-  };
-  const handleCheckedChange = (event) => {
-    console.log(`changeHandler ${event.target.name} --> ${event.target.checked}`);
-    setState({
-      ...state,
-      [event.target.name]: event.target.checked,
-    });
-    console.log(state);
+  const handleChange = (event, value) => {
+    updateState(id, event, value);
   };
 
   return (
@@ -83,21 +63,19 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
             id="standard-full-width"
             className={classes.textFieldLarge}
             autoFocus
-            disabled={!editing}
             fullWidth
             margin="normal"
             name="header"
             error={errors.header}
-            onChange={handleTextChange}
+            onChange={(e) => handleChange(e.target.name, e.target.value)}
             value={state.header}
           />
           <TextField
             label="User prompt"
             id="margin-normal"
             className={classes.textFieldLarge}
-            disabled={!editing}
             margin="normal"
-            onChange={handleTextChange}
+            onChange={(e) => handleChange(e.target.name, e.target.value)}
             name="plaintext"
             value={state.plaintext}
             multiline
@@ -109,7 +87,14 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
         <div className="m-2">
           <FormGroup row>
             <FormControlLabel
-              control={<Switch checked={state.numeric} onChange={handleCheckedChange} name="numeric" color="primary" />}
+              control={(
+                <Switch
+                  checked={state.numeric}
+                  onChange={(e) => handleChange(e.target.name, e.target.checked)}
+                  name="numeric"
+                  color="primary"
+                />
+              )}
               label="Numeric"
             />
             {state.numeric
@@ -119,33 +104,30 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
               label="Label"
               id="margin-normal"
               className={classes.textFieldSmall}
-              disabled={!editing}
               margin="normal"
               name="numericLabel"
               type="text"
-              onChange={handleTextChange}
+              onChange={(e) => handleChange(e.target.name, e.target.value)}
               value={state.numericLabel}
             />
             <TextField
               label="Min"
               id="margin-normal"
               className={classes.textFieldSmall}
-              disabled={!editing}
               margin="normal"
               name="low"
               type="number"
-              onChange={handleTextChange}
+              onChange={(e) => handleChange(e.target.name, e.target.value)}
               value={state.low}
             />
             <TextField
               label="Max"
               id="margin-normal"
               className={classes.textFieldSmall}
-              disabled={!editing}
               margin="normal"
               name="high"
               type="number"
-              onChange={handleTextChange}
+              onChange={(e) => handleChange(e.target.name, e.target.value)}
               value={state.high}
             />
           </>
@@ -155,7 +137,14 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
         <div className="m-2">
           <FormGroup row>
             <FormControlLabel
-              control={<Switch checked={state.text} onChange={handleCheckedChange} name="text" color="primary" />}
+              control={(
+                <Switch
+                  checked={state.text}
+                  onChange={(e) => handleChange(e.target.name, e.target.checked)}
+                  name="text"
+                  color="primary"
+                />
+              )}
               label="Text"
             />
             {state.text
@@ -164,11 +153,10 @@ export default function CustomFormStep({ editing, addButton, deleteButton }) {
               label="Text Label"
               id="margin-normal"
               className={classes.textFieldMedium}
-              disabled={!editing}
               margin="normal"
               type="text"
               name="textLabel"
-              onChange={handleTextChange}
+              onChange={(e) => handleChange(e.target.name, e.target.value)}
               value={state.textLabel}
             />
           )}

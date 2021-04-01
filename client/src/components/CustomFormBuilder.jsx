@@ -5,29 +5,36 @@ import IconButton from '@material-ui/core/IconButton';
 import CustomFormStep from './CustomFormStep';
 import { PopOverFragment } from './PopOver';
 
-const emptyForm = {
-  header: '',
-  plaintext: '',
-  numeric: false,
-  numericLabel: '',
-  low: 0,
-  high: 0,
-  text: false,
-  textLabel: '',
-};
-
 // TODO: Lift state from form step into parent
 // TODO: Arbitrary ordering, create, delete of steps
+// TODO: Debug state.map function
 export default function CustomFormBuilder() {
+  const stepObj = (id) => ({
+    id,
+    header: '',
+    plaintext: '',
+    numeric: false,
+    numericLabel: '',
+    low: 0,
+    high: 0,
+    text: false,
+    textLabel: '',
+  });
   // eslint-disable-next-line no-unused-vars
-  const [state, setState] = React.useState([emptyForm]);
+  const [lastId, setLastId] = React.useState(0);
+  const [state, setState] = React.useState([stepObj(0)]);
   const handleSubmit = () => {
     console.log('submitting form with state: ');
     console.log(state);
   };
+  const updateState = (id, event, value) => {
+    console.log(`updateState(${id}, ${event}, ${value})`);
+  };
 
   const createNewStep = () => {
     console.log('Creating new step');
+    const newState = state.push(stepObj(1));
+    setState(newState);
   };
   const addButton = (
     <PopOverFragment message="Add Step">
@@ -43,12 +50,31 @@ export default function CustomFormBuilder() {
       </IconButton>
     </PopOverFragment>
   );
+  let formSteps = state.map((element) => (
+    <CustomFormStep
+      id={element.id}
+      state={element}
+      updateState={updateState}
+      addButton={addButton}
+      deleteButton={deleteButton}
+    />
+  ));
+  React.useEffect(() => {
+    formSteps = state.map((element) => (
+      <CustomFormStep
+        id={element.id}
+        state={element}
+        updateState={updateState}
+        addButton={addButton}
+        deleteButton={deleteButton}
+      />
+    ));
+  }, state);
 
   return (
     <>
       <h1 className="m-2">Custom Form Builder</h1>
-      <CustomFormStep editing addButton={addButton} deleteButton={deleteButton} />
-      <CustomFormStep editing addButton={addButton} deleteButton={deleteButton} />
+      {formSteps}
       <button type="submit" className="btn" onClick={handleSubmit}>Review Form</button>
     </>
   );
