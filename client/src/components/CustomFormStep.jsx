@@ -39,9 +39,11 @@ const emptyForm = {
   textLabel: '',
 };
 
-export default function CustomFormStep({ editing }) {
+export default function CustomFormStep({ editing, addButton, deleteButton }) {
   CustomFormStep.propTypes = {
     editing: PropTypes.bool.isRequired,
+    addButton: PropTypes.node.isRequired,
+    deleteButton: PropTypes.node.isRequired,
   };
   const classes = useStylesText();
   const errors = {
@@ -171,6 +173,8 @@ export default function CustomFormStep({ editing }) {
         </FormGroup>
       </div>
       <button type="submit" className="btn" onClick={handleSubmit}>Submit</button>
+      {addButton}
+      {deleteButton}
     </div>
   );
 }
