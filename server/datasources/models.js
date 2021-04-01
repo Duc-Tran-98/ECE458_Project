@@ -4,7 +4,7 @@ const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
 
 function validateModel({
-  modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false,
+  modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false, custom = false,
 }) {
   if (vendor.length > 30) {
     return [false, 'ERROR: Vendor input must be under 30 characters!'];
@@ -27,8 +27,12 @@ function validateModel({
   if (comment != null && comment.length > 2000) {
     return [false, 'ERROR: Comment input must be under 2000 characters!'];
   }
-  if (klufe && loadBank) {
-    return [false, 'ERROR: Model cannot support calibration via load bank wizard and Klufe 5700!'];
+  let count = 0;
+  if (klufe) count += 1;
+  if (loadBank) count += 1;
+  if (custom) count += 1;
+  if (count > 1) {
+    return [false, 'ERROR: Model can only support one of load bank wizard, klufe wizard, or custom form!'];
   }
   return [true];
 }
@@ -99,8 +103,11 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    requiresCalibrationApproval,
+    supportCustomCalibration,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    customForm,
     categories,
   }) {
     const response = { message: '', success: false, model: null };
@@ -112,7 +119,7 @@ class ModelAPI extends DataSource {
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
-      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration, custom: supportCustomCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -134,6 +141,9 @@ class ModelAPI extends DataSource {
             description,
             comment,
             calibrationFrequency,
+            requiresCalibrationApproval,
+            supportCustomCalibration,
+            customForm,
             supportLoadBankCalibration,
             supportKlufeCalibration,
           },
@@ -402,8 +412,11 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    requiresCalibrationApproval = false,
     supportLoadBankCalibration = false,
     supportKlufeCalibration = false,
+    supportCustomCalibration = false,
+    customForm,
     categories = [],
   }) {
     const response = { message: '', success: false, model: null };
@@ -415,7 +428,7 @@ class ModelAPI extends DataSource {
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
-      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration, custom: supportCustomCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -432,6 +445,9 @@ class ModelAPI extends DataSource {
           description,
           comment,
           calibrationFrequency,
+          requiresCalibrationApproval,
+          supportCustomCalibration,
+          customForm,
           supportLoadBankCalibration,
           supportKlufeCalibration,
         });

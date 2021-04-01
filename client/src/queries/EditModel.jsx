@@ -11,6 +11,9 @@ export default function EditModelQuery({
   calibrationFrequency,
   supportLoadBankCalibration,
   supportKlufeCalibration,
+  supportCustomCalibration,
+  requiresCalibrationApproval,
+  customForm,
   categories,
   handleResponse,
 }) {
@@ -21,6 +24,9 @@ export default function EditModelQuery({
     calibrationFrequency: PropTypes.number.isRequired,
     supportLoadBankCalibration: PropTypes.bool.isRequired,
     supportKlufeCalibration: PropTypes.bool.isRequired,
+    supportCustomCalibration: PropTypes.bool.isRequired,
+    requiresCalibrationApproval: PropTypes.bool.isRequired,
+    customForm: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
@@ -36,6 +42,9 @@ export default function EditModelQuery({
             $calibrationFrequency: Int
             $supportLoadBankCalibration: Boolean!
             $supportKlufeCalibration: Boolean!
+            $requiresCalibrationApproval: Boolean!
+            $supportCustomCalibration: Boolean!
+            $customForm: String
             $categories: [String]
             $id: ID!
         ) {
@@ -47,6 +56,9 @@ export default function EditModelQuery({
             calibrationFrequency: $calibrationFrequency
             supportLoadBankCalibration: $supportLoadBankCalibration
             supportKlufeCalibration: $supportKlufeCalibration
+            requiresCalibrationApproval: $requiresCalibrationApproval
+            supportCustomCalibration: $supportCustomCalibration
+            customForm: $customForm
             categories: $categories
             id: $id
             ){
@@ -64,6 +76,9 @@ export default function EditModelQuery({
                 }
                 supportLoadBankCalibration
                 supportKlufeCalibration
+                supportCustomCalibration
+                requiresCalibrationApproval
+                customForm
               }
             }
         }
@@ -85,6 +100,9 @@ export default function EditModelQuery({
     calibrationFrequency,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    supportCustomCalibration,
+    requiresCalibrationApproval,
+    customForm,
     id,
     modelNumber,
     vendor,

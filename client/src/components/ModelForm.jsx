@@ -64,7 +64,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -74,6 +74,8 @@ export default function ModelForm({
     description: PropTypes.string,
     supportLoadBankCalibration: PropTypes.bool,
     supportKlufeCalibration: PropTypes.bool,
+    supportCustomCalibration: PropTypes.bool,
+    requiresCalibrationApproval: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
@@ -93,6 +95,8 @@ export default function ModelForm({
     description: '',
     supportLoadBankCalibration: false,
     supportKlufeCalibration: false,
+    supportCustomCalibration: false,
+    requiresCalibrationApproval: false,
     categories: [],
     diffSubmit: false,
     deleteBtn: null,
@@ -151,6 +155,8 @@ export default function ModelForm({
         categories: categories || [],
         supportLoadBankCalibration: supportLoadBankCalibration || false,
         supportKlufeCalibration: supportKlufeCalibration || false,
+        supportCustomCalibration: supportCustomCalibration || false,
+        requiresCalibrationApproval: requiresCalibrationApproval || false,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -288,6 +294,28 @@ export default function ModelForm({
               <div className="form-check form-switch mt-4">
                 <label
                   className="form-check-label h5 col"
+                  htmlFor="custom-support"
+                >
+                  Does calibration require approval??
+                </label>
+                <Form.Control
+                  className="form-check-input"
+                  type="checkbox"
+                  id="requires-approval"
+                  name="requiresCalibrationApproval"
+                  checked={values.requiresCalibrationApproval}
+                  onChange={handleChange}
+                  disabled={disabled}
+                />
+                <div className="col">
+                  <strong>
+                    {values.requiresCalibrationApproval ? 'Yes' : 'No'}
+                  </strong>
+                </div>
+              </div>
+              <div className="form-check form-switch mt-4">
+                <label
+                  className="form-check-label h5 col"
                   htmlFor="load-bank-support"
                 >
                   Can model be calibrated as load bank?
@@ -326,6 +354,28 @@ export default function ModelForm({
                 <div className="col">
                   <strong>
                     {values.supportKlufeCalibration ? 'Yes' : 'No'}
+                  </strong>
+                </div>
+              </div>
+              <div className="form-check form-switch mt-4">
+                <label
+                  className="form-check-label h5 col"
+                  htmlFor="custom-support"
+                >
+                  Can model be calibrated with custom form?
+                </label>
+                <Form.Control
+                  className="form-check-input"
+                  type="checkbox"
+                  id="custom-support"
+                  name="supportCustomCalibration"
+                  checked={values.supportCustomCalibration}
+                  onChange={handleChange}
+                  disabled={disabled}
+                />
+                <div className="col">
+                  <strong>
+                    {values.supportCustomCalibration ? 'Yes' : 'No'}
                   </strong>
                 </div>
               </div>

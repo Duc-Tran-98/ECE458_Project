@@ -32,7 +32,7 @@ function CreateModelPage({ onCreation }) {
       calibrationFrequency = parseInt(calibrationFrequency, 10);
     }
     const {
-      modelNumber, vendor, description, comment, categories, supportLoadBankCalibration, supportKlufeCalibration,
+      modelNumber, vendor, description, comment, categories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval,
     } = values;
     CreateModel({
       modelNumber,
@@ -42,6 +42,9 @@ function CreateModelPage({ onCreation }) {
       calibrationFrequency,
       supportLoadBankCalibration,
       supportKlufeCalibration,
+      supportCustomCalibration,
+      requiresCalibrationApproval,
+      customForm: '',
       categories,
       handleResponse,
     });

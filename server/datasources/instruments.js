@@ -109,6 +109,14 @@ class InstrumentAPI extends DataSource {
             assetTag: instrument.dataValues.assetTag,
             supportLoadBankCalibration:
               model.dataValues.supportLoadBankCalibration,
+            supportKlufeCalibration:
+              model.dataValues.supportKlufeCalibration,
+            supportCustomCalibration:
+              model.dataValues.supportCustomCalibration,
+            requiresCalibrationApproval:
+              model.dataValues.requiresCalibrationApproval,
+            customForm:
+              model.dataValues.customForm,
           };
           return instrumentInfo;
         });
@@ -509,6 +517,14 @@ class InstrumentAPI extends DataSource {
             assetTag: instrument.dataValues.assetTag,
             supportLoadBankCalibration:
               model.dataValues.supportLoadBankCalibration,
+            supportKlufeCalibration:
+              model.dataValues.supportKlufeCalibration,
+            supportCustomCalibration:
+              model.dataValues.supportCustomCalibration,
+            requiresCalibrationApproval:
+              model.dataValues.requiresCalibrationApproval,
+            customForm:
+              model.dataValues.customForm,
           };
         });
     }
@@ -545,6 +561,14 @@ class InstrumentAPI extends DataSource {
             assetTag: instrument.dataValues.assetTag,
             supportLoadBankCalibration:
               model.dataValues.supportLoadBankCalibration,
+            supportKlufeCalibration:
+              model.dataValues.supportKlufeCalibration,
+            supportCustomCalibration:
+              model.dataValues.supportCustomCalibration,
+            requiresCalibrationApproval:
+              model.dataValues.requiresCalibrationApproval,
+            customForm:
+              model.dataValues.customForm,
           };
           return instrumentInfo;
         });

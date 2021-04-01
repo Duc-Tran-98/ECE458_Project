@@ -98,6 +98,10 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      calibrationApproverPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {
@@ -134,6 +138,10 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.STRING(2000),
         allowNull: true,
       },
+      requiresCalibrationApproval: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
       supportLoadBankCalibration: {
         type: SQL.BOOLEAN,
         allowNull: false,
@@ -142,6 +150,11 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      supportCustomCalibration: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      customForm: SQL.TEXT,
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
@@ -514,6 +527,7 @@ module.exports.createStore = async (useTestDB) => {
       password: hash,
       isAdmin: true,
       calibrationPermission: true,
+      calibrationApproverPermission: true,
       modelPermission: true,
       instrumentPermission: true,
     });

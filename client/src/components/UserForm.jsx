@@ -164,7 +164,7 @@ export function EditUserForm({
     e.preventDefault();
     setLoading(true);
     const {
-      userName, isAdmin, modelPermission, instrumentPermission, calibrationPermission,
+      userName, isAdmin, modelPermission, instrumentPermission, calibrationPermission, calibrationApproverPermission,
     } = formState;
     Query({
       query: gql`
@@ -174,8 +174,9 @@ export function EditUserForm({
             $instrumentPermission: Boolean!
             $modelPermission: Boolean!
             $calibrationPermission: Boolean!
+            $calibrationApproverPermission: Boolean!
             ) {
-             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission){
+             editPermissions(userName: $userName, isAdmin: $isAdmin, modelPermission: $modelPermission, instrumentPermission: $instrumentPermission, calibrationPermission: $calibrationPermission, calibrationApproverPermission: $calibrationApproverPermission){
                message
                success
                user {
@@ -189,6 +190,7 @@ export function EditUserForm({
                 instrumentPermission
                 modelPermission
                 calibrationPermission
+                calibrationApproverPermission
                }
              }
            }
@@ -200,6 +202,7 @@ export function EditUserForm({
         modelPermission,
         instrumentPermission,
         calibrationPermission,
+        calibrationApproverPermission,
       }),
       handleResponse: (response) => {
         setLoading(false);
@@ -318,6 +321,28 @@ export function EditUserForm({
               <div className="">
                 <strong>
                   {formState.calibrationPermission ? 'Yes' : 'No'}
+                </strong>
+              </div>
+            </div>
+            <div className="form-check form-switch mt-3 position-relative text-center">
+              <label
+                className="form-check-label h5 ps-5"
+                htmlFor="calibrationApproverPermissionCheck"
+              >
+                Calibration Approver Permissions?
+              </label>
+              <input
+                className="form-check-input position-absolute top-0 start-36 translate-middle-x"
+                type="checkbox"
+                id="calibrationApproverPermissionCheck"
+                name="calibrationApproverPermission"
+                checked={formState.calibrationApproverPermission}
+                onChange={onChangeCheckbox}
+                disabled={disabledButtons}
+              />
+              <div className="">
+                <strong>
+                  {formState.calibrationApproverPermission ? 'Yes' : 'No'}
                 </strong>
               </div>
             </div>

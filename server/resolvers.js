@@ -172,6 +172,9 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
@@ -184,6 +187,9 @@ module.exports = {
       supportKlufeCalibration,
       calibrationFrequency,
       categories,
+      requiresCalibrationApproval,
+      supportCustomCalibration,
+      customForm,
     }),
     addModel: async (
       _,
@@ -196,6 +202,9 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       },
       { dataSources },
     ) => {
@@ -208,6 +217,9 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       });
       return response;
     },
@@ -407,6 +419,7 @@ module.exports = {
         instrumentPermission,
         modelPermission,
         calibrationPermission,
+        calibrationApproverPermission,
       },
       { dataSources },
     ) => {
@@ -423,6 +436,7 @@ module.exports = {
         instrumentPermission,
         modelPermission,
         calibrationPermission,
+        calibrationApproverPermission,
       });
       return response;
     },
@@ -434,6 +448,7 @@ module.exports = {
         modelPermission,
         calibrationPermission,
         instrumentPermission,
+        calibrationApproverPermission,
       },
       { dataSources },
     ) => await dataSources.userAPI.editPermissions({
@@ -442,6 +457,7 @@ module.exports = {
       modelPermission,
       calibrationPermission,
       instrumentPermission,
+      calibrationApproverPermission,
     }),
     deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (_, { name }, { dataSources }) => {
