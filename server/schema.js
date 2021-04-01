@@ -102,6 +102,7 @@ const typeDefs = gql`
     instrumentPermission: Boolean
     modelPermission: Boolean
     calibrationPermission: Boolean
+    calibrationApproverPermission: Boolean
   }
 
   type InstrumentScrollFeed {
@@ -281,6 +282,7 @@ const typeDefs = gql`
       instrumentPermission: Boolean
       modelPermission: Boolean
       calibrationPermission: Boolean
+      calibrationApproverPermission: Boolean
     ): String!
     editPermissions(
       userName: String!
@@ -288,6 +290,7 @@ const typeDefs = gql`
       instrumentPermission: Boolean!
       modelPermission: Boolean!
       calibrationPermission: Boolean!
+      calibrationApproverPermission: Boolean!
     ): UserCacheUpdate
     deleteUser(userName: String!): String!
 
