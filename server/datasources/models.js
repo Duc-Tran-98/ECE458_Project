@@ -377,11 +377,15 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { id },
-      include: {
+      include: [{
         model: this.store.modelCategories,
         as: 'categories',
         through: 'modelCategoryRelationships',
-      },
+      }, {
+        model: this.store.modelCategories,
+        as: 'calibratorCategories',
+        through: 'calibratorCategoriesRelationships',
+      }],
     });
     if (model && model[0]) {
       return model[0];
@@ -394,11 +398,15 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
-      include: {
+      include: [{
         model: this.store.modelCategories,
         as: 'categories',
         through: 'modelCategoryRelationships',
-      },
+      }, {
+        model: this.store.modelCategories,
+        as: 'calibratorCategories',
+        through: 'calibratorCategoriesRelationships',
+      }],
     });
     if (model && model[0]) {
       return model[0];

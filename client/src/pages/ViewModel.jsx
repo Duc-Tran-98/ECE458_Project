@@ -29,6 +29,7 @@ export default function DetailedModelView() {
     requiresCalibrationApproval: false,
     customForm: '',
     categories: [],
+    calibratorCategories: [],
   });
   const [loading, setLoading] = React.useState(false);
   const [showDelete, setShowDelete] = React.useState(false);
@@ -37,6 +38,7 @@ export default function DetailedModelView() {
   const handleFindModel = (response) => {
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
+    const calibratorCategories = response.calibratorCategories.map((item) => item.name);
     const {
       description, comment, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm,
     } = response;
@@ -53,6 +55,7 @@ export default function DetailedModelView() {
       comment,
       id,
       categories,
+      calibratorCategories,
       calibrationFrequency,
       supportLoadBankCalibration,
       supportCustomCalibration,
@@ -145,6 +148,7 @@ export default function DetailedModelView() {
     requiresCalibrationApproval,
     customForm,
     categories,
+    calibratorCategories,
   } = model;
   const handleDelete = () => {
     setLoading(true);
@@ -205,6 +209,7 @@ export default function DetailedModelView() {
                 description={description}
                 comment={comment}
                 categories={categories}
+                calibratorCategories={calibratorCategories}
                 calibrationFrequency={calibrationFrequency}
                 supportLoadBankCalibration={supportLoadBankCalibration}
                 supportCustomCalibration={supportCustomCalibration}

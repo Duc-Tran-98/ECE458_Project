@@ -25,6 +25,9 @@ export default function FindModel({
         categories {
             name
         }
+        calibratorCategories {
+          name
+        }
         }
     }
     `;
@@ -59,6 +62,9 @@ export function FindModelById({ id, handleResponse }) {
         requiresCalibrationApproval
         customForm
         categories {
+          name
+        }
+        calibratorCategories {
           name
         }
       }
