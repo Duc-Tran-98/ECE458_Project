@@ -239,6 +239,56 @@ module.exports.createStore = async (useTestDB) => {
     constraints: false,
   });
 
+  const calibratorCategoryRelationships = db.define(
+    'calibratorCategoryRelationships',
+    {
+      modelId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      modelCategoryId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      taggableType: {
+        type: SQL.STRING,
+      },
+      id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
+  models.belongsToMany(modelCategories, {
+    as: 'calibratorCategories',
+    through: {
+      model: 'calibratorCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelId',
+    constraints: false,
+  });
+  modelCategories.belongsToMany(models, {
+    as: 'calibratorModels',
+    through: {
+      model: 'calibratorCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelCategoryId',
+    constraints: false,
+  });
+
   const instruments = db.define(
     'instruments',
     {
@@ -543,5 +593,6 @@ module.exports.createStore = async (useTestDB) => {
     modelCategoryRelationships,
     instrumentCategories,
     instrumentCategoryRelationships,
+    calibratorCategoryRelationships,
   };
 };

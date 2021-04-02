@@ -109,6 +109,7 @@ class ModelAPI extends DataSource {
     supportKlufeCalibration,
     customForm,
     categories,
+    calibratorCategories,
   }) {
     const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
@@ -156,6 +157,14 @@ class ModelAPI extends DataSource {
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
+        this.store.calibratorCategoryRelationships.destroy({
+          where: {
+            modelId: id,
+          },
+        });
+        calibratorCategories.forEach(async (category) => {
+          await this.addCalibratorCategoryToModel({ vendor, modelNumber, category });
         });
         const modelReference = id;
         const instrumentList = await this.store.instruments.findAll({
@@ -377,11 +386,15 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { id },
-      include: {
+      include: [{
         model: this.store.modelCategories,
         as: 'categories',
         through: 'modelCategoryRelationships',
-      },
+      }, {
+        model: this.store.modelCategories,
+        as: 'calibratorCategories',
+        through: 'calibratorCategoriesRelationships',
+      }],
     });
     if (model && model[0]) {
       return model[0];
@@ -394,11 +407,15 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
-      include: {
+      include: [{
         model: this.store.modelCategories,
         as: 'categories',
         through: 'modelCategoryRelationships',
-      },
+      }, {
+        model: this.store.modelCategories,
+        as: 'calibratorCategories',
+        through: 'calibratorCategoriesRelationships',
+      }],
     });
     if (model && model[0]) {
       return model[0];
@@ -418,6 +435,7 @@ class ModelAPI extends DataSource {
     supportCustomCalibration = false,
     customForm,
     categories = [],
+    calibratorCategories = [],
   }) {
     const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
@@ -453,6 +471,11 @@ class ModelAPI extends DataSource {
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
+        console.log('cal cat');
+        console.log(calibratorCategories);
+        calibratorCategories.forEach(async (category) => {
+          await this.addCalibratorCategoryToModel({ vendor, modelNumber, category });
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;
@@ -580,6 +603,38 @@ class ModelAPI extends DataSource {
             });
             response.success = true;
             response.message = `Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
+          } else {
+            response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot add category beacuse model ${vendor} ${modelNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async addCalibratorCategoryToModel({ vendor, modelNumber, category }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getModelCategory({ name }).then((result) => {
+          if (result) {
+            const modelId = value.dataValues.id;
+            const modelCategoryId = result.dataValues.id;
+            this.store.calibratorCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            });
+            response.success = true;
+            response.message = `Calibrator Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
           } else {
             response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
           }

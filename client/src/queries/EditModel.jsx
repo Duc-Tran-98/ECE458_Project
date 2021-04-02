@@ -15,6 +15,7 @@ export default function EditModelQuery({
   requiresCalibrationApproval,
   customForm,
   categories,
+  calibratorCategories,
   handleResponse,
 }) {
   EditModelQuery.propTypes = {
@@ -32,6 +33,8 @@ export default function EditModelQuery({
     handleResponse: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    calibratorCategories: PropTypes.array.isRequired,
   };
   const EDIT_MODEL = gql`
         mutation EditModel(
@@ -46,6 +49,7 @@ export default function EditModelQuery({
             $supportCustomCalibration: Boolean!
             $customForm: String
             $categories: [String]
+            $calibratorCategories: [String]
             $id: ID!
         ) {
             editModel(
@@ -60,6 +64,7 @@ export default function EditModelQuery({
             supportCustomCalibration: $supportCustomCalibration
             customForm: $customForm
             categories: $categories
+            calibratorCategories: $calibratorCategories
             id: $id
             ){
               message
@@ -72,6 +77,9 @@ export default function EditModelQuery({
                 comment
                 calibrationFrequency
                 categories {
+                  name
+                }
+                calibratorCategories {
                   name
                 }
                 supportLoadBankCalibration
@@ -107,6 +115,7 @@ export default function EditModelQuery({
     modelNumber,
     vendor,
     categories,
+    calibratorCategories,
   });
   Query({
     query,

@@ -118,6 +118,7 @@ const typeDefs = gql`
     comment: String
     calibrationFrequency: Int
     categories: [Category]
+    calibratorCategories: [Category]
     supportLoadBankCalibration: Boolean!
     supportKlufeCalibration: Boolean!
     requiresCalibrationApproval: Boolean!
@@ -310,6 +311,7 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      calibratorCategories: [String]
       requiresCalibrationApproval: Boolean!
       supportCustomCalibration: Boolean!
       customForm: String
@@ -325,6 +327,7 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      calibratorCategories: [String]
       requiresCalibrationApproval: Boolean!
       supportCustomCalibration: Boolean!
       customForm: String

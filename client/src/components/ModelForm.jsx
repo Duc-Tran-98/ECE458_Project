@@ -64,7 +64,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, calibratorCategories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -78,6 +78,8 @@ export default function ModelForm({
     requiresCalibrationApproval: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
+    calibratorCategories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
@@ -98,6 +100,7 @@ export default function ModelForm({
     supportCustomCalibration: false,
     requiresCalibrationApproval: false,
     categories: [],
+    calibratorCategories: [],
     diffSubmit: false,
     deleteBtn: null,
     type: 'create',
@@ -153,6 +156,7 @@ export default function ModelForm({
         comment: comment || '',
         description: description || '',
         categories: categories || [],
+        calibratorCategories: calibratorCategories || [],
         supportLoadBankCalibration: supportLoadBankCalibration || false,
         supportKlufeCalibration: supportKlufeCalibration || false,
         supportCustomCalibration: supportCustomCalibration || false,
@@ -384,12 +388,26 @@ export default function ModelForm({
           {/* TODO: Ensure tags are added into the db (not rendering on view)  */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <Form.Label className="h5">Categories</Form.Label>
+              <Form.Label className="h5">Model Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
                 }}
                 tags={values.categories}
+                dis={disabled}
+                models
+                isInvalid={false}
+              />
+            </div>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="col mt-3">
+              <Form.Label className="h5">Calibrator Categories</Form.Label>
+              <TagsInput
+                selectedTags={(tags) => {
+                  setFieldValue('calibratorCategories', tags);
+                }}
+                tags={values.calibratorCategories}
                 dis={disabled}
                 models
                 isInvalid={false}

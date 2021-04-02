@@ -32,11 +32,13 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
     requiresCalibrationApproval: false,
     customForm: '',
     categories: [],
+    calibratorCategories: [],
   });
   const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
 
   const handleFindModel = (response) => {
     const categories = response.categories.map((item) => item.name);
+    const calibratorCategories = response.calibratorCategories.map((item) => item.name);
     const {
       description, comment, id, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm,
     } = response;
@@ -53,6 +55,7 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
       comment,
       id,
       categories,
+      calibratorCategories,
       calibrationFrequency,
       supportLoadBankCalibration,
       supportKlufeCalibration,
@@ -80,7 +83,7 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
   const handleSubmit = (values) => {
     // Parse information from model information
     const {
-      calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, description, comment, modelNumber, vendor, categories, supportCustomCalibration, requiresCalibrationApproval, customForm,
+      calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, description, comment, modelNumber, vendor, categories, calibratorCategories, supportCustomCalibration, requiresCalibrationApproval, customForm,
     } = values;
 
     // Send actual query to edit model
@@ -97,6 +100,7 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
       requiresCalibrationApproval,
       customForm,
       categories,
+      calibratorCategories,
       handleResponse: (response) => {
         if (response.success) {
           toast.success(response.message);
@@ -120,6 +124,7 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
     requiresCalibrationApproval,
     customForm,
     categories,
+    calibratorCategories,
   } = model;
 
   return (
@@ -133,6 +138,7 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
             description={description}
             comment={comment}
             categories={categories}
+            calibratorCategories={calibratorCategories}
             calibrationFrequency={calibrationFrequency}
             supportLoadBankCalibration={supportLoadBankCalibration}
             supportKlufeCalibration={supportKlufeCalibration}
