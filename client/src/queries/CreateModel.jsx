@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Query from '../components/UseQuery';
 
 export default function CreateModel({
-  modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm, handleResponse, categories,
+  modelNumber, vendor, description, comment, calibrationFrequency, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm, handleResponse, categories, calibratorCategories,
 }) {
   CreateModel.propTypes = {
     modelNumber: PropTypes.string.isRequired,
@@ -19,6 +19,8 @@ export default function CreateModel({
     handleResponse: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    calibratorCategories: PropTypes.array.isRequired,
   };
   const ADD_MODEL = gql`
       mutation AddModel(
@@ -33,6 +35,7 @@ export default function CreateModel({
         $supportCustomCalibration: Boolean!
         $customForm: String
         $categories: [String]
+        $calibratorCategories: [String]
       ) {
         addModel(
           modelNumber: $modelNumber
@@ -46,6 +49,7 @@ export default function CreateModel({
           supportCustomCalibration: $supportCustomCalibration
           customForm: $customForm
           categories: $categories
+          calibratorCategories: $calibratorCategories
         ){
           message
           success
@@ -64,6 +68,9 @@ export default function CreateModel({
             supportCustomCalibration
             requiresCalibrationApproval
             customForm
+            calibratorCategories{
+              name
+            }
           }
         }
       }
@@ -91,6 +98,7 @@ export default function CreateModel({
     requiresCalibrationApproval,
     customForm,
     categories,
+    calibratorCategories,
   });
   Query({
     query, queryName, getVariables, handleResponse, refetchQueries,

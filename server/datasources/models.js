@@ -455,6 +455,8 @@ class ModelAPI extends DataSource {
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
         });
+        console.log('cal cat');
+        console.log(calibratorCategories);
         calibratorCategories.forEach(async (category) => {
           await this.addCalibratorCategoryToModel({ vendor, modelNumber, category });
         });
