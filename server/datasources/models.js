@@ -109,6 +109,7 @@ class ModelAPI extends DataSource {
     supportKlufeCalibration,
     customForm,
     categories,
+    calibratorCategories,
   }) {
     const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
@@ -156,6 +157,14 @@ class ModelAPI extends DataSource {
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
+        this.store.calibratorCategoryRelationships.destroy({
+          where: {
+            modelId: id,
+          },
+        });
+        calibratorCategories.forEach(async (category) => {
+          await this.addCalibratorCategoryToModel({ vendor, modelNumber, category });
         });
         const modelReference = id;
         const instrumentList = await this.store.instruments.findAll({

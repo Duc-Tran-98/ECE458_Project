@@ -327,6 +327,7 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      calibratorCategories: [String]
       requiresCalibrationApproval: Boolean!
       supportCustomCalibration: Boolean!
       customForm: String
