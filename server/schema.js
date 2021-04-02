@@ -448,6 +448,12 @@ const typeDefs = gql`
       category: String!
     ): String!
   }
+
+  type Subscription {
+    userChanged(userName: String!): User
+  }
+
+
 `;
 
 module.exports = typeDefs;
