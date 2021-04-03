@@ -8,6 +8,8 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
+import TextField from '@material-ui/core/TextField';
+
 import $ from 'jquery';
 
 // TODO: Implement me (with JSON dump as only prop, parse steps from there)
@@ -71,6 +73,17 @@ export default function CustomFormWizard({
     </Button>
   );
 
+  const getNumberLabel = (low, high) => {
+    if (!low && !high) {
+      return '';
+    } if (!low) {
+      return `less than ${high}`;
+    } if (!high) {
+      return `greater than ${low}`;
+    }
+    return `between ${low} and ${high}`;
+  };
+
   const getStepContent = (formStep) => {
     const {
       plaintext,
@@ -84,23 +97,42 @@ export default function CustomFormWizard({
 
     return (
       <>
-        <h4>{plaintext}</h4>
+        <p>{plaintext}</p>
         {numeric
           && (
           <>
-            <p>{numericLabel}</p>
-            <p>{low}</p>
-            <p>{high}</p>
+            <p>{`${numericLabel} ${getNumberLabel(low, high)}`}</p>
+            <TextField
+              label="Measurement"
+              id="margin-normal"
+              margin="normal"
+              name="Measurement"
+              type="number"
+              // className={classes.textFieldSmall}
+              // onChange={(e) => handleChange(e.target.name, e.target.value)}
+              // value={state.low}
+            />
           </>
           )}
-        {text && <p>{textLabel}</p>}
+        {text && (
+        <>
+          <p>{textLabel}</p>
+          <TextField
+            label="Observation"
+            id="margin-normal"
+            margin="normal"
+            name="Observation"
+            type="text"
+          />
+        </>
+        )}
 
       </>
     );
   };
 
   return (
-    <div>
+    <div className="customFormWizard">
       <>
         <Stepper
           activeStep={activeStep}

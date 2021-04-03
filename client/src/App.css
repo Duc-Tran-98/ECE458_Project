@@ -206,11 +206,15 @@ div.MuiPaper-root.MuiPaper-elevation0{
   cursor: pointer;
 }
 
-.customFormBox {
+.customFormBox, .customFormWizard {
   width: 50vw;
   justify-content: center;
-  text-align: center;
+  
   margin: auto;
+}
+
+.customFormBox {
+  text-align: center;
   border-radius: 25px;
   border: 2px solid #14213d;
   padding: 10px;
