@@ -2,6 +2,7 @@
 import React from 'react';
 import CustomFormStep from './CustomFormStep';
 import { PreviewButton, EditPopoverIcon } from './CustomMuiIcons';
+import CustomFormWizard from './CustomFormWizard';
 
 export default function CustomFormBuilder() {
   const emptyState = {
@@ -64,20 +65,7 @@ export default function CustomFormBuilder() {
 
   // TODO: Create wizard from state map
   React.useEffect(() => {
-    const steps = state.map((entry, index) => (
-      <CustomFormStep
-        // eslint-disable-next-line react/no-array-index-key
-        key={index}
-        id={index}
-        state={entry}
-        updateState={updateState}
-        createStep={createStep}
-        deleteStep={deleteStep}
-      />
-    ));
-    console.log('formSteps: ');
-    console.log(steps);
-    setFormSteps(steps);
+    setWizard(<CustomFormWizard getSteps={() => state} onFinish={() => alert('just finished')} />);
   }, [state]);
 
   return (
@@ -86,11 +74,12 @@ export default function CustomFormBuilder() {
         <div className="form-builder-header m-4">
           {/* <h1 className="m-2">Custom Form Builder</h1>
           <h3 className="m-2">{`Total Steps: ${size}`}</h3> */}
-          <PreviewButton onClick={handleSubmit} message="Preview" />
-          <EditPopoverIcon onClick={handleSubmit} message="Edit" />
+          <PreviewButton onClick={() => setMode('preview')} message="Preview" />
+          <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />
         </div>
         <div className="mb-5">
-          {formSteps}
+          {mode === 'editing' && formSteps}
+          {mode === 'preview' && wizard}
         </div>
 
         {/* <button type="submit" className="btn" onClick={handleSubmit}>Review Form</button> */}

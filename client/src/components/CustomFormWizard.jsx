@@ -10,69 +10,36 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 
+// TODO: Implement me (with JSON dump as only prop, parse steps from there)
 export default function CustomFormWizard({
-  getSteps,
-  getStepContent,
-  onFinish,
-  canAdvance,
-  showResetBtn,
-  finishMsg,
-  forceReset,
-  handleRestart,
-  onNext,
-  onBack,
+  getSteps, onFinish,
 }) {
   CustomFormWizard.propTypes = {
-    getSteps: PropTypes.func.isRequired, // return array of step titles
-    getStepContent: PropTypes.func.isRequired, // function that decides what to display in each step
-    onFinish: PropTypes.func.isRequired, // callback fired when all steps complete
-    canAdvance: PropTypes.func, // function that decides if user can go on to next step; optional
-    showResetBtn: PropTypes.bool, // whether or not the reset button should be displayed at the end of the wizard
-    finishMsg: PropTypes.string, // the message to display after finishing all the steps; optional
-    forceReset: PropTypes.bool, // whehter or not the user inputed an error and should be prompted a restart button
-    handleRestart: PropTypes.func, // callback fired when the restart button is clicked
-    onNext: PropTypes.func,
-    onBack: PropTypes.func,
-  };
-  CustomFormWizard.defaultProps = {
-    showResetBtn: false,
-    canAdvance: () => true,
-    finishMsg: "All steps completed - you're finished",
-    forceReset: false,
-    handleRestart: () => undefined,
-    onNext: () => undefined,
-    onBack: () => undefined,
+    getSteps: PropTypes.func.isRequired, // return array of steps JSON
+    onFinish: PropTypes.func.isRequired,
   };
   // const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0); // state that manages our current step
-  const [canShow, setShow] = React.useState(false); // state used to add some delay before displaying so default props can take hold
-  React.useEffect(() => {
-    let active = true;
-    (() => {
-      if (active) {
-        setShow(true); // on mount, render component
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
   const steps = getSteps();
+  console.log('Creating CustomFormWizard with steps: ');
+  console.log(steps);
+  const forceReset = false;
+  const finishMsg = 'Completing custom form calibration';
+  const showResetBtn = false;
 
   const handleNext = () => { // handle clicking on the next button
-    if (canAdvance(activeStep)) {
-      setTimeout(() => $('#nextbtn').removeAttr('disabled'), 500);
-      $('#nextbtn').attr('disabled', 'disabled');
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-      if (onNext !== undefined) { onNext(activeStep); }
-      if (activeStep === steps.length - 1) {
-        onFinish();
-      }
+    // if (canAdvance(activeStep)) {
+    setTimeout(() => $('#nextbtn').removeAttr('disabled'), 500);
+    $('#nextbtn').attr('disabled', 'disabled');
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep === steps.length - 1) {
+      onFinish();
     }
+    // }
   };
+  const canClickNext = true; // canAdvance(activeStep);
 
   const handleBack = () => { // handle clicking on the back button
-    if (onBack !== undefined) { onBack(activeStep); }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -80,16 +47,11 @@ export default function CustomFormWizard({
     setActiveStep(0);
   };
 
-  const canClickNext = canAdvance(activeStep);
-
   const nextOrResetBtn = forceReset ? (
     <Button
       variant="contained"
       color="primary"
       onClick={() => {
-        if (typeof handleRestart !== 'undefined') {
-          handleRestart();
-        }
         handleReset();
       }}
       className="btn"
@@ -109,38 +71,66 @@ export default function CustomFormWizard({
     </Button>
   );
 
+  const getStepContent = (formStep) => {
+    const {
+      header,
+      plaintext,
+      numeric,
+      numericLabel,
+      low,
+      high,
+      text,
+      textLabel,
+    } = formStep;
+
+    return (
+      <>
+        <h2>{header}</h2>
+        <p>{plaintext}</p>
+        {numeric
+          && (
+          <>
+            <p>{numericLabel}</p>
+            <p>{low}</p>
+            <p>{high}</p>
+          </>
+          )}
+        {text && <p>{textLabel}</p>}
+
+      </>
+    );
+  };
+
   return (
     <div>
-      {canShow && (
-        <>
-          <Stepper
-            activeStep={activeStep}
-            orientation="vertical"
-            className="rounded p-4"
-          >
-            {steps.map((label, index) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-                <StepContent>
-                  {getStepContent(index)}
-                  <div className="my-2">
-                    <Button
-                      disabled={activeStep === 0}
-                      onClick={handleBack}
-                      className="btn"
-                    >
-                      Back
-                    </Button>
-                    <span className="mx-2" />
-                    {nextOrResetBtn}
-
-                  </div>
-                </StepContent>
-              </Step>
-            ))}
-          </Stepper>
-        </>
-      )}
+      <>
+        <Stepper
+          activeStep={activeStep}
+          orientation="vertical"
+          className="rounded p-4"
+        >
+          {steps.map((formStep, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <Step key={index}>
+              <StepLabel>{formStep.header}</StepLabel>
+              <StepContent>
+                {getStepContent(formStep)}
+                <div className="my-2">
+                  <Button
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    className="btn"
+                  >
+                    Back
+                  </Button>
+                  <span className="mx-2" />
+                  {nextOrResetBtn}
+                </div>
+              </StepContent>
+            </Step>
+          ))}
+        </Stepper>
+      </>
       {activeStep === steps.length && (
         <Paper square elevation={0} className="p-3">
           <Typography>{finishMsg}</Typography>
