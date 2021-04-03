@@ -23,7 +23,7 @@ export default function CustomFormBuilder() {
   };
   const updateState = (index, event, value) => {
     console.log(`updateState(${index}, ${event}, ${value})`);
-    const prevState = state;
+    const prevState = [...state];
     prevState[index] = {
       ...prevState[index],
       [event]: value,
@@ -32,13 +32,13 @@ export default function CustomFormBuilder() {
   };
   const createStep = (index) => {
     console.log(`createStep after index: ${index}`);
-    const prevState = state;
+    const prevState = [...state];
     prevState.splice(index, 0, Object.create(emptyState));
     setState(prevState);
   };
   const deleteStep = (index) => {
     console.log(`deleteStep with id: ${index}`);
-    const prevState = state;
+    const prevState = [...state];
     const nextState = prevState.splice(index, 1);
     setState(nextState);
   };
