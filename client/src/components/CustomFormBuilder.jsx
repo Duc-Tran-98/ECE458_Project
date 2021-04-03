@@ -1,8 +1,6 @@
 import React from 'react';
 import CustomFormStep from './CustomFormStep';
-import LinkedList from '../objects/LinkedList';
 
-// TODO: Keep state synced with child component
 export default function CustomFormBuilder() {
   const emptyState = {
     header: '',
@@ -14,59 +12,44 @@ export default function CustomFormBuilder() {
     text: false,
     textLabel: '',
   };
-  let nextId = 1;
-  const [update, setUpdate] = React.useState(0);
-  const [formSteps, setFormSteps] = React.useState([]);
+  const initState = [emptyState];
   const [size, setSize] = React.useState(1);
-  const linkedList = new LinkedList(0);
-  const map = new Map().set(0, Object.create(emptyState));
+  const [state, setState] = React.useState(initState);
+  const [formSteps, setFormSteps] = React.useState([]);
 
   const handleSubmit = () => {
-    console.log('submitting form with map: ');
-    console.log(map);
+    console.log('submitting form with state: ');
+    console.log(state);
   };
-  const updateState = (id, event, value) => {
-    console.log(`updateState(${id}, ${event}, ${value})`);
-    map.set(id, {
-      ...map.get(id),
+  const updateState = (index, event, value) => {
+    console.log(`updateState(${index}, ${event}, ${value})`);
+    const prevState = state;
+    prevState[index] = {
+      ...prevState[index],
       [event]: value,
-    });
-    setUpdate(update + 1);
+    };
+    setState(prevState);
   };
-  const createStep = (id) => {
-    console.log(`createStep after id: ${id}`);
-    map.set(id, Object.create(emptyState));
-    linkedList.insertAfter(id, nextId);
-    nextId += 1;
-    setUpdate(update + 1);
+  const createStep = (index) => {
+    console.log(`createStep after index: ${index}`);
+    const prevState = state;
+    prevState.splice(index, 0, Object.create(emptyState));
+    setState(prevState);
   };
-  const deleteStep = (id) => {
-    console.log(`deleteStep with id: ${id}`);
-    map.delete(id);
-    linkedList.deleteNode(id);
-    setUpdate(update + 1);
+  const deleteStep = (index) => {
+    console.log(`deleteStep with id: ${index}`);
+    const prevState = state;
+    const nextState = prevState.splice(index, 1);
+    setState(nextState);
   };
 
-  const generateKeysArray = () => {
-    console.log('generatingKeysArray with linkedList: ');
-    console.log(linkedList);
-    const arr = [];
-    let node = linkedList.head;
-    while (node) {
-      arr.push(node.data);
-      node = node.next;
-    }
-    console.log('created array from linked list: ');
-    console.log(arr);
-    return arr;
-  };
   React.useEffect(() => {
-    const arr = generateKeysArray();
-    const steps = arr.map((key) => (
+    const steps = state.map((entry, index) => (
       <CustomFormStep
-        key={key}
-        id={key}
-        state={map.get(key)}
+        // eslint-disable-next-line react/no-array-index-key
+        key={index}
+        id={index}
+        state={entry}
         updateState={updateState}
         createStep={createStep}
         deleteStep={deleteStep}
@@ -75,8 +58,8 @@ export default function CustomFormBuilder() {
     console.log('formSteps: ');
     console.log(steps);
     setFormSteps(steps);
-    setSize(linkedList.size());
-  }, [update]);
+    setSize(steps.length);
+  }, [state]);
 
   return (
     <>
