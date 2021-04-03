@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import CustomFormStep from './CustomFormStep';
-import { PreviewButton, EditPopoverIcon } from './CustomMuiIcons';
+import { PreviewButton, EditPopoverIcon, MuiSaveButton } from './CustomMuiIcons';
 import CustomFormWizard from './CustomFormWizard';
 
 export default function CustomFormBuilder() {
@@ -76,6 +76,7 @@ export default function CustomFormBuilder() {
           <h3 className="m-2">{`Total Steps: ${size}`}</h3> */}
           <PreviewButton onClick={() => setMode('preview')} message="Preview" />
           <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />
+          <MuiSaveButton onClick={handleSubmit} color="primary" />
         </div>
         <div className="mb-5">
           {mode === 'editing' && formSteps}
