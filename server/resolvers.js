@@ -473,9 +473,11 @@ module.exports = {
         instrumentPermission,
         calibrationApproverPermission,
       });
-      pubsub.publish(triggerWord, {
-        userChanged: response.user,
-      });
+      if (response.user) {
+        pubsub.publish(triggerWord, {
+          userChanged: response.user,
+        });
+      }
       return response;
     },
     deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
