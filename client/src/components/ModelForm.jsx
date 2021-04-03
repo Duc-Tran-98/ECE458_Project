@@ -276,112 +276,110 @@ export default function ModelForm({
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
-              <Form.Group controlId="formComment">
-                <Form.Label className="h5">Comment</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  name="comment"
-                  value={values.comment}
-                  onChange={handleChange}
-                  disabled={disabled}
-                  isInvalid={!!errors.comment}
-                  error={errors.comment}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.comment}
-                </Form.Control.Feedback>
-              </Form.Group>
+            <Form.Group controlId="formComment">
+              <Form.Label className="h5">Comment</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="comment"
+                value={values.comment}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.comment}
+                error={errors.comment}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.comment}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="form-check form-switch mt-4 col">
+              <label
+                className="form-check-label h5 col"
+                htmlFor="custom-support"
+              >
+                Approval
+              </label>
+              <Form.Control
+                className="form-check-input"
+                type="checkbox"
+                id="requires-approval"
+                name="requiresCalibrationApproval"
+                checked={values.requiresCalibrationApproval}
+                onChange={handleChange}
+                disabled={disabled}
+              />
+              <div className="col">
+                <strong>
+                  {values.requiresCalibrationApproval ? 'Yes' : 'No'}
+                </strong>
+              </div>
             </div>
-            <div className="col mt-3">
-              <div className="form-check form-switch mt-4">
-                <label
-                  className="form-check-label h5 col"
-                  htmlFor="custom-support"
-                >
-                  Does calibration require approval??
-                </label>
-                <Form.Control
-                  className="form-check-input"
-                  type="checkbox"
-                  id="requires-approval"
-                  name="requiresCalibrationApproval"
-                  checked={values.requiresCalibrationApproval}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <div className="col">
-                  <strong>
-                    {values.requiresCalibrationApproval ? 'Yes' : 'No'}
-                  </strong>
-                </div>
+            <div className="form-check form-switch mt-4 col">
+              <label
+                className="form-check-label h5 col"
+                htmlFor="load-bank-support"
+              >
+                Load Bank
+              </label>
+              <Form.Control
+                className="form-check-input"
+                type="checkbox"
+                id="load-bank-support"
+                name="supportLoadBankCalibration"
+                checked={values.supportLoadBankCalibration}
+                onChange={handleChange}
+                disabled={disabled}
+              />
+              <div className="col">
+                <strong>
+                  {values.supportLoadBankCalibration ? 'Yes' : 'No'}
+                </strong>
               </div>
-              <div className="form-check form-switch mt-4">
-                <label
-                  className="form-check-label h5 col"
-                  htmlFor="load-bank-support"
-                >
-                  Can model be calibrated as load bank?
-                </label>
-                <Form.Control
-                  className="form-check-input"
-                  type="checkbox"
-                  id="load-bank-support"
-                  name="supportLoadBankCalibration"
-                  checked={values.supportLoadBankCalibration}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <div className="col">
-                  <strong>
-                    {values.supportLoadBankCalibration ? 'Yes' : 'No'}
-                  </strong>
-                </div>
+            </div>
+            <div className="form-check form-switch mt-4 col">
+              <label
+                className="form-check-label h5 col"
+                htmlFor="klufe-support"
+              >
+                Klufe 5700
+              </label>
+              <Form.Control
+                className="form-check-input"
+                type="checkbox"
+                id="klufe-support"
+                name="supportKlufeCalibration"
+                checked={values.supportKlufeCalibration}
+                onChange={handleChange}
+                disabled={disabled}
+              />
+              <div className="col">
+                <strong>
+                  {values.supportKlufeCalibration ? 'Yes' : 'No'}
+                </strong>
               </div>
-              <div className="form-check form-switch mt-4">
-                <label
-                  className="form-check-label h5 col"
-                  htmlFor="klufe-support"
-                >
-                  Can model be calibrated with Klufe 5700?
-                </label>
-                <Form.Control
-                  className="form-check-input"
-                  type="checkbox"
-                  id="klufe-support"
-                  name="supportKlufeCalibration"
-                  checked={values.supportKlufeCalibration}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <div className="col">
-                  <strong>
-                    {values.supportKlufeCalibration ? 'Yes' : 'No'}
-                  </strong>
-                </div>
-              </div>
-              <div className="form-check form-switch mt-4">
-                <label
-                  className="form-check-label h5 col"
-                  htmlFor="custom-support"
-                >
-                  Can model be calibrated with custom form?
-                </label>
-                <Form.Control
-                  className="form-check-input"
-                  type="checkbox"
-                  id="custom-support"
-                  name="supportCustomCalibration"
-                  checked={values.supportCustomCalibration}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <div className="col">
-                  <strong>
-                    {values.supportCustomCalibration ? 'Yes' : 'No'}
-                  </strong>
-                </div>
+            </div>
+            <div className="form-check form-switch mt-4 col">
+              <label
+                className="form-check-label h5 col"
+                htmlFor="custom-support"
+              >
+                Custom Form
+              </label>
+              <Form.Control
+                className="form-check-input"
+                type="checkbox"
+                id="custom-support"
+                name="supportCustomCalibration"
+                checked={values.supportCustomCalibration}
+                onChange={handleChange}
+                disabled={disabled}
+              />
+              <div className="col">
+                <strong>
+                  {values.supportCustomCalibration ? 'Yes' : 'No'}
+                </strong>
               </div>
             </div>
           </div>
