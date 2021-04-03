@@ -29,7 +29,8 @@ export default function AsyncSuggest({
   handleKeyPress, // what to do when user clicks key on input
 }) {
   AsyncSuggest.propTypes = {
-    query: PropTypes.string.isRequired, // what query to perform
+    // eslint-disable-next-line react/forbid-prop-types
+    query: PropTypes.object.isRequired, // what query to perform
     queryName: PropTypes.string.isRequired, // name of query
     onInputChange: PropTypes.func.isRequired, // onInputChange handler
     label: PropTypes.string.isRequired, // label to display

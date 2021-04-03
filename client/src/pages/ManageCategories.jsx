@@ -349,19 +349,16 @@ function ManageCategories() {
               history.push(`/modelCategories${searchString}`);
             }
           }}
-          initialOrder={() => {
-            if (orderBy) {
-              return [[orderBy, sortBy]];
-            }
-            return null;
-          }}
+          initialOrder={orderBy ? [[orderBy, sortBy]] : []}
           onSortModelChange={(order, sort) => {
             const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
             if (window.location.search !== searchString) {
               history.push(`/modelCategories${searchString}`);
             }
           }}
-          fetchData={(limit, offset, ordering) => GetModelCategories({ limit, offset, orderBy: ordering }).then((response) => response)}
+          fetchData={(limit, offset, ordering) => GetModelCategories({ limit, offset, orderBy: ordering }).then(
+            (response) => response,
+          )}
           showToolBar={false}
           showImport={false}
         />
@@ -390,12 +387,7 @@ function ManageCategories() {
               history.push(`/instrumentCategories${searchString}`);
             }
           }}
-          initialOrder={() => {
-            if (orderBy) {
-              return [[orderBy, sortBy]];
-            }
-            return null;
-          }}
+          initialOrder={orderBy ? [[orderBy, sortBy]] : []}
           onSortModelChange={(order, sort) => {
             const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
             if (window.location.search !== searchString) {

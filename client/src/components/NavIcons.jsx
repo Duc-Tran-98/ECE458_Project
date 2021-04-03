@@ -15,10 +15,11 @@ export default function NavIcons({ handleSignOut }) {
     handleSignOut: PropTypes.func.isRequired,
   };
   const history = useHistory();
+  // eslint-disable-next-line no-unused-vars
   const user = useContext(UserContext);
   const approvalPermissions = true;
-  const { userName } = user;
-  console.log(userName);
+  // const { userName } = user;
+  // console.log(userName);
   const notifications = 12;
 
   // TODO: Implement handlers for onclick events
