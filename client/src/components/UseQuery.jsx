@@ -129,6 +129,7 @@ const Query = ({
         if (handleError) handleError(err);
         console.error(err);
         console.error(err.response);
+        console.log(err.message);
       });
   } else {
     client

@@ -25,7 +25,11 @@ export default function DetailedModelView() {
     calibrationFrequency: '',
     supportLoadBankCalibration: false,
     supportKlufeCalibration: false,
+    supportCustomCalibration: false,
+    requiresCalibrationApproval: false,
+    customForm: '',
     categories: [],
+    calibratorCategories: [],
   });
   const [loading, setLoading] = React.useState(false);
   const [showDelete, setShowDelete] = React.useState(false);
@@ -34,8 +38,9 @@ export default function DetailedModelView() {
   const handleFindModel = (response) => {
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
+    const calibratorCategories = response.calibratorCategories.map((item) => item.name);
     const {
-      description, comment, supportLoadBankCalibration, supportKlufeCalibration,
+      description, comment, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm,
     } = response;
     let { calibrationFrequency, id } = response;
     if (calibrationFrequency !== null) {
@@ -50,8 +55,12 @@ export default function DetailedModelView() {
       comment,
       id,
       categories,
+      calibratorCategories,
       calibrationFrequency,
       supportLoadBankCalibration,
+      supportCustomCalibration,
+      requiresCalibrationApproval,
+      customForm,
       supportKlufeCalibration,
     });
     setUpdate(false);
@@ -135,7 +144,11 @@ export default function DetailedModelView() {
     calibrationFrequency,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    supportCustomCalibration,
+    requiresCalibrationApproval,
+    customForm,
     categories,
+    calibratorCategories,
   } = model;
   const handleDelete = () => {
     setLoading(true);
@@ -196,8 +209,12 @@ export default function DetailedModelView() {
                 description={description}
                 comment={comment}
                 categories={categories}
+                calibratorCategories={calibratorCategories}
                 calibrationFrequency={calibrationFrequency}
                 supportLoadBankCalibration={supportLoadBankCalibration}
+                supportCustomCalibration={supportCustomCalibration}
+                requiresCalibrationApproval={requiresCalibrationApproval}
+                customForm={customForm}
                 supportKlufeCalibration={supportKlufeCalibration}
                 handleFormSubmit={() => undefined}
                 validated={false}

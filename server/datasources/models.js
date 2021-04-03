@@ -4,7 +4,7 @@ const { DataSource } = require('apollo-datasource');
 const SQL = require('sequelize');
 
 function validateModel({
-  modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false,
+  modelNumber = '', vendor = '', description = '', comment = '', klufe = false, loadBank = false, custom = false,
 }) {
   if (vendor.length > 30) {
     return [false, 'ERROR: Vendor input must be under 30 characters!'];
@@ -27,8 +27,12 @@ function validateModel({
   if (comment != null && comment.length > 2000) {
     return [false, 'ERROR: Comment input must be under 2000 characters!'];
   }
-  if (klufe && loadBank) {
-    return [false, 'ERROR: Model cannot support calibration via load bank wizard and Klufe 5700!'];
+  let count = 0;
+  if (klufe) count += 1;
+  if (loadBank) count += 1;
+  if (custom) count += 1;
+  if (count > 1) {
+    return [false, 'ERROR: Model can only support one of load bank wizard, klufe wizard, or custom form!'];
   }
   return [true];
 }
@@ -99,9 +103,13 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    requiresCalibrationApproval,
+    supportCustomCalibration,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    customForm,
     categories,
+    calibratorCategories,
   }) {
     const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
@@ -112,7 +120,7 @@ class ModelAPI extends DataSource {
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
-      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration, custom: supportCustomCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -134,6 +142,9 @@ class ModelAPI extends DataSource {
             description,
             comment,
             calibrationFrequency,
+            requiresCalibrationApproval,
+            supportCustomCalibration,
+            customForm,
             supportLoadBankCalibration,
             supportKlufeCalibration,
           },
@@ -146,6 +157,14 @@ class ModelAPI extends DataSource {
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
+        this.store.calibratorCategoryRelationships.destroy({
+          where: {
+            modelId: id,
+          },
+        });
+        calibratorCategories.forEach(async (category) => {
+          await this.addCalibratorCategoryToModel({ vendor, modelNumber, category });
         });
         const modelReference = id;
         const instrumentList = await this.store.instruments.findAll({
@@ -367,11 +386,15 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { id },
-      include: {
+      include: [{
         model: this.store.modelCategories,
         as: 'categories',
         through: 'modelCategoryRelationships',
-      },
+      }, {
+        model: this.store.modelCategories,
+        as: 'calibratorCategories',
+        through: 'calibratorCategoriesRelationships',
+      }],
     });
     if (model && model[0]) {
       return model[0];
@@ -384,11 +407,15 @@ class ModelAPI extends DataSource {
     this.store = storeModel;
     const model = await this.store.models.findAll({
       where: { modelNumber, vendor },
-      include: {
+      include: [{
         model: this.store.modelCategories,
         as: 'categories',
         through: 'modelCategoryRelationships',
-      },
+      }, {
+        model: this.store.modelCategories,
+        as: 'calibratorCategories',
+        through: 'calibratorCategoriesRelationships',
+      }],
     });
     if (model && model[0]) {
       return model[0];
@@ -402,9 +429,13 @@ class ModelAPI extends DataSource {
     description,
     comment,
     calibrationFrequency,
+    requiresCalibrationApproval = false,
     supportLoadBankCalibration = false,
     supportKlufeCalibration = false,
+    supportCustomCalibration = false,
+    customForm,
     categories = [],
+    calibratorCategories = [],
   }) {
     const response = { message: '', success: false, model: null };
     const storeModel = await this.store;
@@ -415,7 +446,7 @@ class ModelAPI extends DataSource {
     }
     const validation = validateModel({
       // eslint-disable-next-line max-len
-      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration,
+      modelNumber, vendor, description, comment, klufe: supportKlufeCalibration, loadBank: supportLoadBankCalibration, custom: supportCustomCalibration,
     });
     if (!validation[0]) {
       // eslint-disable-next-line prefer-destructuring
@@ -432,11 +463,19 @@ class ModelAPI extends DataSource {
           description,
           comment,
           calibrationFrequency,
+          requiresCalibrationApproval,
+          supportCustomCalibration,
+          customForm,
           supportLoadBankCalibration,
           supportKlufeCalibration,
         });
         categories.forEach(async (category) => {
           await this.addCategoryToModel({ vendor, modelNumber, category });
+        });
+        console.log('cal cat');
+        console.log(calibratorCategories);
+        calibratorCategories.forEach(async (category) => {
+          await this.addCalibratorCategoryToModel({ vendor, modelNumber, category });
         });
         response.message = `Added new model, ${vendor} ${modelNumber}, into the DB!`;
         response.success = true;
@@ -564,6 +603,38 @@ class ModelAPI extends DataSource {
             });
             response.success = true;
             response.message = `Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
+          } else {
+            response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
+          }
+        });
+      } else {
+        response.message = `ERROR: cannot add category beacuse model ${vendor} ${modelNumber}, does not exist!`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async addCalibratorCategoryToModel({ vendor, modelNumber, category }) {
+    const response = { message: '', success: false };
+    const storeModel = await this.store;
+    this.store = storeModel;
+    if (!this.checkPermissions()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    await this.getModel({ modelNumber, vendor }).then(async (value) => {
+      if (value) {
+        const name = category;
+        await this.getModelCategory({ name }).then((result) => {
+          if (result) {
+            const modelId = value.dataValues.id;
+            const modelCategoryId = result.dataValues.id;
+            this.store.calibratorCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            });
+            response.success = true;
+            response.message = `Calibrator Category ${category} successfully added to model ${vendor} ${modelNumber}!`;
           } else {
             response.message = `ERROR: Cannot add category ${category}, to model because it does not exist!`;
           }

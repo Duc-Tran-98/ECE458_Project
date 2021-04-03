@@ -98,6 +98,10 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      calibrationApproverPermission: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
     },
     { freezeTableName: true },
     {
@@ -134,6 +138,10 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.STRING(2000),
         allowNull: true,
       },
+      requiresCalibrationApproval: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
       supportLoadBankCalibration: {
         type: SQL.BOOLEAN,
         allowNull: false,
@@ -142,6 +150,11 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.BOOLEAN,
         allowNull: false,
       },
+      supportCustomCalibration: {
+        type: SQL.BOOLEAN,
+        allowNull: false,
+      },
+      customForm: SQL.TEXT,
       calibrationFrequency: SQL.INTEGER,
     },
     { freezeTableName: true },
@@ -219,6 +232,56 @@ module.exports.createStore = async (useTestDB) => {
     as: 'models',
     through: {
       model: 'modelCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelCategoryId',
+    constraints: false,
+  });
+
+  const calibratorCategoryRelationships = db.define(
+    'calibratorCategoryRelationships',
+    {
+      modelId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      modelCategoryId: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      taggableType: {
+        type: SQL.STRING,
+      },
+      id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
+  models.belongsToMany(modelCategories, {
+    as: 'calibratorCategories',
+    through: {
+      model: 'calibratorCategoryRelationships',
+      unique: false,
+    },
+    sourceKey: 'id',
+    foreignKey: 'modelId',
+    constraints: false,
+  });
+  modelCategories.belongsToMany(models, {
+    as: 'calibratorModels',
+    through: {
+      model: 'calibratorCategoryRelationships',
       unique: false,
     },
     sourceKey: 'id',
@@ -514,6 +577,7 @@ module.exports.createStore = async (useTestDB) => {
       password: hash,
       isAdmin: true,
       calibrationPermission: true,
+      calibrationApproverPermission: true,
       modelPermission: true,
       instrumentPermission: true,
     });
@@ -529,5 +593,6 @@ module.exports.createStore = async (useTestDB) => {
     modelCategoryRelationships,
     instrumentCategories,
     instrumentCategoryRelationships,
+    calibratorCategoryRelationships,
   };
 };

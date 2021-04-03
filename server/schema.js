@@ -102,6 +102,7 @@ const typeDefs = gql`
     instrumentPermission: Boolean
     modelPermission: Boolean
     calibrationPermission: Boolean
+    calibrationApproverPermission: Boolean
   }
 
   type InstrumentScrollFeed {
@@ -117,8 +118,12 @@ const typeDefs = gql`
     comment: String
     calibrationFrequency: Int
     categories: [Category]
+    calibratorCategories: [Category]
     supportLoadBankCalibration: Boolean!
     supportKlufeCalibration: Boolean!
+    requiresCalibrationApproval: Boolean!
+    supportCustomCalibration: Boolean!
+    customForm: String
   }
 
   type ModelOutput {
@@ -150,6 +155,9 @@ const typeDefs = gql`
     assetTag: Int!
     supportLoadBankCalibration: Boolean
     supportKlufeCalibration: Boolean
+    requiresCalibrationApproval: Boolean!
+    supportCustomCalibration: Boolean!
+    customForm: String
   }
 
   type FilteredInstrument {
@@ -281,6 +289,7 @@ const typeDefs = gql`
       instrumentPermission: Boolean
       modelPermission: Boolean
       calibrationPermission: Boolean
+      calibrationApproverPermission: Boolean
     ): String!
     editPermissions(
       userName: String!
@@ -288,6 +297,7 @@ const typeDefs = gql`
       instrumentPermission: Boolean!
       modelPermission: Boolean!
       calibrationPermission: Boolean!
+      calibrationApproverPermission: Boolean!
     ): UserCacheUpdate
     deleteUser(userName: String!): String!
 
@@ -301,6 +311,10 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      calibratorCategories: [String]
+      requiresCalibrationApproval: Boolean!
+      supportCustomCalibration: Boolean!
+      customForm: String
     ): ModelCacheUpdate
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
@@ -313,6 +327,10 @@ const typeDefs = gql`
       supportLoadBankCalibration: Boolean!
       supportKlufeCalibration: Boolean!
       categories: [String]
+      calibratorCategories: [String]
+      requiresCalibrationApproval: Boolean!
+      supportCustomCalibration: Boolean!
+      customForm: String
     ): ModelCacheUpdate
 
     # Instrument related mutations
