@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import CustomFormStep from './CustomFormStep';
+import { PreviewButton, EditPopoverIcon } from './CustomMuiIcons';
 
 export default function CustomFormBuilder() {
   const emptyState = {
@@ -13,13 +15,13 @@ export default function CustomFormBuilder() {
     textLabel: '',
   };
   const initState = [emptyState];
-  const [size, setSize] = React.useState(1);
   const [state, setState] = React.useState(initState);
   const [formSteps, setFormSteps] = React.useState([]);
+  const [wizard, setWizard] = React.useState();
+  const [mode, setMode] = React.useState('editing');
 
   const handleSubmit = () => {
-    console.log('submitting form with state: ');
-    console.log(state);
+    alert(`submitting form with state: ${JSON.stringify(state)}`);
   };
   const updateState = (index, event, value) => {
     console.log(`updateState(${index}, ${event}, ${value})`);
@@ -33,7 +35,7 @@ export default function CustomFormBuilder() {
   const createStep = (index) => {
     console.log(`createStep after index: ${index}`);
     const prevState = [...state];
-    prevState.splice(index, 0, Object.create(emptyState));
+    prevState.splice(index + 1, 0, Object.create(emptyState));
     setState(prevState);
   };
   const deleteStep = (index) => {
@@ -58,15 +60,41 @@ export default function CustomFormBuilder() {
     console.log('formSteps: ');
     console.log(steps);
     setFormSteps(steps);
-    setSize(steps.length);
+  }, [state]);
+
+  // TODO: Create wizard from state map
+  React.useEffect(() => {
+    const steps = state.map((entry, index) => (
+      <CustomFormStep
+        // eslint-disable-next-line react/no-array-index-key
+        key={index}
+        id={index}
+        state={entry}
+        updateState={updateState}
+        createStep={createStep}
+        deleteStep={deleteStep}
+      />
+    ));
+    console.log('formSteps: ');
+    console.log(steps);
+    setFormSteps(steps);
   }, [state]);
 
   return (
     <>
-      <h1 className="m-2">Custom Form Builder</h1>
-      <h3 className="m-2">{`Total Steps: ${size}`}</h3>
-      {formSteps}
-      <button type="submit" className="btn" onClick={handleSubmit}>Review Form</button>
+      <div>
+        <div className="form-builder-header m-4">
+          {/* <h1 className="m-2">Custom Form Builder</h1>
+          <h3 className="m-2">{`Total Steps: ${size}`}</h3> */}
+          <PreviewButton onClick={handleSubmit} message="Preview" />
+          <EditPopoverIcon onClick={handleSubmit} message="Edit" />
+        </div>
+        <div className="mb-5">
+          {formSteps}
+        </div>
+
+        {/* <button type="submit" className="btn" onClick={handleSubmit}>Review Form</button> */}
+      </div>
     </>
   );
 }

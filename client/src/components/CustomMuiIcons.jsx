@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import { PopOverFragment } from './PopOver';
 
@@ -141,4 +142,20 @@ export const MuiSaveButton = ({ onClick, color }) => (
   <IconButton onClick={onClick}>
     <SaveIcon color={color} />
   </IconButton>
+);
+
+export const PreviewButton = ({ message, onClick }) => (
+  <PopOverFragment message={message}>
+    <IconButton onClick={onClick}>
+      <VisibilityIcon />
+    </IconButton>
+  </PopOverFragment>
+);
+
+export const EditPopoverIcon = ({ message, onClick }) => (
+  <PopOverFragment message={message}>
+    <IconButton onClick={onClick}>
+      <EditIcon />
+    </IconButton>
+  </PopOverFragment>
 );

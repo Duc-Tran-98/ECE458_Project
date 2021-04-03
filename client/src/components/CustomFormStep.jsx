@@ -59,49 +59,48 @@ export default function CustomFormStep({
   };
 
   return (
-    <div className="m-5">
-      <div className="customFormBox">
-        <div className={classes.root}>
-          <TextField
-            label="Header"
-            id="standard-full-width"
-            className={classes.textFieldLarge}
-            autoFocus
-            fullWidth
-            margin="normal"
-            name="header"
-            error={errors.header}
-            onChange={(e) => handleChange(e.target.name, e.target.value)}
-            value={state.header}
-          />
-          <TextField
-            label="User prompt"
-            id="margin-normal"
-            className={classes.textFieldLarge}
-            margin="normal"
-            onChange={(e) => handleChange(e.target.name, e.target.value)}
-            name="plaintext"
-            value={state.plaintext}
-            multiline
-            rows={4}
-            rowsMax={4}
-          />
+    <div className="customFormBox">
+      <div className={classes.root}>
+        <TextField
+          label="Header"
+          id="standard-full-width"
+          className={classes.textFieldLarge}
+          autoFocus
+          fullWidth
+          margin="normal"
+          name="header"
+          error={errors.header}
+          onChange={(e) => handleChange(e.target.name, e.target.value)}
+          value={state.header}
+        />
+        <TextField
+          label="User prompt"
+          id="margin-normal"
+          className={classes.textFieldLarge}
+          margin="normal"
+          onChange={(e) => handleChange(e.target.name, e.target.value)}
+          name="plaintext"
+          value={state.plaintext}
+          multiline
+          rows={4}
+          rowsMax={4}
+        />
 
-        </div>
-        <div className="m-2">
-          <FormGroup row>
-            <FormControlLabel
-              control={(
-                <Switch
-                  checked={state.numeric}
-                  onChange={(e) => handleChange(e.target.name, e.target.checked)}
-                  name="numeric"
-                  color="primary"
-                />
+      </div>
+      <div className="m-2">
+        <FormGroup row>
+          <FormControlLabel
+            control={(
+              <Switch
+                checked={state.numeric}
+                onChange={(e) => handleChange(e.target.name, e.target.checked)}
+                name="numeric"
+                color="primary"
+              />
               )}
-              label="Numeric"
-            />
-            {state.numeric
+            label="Numeric"
+          />
+          {state.numeric
           && (
           <>
             <TextField
@@ -136,22 +135,22 @@ export default function CustomFormStep({
             />
           </>
           )}
-          </FormGroup>
-        </div>
-        <div className="m-2">
-          <FormGroup row>
-            <FormControlLabel
-              control={(
-                <Switch
-                  checked={state.text}
-                  onChange={(e) => handleChange(e.target.name, e.target.checked)}
-                  name="text"
-                  color="primary"
-                />
+        </FormGroup>
+      </div>
+      <div className="m-2">
+        <FormGroup row>
+          <FormControlLabel
+            control={(
+              <Switch
+                checked={state.text}
+                onChange={(e) => handleChange(e.target.name, e.target.checked)}
+                name="text"
+                color="primary"
+              />
               )}
-              label="Text"
-            />
-            {state.text
+            label="Text"
+          />
+          {state.text
           && (
             <TextField
               label="Text Label"
@@ -164,19 +163,18 @@ export default function CustomFormStep({
               value={state.textLabel}
             />
           )}
-          </FormGroup>
-        </div>
-        <PopOverFragment message="Add Step">
-          <IconButton onClick={() => createStep(id)}>
-            <AddCircleIcon style={{ color: '#11fc85' }} />
-          </IconButton>
-        </PopOverFragment>
-        <PopOverFragment message="Delete Step">
-          <IconButton onClick={() => deleteStep(id)}>
-            <DeleteIcon style={{ color: '#fc2311' }} />
-          </IconButton>
-        </PopOverFragment>
+        </FormGroup>
       </div>
+      <PopOverFragment message="Add Step">
+        <IconButton onClick={() => createStep(id)}>
+          <AddCircleIcon style={{ color: '#11fc85' }} />
+        </IconButton>
+      </PopOverFragment>
+      <PopOverFragment message="Delete Step">
+        <IconButton onClick={() => deleteStep(id)}>
+          <DeleteIcon style={{ color: '#fc2311' }} />
+        </IconButton>
+      </PopOverFragment>
     </div>
   );
 }

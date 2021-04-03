@@ -217,3 +217,9 @@ div.MuiPaper-root.MuiPaper-elevation0{
   background-color: whitesmoke;
   box-shadow: 3px 3px 5px 6px #ccc;
 }
+
+.form-builder-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top:60px;
+}
