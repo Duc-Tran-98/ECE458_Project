@@ -73,7 +73,6 @@ export default function CustomFormWizard({
 
   const getStepContent = (formStep) => {
     const {
-      header,
       plaintext,
       numeric,
       numericLabel,
@@ -85,8 +84,7 @@ export default function CustomFormWizard({
 
     return (
       <>
-        <h2>{header}</h2>
-        <p>{plaintext}</p>
+        <h4>{plaintext}</h4>
         {numeric
           && (
           <>
