@@ -73,6 +73,8 @@ export default function CustomFormStep({
     const intValue = Number.isNaN(parseInt(value, 10)) ? value : parseInt(value, 10);
     const lowExists = !emptyNumber(state.low) || type === 'low';
     const highExists = !emptyNumber(state.high) || type === 'high';
+
+    // State update takes time, use current value
     const low = (type === 'low') ? intValue : state.low;
     const high = (type === 'high') ? intValue : state.high;
 
