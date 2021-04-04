@@ -108,7 +108,7 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        console.log(`${fileLocation} ${fileName}`);
+        console.log(`line 111 inside calib event: ${fileLocation} ${fileName}`);
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
@@ -155,7 +155,7 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        console.log(`${fileLocation} ${fileName}`);
+        console.log(`line 158 in calib evnet: ${fileLocation} ${fileName}`);
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,

@@ -2,6 +2,11 @@
 // Resolvers define the technique for fetching the types defined in the
 // schema.
 const bcrypt = require('bcryptjs');
+const { PubSub } = require('apollo-server');
+const { withFilter } = require('apollo-server');
+
+const pubsub = new PubSub();
+const triggerWord = 'USER_MODIFIED';
 // For hashing password
 const saltRounds = 10;
 module.exports = {
@@ -129,12 +134,20 @@ module.exports = {
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
       calibrationHistoryIdReference,
     }),
-    getAllModelCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.modelAPI.getAllModelCategories({
+    getAllModelCategories: async (
+      _,
+      { limit, offset, orderBy },
+      { dataSources },
+    ) => await dataSources.modelAPI.getAllModelCategories({
       limit,
       offset,
       orderBy,
     }),
-    getAllInstrumentCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentCategories({
+    getAllInstrumentCategories: async (
+      _,
+      { limit, offset, orderBy },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentCategories({
       limit,
       offset,
       orderBy,
@@ -455,14 +468,22 @@ module.exports = {
         calibrationApproverPermission,
       },
       { dataSources },
-    ) => await dataSources.userAPI.editPermissions({
-      userName,
-      isAdmin,
-      modelPermission,
-      calibrationPermission,
-      instrumentPermission,
-      calibrationApproverPermission,
-    }),
+    ) => {
+      const response = await dataSources.userAPI.editPermissions({
+        userName,
+        isAdmin,
+        modelPermission,
+        calibrationPermission,
+        instrumentPermission,
+        calibrationApproverPermission,
+      });
+      if (response.user) {
+        pubsub.publish(triggerWord, {
+          userChanged: response.user,
+        });
+      }
+      return response;
+    },
     deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (_, { name }, { dataSources }) => {
       const response = await dataSources.modelAPI.addModelCategory({
@@ -567,6 +588,15 @@ module.exports = {
         },
       );
       return response;
+    },
+  },
+  Subscription: {
+    userChanged: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(triggerWord),
+        (payload, variables) => (payload.userChanged.userName === variables.userName)
+        ,
+      ),
     },
   },
 };
