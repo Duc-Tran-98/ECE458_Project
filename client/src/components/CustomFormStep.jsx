@@ -44,18 +44,65 @@ export default function CustomFormStep({
     deleteStep: PropTypes.func.isRequired,
   };
   const classes = useStylesText();
-  const errors = {
-    header: false,
-  };
+  const [errors, setErrors] = React.useState({
+    low: false,
+    lowMessage: '',
+    high: false,
+    highMessage: '',
+  });
 
-  // TODO: Update low and high to floats (from text)
-  // eslint-disable-next-line no-unused-vars
-  const handleSubmit = () => {
-    console.log('submitting form with state: ');
-    console.log(state);
-  };
   const handleChange = (event, value) => {
     updateState(id, event, value);
+  };
+  const resetErrors = () => {
+    console.log('resetting errors');
+    setErrors({
+      ...errors,
+      low: false,
+      lowMessage: '',
+      high: false,
+      highMessage: '',
+    });
+  };
+  const emptyNumber = (value) => value === 0 || value === null || value === '';
+  // FIXME: Known bug, 'e' is accepted as part of number
+  // Tried text, regex match, etc. but getting strange behavior
+  // Come back if time
+  const handleChangeNumber = (type, event, value) => {
+    console.log(`handleChangeNumber(${event}, ${value})`);
+    const intValue = parseInt(value, 10);
+    const lowExists = !emptyNumber(state.low) || type === 'low';
+    const highExists = !emptyNumber(state.high) || type === 'high';
+    const low = (type === 'low') ? intValue : state.low;
+    const high = (type === 'high') ? intValue : state.high;
+    handleChange(event, parseInt(value, 10));
+    if (highExists && lowExists) {
+      console.log('both numbers present');
+      // Both numbers present, validate both
+      if (low >= high) {
+        console.log('low >= high, setting errors');
+        setErrors({
+          low: true,
+          lowMessage: 'Invalid min',
+          high: true,
+          highMessage: 'Invalid max',
+        });
+      } else {
+        resetErrors();
+      }
+    } else {
+      // Both not present, fine to have single bound
+      resetErrors();
+    }
+
+    // if (!value.includes('e')) {
+    //   handleChange(event, value);
+    // }
+    // const regex = new RegExp('^[+-]?\\d+(\\.\\d+)?$');
+    // if (regex.test(value) || value === '') {
+    //   console.log('regex passed');
+    //   handleChange(event, value);
+    // }
   };
 
   return (
@@ -69,7 +116,6 @@ export default function CustomFormStep({
           fullWidth
           margin="normal"
           name="header"
-          error={errors.header}
           onChange={(e) => handleChange(e.target.name, e.target.value)}
           value={state.header}
         />
@@ -105,7 +151,6 @@ export default function CustomFormStep({
           <>
             <TextField
               label="Label"
-              id="margin-normal"
               className={classes.textFieldSmall}
               margin="normal"
               name="numericLabel"
@@ -115,23 +160,25 @@ export default function CustomFormStep({
             />
             <TextField
               label="Min"
-              id="margin-normal"
               className={classes.textFieldSmall}
               margin="normal"
               name="low"
               type="number"
-              onChange={(e) => handleChange(e.target.name, e.target.value)}
+              onChange={(e) => handleChangeNumber('low', e.target.name, e.target.value)}
               value={state.low}
+              error={errors.low}
+              helperText={errors.lowMessage}
             />
             <TextField
               label="Max"
-              id="margin-normal"
               className={classes.textFieldSmall}
               margin="normal"
               name="high"
               type="number"
-              onChange={(e) => handleChange(e.target.name, e.target.value)}
+              onChange={(e) => handleChangeNumber('high', e.target.name, e.target.value)}
               value={state.high}
+              error={errors.high}
+              helperText={errors.highMessage}
             />
           </>
           )}
