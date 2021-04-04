@@ -70,12 +70,13 @@ export default function CustomFormStep({
   // Come back if time
   const handleChangeNumber = (type, event, value) => {
     console.log(`handleChangeNumber(${event}, ${value})`);
-    const intValue = parseInt(value, 10);
+    const intValue = Number.isNaN(parseInt(value, 10)) ? value : parseInt(value, 10);
     const lowExists = !emptyNumber(state.low) || type === 'low';
     const highExists = !emptyNumber(state.high) || type === 'high';
     const low = (type === 'low') ? intValue : state.low;
     const high = (type === 'high') ? intValue : state.high;
-    handleChange(event, parseInt(value, 10));
+
+    handleChange(event, intValue);
     if (highExists && lowExists) {
       console.log('both numbers present');
       // Both numbers present, validate both
