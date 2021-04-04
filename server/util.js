@@ -477,11 +477,6 @@ module.exports.createStore = async (useTestDB) => {
     constraints: false,
   });
 
-  // instruments.hasMany(instrumentCategoryRelationships);
-  // instrumentCategoryRelationships.belongsTo(instruments);
-  // instrumentCategories.hasMany(instrumentCategoryRelationships);
-  // instrumentCategoryRelationships.belongsTo(instrumentCategories);
-
   instruments.belongsToMany(modelCategories, {
     as: 'modelCategories',
     through: {
@@ -502,18 +497,6 @@ module.exports.createStore = async (useTestDB) => {
     foreignKey: 'modelCategoryId',
     constraints: false,
   });
-  // instruments.hasMany(modelCategoryRelationships, {
-  //   // as: 'inToModCatRel',
-  //   sourceKey: 'modelReference',
-  //   foreignKey: 'modelId',
-  //   constraints: false,
-  // });
-  // modelCategoryRelationships.belongsTo(instruments, {
-  //   // as: 'modCatRelToIn',
-  //   foreignKey: 'modelId',
-  //   targetKey: 'modelReference',
-  //   constraints: false,
-  // });
 
   const calibrationEvents = db.define(
     'calibrationEvents',
