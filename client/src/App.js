@@ -83,7 +83,7 @@ function App() {
       <main
         style={{ zIndex: 0 }}
       >
-        <div className="bg-theme rounded ">
+        <div className="bg-theme rounded " style={{ minHeight: '90vh' }}>
           <Switch>
             <Route path="/test">
               <ComponentTest />
