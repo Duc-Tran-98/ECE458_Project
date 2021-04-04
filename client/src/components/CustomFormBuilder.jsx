@@ -25,7 +25,7 @@ export default function CustomFormBuilder() {
     alert(`submitting form with state: ${JSON.stringify(state)}`);
   };
   const updateState = (index, event, value) => {
-    console.log(`updateState(${index}, ${event}, ${value})`);
+    // console.log(`updateState(${index}, ${event}, ${value})`);
     const prevState = [...state];
     prevState[index] = {
       ...prevState[index],
@@ -34,7 +34,6 @@ export default function CustomFormBuilder() {
     setState(prevState);
   };
   const createStep = (index) => {
-    console.log(`createStep after index: ${index}`);
     const prevState = [...state];
     prevState.splice(index + 1, 0, Object.create(emptyState));
     setState(prevState);
@@ -58,8 +57,6 @@ export default function CustomFormBuilder() {
         deleteStep={deleteStep}
       />
     ));
-    console.log('formSteps: ');
-    console.log(steps);
     setFormSteps(steps);
   }, [state]);
 

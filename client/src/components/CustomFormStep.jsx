@@ -122,10 +122,6 @@ export default function CustomFormStep({
           label="Header"
           id="custom-form-header"
           className={classes.textFieldHeader}
-          // inputProps={{
-          //   lineHeight: '20px',
-          //   fontSize: '2rem',
-          // }}
           autoFocus
           fullWidth
           margin="normal"

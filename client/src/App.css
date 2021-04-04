@@ -248,3 +248,13 @@ div.MuiPaper-root.MuiPaper-elevation0{
 #custom-form-header {
   font-size: 2rem!important;
 }
+
+.customFormWizardLabel {
+  margin-top: 15px!important;
+  margin-bottom: 0px!important;
+}
+
+.customFormWizardInput {
+  margin-top: 0!important;
+  /* margin-bottom: 15px!important; */
+}
