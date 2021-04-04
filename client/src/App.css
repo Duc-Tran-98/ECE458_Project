@@ -244,3 +244,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
   background: #fedca6;
   /* background: linear-gradient(transparent, #fedca6); */
 }
+
+#custom-form-header {
+  font-size: 2rem!important;
+}

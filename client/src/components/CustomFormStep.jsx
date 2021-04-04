@@ -15,6 +15,13 @@ const useStylesText = makeStyles((theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
+  textFieldHeader: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '100ch',
+    lineHight: '20px',
+    fontSize: '25px',
+  },
   textFieldLarge: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
@@ -113,8 +120,12 @@ export default function CustomFormStep({
       <div className={classes.root}>
         <TextField
           label="Header"
-          id="standard-full-width"
-          className={classes.textFieldLarge}
+          id="custom-form-header"
+          className={classes.textFieldHeader}
+          // inputProps={{
+          //   lineHeight: '20px',
+          //   fontSize: '2rem',
+          // }}
           autoFocus
           fullWidth
           margin="normal"
