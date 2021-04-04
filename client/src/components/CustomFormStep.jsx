@@ -40,7 +40,7 @@ const useStylesText = makeStyles((theme) => ({
 }));
 
 export default function CustomFormStep({
-  id, state, updateState, createStep, deleteStep,
+  id, state, updateState, createStep, deleteStep, canDelete,
 }) {
   CustomFormStep.propTypes = {
     id: PropTypes.number.isRequired,
@@ -49,6 +49,7 @@ export default function CustomFormStep({
     updateState: PropTypes.func.isRequired,
     createStep: PropTypes.func.isRequired,
     deleteStep: PropTypes.func.isRequired,
+    canDelete: PropTypes.bool.isRequired,
   };
   const classes = useStylesText();
   const [errors, setErrors] = React.useState({
@@ -114,6 +115,8 @@ export default function CustomFormStep({
     //   handleChange(event, value);
     // }
   };
+
+  // const deleteColor = canDelete ? '#fc2311' ? '#665c5b';
 
   return (
     <div className="customFormBox">
@@ -227,11 +230,14 @@ export default function CustomFormStep({
           <AddCircleIcon style={{ color: '#11fc85' }} />
         </IconButton>
       </PopOverFragment>
+      {canDelete
+      && (
       <PopOverFragment message="Delete Step">
         <IconButton onClick={() => deleteStep(id)}>
           <DeleteIcon style={{ color: '#fc2311' }} />
         </IconButton>
       </PopOverFragment>
+      )}
     </div>
   );
 }

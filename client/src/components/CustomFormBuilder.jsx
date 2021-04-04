@@ -59,6 +59,7 @@ export default function CustomFormBuilder() {
         updateState={updateState}
         createStep={createStep}
         deleteStep={deleteStep}
+        canDelete={state.length > 1}
       />
     ));
     setFormSteps(steps);
