@@ -3,8 +3,12 @@ import PropTypes from 'prop-types';
 import {
   ApolloClient,
   InMemoryCache,
-  createHttpLink,
+  HttpLink,
+  // eslint-disable-next-line no-unused-vars
+  split,
 } from '@apollo/client';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 import { setContext } from '@apollo/client/link/context';
 import { print } from 'graphql';
 
@@ -12,8 +16,15 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4000'
   : '/api';
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: route,
+});
+
+const wsLink = new WebSocketLink({
+  uri: 'ws://localhost:4000/graphql',
+  options: {
+    reconnect: true,
+  },
 });
 let authLink = setContext((_, { headers }) => ({
   headers: {
@@ -21,6 +32,17 @@ let authLink = setContext((_, { headers }) => ({
     authorization: '',
   },
 }));
+let splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition'
+      && definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  authLink.concat(httpLink),
+);
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
@@ -54,7 +76,7 @@ const cache = new InMemoryCache({
   },
 });
 let client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: splitLink,
   cache,
 });
 
@@ -67,8 +89,19 @@ export function setAuthHeader(token) { // This is to let backend know request ar
       authorization: token ? `${token}` : '',
     },
   }));
+  splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition'
+        && definition.operation === 'subscription'
+      );
+    },
+    wsLink,
+    authLink.concat(httpLink),
+  );
   client = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: splitLink,
     cache,
   });
 }
@@ -85,7 +118,8 @@ const Query = ({
   awaitRefetchQueries = false,
 }) => {
   Query.propTypes = {
-    query: PropTypes.string.isRequired, // This is the gql query printed
+    // eslint-disable-next-line react/forbid-prop-types
+    query: PropTypes.object.isRequired, // This is the gql query printed
     queryName: PropTypes.string.isRequired, // This is the name of the query
     getVariables: PropTypes.func, // This is how we get the variables to pass into the query
     handleResponse: PropTypes.func.isRequired, // This is what to do with the response
@@ -160,13 +194,13 @@ export async function QueryAndThen({
   refetchQueries = [],
 }) {
   QueryAndThen.propTypes = {
-    query: PropTypes.string.isRequired, // This is the gql query printed
+    // eslint-disable-next-line react/forbid-prop-types
+    query: PropTypes.object.isRequired, // This is the gql query printed
     queryName: PropTypes.string.isRequired, // This is the name of the query
     getVariables: PropTypes.func, // This is how we get the variables to pass into the query
     fetchPolicy: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
     refetchQueries: PropTypes.array,
-
   };
   // const data = getVariables ? { query, variables: getVariables() } : { query };
   // eslint-disable-next-line no-return-await
@@ -208,6 +242,20 @@ export async function QueryAndThen({
       console.error(err);
       console.error(err.response);
     });
+}
+
+export function Subscribe({ query, getVariables = () => undefined }) {
+  Subscribe.propTypes = {
+    // eslint-disable-next-line react/forbid-prop-types
+    query: PropTypes.object,
+    getVariables: PropTypes.func,
+  };
+  console.log(getVariables());
+  return client.subscribe({
+    query,
+    variables: getVariables(),
+    fetchPolicy: 'no-cache',
+  });
 }
 
 export default Query;

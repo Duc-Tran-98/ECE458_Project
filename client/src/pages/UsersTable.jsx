@@ -152,7 +152,13 @@ export default function UsersTable() {
         }}
         show={showEdit}
       >
-        <ViewUser userName={selectedUser} onDelete={() => { setShowEdit(false); setSelectedUser(''); }} />
+        <ViewUser
+          userName={selectedUser}
+          onDelete={() => {
+            setShowEdit(false);
+            setSelectedUser('');
+          }}
+        />
       </StateLessModal>
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
@@ -166,9 +172,7 @@ export default function UsersTable() {
           setShowEdit(true);
         }}
         shouldUpdate={update}
-        headerElement={(
-          createBtn
-        )}
+        headerElement={createBtn}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
@@ -190,12 +194,7 @@ export default function UsersTable() {
             setInitPage(page);
           }
         }}
-        initialOrder={() => {
-          if (orderBy) {
-            return [[orderBy, sortBy]];
-          }
-          return null;
-        }}
+        initialOrder={orderBy ? [[orderBy, sortBy]] : []}
         onSortModelChange={(order, sort) => {
           const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
           if (window.location.search !== searchString) {

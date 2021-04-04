@@ -84,22 +84,10 @@ export default async function GetCalibHistory({
       }
     }
   `;
-  const query = dateOnly ? GET_DATE_HIST : GET_ALL_CALIB_HIST; // Pick which query to use
-  const queryName = 'getCalibrationEventsByReferenceId';
-  const getVariables = () => ({ id });
-  if (handleResponse) { // If you passed a handler, call it
-    Query({
-      query, queryName, getVariables, handleResponse,
-    });
-  } else { // Else, return response
-    const response = await QueryAndThen({
-      query,
-      queryName,
-      getVariables,
-      fetchPolicy: 'no-cache',
-    });
+  const sortRes = (response) => {
     let copyOfRes;
-    if (response) { // If response isn't null
+    if (response) {
+      // If response isn't null
       response.sort((a, b) => {
         const timeDiff = new Date(b.date) - new Date(a.date);
         if (timeDiff === 0) {
@@ -108,10 +96,33 @@ export default async function GetCalibHistory({
         return timeDiff;
       }); // This will sort calib events by date (most recent to least recent)
       copyOfRes = JSON.parse(JSON.stringify(response));
-      if (mostRecent) { // If you asked for most recent, return it
+      if (mostRecent) {
+        // If you asked for most recent, return it
         return copyOfRes[0];
       }
     }
     return copyOfRes;
+  };
+  const query = dateOnly ? GET_DATE_HIST : GET_ALL_CALIB_HIST; // Pick which query to use
+  const queryName = 'getCalibrationEventsByReferenceId';
+  const getVariables = () => ({ id });
+  if (handleResponse) { // If you passed a handler, call it
+    Query({
+      query,
+      queryName,
+      getVariables,
+      handleResponse: (response) => {
+        handleResponse(sortRes(response));
+      },
+      fetchPolicy: 'no-cache',
+    });
+  } else { // Else, return response
+    const response = await QueryAndThen({
+      query,
+      queryName,
+      getVariables,
+      fetchPolicy: 'no-cache',
+    });
+    return sortRes(response);
   }
 }
