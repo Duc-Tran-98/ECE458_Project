@@ -38,11 +38,15 @@ export default function CustomFormBuilder() {
     prevState.splice(index + 1, 0, Object.create(emptyState));
     setState(prevState);
   };
-  const deleteStep = (index) => {
-    console.log(`deleteStep with id: ${index}`);
-    const prevState = [...state];
-    const nextState = prevState.splice(index, 1);
-    setState(nextState);
+  const deleteStep = (index) => { // Cannot delete last step
+    console.log(`deleteStep with id: ${index}\tprevState, nextState`);
+    if (state.length > 1) {
+      const prevState = [...state];
+      const nextState = prevState.filter((item, i) => index !== i);
+      console.log(prevState);
+      console.log(nextState);
+      setState(nextState);
+    }
   };
 
   React.useEffect(() => {
