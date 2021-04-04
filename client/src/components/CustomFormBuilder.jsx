@@ -63,7 +63,6 @@ export default function CustomFormBuilder() {
     setFormSteps(steps);
   }, [state]);
 
-  // TODO: Create wizard from state map
   React.useEffect(() => {
     setWizard(<CustomFormWizard getSteps={() => state} onFinish={() => alert('just finished')} />);
   }, [state]);
@@ -74,8 +73,8 @@ export default function CustomFormBuilder() {
         <div className="form-builder-header m-4">
           {/* <h1 className="m-2">Custom Form Builder</h1>
           <h3 className="m-2">{`Total Steps: ${size}`}</h3> */}
-          <PreviewButton onClick={() => setMode('preview')} message="Preview" />
-          <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />
+          {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
+          {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
           <MuiSaveButton onClick={handleSubmit} color="primary" />
         </div>
         <div className="mb-5">
