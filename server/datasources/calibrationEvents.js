@@ -342,6 +342,18 @@ class CalibrationEventAPI extends DataSource {
     response.success = true;
     return JSON.stringify(response);
   }
+
+  async getCetificateForInstrument({ assetTag }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    console.log(assetTag);
+  }
+
+  async getChainOfTruthForInstrument({ assetTag }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    console.log(assetTag);
+  }
 }
 
 module.exports = CalibrationEventAPI;
