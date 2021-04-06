@@ -1,8 +1,9 @@
+/* eslint-disable no-param-reassign */
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import UserContext from '../components/UserContext';
-import { cols } from '../utils/CalibTable';
+import { approvalCols } from '../utils/CalibTable';
 import GetCalibHistory from '../queries/GetCalibHistory';
 
 export default function CalibrationApprovalPage() {
@@ -63,7 +64,7 @@ export default function CalibrationApprovalPage() {
   return (
     <ServerPaginationGrid
       shouldUpdate={update}
-      cols={cols}
+      cols={approvalCols}
       initPage={initPage || 1}
       initLimit={initLimit || 25}
       onPageChange={(page, limit) => {
@@ -78,13 +79,22 @@ export default function CalibrationApprovalPage() {
       }}
       showToolBar={false}
       showImport={false}
-      headerElement={(
-        <div className="ps-3 h5 py-2">
-          Calibration Approval Table
-        </div>
-      )}
+      headerElement={
+        <div className="ps-3 h5 py-2">Calibration Approval Table</div>
+      }
       // eslint-disable-next-line no-unused-vars
-      fetchData={(limit, offset, ordering) => GetCalibHistory({ id: 1 }).then((data) => data)}
+      fetchData={(limit, offset, ordering) => {
+        const calibEvents = GetCalibHistory({ id: 1 }).then((data) => {
+          data.forEach((element) => {
+            element.vendor = 'Fluke';
+            element.modelNumber = '458'; // TODO: fill in instrument info for each row
+            element.assetTag = 100000;
+            element.serialNumber = 'XYZ';
+          });
+          return data;
+        });
+        return calibEvents;
+      }}
       rowCount={() => GetCalibHistory({ id: 1 }).then((data) => data.length)}
     />
   );
