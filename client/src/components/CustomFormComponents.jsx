@@ -93,6 +93,7 @@ export function CustomHeaderInput({ header, index, handleChange }) {
       name="prompt"
       onChange={(e) => handleChange(e, index)}
       value={header}
+      style={{ fontSize: '2rem!important' }}
     />
   );
 }
