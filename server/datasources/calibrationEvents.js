@@ -365,10 +365,10 @@ class CalibrationEventAPI extends DataSource {
     const relations = [];
     for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
       const inst = calibration.calibratedBy[i];
-      const id = inst.dataValues.calibratedBy;
+      const currentId = inst.dataValues.calibratedBy;
       // eslint-disable-next-line no-await-in-loop
       const found = await this.store.instruments.findOne({
-        where: { id },
+        where: { id: currentId },
       });
       if (found) {
         relations.push({
