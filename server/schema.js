@@ -5,6 +5,8 @@ const typeDefs = gql`
   # clients can execute, along with the return type for each.
   type Query {
     getCetificateForInstrument(assetTag: Int!): CertificateInfo
+    getChainOfTruthForInstrument(assetTag: Int!): [CertificateInfo]
+    
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!

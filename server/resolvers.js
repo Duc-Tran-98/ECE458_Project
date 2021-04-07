@@ -153,6 +153,7 @@ module.exports = {
       orderBy,
     }),
     getCetificateForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getCetificateForInstrument({ assetTag }),
+    getChainOfTruthForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getChainOfTruthForInstrument({ assetTag }),
   },
   Mutation: {
     bulkImportData: async (
