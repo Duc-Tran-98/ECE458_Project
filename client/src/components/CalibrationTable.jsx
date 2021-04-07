@@ -37,7 +37,7 @@ export default function CalibrationTable({
       handleDelete={deleteRow}
       id={entry.id}
       onChangeCalibRow={onChangeCalibRow}
-      comment={entry.comment}
+      comment={entry.comment || ''}
       fileName={entry.fileName}
       fileLocation={entry.fileLocation}
       loadBankData={entry.loadBankData}

@@ -51,6 +51,7 @@
     "react-toastify": "^7.0.3",
     "readline-sync": "^1.4.10",
     "strftime": "^0.10.0",
+    "subscriptions-transport-ws": "^0.9.18",
     "sync-request": "^6.1.0",
     "use-state-with-callback": "^2.0.3",
     "web-vitals": "^0.2.4",
