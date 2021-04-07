@@ -2,20 +2,13 @@
 import React from 'react';
 import CustomFormStep from './CustomFormStep';
 import { PreviewButton, EditPopoverIcon, MuiSaveButton } from './CustomMuiIcons';
-import CustomFormWizard from './CustomFormWizard';
 
 export default function CustomFormBuilder() {
-  const emptyState = {
-    header: '',
-    plaintext: '',
-    numeric: false,
-    numericLabel: '',
-    low: 0,
-    high: 0,
-    text: false,
-    textLabel: '',
+  const emptyHeader = {
+    type: 'header',
+    prompt: '',
   };
-  const initState = [emptyState];
+  const initState = [emptyHeader];
   const [state, setState] = React.useState(initState);
   const [formSteps, setFormSteps] = React.useState([]);
   const [wizard, setWizard] = React.useState();
@@ -35,7 +28,7 @@ export default function CustomFormBuilder() {
   };
   const createStep = (index) => {
     const prevState = [...state];
-    prevState.splice(index + 1, 0, Object.create(emptyState));
+    prevState.splice(index + 1, 0, Object.create(emptyHeader));
     setState(prevState);
   };
   const deleteStep = (index) => { // Cannot delete last step
@@ -65,9 +58,9 @@ export default function CustomFormBuilder() {
     setFormSteps(steps);
   }, [state]);
 
-  React.useEffect(() => {
-    setWizard(<CustomFormWizard getSteps={() => state} onFinish={() => alert('just finished')} />);
-  }, [state]);
+  // React.useEffect(() => {
+  //   setWizard(<CustomFormWizard getSteps={() => state} onFinish={() => alert('just finished')} />);
+  // }, [state]);
 
   return (
     <>

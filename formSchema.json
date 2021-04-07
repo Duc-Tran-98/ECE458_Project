@@ -13,19 +13,25 @@
       "prompt": "Multimeter value",
       "min": 12,
       "max": 25.4,
-      "value": 0
+      "value": 0,
+      "errors": false,
+      "helperText": ""
     },
     {
       "type": "number",
       "prompt": "Oscilloscope value",
       "value": 12,
       "min": -12,
-      "max": 29
+      "max": 29,
+      "errors": false,
+      "helperText": ""
     },
     {
       "type": "text",
       "prompt": "Please make an observation on the dents in the device",
-      "value": "The model was purplse wow!"
+      "value": "The model was purplse wow!",
+      "errors": false,
+      "helperText": ""
     }
   ]
 }

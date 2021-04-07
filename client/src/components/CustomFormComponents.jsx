@@ -1,5 +1,9 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
+import TextField from '@material-ui/core/TextField';
+import PropTypes from 'prop-types';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 // eslint-disable-next-line import/prefer-default-export
 export const CustomInput = ({
@@ -36,3 +40,150 @@ export const CustomButton = ({
     </button>
   </div>
 );
+
+/**
+ * The following several components are used in the CustomForm builder
+ * They are all controlled components, and solely render information from the parent component
+ * Many of these will be used to compose the custom form builder
+ */
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  textFieldHeader: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '100ch',
+    lineHight: '20px',
+    fontSize: '25px',
+  },
+  textFieldLarge: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '100ch',
+  },
+  textFieldMedium: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '50ch',
+  },
+  textFieldSmall: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '20ch',
+  },
+}));
+
+export function CustomHeaderInput({ header, onChange }) {
+  CustomHeaderInput.propTypes = {
+    header: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
+  const classes = useStyles();
+  return (
+    <TextField
+      label="Header"
+      className={classes.textFieldHeader}
+      autoFocus
+      fullWidth
+      margin="normal"
+      name="header"
+      onChange={onChange}
+      value={header}
+    />
+  );
+}
+
+export function CustomUserPromptInput({ userPrompt, onChange }) {
+  CustomUserPromptInput.propTypes = {
+    userPrompt: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
+  const classes = useStyles();
+  return (
+    <TextField
+      label="userPrompt"
+      className={classes.textFieldLarge}
+      autoFocus
+      fullWidth
+      margin="normal"
+      name="userPrompt"
+      onChange={onChange}
+      value={userPrompt}
+      multiline
+      rows={4}
+      rowsMax={4}
+    />
+  );
+}
+
+export function CustomNumericInput({
+  label, min, max, onChange,
+}) {
+  CustomNumericInput.propTypes = {
+    label: PropTypes.string.isRequired,
+    min: PropTypes.number.isRequired,
+    max: PropTypes.number.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
+  const classes = useStyles();
+
+  return (
+    <>
+      <TextField
+        label="Label"
+        className={classes.textFieldSmall}
+        margin="normal"
+        name="numericLabel"
+        type="text"
+        onChange={onChange}
+        value={label}
+      />
+      <TextField
+        label="Min"
+        className={classes.textFieldSmall}
+        margin="normal"
+        name="min"
+        type="number"
+        onChange={onChange}
+        value={min}
+        // error={errors.low}
+        // helperText={errors.lowMessage}
+      />
+      <TextField
+        label="Max"
+        className={classes.textFieldSmall}
+        margin="normal"
+        name="max"
+        type="number"
+        onChange={onChange}
+        value={max}
+        // error={errors.high}
+        // helperText={errors.highMessage}
+      />
+    </>
+  );
+}
+
+export function CustomTextInput({ text, onChange }) {
+  CustomTextInput.propTypes = {
+    text: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
+  const classes = useStyles();
+
+  return (
+    <TextField
+      label="Text Label"
+      id="margin-normal"
+      className={classes.textFieldMedium}
+      margin="normal"
+      type="text"
+      name="textLabel"
+      onChange={onChange}
+      value={text}
+    />
+  );
+}
