@@ -11,7 +11,7 @@ import { Portal } from '@material-ui/core';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
+// import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
@@ -418,16 +418,16 @@ export default function ModelForm({
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
+            <Form.Label className="h5 mt-3">Calibration Information</Form.Label>
+            <div className="col">
               <FormControlLabel
                   // control={<Checkbox checked={false} onChange={handleChange} name="checkedA" />}
-                control={<Checkbox checked name="approvalCheck" color="primary" />}
-                label="Approval"
+                control={<Checkbox checked={values.requiresCalibrationApproval} name="requiresCalibrationApproval" onChange={handleChange} color="primary" />}
+                label="Requires Approval"
               />
             </div>
-
-            <div className="col mt-3">
-              <FormLabel component="legend">Calibration Type</FormLabel>
+            <div className="col-auto">
+              {/* TODO: Determine how to set values in least invasive way */}
               <RadioGroup row aria-label="calibrationType" name="calibrationType">
                 {/* value={value} onChange={handleChange}> */}
                 <FormControlLabel value="standard" control={<Radio color="primary" />} label="Standard" />
