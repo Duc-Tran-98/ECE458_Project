@@ -1,12 +1,37 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import CustomFormStep from './CustomFormStep';
-import { PreviewButton, EditPopoverIcon, MuiSaveButton } from './CustomMuiIcons';
+import {
+  PreviewButton, EditPopoverIcon, MuiSaveButton, TitlePopoverIcon, TextFieldPopoverIcon, NumberInputPopoverIcon,
+} from './CustomMuiIcons';
+import {
+  CustomHeaderInput, CustomUserPromptInput, CustomNumericInput, CustomTextInput,
+} from './CustomFormComponents';
 
 export default function CustomFormBuilder() {
   const emptyHeader = {
     type: 'header',
     prompt: '',
+  };
+  const emptyDescription = {
+    type: 'description',
+    prompt: '',
+  };
+  const emptyNumericInput = {
+    type: 'number',
+    prompt: '',
+    value: 0,
+    min: 0,
+    max: 0,
+    errors: false,
+    helperText: '',
+  };
+  const emptyTextInput = {
+    type: 'text',
+    prompt: '',
+    value: '',
+    errors: false,
+    helperText: '',
   };
   const initState = [emptyHeader];
   const [state, setState] = React.useState(initState);
@@ -42,19 +67,102 @@ export default function CustomFormBuilder() {
     }
   };
 
+  const addElement = (type, index) => {
+    let obj = Object.create(emptyHeader);
+    switch (type) {
+      case 'header':
+        obj = Object.create(emptyHeader);
+        break;
+      case 'description':
+        obj = Object.create(emptyDescription);
+        break;
+      case 'number':
+        obj = Object.create(emptyNumericInput);
+        break;
+      case 'text':
+        obj = Object.create(emptyTextInput);
+        break;
+      default:
+        obj = null; // TODO: Will this ever happen?
+    }
+    const prevState = [...state];
+    prevState.splice(index + 1, 0, obj);
+    setState(prevState);
+  };
+  const onChangeText = (value, index) => {
+    console.log(`onChangeText(${value}, ${index})`);
+    const nextState = [...state];
+    nextState[index] = {
+      ...nextState[index],
+      prompt: value,
+    };
+    console.log(nextState);
+    setState(nextState);
+  };
+  const onChangeNumeric = (prompt, min, max, index) => {
+    console.log(`onChangeNumeric(${prompt}, ${min}, ${max}, ${index})`);
+    const nextState = [...state];
+    nextState[index] = {
+      ...nextState[index],
+      prompt,
+      min,
+      max,
+    };
+    console.log(nextState);
+    setState(nextState);
+  };
+
+  const toolbar = (
+    <>
+      <span>
+        <TitlePopoverIcon message="Add Header" onClick={() => addElement('header')} />
+        <TitlePopoverIcon message="Add User Prompt" onClick={() => addElement('description')} />
+        <NumberInputPopoverIcon message="Add Numeric Input" onClick={() => addElement('number')} />
+        <TextFieldPopoverIcon message="Add Text Input" onClick={() => addElement('text')} />
+      </span>
+    </>
+  );
+
   React.useEffect(() => {
-    const steps = state.map((entry, index) => (
-      <CustomFormStep
-        // eslint-disable-next-line react/no-array-index-key
-        key={index}
-        id={index}
-        state={entry}
-        updateState={updateState}
-        createStep={createStep}
-        deleteStep={deleteStep}
-        canDelete={state.length > 1}
-      />
-    ));
+    const steps = state.map((entry, index) => {
+      switch (entry.type) {
+        case 'header':
+          return (
+            <CustomHeaderInput
+              header={entry.prompt}
+              index={index}
+              onChange={onChangeText}
+            />
+          );
+        case 'description':
+          return (
+            <CustomUserPromptInput
+              userPrompt={entry.prompt}
+              index={index}
+              onChange={onChangeText}
+            />
+          );
+        case 'number':
+          return (
+            <CustomNumericInput
+              prompt={entry.prompt}
+              min={entry.min}
+              max={entry.max}
+              index={index}
+              onChange={onChangeNumeric}
+            />
+          );
+        case 'text':
+          return (
+            <CustomTextInput
+              prompt={entry.prompt}
+              onChange={onChangeText}
+            />
+          );
+        default:
+          return null;
+      }
+    });
     setFormSteps(steps);
   }, [state]);
 
@@ -71,8 +179,9 @@ export default function CustomFormBuilder() {
           {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
           {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
           <MuiSaveButton onClick={handleSubmit} color="primary" />
+          {toolbar}
         </div>
-        <div className="mb-5">
+        <div className="mb-5" style={{ margin: 'auto', width: '50vw' }}>
           {mode === 'editing' && formSteps}
           {mode === 'preview' && wizard}
         </div>

@@ -55,14 +55,14 @@ const useStyles = makeStyles((theme) => ({
   textFieldHeader: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '100ch',
+    width: '50vw',
     lineHight: '20px',
     fontSize: '25px',
   },
   textFieldLarge: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '100ch',
+    width: '50vw',
   },
   textFieldMedium: {
     marginLeft: theme.spacing(1),
@@ -76,9 +76,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function CustomHeaderInput({ header, onChange }) {
+export function CustomHeaderInput({ header, index, onChange }) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired,
   };
   const classes = useStyles();
@@ -90,27 +91,28 @@ export function CustomHeaderInput({ header, onChange }) {
       fullWidth
       margin="normal"
       name="header"
-      onChange={onChange}
+      onChange={(e) => onChange(e.target.value, index)}
       value={header}
     />
   );
 }
 
-export function CustomUserPromptInput({ userPrompt, onChange }) {
+export function CustomUserPromptInput({ userPrompt, index, onChange }) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired,
   };
   const classes = useStyles();
   return (
     <TextField
-      label="userPrompt"
+      label="User Prompt"
       className={classes.textFieldLarge}
       autoFocus
       fullWidth
       margin="normal"
       name="userPrompt"
-      onChange={onChange}
+      onChange={(e) => onChange(e.target.value, index)}
       value={userPrompt}
       multiline
       rows={4}
@@ -120,13 +122,14 @@ export function CustomUserPromptInput({ userPrompt, onChange }) {
 }
 
 export function CustomNumericInput({
-  label, min, max, onChange,
+  prompt, min, max, onChange, index,
 }) {
   CustomNumericInput.propTypes = {
-    label: PropTypes.string.isRequired,
+    prompt: PropTypes.string.isRequired,
     min: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired,
   };
   const classes = useStyles();
 
@@ -138,8 +141,8 @@ export function CustomNumericInput({
         margin="normal"
         name="numericLabel"
         type="text"
-        onChange={onChange}
-        value={label}
+        onChange={(e) => onChange(e.target.value, min, max, index)}
+        value={prompt}
       />
       <TextField
         label="Min"
@@ -147,7 +150,7 @@ export function CustomNumericInput({
         margin="normal"
         name="min"
         type="number"
-        onChange={onChange}
+        onChange={(e) => onChange(prompt, e.target.value, max, index)}
         value={min}
         // error={errors.low}
         // helperText={errors.lowMessage}
@@ -158,7 +161,7 @@ export function CustomNumericInput({
         margin="normal"
         name="max"
         type="number"
-        onChange={onChange}
+        onChange={(e) => onChange(prompt, min, e.target.value, index)}
         value={max}
         // error={errors.high}
         // helperText={errors.highMessage}
@@ -167,10 +170,11 @@ export function CustomNumericInput({
   );
 }
 
-export function CustomTextInput({ text, onChange }) {
+export function CustomTextInput({ prompt, onChange, index }) {
   CustomTextInput.propTypes = {
-    text: PropTypes.string.isRequired,
+    prompt: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired,
   };
   const classes = useStyles();
 
@@ -182,8 +186,8 @@ export function CustomTextInput({ text, onChange }) {
       margin="normal"
       type="text"
       name="textLabel"
-      onChange={onChange}
-      value={text}
+      onChange={(e) => onChange(e.target.value, index)}
+      value={prompt}
     />
   );
 }
