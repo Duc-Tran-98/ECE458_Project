@@ -12,6 +12,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
@@ -418,14 +419,21 @@ export default function ModelForm({
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <FormLabel component="legend">Gender</FormLabel>
-              <RadioGroup aria-label="gender" name="gender1">
-                {' '}
-                {/* onChange={handleChange}> */}
-                <FormControlLabel value="female" control={<Radio />} label="Female" />
-                <FormControlLabel value="male" control={<Radio />} label="Male" />
-                <FormControlLabel value="other" control={<Radio />} label="Other" />
-                <FormControlLabel value="disabled" disabled control={<Radio />} label="(Disabled option)" />
+              <FormControlLabel
+                  // control={<Checkbox checked={false} onChange={handleChange} name="checkedA" />}
+                control={<Checkbox checked name="approvalCheck" color="primary" />}
+                label="Approval"
+              />
+            </div>
+
+            <div className="col mt-3">
+              <FormLabel component="legend">Calibration Type</FormLabel>
+              <RadioGroup row aria-label="calibrationType" name="calibrationType">
+                {/* value={value} onChange={handleChange}> */}
+                <FormControlLabel value="standard" control={<Radio color="primary" />} label="Standard" />
+                <FormControlLabel value="loadBank" control={<Radio color="primary" />} label="Load Bank" />
+                <FormControlLabel value="klufe" control={<Radio color="primary" />} label="Klufe 5700" />
+                <FormControlLabel value="customForm" control={<Radio color="primary" />} label="Custom Form" />
               </RadioGroup>
             </div>
           </div>
