@@ -188,6 +188,9 @@ class InstrumentAPI extends DataSource {
         as: 'recentCalibration',
         limit: 1,
         order: [['date', 'DESC']],
+        where: {
+          approvalStatus: [1, 3],
+        },
       });
 
       // eslint-disable-next-line prefer-const
@@ -300,6 +303,9 @@ class InstrumentAPI extends DataSource {
         as: 'recentCalibration',
         limit: 1,
         order: [['date', 'DESC']],
+        where: {
+          approvalStatus: [1, 3],
+        },
       });
 
       // eslint-disable-next-line prefer-const
