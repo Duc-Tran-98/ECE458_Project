@@ -346,11 +346,9 @@ class CalibrationEventAPI extends DataSource {
   async getCetificateForInstrument({ assetTag }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    console.log(assetTag);
     const instrument = await this.store.instruments.findOne({
       where: { assetTag },
     });
-    console.log(instrument);
     // eslint-disable-next-line prefer-destructuring
     const id = instrument.dataValues.id;
     const calibration = await this.store.calibrationEvents.findOne({
@@ -364,10 +362,6 @@ class CalibrationEventAPI extends DataSource {
         as: 'calibratedBy',
       },
     });
-    console.log(calibration);
-    console.log(calibration.calibratedBy);
-    console.log(calibration.calibratedBy.length);
-    console.log(calibration.calibratedBy[0]);
     const relations = [];
     for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
       const inst = calibration.calibratedBy[i];
