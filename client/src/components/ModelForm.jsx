@@ -8,6 +8,10 @@ import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Portal } from '@material-ui/core';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
@@ -15,11 +19,6 @@ import { CustomButton, CustomInput } from './CustomFormComponents';
 import ModalAlert from './ModalAlert';
 // eslint-disable-next-line import/no-cycle
 import EditModel from './EditModel';
-// import Radio from '@material-ui/core/Radio';
-// import RadioGroup from '@material-ui/core/RadioGroup';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import FormControl from '@material-ui/core/FormControl';
-// import FormLabel from '@material-ui/core/FormLabel';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -415,6 +414,19 @@ export default function ModelForm({
                 models
                 isInvalid={false}
               />
+            </div>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="col mt-3">
+              <FormLabel component="legend">Gender</FormLabel>
+              <RadioGroup aria-label="gender" name="gender1">
+                {' '}
+                {/* onChange={handleChange}> */}
+                <FormControlLabel value="female" control={<Radio />} label="Female" />
+                <FormControlLabel value="male" control={<Radio />} label="Male" />
+                <FormControlLabel value="other" control={<Radio />} label="Other" />
+                <FormControlLabel value="disabled" disabled control={<Radio />} label="(Disabled option)" />
+              </RadioGroup>
             </div>
           </div>
           {(typeof viewOnly === 'undefined' || !viewOnly)
