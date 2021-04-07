@@ -347,6 +347,86 @@ class CalibrationEventAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     console.log(assetTag);
+    const instrument = await this.store.instruments.findOne({
+      where: { assetTag },
+    });
+    console.log(instrument);
+    // eslint-disable-next-line prefer-destructuring
+    const id = instrument.dataValues.id;
+    const calibration = await this.store.calibrationEvents.findOne({
+      where: {
+        calibrationHistoryIdReference: id,
+        approvalStatus: [1, 3],
+      },
+      order: [['date', 'DESC']],
+      include: {
+        model: this.store.calibratedByRelationships,
+        as: 'calibratedBy',
+      },
+    });
+    console.log(calibration);
+    console.log(calibration.calibratedBy);
+    console.log(calibration.calibratedBy.length);
+    console.log(calibration.calibratedBy[0]);
+    const relations = [];
+    for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
+      const inst = calibration.calibratedBy[i];
+      const id = inst.dataValues.calibratedBy;
+      // eslint-disable-next-line no-await-in-loop
+      const found = await this.store.instruments.findOne({
+        where: { id },
+      });
+      if (found) {
+        relations.push({
+          vendor: found.dataValues.vendor,
+          modelNumber: found.dataValues.modelNumber,
+          // eslint-disable-next-line max-len
+          serialNumber: (found.dataValues.serialNumber === null || found.dataValues.serialNumber.length === 0) ? null : found.dataValues.serialNumber,
+          assetTag: found.dataValues.assetTag,
+        });
+      } else {
+        relations.push({
+          vendor: inst.dataValues.byVendor,
+          modelNumber: inst.dataValues.byModelNumber,
+          // eslint-disable-next-line max-len
+          serialNumber: (inst.dataValues.serialNumber === null || inst.dataValues.serialNumber.length === 0) ? null : inst.dataValues.serialNumber,
+          assetTag: inst.dataValues.byAssetTag,
+        });
+      }
+    }
+    const result = {
+      vendor: instrument.dataValues.vendor,
+      modelNumber: instrument.dataValues.modelNumber,
+      // eslint-disable-next-line max-len
+      serialNumber: (instrument.dataValues.serialNumber === null || instrument.dataValues.serialNumber.length === 0) ? null : instrument.dataValues.serialNumber,
+      assetTag: instrument.dataValues.assetTag,
+      modelDescription: instrument.dataValues.description,
+      calibrationFrequency: instrument.dataValues.calibrationFrequency,
+      calibrationComment: calibration.dataValues.comment,
+      calibrationDate: calibration.dataValues.date,
+      calibratorUserName: calibration.dataValues.user,
+      calibratorFirstName: calibration.dataValues.userFirstName,
+      calibratorLastName: calibration.dataValues.userLastName,
+      approvalStatus: calibration.dataValues.approvalStatus === 1 ? 'Approved' : 'Not Required',
+      approvalComment: calibration.dataValues.approvalComment,
+      approvalDate: calibration.dataValues.approvalDate,
+      approverUserName: calibration.dataValues.approverUsername,
+      approverFirstName: calibration.dataValues.approverFirstName,
+      approverLastName: calibration.dataValues.approverLastName,
+      // eslint-disable-next-line max-len
+      isFileAttached: calibration.dataValues.fileLocation !== null && calibration.dataValues.fileName !== null,
+      fileLocation: calibration.dataValues.fileLocation,
+      fileName: calibration.dataValues.fileName,
+      isKlufe: calibration.dataValues.klufeData !== null,
+      klufeData: calibration.dataValues.klufeData,
+      isLoadBank: calibration.dataValues.loadBankData !== null,
+      loadBankData: calibration.dataValues.loadBankData,
+      isCustomForm: calibration.dataValues.customFormData !== null,
+      customFormData: calibration.dataValues.customFormData,
+      calibratedBy: relations,
+    };
+    console.log('*****************************************************************');
+    console.log(result);
   }
 
   async getChainOfTruthForInstrument({ assetTag }) {

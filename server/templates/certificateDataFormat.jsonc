@@ -12,7 +12,7 @@
       "calibratorLastName": "Account",
       "approvalStatus": "Approved", // Will be string either "Approved" or "Not Required", no other types should be returned in certificate
       "approvalCommment": "approved by louis on 12/23", // null if not present
-      "approvalDate": "2021-02-04",
+      "approvalDate": "2021-02-04", // this and next 3 fields will be null if approval is not required
       "approverUserName": "louis", 
       "approverFirstName": "Louis",
       "approverLastName": "Jensen",
