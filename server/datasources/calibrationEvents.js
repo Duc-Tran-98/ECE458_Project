@@ -52,6 +52,19 @@ class CalibrationEventAPI extends DataSource {
     return calibrationEvents;
   }
 
+  async getAllPendingCalibrationEvents({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const calibrationEvents = await this.store.calibrationEvents.findAll({
+      limit,
+      offset,
+      where: {
+        approvalStatus: 0,
+      },
+    });
+    return calibrationEvents;
+  }
+
   async getCalibrationEventsByInstrument({ modelNumber, vendor, assetTag }) {
     let calibrationHistoryIdReference = -1;
     const storeModel = await this.store;

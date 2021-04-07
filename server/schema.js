@@ -68,6 +68,7 @@ const typeDefs = gql`
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
+    getAllPendingCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
     getCalibrationEventsByInstrument(
       modelNumber: String!
       vendor: String!
