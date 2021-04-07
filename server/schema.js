@@ -6,7 +6,7 @@ const typeDefs = gql`
   type Query {
     getCetificateForInstrument(assetTag: Int!): CertificateInfo
     getChainOfTruthForInstrument(assetTag: Int!): [CertificateInfo]
-    
+
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
@@ -269,12 +269,21 @@ const typeDefs = gql`
     id: ID!
     calibrationHistoryIdReference: Int!
     user: String!
+    userFirstName: String!
+    userLastName: String!
     date: String!
     comment: String
     fileLocation: String
     fileName: String
     loadBankData: String
     klufeData: String
+    customFormData: String
+    approvalStatus: Int!
+    approverUsername: String
+    approverFirstName: String
+    approverLastName: String
+    approvalDate: String
+    approvalComment: String
   }
 
   input ModelInput {
