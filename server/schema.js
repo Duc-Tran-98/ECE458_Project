@@ -4,6 +4,7 @@ const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each.
   type Query {
+    getCetificateForInstrument(assetTag: Int!): CertificateInfo
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
@@ -89,6 +90,43 @@ const typeDefs = gql`
     countInstrumentCategories: Int!
     countModelsAttachedToCategory(name: String!): Int!
     countInstrumentsAttachedToCategory(name: String!): Int!
+  }
+
+  type CertificateInfo {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String
+    assetTag: Int!
+    modelDescription: String!
+    calibrationFrequency: Int
+    calibrationComment: String
+    calibrationDate: String
+    calibratorUserName: String
+    calibratorFirstName: String
+    calibratorLastName: String
+    approvalStatus: String!
+    approvalComment: String
+    approvalDate: String
+    approverUserName: String
+    approverFirstName: String
+    approverLastName: String
+    isFileAttached: Boolean!
+    fileLocation: String
+    fileName: String
+    isKlufe: Boolean!
+    klufeData: String
+    isLoadBank: Boolean!
+    loadBankData: String
+    isCustomForm: Boolean!
+    customFormData: String
+    calibratedBy: [CalibratedByInfo]
+  }
+
+  type CalibratedByInfo {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String
+    assetTag: String!
   }
 
   type User {

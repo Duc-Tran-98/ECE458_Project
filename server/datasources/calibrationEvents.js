@@ -349,6 +349,7 @@ class CalibrationEventAPI extends DataSource {
     const instrument = await this.store.instruments.findOne({
       where: { assetTag },
     });
+    if (instrument === null) return null;
     // eslint-disable-next-line prefer-destructuring
     const id = instrument.dataValues.id;
     const calibration = await this.store.calibrationEvents.findOne({
@@ -362,6 +363,7 @@ class CalibrationEventAPI extends DataSource {
         as: 'calibratedBy',
       },
     });
+    if (calibration === null) return null;
     const relations = [];
     for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
       const inst = calibration.calibratedBy[i];
@@ -419,8 +421,7 @@ class CalibrationEventAPI extends DataSource {
       customFormData: calibration.dataValues.customFormData,
       calibratedBy: relations,
     };
-    console.log('*****************************************************************');
-    console.log(result);
+    return result;
   }
 
   async getChainOfTruthForInstrument({ assetTag }) {
