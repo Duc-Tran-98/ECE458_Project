@@ -76,11 +76,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function CustomHeaderInput({ header, index, onChange }) {
+export function CustomHeaderInput({ header, index, handleChange }) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
   };
   const classes = useStyles();
   return (
@@ -90,18 +90,18 @@ export function CustomHeaderInput({ header, index, onChange }) {
       autoFocus
       fullWidth
       margin="normal"
-      name="header"
-      onChange={(e) => onChange(e.target.value, index)}
+      name="prompt"
+      onChange={(e) => handleChange(e, index)}
       value={header}
     />
   );
 }
 
-export function CustomUserPromptInput({ userPrompt, index, onChange }) {
+export function CustomUserPromptInput({ userPrompt, index, handleChange }) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
   };
   const classes = useStyles();
   return (
@@ -111,8 +111,8 @@ export function CustomUserPromptInput({ userPrompt, index, onChange }) {
       autoFocus
       fullWidth
       margin="normal"
-      name="userPrompt"
-      onChange={(e) => onChange(e.target.value, index)}
+      name="prompt"
+      onChange={(e) => handleChange(e, index)}
       value={userPrompt}
       multiline
       rows={4}
@@ -122,13 +122,13 @@ export function CustomUserPromptInput({ userPrompt, index, onChange }) {
 }
 
 export function CustomNumericInput({
-  prompt, min, max, onChange, index,
+  prompt, min, max, handleChange, index,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
     min: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
-    onChange: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
   };
   const classes = useStyles();
@@ -139,10 +139,11 @@ export function CustomNumericInput({
         label="Label"
         className={classes.textFieldSmall}
         margin="normal"
-        name="numericLabel"
+        name="prompt"
         type="text"
-        onChange={(e) => onChange(e.target.value, min, max, index)}
+        onChange={(e) => handleChange(e, index)}
         value={prompt}
+        autoFocus
       />
       <TextField
         label="Min"
@@ -150,7 +151,7 @@ export function CustomNumericInput({
         margin="normal"
         name="min"
         type="number"
-        onChange={(e) => onChange(prompt, e.target.value, max, index)}
+        onChange={(e) => handleChange(e, index)}
         value={min}
         // error={errors.low}
         // helperText={errors.lowMessage}
@@ -161,7 +162,7 @@ export function CustomNumericInput({
         margin="normal"
         name="max"
         type="number"
-        onChange={(e) => onChange(prompt, min, e.target.value, index)}
+        onChange={(e) => handleChange(e, index)}
         value={max}
         // error={errors.high}
         // helperText={errors.highMessage}
@@ -170,10 +171,10 @@ export function CustomNumericInput({
   );
 }
 
-export function CustomTextInput({ prompt, onChange, index }) {
+export function CustomTextInput({ prompt, handleChange, index }) {
   CustomTextInput.propTypes = {
     prompt: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
   };
   const classes = useStyles();
@@ -185,9 +186,10 @@ export function CustomTextInput({ prompt, onChange, index }) {
       className={classes.textFieldMedium}
       margin="normal"
       type="text"
-      name="textLabel"
-      onChange={(e) => onChange(e.target.value, index)}
+      name="prompt"
+      onChange={(e) => handleChange(e, index)}
       value={prompt}
+      autoFocus
     />
   );
 }

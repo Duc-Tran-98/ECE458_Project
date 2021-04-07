@@ -33,8 +33,8 @@ export default function CustomFormBuilder() {
     errors: false,
     helperText: '',
   };
-  const initState = [emptyHeader];
-  const [state, setState] = React.useState(initState);
+  const initState = { ...emptyHeader };
+  const [state, setState] = React.useState([initState]);
   const [formSteps, setFormSteps] = React.useState([]);
   const [wizard, setWizard] = React.useState();
   const [mode, setMode] = React.useState('editing');
@@ -51,9 +51,19 @@ export default function CustomFormBuilder() {
     };
     setState(prevState);
   };
+  const handleChange = (e, index) => {
+    console.log(`handleChange(${e.target.name}, ${e.target.value}, ${index})`);
+    const nextState = [...state];
+    nextState[index] = {
+      ...nextState[index],
+      [e.target.name]: e.target.value,
+    };
+    console.log(nextState);
+    setState(nextState);
+  };
   const createStep = (index) => {
     const prevState = [...state];
-    prevState.splice(index + 1, 0, Object.create(emptyHeader));
+    prevState.splice(index + 1, 0, ...emptyHeader);
     setState(prevState);
   };
   const deleteStep = (index) => { // Cannot delete last step
@@ -68,48 +78,33 @@ export default function CustomFormBuilder() {
   };
 
   const addElement = (type, index) => {
-    let obj = Object.create(emptyHeader);
+    const insertIndex = index || state.length;
+    console.log(`addElement(${type}, ${index}, ${insertIndex})`);
+    let obj = { ...emptyHeader };
+    // eslint-disable-next-line default-case
     switch (type) {
       case 'header':
-        obj = Object.create(emptyHeader);
+        console.log('found header');
+        obj = { ...emptyHeader };
         break;
       case 'description':
-        obj = Object.create(emptyDescription);
+        console.log('found description');
+        obj = { ...emptyDescription };
         break;
       case 'number':
-        obj = Object.create(emptyNumericInput);
+        console.log('found number');
+        obj = { ...emptyNumericInput };
         break;
       case 'text':
-        obj = Object.create(emptyTextInput);
+        console.log('found text');
+        obj = { ...emptyTextInput };
         break;
-      default:
-        obj = null; // TODO: Will this ever happen?
     }
+    console.log('adding obj:');
+    console.log(obj);
     const prevState = [...state];
-    prevState.splice(index + 1, 0, obj);
+    prevState.splice(insertIndex + 1, 0, obj);
     setState(prevState);
-  };
-  const onChangeText = (value, index) => {
-    console.log(`onChangeText(${value}, ${index})`);
-    const nextState = [...state];
-    nextState[index] = {
-      ...nextState[index],
-      prompt: value,
-    };
-    console.log(nextState);
-    setState(nextState);
-  };
-  const onChangeNumeric = (prompt, min, max, index) => {
-    console.log(`onChangeNumeric(${prompt}, ${min}, ${max}, ${index})`);
-    const nextState = [...state];
-    nextState[index] = {
-      ...nextState[index],
-      prompt,
-      min,
-      max,
-    };
-    console.log(nextState);
-    setState(nextState);
   };
 
   const toolbar = (
@@ -131,7 +126,7 @@ export default function CustomFormBuilder() {
             <CustomHeaderInput
               header={entry.prompt}
               index={index}
-              onChange={onChangeText}
+              handleChange={handleChange}
             />
           );
         case 'description':
@@ -139,7 +134,7 @@ export default function CustomFormBuilder() {
             <CustomUserPromptInput
               userPrompt={entry.prompt}
               index={index}
-              onChange={onChangeText}
+              handleChange={handleChange}
             />
           );
         case 'number':
@@ -149,14 +144,15 @@ export default function CustomFormBuilder() {
               min={entry.min}
               max={entry.max}
               index={index}
-              onChange={onChangeNumeric}
+              handleChange={handleChange}
             />
           );
         case 'text':
           return (
             <CustomTextInput
               prompt={entry.prompt}
-              onChange={onChangeText}
+              handleChange={handleChange}
+              index={index}
             />
           );
         default:
