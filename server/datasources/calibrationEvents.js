@@ -123,7 +123,6 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        console.log(`line 111 inside calib event: ${fileLocation} ${fileName}`);
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
@@ -170,7 +169,6 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        console.log(`line 158 in calib evnet: ${fileLocation} ${fileName}`);
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
@@ -463,7 +461,6 @@ class CalibrationEventAPI extends DataSource {
         approvalStatus: [1, 3],
       });
       if (count !== 1) {
-        console.log(dates.get(instrument.dataValues.assetTag));
         filters.push({
           date: SQL.where(
             SQL.fn('date', SQL.col('date')),
