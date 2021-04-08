@@ -152,6 +152,14 @@ export default function ModelForm({
       )}
     </div>
   );
+
+  const getCalibrationType = () => {
+    if (supportCustomCalibration) { return 'custom'; }
+    if (supportKlufeCalibration) { return 'klufe'; }
+    if (supportLoadBankCalibration) { return 'loadBank'; }
+    return 'standard';
+  };
+  const initCalibrationType = getCalibrationType();
   return (
     <Formik
       initialValues={{
@@ -162,16 +170,27 @@ export default function ModelForm({
         description: description || '',
         categories: categories || [],
         calibratorCategories: calibratorCategories || [],
-        supportLoadBankCalibration: supportLoadBankCalibration || false,
-        supportKlufeCalibration: supportKlufeCalibration || false,
-        supportCustomCalibration: supportCustomCalibration || false,
         requiresCalibrationApproval: requiresCalibrationApproval || false,
+        calibrationType: initCalibrationType,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
+        const filteredValues = {
+          modelNumber: values.modelNumber,
+          vendor: values.vendor,
+          calibrationFrequency: values.calibrationFrequency,
+          comment: values.comment,
+          description: values.description,
+          categories: values.categories,
+          calibratorCategories: values.calibratorCategories,
+          requiresCalibrationApproval: values.requiresCalibrationApproval,
+          supportCustomCalibration: values.calibrationType.includes('custom'),
+          supportKlufeCalibration: values.calibrationType.includes('klufe'),
+          supportLoadBankCalibration: values.calibrationType.includes('load'),
+        };
         setSubmitting(true);
         setTimeout(() => {
-          handleFormSubmit(values, resetForm);
+          handleFormSubmit(filteredValues, resetForm);
           setSubmitting(false);
         }, 500);
       }}
@@ -282,7 +301,7 @@ export default function ModelForm({
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
             <Form.Group controlId="formComment">
-              <Form.Label className="h5">Comment</Form.Label>
+              <Form.Label className="h5 mt-3">Comment</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
@@ -297,96 +316,6 @@ export default function ModelForm({
                 {errors.comment}
               </Form.Control.Feedback>
             </Form.Group>
-          </div>
-          <div className="row mx-3 border-top border-dark mt-3">
-            <div className="form-check form-switch mt-4 col">
-              <label
-                className="form-check-label h5 col"
-                htmlFor="custom-support"
-              >
-                Approval
-              </label>
-              <Form.Control
-                className="form-check-input"
-                type="checkbox"
-                id="requires-approval"
-                name="requiresCalibrationApproval"
-                checked={values.requiresCalibrationApproval}
-                onChange={handleChange}
-                disabled={disabled}
-              />
-              <div className="col">
-                <strong>
-                  {values.requiresCalibrationApproval ? 'Yes' : 'No'}
-                </strong>
-              </div>
-            </div>
-            <div className="form-check form-switch mt-4 col">
-              <label
-                className="form-check-label h5 col"
-                htmlFor="load-bank-support"
-              >
-                Load Bank
-              </label>
-              <Form.Control
-                className="form-check-input"
-                type="checkbox"
-                id="load-bank-support"
-                name="supportLoadBankCalibration"
-                checked={values.supportLoadBankCalibration}
-                onChange={handleChange}
-                disabled={disabled}
-              />
-              <div className="col">
-                <strong>
-                  {values.supportLoadBankCalibration ? 'Yes' : 'No'}
-                </strong>
-              </div>
-            </div>
-            <div className="form-check form-switch mt-4 col">
-              <label
-                className="form-check-label h5 col"
-                htmlFor="klufe-support"
-              >
-                Klufe 5700
-              </label>
-              <Form.Control
-                className="form-check-input"
-                type="checkbox"
-                id="klufe-support"
-                name="supportKlufeCalibration"
-                checked={values.supportKlufeCalibration}
-                onChange={handleChange}
-                disabled={disabled}
-              />
-              <div className="col">
-                <strong>
-                  {values.supportKlufeCalibration ? 'Yes' : 'No'}
-                </strong>
-              </div>
-            </div>
-            <div className="form-check form-switch mt-4 col">
-              <label
-                className="form-check-label h5 col"
-                htmlFor="custom-support"
-              >
-                Custom Form
-              </label>
-              <Form.Control
-                className="form-check-input"
-                type="checkbox"
-                id="custom-support"
-                name="supportCustomCalibration"
-                checked={values.supportCustomCalibration}
-                onChange={handleChange}
-                disabled={disabled}
-              />
-              <div className="col">
-                <strong>
-                  {values.supportCustomCalibration ? 'Yes' : 'No'}
-                </strong>
-              </div>
-            </div>
           </div>
           {/* TODO: Ensure tags are added into the db (not rendering on view)  */}
           <div className="row mx-3 border-top border-dark mt-3">
@@ -424,16 +353,17 @@ export default function ModelForm({
                   // control={<Checkbox checked={false} onChange={handleChange} name="checkedA" />}
                 control={<Checkbox checked={values.requiresCalibrationApproval} name="requiresCalibrationApproval" onChange={handleChange} color="primary" />}
                 label="Requires Approval"
+                disabled={disabled}
               />
             </div>
             <div className="col-auto">
               {/* TODO: Determine how to set values in least invasive way */}
-              <RadioGroup row aria-label="calibrationType" name="calibrationType">
+              <RadioGroup row aria-label="calibrationType" name="calibrationType" value={values.calibrationType} onChange={handleChange}>
                 {/* value={value} onChange={handleChange}> */}
-                <FormControlLabel value="standard" control={<Radio color="primary" />} label="Standard" />
-                <FormControlLabel value="loadBank" control={<Radio color="primary" />} label="Load Bank" />
-                <FormControlLabel value="klufe" control={<Radio color="primary" />} label="Klufe 5700" />
-                <FormControlLabel value="customForm" control={<Radio color="primary" />} label="Custom Form" />
+                <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="Standard" />
+                <FormControlLabel value="loadBank" disabled={disabled} control={<Radio color="primary" />} label="Load Bank" />
+                <FormControlLabel value="klufe" disabled={disabled} control={<Radio color="primary" />} label="Klufe 5700" />
+                <FormControlLabel value="customForm" disabled={disabled} control={<Radio color="primary" />} label="Custom Form" />
               </RadioGroup>
             </div>
           </div>
