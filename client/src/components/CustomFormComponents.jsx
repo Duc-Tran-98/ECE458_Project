@@ -180,6 +180,8 @@ export function CustomNumericInput({
         onChange={(e) => handleChange(e, index)}
         value={prompt}
         autoFocus
+        multiline
+        rowsMax={4}
       />
       {/* <span style={{ display: 'flex', flexDirection: 'column' }} className="col"> */}
       <FormControlLabel

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
-import CustomFormStep from './CustomFormStep';
+import PropTypes from 'prop-types';
 import {
   PreviewButton, EditPopoverIcon, MuiSaveButton, TitlePopoverIcon, TextFieldPopoverIcon, NumberInputPopoverIcon,
 } from './CustomMuiIcons';
@@ -8,7 +8,10 @@ import {
   CustomHeaderInput, CustomUserPromptInput, CustomNumericInput, CustomTextInput,
 } from './CustomFormComponents';
 
-export default function CustomFormBuilder() {
+export default function CustomFormBuilder({ handleSave }) {
+  CustomFormBuilder.propTypes = {
+    handleSave: PropTypes.func.isRequired,
+  };
   const emptyHeader = {
     type: 'header',
     prompt: '',
@@ -40,7 +43,7 @@ export default function CustomFormBuilder() {
   const [mode, setMode] = React.useState('editing');
 
   const handleSubmit = () => {
-    alert(`submitting form with state: ${JSON.stringify(state)}`);
+    handleSave(JSON.stringify(state));
   };
   const updateState = (index, event, value) => {
     // console.log(`updateState(${index}, ${event}, ${value})`);
@@ -177,7 +180,8 @@ export default function CustomFormBuilder() {
   return (
     <>
       <div style={{ margin: 'auto', justifyContents: 'center' }}>
-        <div className="form-builder-header m-4">
+        {/* <div className="form-builder-header m-4"> TODO: Determine where to put toolbar (not sticky) */}
+        <div className="m-4">
           {toolbar}
           {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
           {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}

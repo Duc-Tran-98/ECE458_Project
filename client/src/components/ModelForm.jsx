@@ -71,7 +71,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, calibratorCategories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, calibratorCategories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null, customForm,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -95,6 +95,7 @@ export default function ModelForm({
     type: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
     editBtnRef: PropTypes.object,
+    customForm: PropTypes.string,
   };
   ModelForm.defaultProps = {
     modelNumber: '',
@@ -111,6 +112,7 @@ export default function ModelForm({
     diffSubmit: false,
     deleteBtn: null,
     type: 'create',
+    customForm: '',
   };
 
   const user = useContext(UserContext);
@@ -174,9 +176,11 @@ export default function ModelForm({
         calibratorCategories: calibratorCategories || [],
         requiresCalibrationApproval: requiresCalibrationApproval || false,
         calibrationType: initCalibrationType,
+        customForm: '',
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
+        // TODO: Add custom form to API request
         const filteredValues = {
           modelNumber: values.modelNumber,
           vendor: values.vendor,
@@ -371,7 +375,14 @@ export default function ModelForm({
           </div>
           {values.calibrationType === 'customForm' && (
             <div className="mt-2">
-              <AccordionWrapper header="Custom Form" contents={<CustomFormBuilder />} />
+              <AccordionWrapper
+                header="Custom Form"
+                contents={(
+                  <CustomFormBuilder
+                    handleSave={(customFormJSON) => setFieldValue('customForm', customFormJSON)}
+                  />
+            )}
+              />
             </div>
           )}
           {(typeof viewOnly === 'undefined' || !viewOnly)
