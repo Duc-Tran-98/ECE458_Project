@@ -229,12 +229,21 @@ const typeDefs = gql`
     id: ID!
     calibrationHistoryIdReference: Int!
     user: String!
+    userFirstName: String!
+    userLastName: String!
     date: String!
     comment: String
     fileLocation: String
     fileName: String
     loadBankData: String
     klufeData: String
+    customFormData: String
+    approvalStatus: Int
+    approverUsername: String
+    approverFirstName: String
+    approverLastName: String
+    approvalDate: String
+    approvalComment: String
   }
 
   input ModelInput {
@@ -274,11 +283,13 @@ const typeDefs = gql`
     # User related mutations
     login(userName: String!, password: String!): String!
     oauthLogin(netId: String!, firstName: String!, lastName: String!): String!
+    
     changePassword(
       userName: String!
       oldPassword: String!
       newPassword: String!
     ): String!
+
     signup(
       email: String!
       firstName: String!
@@ -291,6 +302,7 @@ const typeDefs = gql`
       calibrationPermission: Boolean
       calibrationApproverPermission: Boolean
     ): String!
+
     editPermissions(
       userName: String!
       isAdmin: Boolean!
@@ -299,6 +311,7 @@ const typeDefs = gql`
       calibrationPermission: Boolean!
       calibrationApproverPermission: Boolean!
     ): UserCacheUpdate
+
     deleteUser(userName: String!): String!
 
     # Model related Mutations
@@ -316,6 +329,7 @@ const typeDefs = gql`
       supportCustomCalibration: Boolean!
       customForm: String
     ): ModelCacheUpdate
+
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
       id: ID!
@@ -342,6 +356,7 @@ const typeDefs = gql`
       comment: String
       categories: [String]
     ): InstrumentCacheUpdate
+
     editInstrument(
       modelNumber: String!
       vendor: String!
@@ -351,6 +366,7 @@ const typeDefs = gql`
       id: ID!
       categories: [String]
     ): InstrumentCacheUpdate
+
     deleteInstrument(id: ID!): String!
 
     # Calibration Events related mutations
@@ -363,6 +379,12 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+      approvalStatus: Int!
+      approverUsername: String
+      approverFirstName: String
+      approverLastName: String
+      approvalDate: String
+      approvalComment: String
     ): String!
 
     addCalibrationEventByAssetTag(
@@ -372,6 +394,12 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+      approvalStatus: Int!
+      approverUsername: String
+      approverFirstName: String
+      approverLastName: String
+      approvalDate: String
+      approvalComment: String
     ): String!
 
     addLoadBankCalibration(
@@ -380,6 +408,12 @@ const typeDefs = gql`
       user: String!
       comment: String
       loadBankData: String!
+      approvalStatus: Int!
+      approverUsername: String
+      approverFirstName: String
+      approverLastName: String
+      approvalDate: String
+      approvalComment: String
     ): String!
 
     addKlufeCalibration(
@@ -388,6 +422,48 @@ const typeDefs = gql`
       user: String!
       comment: String
       klufeData: String!
+      approvalStatus: Int!
+      approverUsername: String
+      approverFirstName: String
+      approverLastName: String
+      approvalDate: String
+      approvalComment: String
+    ): String!
+
+    addCustomCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      customFormData: String!
+      approvalStatus: Int!
+      approverUsername: String
+      approverFirstName: String
+      approverLastName: String
+      approvalDate: String
+      approvalComment: String
+    ): String!
+
+    addCalibrationEventById(
+      calibrationHistoryIdReference: Int!
+      date: String!
+      user: String!
+      comment: String
+      approvalStatus: Int!
+      approverUsername: String
+      approverFirstName: String
+      approverLastName: String
+      approvalDate: String
+      approvalComment: String
+    ): String!
+
+    deleteCalibrationEvent(id: ID!): String!
+
+    editCalibrationEvent(
+      user: String
+      date: String
+      comment: String
+      id: ID!
     ): String!
 
     #bulk import
@@ -396,32 +472,24 @@ const typeDefs = gql`
       models: [ModelInput]
       instruments: [InstrumentInput]
     ): String!
+
     bulkImportModels(models: [ModelInput]): String!
     bulkImportInstruments(instruments: [InstrumentInput]): String!
-    addCalibrationEventById(
-      calibrationHistoryIdReference: Int!
-      date: String!
-      user: String!
-      comment: String
-    ): String!
-    deleteCalibrationEvent(id: ID!): String!
-    editCalibrationEvent(
-      user: String
-      date: String
-      comment: String
-      id: ID!
-    ): String!
 
     # category related mutations
     addModelCategory(name: String!): CategoryCacheUpdate
+
     removeModelCategory(name: String!): String!
+
     editModelCategory(
       currentName: String!
       updatedName: String!
     ): CategoryCacheUpdate
 
     addInstrumentCategory(name: String!): CategoryCacheUpdate
+
     removeInstrumentCategory(name: String!): String!
+
     editInstrumentCategory(
       currentName: String!
       updatedName: String!
@@ -432,6 +500,7 @@ const typeDefs = gql`
       modelNumber: String!
       category: String!
     ): String!
+
     removeCategoryFromModel(
       vendor: String!
       modelNumber: String!
@@ -444,6 +513,7 @@ const typeDefs = gql`
       serialNumber: String!
       category: String!
     ): String!
+
     removeCategoryFromInstrument(
       vendor: String!
       modelNumber: String!
@@ -455,8 +525,6 @@ const typeDefs = gql`
   type Subscription {
     userChanged(userName: String!): User
   }
-
-
 `;
 
 module.exports = typeDefs;

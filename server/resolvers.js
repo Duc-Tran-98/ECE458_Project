@@ -285,6 +285,12 @@ module.exports = {
         comment,
         fileLocation,
         fileName,
+        approvalStatus,
+        approverUsername,
+        approverFirstName,
+        approverLastName,
+        approvalDate,
+        approvalComment,
       },
       { dataSources },
     ) => {
@@ -298,6 +304,12 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         },
       );
       return response;
@@ -305,7 +317,18 @@ module.exports = {
     addCalibrationEventByAssetTag: async (
       _,
       {
-        assetTag, user, date, comment, fileLocation, fileName,
+        assetTag,
+        user,
+        date,
+        comment,
+        fileLocation,
+        fileName,
+        approvalStatus,
+        approverUsername,
+        approverFirstName,
+        approverLastName,
+        approvalDate,
+        approvalComment,
       },
       { dataSources },
     ) => {
@@ -317,6 +340,12 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         },
       );
       return response;
@@ -335,6 +364,12 @@ module.exports = {
           date,
           comment,
           loadBankData,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         },
       );
       return response;
@@ -342,7 +377,17 @@ module.exports = {
     addKlufeCalibration: async (
       _,
       {
-        assetTag, user, date, comment, klufeData,
+        assetTag,
+        user,
+        date,
+        comment,
+        klufeData,
+        approvalStatus,
+        approverUsername,
+        approverFirstName,
+        approverLastName,
+        approvalDate,
+        approvalComment,
       },
       { dataSources },
     ) => {
@@ -353,6 +398,46 @@ module.exports = {
           date,
           comment,
           klufeData,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
+        },
+      );
+      return response;
+    },
+    addCustomCalibration: async (
+      _,
+      {
+        assetTag,
+        user,
+        date,
+        comment,
+        customFormData,
+        approvalStatus,
+        approverUsername,
+        approverFirstName,
+        approverLastName,
+        approvalDate,
+        approvalComment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCustomCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          customFormData,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         },
       );
       return response;
@@ -360,7 +445,16 @@ module.exports = {
     addCalibrationEventById: async (
       _,
       {
-        calibrationHistoryIdReference, user, date, comment,
+        calibrationHistoryIdReference,
+        user,
+        date,
+        comment,
+        approvalStatus,
+        approverUsername,
+        approverFirstName,
+        approverLastName,
+        approvalDate,
+        approvalComment,
       },
       { dataSources },
     ) => {
@@ -370,6 +464,12 @@ module.exports = {
           user,
           date,
           comment,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         },
       );
       return response;
