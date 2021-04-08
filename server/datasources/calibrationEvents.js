@@ -71,7 +71,7 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where:
-      { modelNumber, vendor, assetTag },
+        { modelNumber, vendor, assetTag },
     }).then((instrument) => {
       if (instrument && instrument[0]) {
         calibrationHistoryIdReference = instrument[0].dataValues.id;
@@ -101,6 +101,12 @@ class CalibrationEventAPI extends DataSource {
     comment,
     fileLocation,
     fileName,
+    approvalStatus,
+    approverUsername,
+    approverFirstName,
+    approverLastName,
+    approvalDate,
+    approvalComment,
   }) {
     const response = { message: '' };
     if (!this.checkPermission()) {
@@ -120,7 +126,11 @@ class CalibrationEventAPI extends DataSource {
     }).then((instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
-          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD!';
+          return;
+        }
+        if (approvalStatus < 0 || approvalStatus > 3) {
+          response.message = 'ERROR: Approval status outside of permitted options!';
           return;
         }
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
@@ -131,6 +141,12 @@ class CalibrationEventAPI extends DataSource {
           comment,
           fileLocation,
           fileName,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         });
         response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {
@@ -147,6 +163,12 @@ class CalibrationEventAPI extends DataSource {
     comment,
     fileLocation,
     fileName,
+    approvalStatus,
+    approverUsername,
+    approverFirstName,
+    approverLastName,
+    approvalDate,
+    approvalComment,
   }) {
     const response = { message: '' };
     if (!this.checkPermission()) {
@@ -169,6 +191,10 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
+        if (approvalStatus < 0 || approvalStatus > 3) {
+          response.message = 'ERROR: Approval status outside of permitted options!';
+          return;
+        }
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
@@ -177,6 +203,12 @@ class CalibrationEventAPI extends DataSource {
           comment,
           fileLocation,
           fileName,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         });
         response.message = `Added calibration event on ${date} to instrument ${assetTag}.`;
       } else {
@@ -192,6 +224,12 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     loadBankData,
+    approvalStatus,
+    approverUsername,
+    approverFirstName,
+    approverLastName,
+    approvalDate,
+    approvalComment,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -214,6 +252,10 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
+        if (approvalStatus < 0 || approvalStatus > 3) {
+          response.message = 'ERROR: Approval status outside of permitted options!';
+          return;
+        }
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
@@ -221,6 +263,12 @@ class CalibrationEventAPI extends DataSource {
           date,
           comment,
           loadBankData,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         });
         response.message = `Added new load bank calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
@@ -237,6 +285,12 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     klufeData,
+    approvalStatus,
+    approverUsername,
+    approverFirstName,
+    approverLastName,
+    approvalDate,
+    approvalComment,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -259,6 +313,10 @@ class CalibrationEventAPI extends DataSource {
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
+        if (approvalStatus < 0 || approvalStatus > 3) {
+          response.message = 'ERROR: Approval status outside of permitted options!';
+          return;
+        }
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
@@ -266,6 +324,73 @@ class CalibrationEventAPI extends DataSource {
           date,
           comment,
           klufeData,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
+        });
+        response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
+        response.success = true;
+      } else {
+        response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async addCustomCalibration({
+    assetTag,
+    user,
+    date,
+    comment,
+    customFormData,
+    approvalStatus,
+    approverUsername,
+    approverFirstName,
+    approverLastName,
+    approvalDate,
+    approvalComment,
+  }) {
+    const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    const validation = validateEvent(comment);
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.findAll({
+      where: { assetTag },
+    }).then((instrument) => {
+      if (instrument && instrument[0]) {
+        if (!isValidDate(date)) { // checks if date is valid
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          return;
+        }
+        if (approvalStatus < 0 || approvalStatus > 3) {
+          response.message = 'ERROR: Approval status outside of permitted options!';
+          return;
+        }
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
+        this.store.calibrationEvents.create({
+          calibrationHistoryIdReference,
+          user,
+          date,
+          comment,
+          customFormData,
+          approvalStatus,
+          approverUsername,
+          approverFirstName,
+          approverLastName,
+          approvalDate,
+          approvalComment,
         });
         response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
         response.success = true;

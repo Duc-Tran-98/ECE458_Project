@@ -465,12 +465,6 @@ module.exports = {
         user,
         date,
         comment,
-        approvalStatus,
-        approverUsername,
-        approverFirstName,
-        approverLastName,
-        approvalDate,
-        approvalComment,
       },
       { dataSources },
     ) => {
@@ -480,12 +474,6 @@ module.exports = {
           user,
           date,
           comment,
-          approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         },
       );
       return response;

@@ -490,12 +490,6 @@ const typeDefs = gql`
       date: String!
       user: String!
       comment: String
-      approvalStatus: Int!
-      approverUsername: String
-      approverFirstName: String
-      approverLastName: String
-      approvalDate: String
-      approvalComment: String
     ): String!
 
     deleteCalibrationEvent(id: ID!): String!
