@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
-import { DeletePopOver } from './CustomMuiIcons';
+import { CustomFormDeletePopOver } from './CustomMuiIcons';
 
 // eslint-disable-next-line import/prefer-default-export
 export const CustomInput = ({
@@ -98,7 +98,7 @@ export function CustomHeaderInput({
   const classes = useStyles();
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="Header"
         id="custom-form-header"
@@ -126,7 +126,7 @@ export function CustomUserPromptInput({
   const classes = useStyles();
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="User Prompt"
         className={classes.textFieldLarge}
@@ -170,7 +170,7 @@ export function CustomNumericInput({
 
   return (
     <div className={`${customFormBoxClass}`}>
-      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="Numeric input label"
         className={classes.textFieldMedium}
@@ -250,7 +250,7 @@ export function CustomTextInput({
 
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="Text input label"
         id="margin-normal"

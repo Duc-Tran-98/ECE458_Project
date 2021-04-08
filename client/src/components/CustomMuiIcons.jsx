@@ -134,6 +134,14 @@ export const DeletePopOver = ({ title, onClick }) => (
   </PopOverFragment>
 );
 
+export const CustomFormDeletePopOver = ({ title, onClick }) => (
+  <PopOverFragment message={title}>
+    <IconButton onClick={onClick}>
+      <DeleteIcon style={{ color: '#fc2311' }} />
+    </IconButton>
+  </PopOverFragment>
+);
+
 export const MuiEditButton = ({ onClick }) => (
   <IconButton onClick={onClick}>
     <EditIcon />
