@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 const customFormBoxClass = 'customFormBasicBox';
 
 export function CustomHeaderInput({
-  header, index, handleChange, handleDelete, showDelete,
+  header, index, handleChange, handleDelete, showDelete, addButton,
 }) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
@@ -94,11 +94,13 @@ export function CustomHeaderInput({
     handleChange: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
+    addButton: PropTypes.node.isRequired,
   };
   const classes = useStyles();
   return (
     <div className={customFormBoxClass}>
       {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {addButton}
       <TextField
         label="Header"
         id="custom-form-header"
@@ -114,7 +116,7 @@ export function CustomHeaderInput({
 }
 
 export function CustomUserPromptInput({
-  userPrompt, index, handleChange, handleDelete, showDelete,
+  userPrompt, index, handleChange, handleDelete, showDelete, addButton,
 }) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
@@ -122,11 +124,13 @@ export function CustomUserPromptInput({
     handleChange: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
+    addButton: PropTypes.node.isRequired,
   };
   const classes = useStyles();
   return (
     <div className={customFormBoxClass}>
       {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {addButton}
       <TextField
         label="User Prompt"
         className={classes.textFieldLarge}
@@ -144,7 +148,7 @@ export function CustomUserPromptInput({
 }
 
 export function CustomNumericInput({
-  prompt, min, max, handleChange, index, handleDelete, showDelete,
+  prompt, min, max, handleChange, index, handleDelete, showDelete, addButton,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -154,6 +158,7 @@ export function CustomNumericInput({
     index: PropTypes.number.isRequired,
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
+    addButton: PropTypes.node.isRequired,
   };
   const classes = useStyles();
   const [state, setState] = React.useState({
@@ -171,6 +176,7 @@ export function CustomNumericInput({
   return (
     <div className={`${customFormBoxClass}`}>
       {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {addButton}
       <TextField
         label="Numeric input label"
         className={classes.textFieldMedium}
@@ -239,7 +245,7 @@ export function CustomNumericInput({
 }
 
 export function CustomTextInput({
-  prompt, handleChange, index, handleDelete, showDelete,
+  prompt, handleChange, index, handleDelete, showDelete, addButton,
 }) {
   CustomTextInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -247,12 +253,14 @@ export function CustomTextInput({
     index: PropTypes.number.isRequired,
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
+    addButton: PropTypes.node.isRequired,
   };
   const classes = useStyles();
 
   return (
     <div className={customFormBoxClass}>
       {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+      {addButton}
       <TextField
         label="Text input label"
         id="margin-normal"

@@ -8,6 +8,7 @@ import {
   CustomHeaderInput, CustomUserPromptInput, CustomNumericInput, CustomTextInput,
 } from './CustomFormComponents';
 import CustomFormEntry from './CustomFormEntry';
+import CustomFormAddMenu from './CustomFormAddMenu';
 
 export default function CustomFormBuilder({ handleSave }) {
   CustomFormBuilder.propTypes = {
@@ -111,6 +112,16 @@ export default function CustomFormBuilder({ handleSave }) {
     setState(prevState);
   };
 
+  const addButton = (index) => (
+    <CustomFormAddMenu
+      createHeader={() => addElement('header', index)}
+      createUserPrompt={() => addElement('description', index)}
+      createNumericInput={() => addElement('number', index)}
+      createTextInput={() => addElement('text', index)}
+      index={index}
+    />
+  );
+
   const toolbar = (
     <>
       <span>
@@ -133,6 +144,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleChange={handleChange}
               handleDelete={deleteStep}
               showDelete={state.length > 1}
+              addButton={addButton(index)}
             />
           );
         case 'description':
@@ -143,6 +155,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleChange={handleChange}
               handleDelete={deleteStep}
               showDelete={state.length > 1}
+              addButton={addButton(index)}
             />
           );
         case 'number':
@@ -155,6 +168,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleChange={handleChange}
               handleDelete={deleteStep}
               showDelete={state.length > 1}
+              addButton={addButton(index)}
             />
           );
         case 'text':
@@ -165,6 +179,7 @@ export default function CustomFormBuilder({ handleSave }) {
               index={index}
               handleDelete={deleteStep}
               showDelete={state.length > 1}
+              addButton={addButton(index)}
             />
           );
         default:
