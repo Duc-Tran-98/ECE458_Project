@@ -1,0 +1,44 @@
+    {
+      "vendor": "Fluke",
+      "modelNumber": "12a",
+      "serialNumber": "GTV567", // null if not present
+      "assetTag": 100012, 
+      "modelDescription": "Description of multimeter",
+      "calibrationFrequency": 31, // included so certificate can calculate calibration expiration
+      "calibrationComment": "Calibrated as part of routine eval", // null if not present
+      "calibrationDate": "2021-02-03", // all dates will be in this YYYY-MM-DD format
+      "calibratorUserName": "admin",
+      "calibratorFirstName": "Admin",
+      "calibratorLastName": "Account",
+      "approvalStatus": "Approved", // Will be string either "Approved" or "Not Required", no other types should be returned in certificate
+      "approvalCommment": "approved by louis on 12/23", // null if not present
+      "approvalDate": "2021-02-04", // this and next 3 fields will be null if approval is not required
+      "approverUserName": "louis", 
+      "approverFirstName": "Louis",
+      "approverLastName": "Jensen",
+      "isFileAttached": true, // boolean indicating if a file upload was part of calibration event
+      "fileLocation": "1234567890-a.jpg", // if previous val is true destination of file, else null
+      "fileName": "a.jpg", // if previous val is true original inputed file name, else null
+      "isKlufe":  false, // boolean indicated if it was a klufe calibration
+      "klufeData": null, // if previous val is true klufe data object, else null
+      "isLoadBank": false, // boolean indicating if it was a load bank wizard calibration
+      "loadBankData": null, // if previous val is true load bank data object, else null
+      "isCustomForm": false, // boolean indicating if it was a custom form calibration
+      "customFormData": null, // if previous val is true custom form data object, else null
+      "calibratedBy": {
+        "instruments": [ // relationships listing all instruments that were used to calibrate this instrument
+          {
+            "vendor": "Fluke",
+            "modelNumber": "87V",
+            "serialNumber": null,
+            "assetTag": 100202,
+          },
+          {
+            "vendor": "AMETEK",
+            "modelNumber": "DITO",
+            "serialNumber": null,
+            "assetTag": 100101,
+          },
+        ]
+      }
+    }

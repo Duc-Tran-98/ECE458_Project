@@ -118,6 +118,10 @@ module.exports = {
       limit,
       offset,
     }),
+    getAllPendingCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllPendingCalibrationEvents({
+      limit,
+      offset,
+    }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, assetTag },
@@ -152,6 +156,8 @@ module.exports = {
       offset,
       orderBy,
     }),
+    getCetificateForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getCetificateForInstrument({ assetTag }),
+    getChainOfTruthForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getChainOfTruthForInstrument({ assetTag }),
   },
   Mutation: {
     bulkImportData: async (
@@ -353,7 +359,17 @@ module.exports = {
     addLoadBankCalibration: async (
       _,
       {
-        assetTag, user, date, comment, loadBankData,
+        assetTag,
+        user,
+        date,
+        comment,
+        loadBankData,
+        approvalStatus,
+        approverUsername,
+        approverFirstName,
+        approverLastName,
+        approvalDate,
+        approvalComment,
       },
       { dataSources },
     ) => {

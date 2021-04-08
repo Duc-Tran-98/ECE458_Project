@@ -622,6 +622,13 @@ module.exports.createStore = async (useTestDB) => {
     },
   );
 
+  calibrationEvents.hasMany(calibratedByRelationships, {
+    as: 'calibratedBy',
+    sourceKey: 'id',
+    foreignKey: 'calibration',
+    constraints: false,
+  });
+
   instruments.hasMany(calibrationEvents, {
     as: 'recentCalibration',
     sourceKey: 'id',
