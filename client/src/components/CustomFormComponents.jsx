@@ -91,7 +91,7 @@ export function CustomHeaderInput({
   const classes = useStyles();
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="Header"
         id="custom-form-header"
@@ -101,7 +101,6 @@ export function CustomHeaderInput({
         name="prompt"
         onChange={(e) => handleChange(e, index)}
         value={header}
-        style={{ fontSize: '2rem!important' }}
       />
     </div>
   );
@@ -120,7 +119,7 @@ export function CustomUserPromptInput({
   const classes = useStyles();
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="User Prompt"
         className={classes.textFieldLarge}
@@ -153,7 +152,7 @@ export function CustomNumericInput({
 
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="Label"
         className={classes.textFieldSmall}
@@ -204,7 +203,7 @@ export function CustomTextInput({
 
   return (
     <div className={customFormBoxClass}>
-      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
         label="Text Label"
         id="margin-normal"
