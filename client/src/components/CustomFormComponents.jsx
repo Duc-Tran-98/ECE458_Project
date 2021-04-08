@@ -130,8 +130,8 @@ export function CustomUserPromptInput({
         onChange={(e) => handleChange(e, index)}
         value={userPrompt}
         multiline
-        rows={4}
-        rowsMax={4}
+        rows={1}
+        rowsMax={100}
       />
     </div>
   );
