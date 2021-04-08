@@ -122,16 +122,16 @@ export default function CustomFormBuilder({ handleSave }) {
     />
   );
 
-  const toolbar = (
-    <>
-      <span>
-        <TitlePopoverIcon message="Add Header" onClick={() => addElement('header')} />
-        <TitlePopoverIcon message="Add User Prompt" onClick={() => addElement('description')} />
-        <NumberInputPopoverIcon message="Add Numeric Input" onClick={() => addElement('number')} />
-        <TextFieldPopoverIcon message="Add Text Input" onClick={() => addElement('text')} />
-      </span>
-    </>
-  );
+  // const toolbar = (
+  //   <>
+  //     <span>
+  //       <TitlePopoverIcon message="Add Header" onClick={() => addElement('header')} />
+  //       <TitlePopoverIcon message="Add User Prompt" onClick={() => addElement('description')} />
+  //       <NumberInputPopoverIcon message="Add Numeric Input" onClick={() => addElement('number')} />
+  //       <TextFieldPopoverIcon message="Add Text Input" onClick={() => addElement('text')} />
+  //     </span>
+  //   </>
+  // );
 
   React.useEffect(() => {
     const steps = state.map((entry, index) => {
@@ -201,9 +201,8 @@ export default function CustomFormBuilder({ handleSave }) {
   return (
     <>
       <div style={{ margin: 'auto', justifyContents: 'center' }}>
-        {/* <div className="form-builder-header m-4"> TODO: Determine where to put toolbar (not sticky) */}
         <div className="m-4">
-          {toolbar}
+          {/* {toolbar} */}
           {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
           {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
           <MuiSaveButton onClick={handleSubmit} color="primary" />

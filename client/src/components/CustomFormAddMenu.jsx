@@ -5,14 +5,13 @@ import PropTypes from 'prop-types';
 import { MuiAddButton } from './CustomMuiIcons';
 
 export default function CustomFormAddButton({
-  createHeader, createUserPrompt, createNumericInput, createTextInput, index,
+  createHeader, createUserPrompt, createNumericInput, createTextInput,
 }) {
   CustomFormAddButton.propTypes = {
     createHeader: PropTypes.func.isRequired,
     createUserPrompt: PropTypes.func.isRequired,
     createNumericInput: PropTypes.func.isRequired,
     createTextInput: PropTypes.func.isRequired,
-    index: PropTypes.number.isRequired,
   };
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -44,16 +43,32 @@ export default function CustomFormAddButton({
           horizontal: 'center',
         }}
       >
-        <MenuItem onClick={() => createHeader(index)}>
+        <MenuItem onClick={() => {
+          handleClose();
+          createHeader();
+        }}
+        >
           Header
         </MenuItem>
-        <MenuItem onClick={() => createUserPrompt(index)}>
+        <MenuItem onClick={() => {
+          handleClose();
+          createUserPrompt();
+        }}
+        >
           User Prompt
         </MenuItem>
-        <MenuItem onClick={() => createNumericInput(index)}>
+        <MenuItem onClick={() => {
+          handleClose();
+          createNumericInput();
+        }}
+        >
           Numeric Input
         </MenuItem>
-        <MenuItem onClick={() => createTextInput(index)}>
+        <MenuItem onClick={() => {
+          handleClose();
+          createTextInput();
+        }}
+        >
           Text Input
         </MenuItem>
       </Menu>
