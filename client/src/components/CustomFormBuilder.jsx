@@ -176,7 +176,7 @@ export default function CustomFormBuilder() {
 
   return (
     <>
-      <div>
+      <div style={{ margin: 'auto', justifyContents: 'center' }}>
         <div className="form-builder-header m-4">
           {toolbar}
           {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}

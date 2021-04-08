@@ -20,6 +20,8 @@ import { CustomButton, CustomInput } from './CustomFormComponents';
 import ModalAlert from './ModalAlert';
 // eslint-disable-next-line import/no-cycle
 import EditModel from './EditModel';
+import CustomFormBuilder from './CustomFormBuilder';
+import AccordionWrapper from './AccordionWrapper';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -367,6 +369,11 @@ export default function ModelForm({
               </RadioGroup>
             </div>
           </div>
+          {values.calibrationType === 'customForm' && (
+            <div className="mt-2">
+              <AccordionWrapper header="Custom Form" contents={<CustomFormBuilder />} />
+            </div>
+          )}
           {(typeof viewOnly === 'undefined' || !viewOnly)
             && !diffSubmit
             && type === 'create' && (

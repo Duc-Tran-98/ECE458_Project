@@ -5,7 +5,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CustomFormBuilder from './CustomFormBuilder';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,19 +18,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // https://material-ui.com/components/accordion/
-export default function AccordionDemo() {
+export default function AccordionWrapper({ header, contents }) {
+  AccordionWrapper.propTypes = {
+    header: PropTypes.string.isRequired,
+    contents: PropTypes.node.isRequired,
+  };
   const classes = useStyles();
 
   return (
-    <div style={{ maxWidth: '75%', margin: 'auto' }}>
-      <Accordion>
+    <>
+      <Accordion className="bg-theme">
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.heading}>Custom Form</Typography>
+          <Typography className={classes.heading}>{header}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <CustomFormBuilder />
+          {contents}
         </AccordionDetails>
       </Accordion>
-    </div>
+    </>
   );
 }
