@@ -76,6 +76,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const customFormBoxClass = 'customFormBasicBox';
+
 export function CustomHeaderInput({
   header, index, handleChange, handleDelete, showDelete,
 }) {
@@ -88,14 +90,13 @@ export function CustomHeaderInput({
   };
   const classes = useStyles();
   return (
-    <div>
+    <div className={customFormBoxClass}>
       {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
       <TextField
         label="Header"
         id="custom-form-header"
         className={classes.textFieldHeader}
         autoFocus
-        fullWidth
         margin="normal"
         name="prompt"
         onChange={(e) => handleChange(e, index)}
@@ -118,13 +119,12 @@ export function CustomUserPromptInput({
   };
   const classes = useStyles();
   return (
-    <div>
+    <div className={customFormBoxClass}>
       {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
       <TextField
         label="User Prompt"
         className={classes.textFieldLarge}
         autoFocus
-        fullWidth
         margin="normal"
         name="prompt"
         onChange={(e) => handleChange(e, index)}
@@ -152,7 +152,7 @@ export function CustomNumericInput({
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={customFormBoxClass}>
       {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
       <TextField
         label="Label"
@@ -203,7 +203,7 @@ export function CustomTextInput({
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={customFormBoxClass}>
       {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
       <TextField
         label="Text Label"
