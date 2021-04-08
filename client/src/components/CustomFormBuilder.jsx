@@ -178,12 +178,10 @@ export default function CustomFormBuilder() {
     <>
       <div>
         <div className="form-builder-header m-4">
-          {/* <h1 className="m-2">Custom Form Builder</h1>
-          <h3 className="m-2">{`Total Steps: ${size}`}</h3> */}
+          {toolbar}
           {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
           {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
           <MuiSaveButton onClick={handleSubmit} color="primary" />
-          {toolbar}
         </div>
         <div className="mb-5" style={{ margin: 'auto', width: '50vw' }}>
           {mode === 'editing' && formSteps}
