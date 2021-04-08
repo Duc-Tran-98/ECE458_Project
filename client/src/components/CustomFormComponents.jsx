@@ -2,6 +2,8 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
 import { DeletePopOver } from './CustomMuiIcons';
 
@@ -73,6 +75,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: '20%',
+  },
+  textFieldNumber: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '10%',
   },
 }));
 
@@ -149,13 +156,24 @@ export function CustomNumericInput({
     showDelete: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
+  const [state, setState] = React.useState({
+    checkedMin: false,
+    checkedMax: false,
+  });
+
+  const handleChecked = (e) => {
+    setState({
+      ...state,
+      [e.target.name]: e.target.checked,
+    });
+  };
 
   return (
-    <div className={customFormBoxClass}>
+    <div className={`${customFormBoxClass}`}>
       {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
-        label="Label"
-        className={classes.textFieldSmall}
+        label="Numeric input label"
+        className={classes.textFieldMedium}
         margin="normal"
         name="prompt"
         type="text"
@@ -163,28 +181,57 @@ export function CustomNumericInput({
         value={prompt}
         autoFocus
       />
+      {/* <span style={{ display: 'flex', flexDirection: 'column' }} className="col"> */}
+      <FormControlLabel
+        control={(
+          <Switch
+            checked={state.checkedMin}
+            onChange={handleChecked}
+            name="checkedMin"
+            color="primary"
+            size="small"
+          />
+        )}
+        label="Min"
+      />
+      <FormControlLabel
+        control={(
+          <Switch
+            checked={state.checkedMax}
+            onChange={handleChecked}
+            name="checkedMax"
+            color="primary"
+            size="small"
+          />
+        )}
+        label="Max"
+      />
+      {/* </span> */}
+
+      {state.checkedMin
+      && (
       <TextField
         label="Min"
-        className={classes.textFieldSmall}
+        className={classes.textFieldNumber}
         margin="normal"
         name="min"
         type="number"
         onChange={(e) => handleChange(e, index)}
         value={min}
-        // error={errors.low}
-        // helperText={errors.lowMessage}
       />
+      )}
+      {state.checkedMax
+      && (
       <TextField
         label="Max"
-        className={classes.textFieldSmall}
+        className={classes.textFieldNumber}
         margin="normal"
         name="max"
         type="number"
         onChange={(e) => handleChange(e, index)}
         value={max}
-        // error={errors.high}
-        // helperText={errors.highMessage}
       />
+      )}
     </div>
   );
 }
@@ -205,7 +252,7 @@ export function CustomTextInput({
     <div className={customFormBoxClass}>
       {showDelete && <DeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       <TextField
-        label="Text Label"
+        label="Text input label"
         id="margin-normal"
         className={classes.textFieldMedium}
         margin="normal"
