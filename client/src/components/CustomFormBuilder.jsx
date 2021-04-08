@@ -43,6 +43,7 @@ export default function CustomFormBuilder({ handleSave }) {
   const [formSteps, setFormSteps] = React.useState([]);
   const [formEntry, setFormEntry] = React.useState();
   const [mode, setMode] = React.useState('editing');
+  const [focus, setFocus] = React.useState(0); // index of element to focus on
 
   const handleSubmit = () => {
     handleSave(JSON.stringify(state));
@@ -83,7 +84,8 @@ export default function CustomFormBuilder({ handleSave }) {
   };
 
   const addElement = (type, index) => {
-    const insertIndex = index || state.length;
+    const insertIndex = index !== null ? index : state.length;
+    setFocus(insertIndex + 1);
     console.log(`addElement(${type}, ${index}, ${insertIndex})`);
     let obj = { ...emptyHeader };
     // eslint-disable-next-line default-case
@@ -145,6 +147,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleDelete={deleteStep}
               showDelete={state.length > 1}
               addButton={addButton(index)}
+              autoFocus={focus === index}
             />
           );
         case 'description':
@@ -156,6 +159,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleDelete={deleteStep}
               showDelete={state.length > 1}
               addButton={addButton(index)}
+              autoFocus={focus === index}
             />
           );
         case 'number':
@@ -169,6 +173,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleDelete={deleteStep}
               showDelete={state.length > 1}
               addButton={addButton(index)}
+              autoFocus={focus === index}
             />
           );
         case 'text':
@@ -180,6 +185,7 @@ export default function CustomFormBuilder({ handleSave }) {
               handleDelete={deleteStep}
               showDelete={state.length > 1}
               addButton={addButton(index)}
+              autoFocus={focus === index}
             />
           );
         default:

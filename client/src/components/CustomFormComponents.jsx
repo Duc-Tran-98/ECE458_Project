@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 const customFormBoxClass = 'customFormBasicBox';
 
 export function CustomHeaderInput({
-  header, index, handleChange, handleDelete, showDelete, addButton,
+  header, index, handleChange, handleDelete, showDelete, addButton, autoFocus,
 }) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
@@ -95,6 +95,7 @@ export function CustomHeaderInput({
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
+    autoFocus: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
@@ -105,7 +106,7 @@ export function CustomHeaderInput({
         label="Header"
         id="custom-form-header"
         className={classes.textFieldHeader}
-        autoFocus
+        autoFocus={autoFocus}
         margin="normal"
         name="prompt"
         onChange={(e) => handleChange(e, index)}
@@ -116,7 +117,7 @@ export function CustomHeaderInput({
 }
 
 export function CustomUserPromptInput({
-  userPrompt, index, handleChange, handleDelete, showDelete, addButton,
+  userPrompt, index, handleChange, handleDelete, showDelete, addButton, autoFocus,
 }) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
@@ -125,6 +126,7 @@ export function CustomUserPromptInput({
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
+    autoFocus: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
@@ -134,7 +136,7 @@ export function CustomUserPromptInput({
       <TextField
         label="User Prompt"
         className={classes.textFieldLarge}
-        autoFocus
+        autoFocus={autoFocus}
         margin="normal"
         name="prompt"
         onChange={(e) => handleChange(e, index)}
@@ -148,7 +150,7 @@ export function CustomUserPromptInput({
 }
 
 export function CustomNumericInput({
-  prompt, min, max, handleChange, index, handleDelete, showDelete, addButton,
+  prompt, min, max, handleChange, index, handleDelete, showDelete, addButton, autoFocus,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -159,6 +161,8 @@ export function CustomNumericInput({
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
+    autoFocus: PropTypes.bool.isRequired,
+
   };
   const classes = useStyles();
   const [state, setState] = React.useState({
@@ -185,7 +189,7 @@ export function CustomNumericInput({
         type="text"
         onChange={(e) => handleChange(e, index)}
         value={prompt}
-        autoFocus
+        autoFocus={autoFocus}
         multiline
         rowsMax={4}
       />
@@ -245,7 +249,7 @@ export function CustomNumericInput({
 }
 
 export function CustomTextInput({
-  prompt, handleChange, index, handleDelete, showDelete, addButton,
+  prompt, handleChange, index, handleDelete, showDelete, addButton, autoFocus,
 }) {
   CustomTextInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -254,6 +258,8 @@ export function CustomTextInput({
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
+    autoFocus: PropTypes.bool.isRequired,
+
   };
   const classes = useStyles();
 
@@ -270,7 +276,7 @@ export function CustomTextInput({
         name="prompt"
         onChange={(e) => handleChange(e, index)}
         value={prompt}
-        autoFocus
+        autoFocus={autoFocus}
       />
     </div>
   );
