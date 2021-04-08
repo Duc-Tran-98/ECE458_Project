@@ -176,11 +176,10 @@ export default function ModelForm({
         calibratorCategories: calibratorCategories || [],
         requiresCalibrationApproval: requiresCalibrationApproval || false,
         calibrationType: initCalibrationType,
-        customForm: '',
+        customForm: customForm || '',
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
-        // TODO: Add custom form to API request
         const filteredValues = {
           modelNumber: values.modelNumber,
           vendor: values.vendor,
@@ -193,6 +192,7 @@ export default function ModelForm({
           supportCustomCalibration: values.calibrationType.includes('custom'),
           supportKlufeCalibration: values.calibrationType.includes('klufe'),
           supportLoadBankCalibration: values.calibrationType.includes('load'),
+          customForm: values.customForm,
         };
         setSubmitting(true);
         setTimeout(() => {
