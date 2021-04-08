@@ -178,6 +178,11 @@ export default function CustomFormBuilder({ handleSave }) {
     setFormEntry(<CustomFormEntry getSteps={() => state} handleSubmit={() => alert('just finished')} />);
   }, [state]);
 
+  // TODO: Add useEffect to assign error values on state changes
+  // IDEA: Iter through, depending on type assign errors
+  // Nonexistant labels are errors (on submit)
+  // Min/Max are errors if value
+
   return (
     <>
       <div style={{ margin: 'auto', justifyContents: 'center' }}>
