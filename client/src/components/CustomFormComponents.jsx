@@ -2,8 +2,8 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
-
 import { makeStyles } from '@material-ui/core/styles';
+import { DeletePopOver } from './CustomMuiIcons';
 
 // eslint-disable-next-line import/prefer-default-export
 export const CustomInput = ({
@@ -55,75 +55,90 @@ const useStyles = makeStyles((theme) => ({
   textFieldHeader: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '50vw',
+    width: '90%',
     lineHight: '20px',
     fontSize: '25px',
   },
   textFieldLarge: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '50vw',
+    width: '90%',
   },
   textFieldMedium: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '50ch',
+    width: '40%',
   },
   textFieldSmall: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: '20ch',
+    width: '20%',
   },
 }));
 
-export function CustomHeaderInput({ header, index, handleChange }) {
+export function CustomHeaderInput({
+  header, index, handleChange, handleDelete, showDelete,
+}) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleDelete: PropTypes.func.isRequired,
+    showDelete: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
-    <TextField
-      label="Header"
-      className={classes.textFieldHeader}
-      autoFocus
-      fullWidth
-      margin="normal"
-      name="prompt"
-      onChange={(e) => handleChange(e, index)}
-      value={header}
-      style={{ fontSize: '2rem!important' }}
-    />
+    <div>
+      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      <TextField
+        label="Header"
+        id="custom-form-header"
+        className={classes.textFieldHeader}
+        autoFocus
+        fullWidth
+        margin="normal"
+        name="prompt"
+        onChange={(e) => handleChange(e, index)}
+        value={header}
+        style={{ fontSize: '2rem!important' }}
+      />
+    </div>
   );
 }
 
-export function CustomUserPromptInput({ userPrompt, index, handleChange }) {
+export function CustomUserPromptInput({
+  userPrompt, index, handleChange, handleDelete, showDelete,
+}) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
     handleChange: PropTypes.func.isRequired,
+    handleDelete: PropTypes.func.isRequired,
+    showDelete: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
-    <TextField
-      label="User Prompt"
-      className={classes.textFieldLarge}
-      autoFocus
-      fullWidth
-      margin="normal"
-      name="prompt"
-      onChange={(e) => handleChange(e, index)}
-      value={userPrompt}
-      multiline
-      rows={4}
-      rowsMax={4}
-    />
+    <div>
+      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      <TextField
+        label="User Prompt"
+        className={classes.textFieldLarge}
+        autoFocus
+        fullWidth
+        margin="normal"
+        name="prompt"
+        onChange={(e) => handleChange(e, index)}
+        value={userPrompt}
+        multiline
+        rows={4}
+        rowsMax={4}
+      />
+    </div>
   );
 }
 
 export function CustomNumericInput({
-  prompt, min, max, handleChange, index,
+  prompt, min, max, handleChange, index, handleDelete, showDelete,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -131,11 +146,14 @@ export function CustomNumericInput({
     max: PropTypes.number.isRequired,
     handleChange: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
+    handleDelete: PropTypes.func.isRequired,
+    showDelete: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
 
   return (
-    <>
+    <div>
+      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
       <TextField
         label="Label"
         className={classes.textFieldSmall}
@@ -168,29 +186,36 @@ export function CustomNumericInput({
         // error={errors.high}
         // helperText={errors.highMessage}
       />
-    </>
+    </div>
   );
 }
 
-export function CustomTextInput({ prompt, handleChange, index }) {
+export function CustomTextInput({
+  prompt, handleChange, index, handleDelete, showDelete,
+}) {
   CustomTextInput.propTypes = {
     prompt: PropTypes.string.isRequired,
     handleChange: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
+    handleDelete: PropTypes.func.isRequired,
+    showDelete: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
 
   return (
-    <TextField
-      label="Text Label"
-      id="margin-normal"
-      className={classes.textFieldMedium}
-      margin="normal"
-      type="text"
-      name="prompt"
-      onChange={(e) => handleChange(e, index)}
-      value={prompt}
-      autoFocus
-    />
+    <div>
+      {showDelete && <DeletePopOver title="Delete" onClick={handleDelete} />}
+      <TextField
+        label="Text Label"
+        id="margin-normal"
+        className={classes.textFieldMedium}
+        margin="normal"
+        type="text"
+        name="prompt"
+        onChange={(e) => handleChange(e, index)}
+        value={prompt}
+        autoFocus
+      />
+    </div>
   );
 }

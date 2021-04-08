@@ -66,7 +66,7 @@ export default function CustomFormBuilder() {
     prevState.splice(index + 1, 0, ...emptyHeader);
     setState(prevState);
   };
-  const deleteStep = (index) => { // Cannot delete last step
+  const deleteStep = (index) => {
     console.log(`deleteStep with id: ${index}\tprevState, nextState`);
     if (state.length > 1) {
       const prevState = [...state];
@@ -127,6 +127,8 @@ export default function CustomFormBuilder() {
               header={entry.prompt}
               index={index}
               handleChange={handleChange}
+              handleDelete={deleteStep}
+              showDelete={state.length > 1}
             />
           );
         case 'description':
@@ -135,6 +137,8 @@ export default function CustomFormBuilder() {
               userPrompt={entry.prompt}
               index={index}
               handleChange={handleChange}
+              handleDelete={deleteStep}
+              showDelete={state.length > 1}
             />
           );
         case 'number':
@@ -145,6 +149,8 @@ export default function CustomFormBuilder() {
               max={entry.max}
               index={index}
               handleChange={handleChange}
+              handleDelete={deleteStep}
+              showDelete={state.length > 1}
             />
           );
         case 'text':
@@ -153,6 +159,8 @@ export default function CustomFormBuilder() {
               prompt={entry.prompt}
               handleChange={handleChange}
               index={index}
+              handleDelete={deleteStep}
+              showDelete={state.length > 1}
             />
           );
         default:
