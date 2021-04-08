@@ -7,6 +7,7 @@ import {
 import {
   CustomHeaderInput, CustomUserPromptInput, CustomNumericInput, CustomTextInput,
 } from './CustomFormComponents';
+import CustomFormEntry from './CustomFormEntry';
 
 export default function CustomFormBuilder({ handleSave }) {
   CustomFormBuilder.propTypes = {
@@ -39,7 +40,7 @@ export default function CustomFormBuilder({ handleSave }) {
   const initState = { ...emptyHeader };
   const [state, setState] = React.useState([initState]);
   const [formSteps, setFormSteps] = React.useState([]);
-  const [wizard, setWizard] = React.useState();
+  const [formEntry, setFormEntry] = React.useState();
   const [mode, setMode] = React.useState('editing');
 
   const handleSubmit = () => {
@@ -173,9 +174,9 @@ export default function CustomFormBuilder({ handleSave }) {
     setFormSteps(steps);
   }, [state]);
 
-  // React.useEffect(() => {
-  //   setWizard(<CustomFormWizard getSteps={() => state} onFinish={() => alert('just finished')} />);
-  // }, [state]);
+  React.useEffect(() => {
+    setFormEntry(<CustomFormEntry getSteps={() => state} handleSubmit={() => alert('just finished')} />);
+  }, [state]);
 
   return (
     <>
@@ -189,7 +190,7 @@ export default function CustomFormBuilder({ handleSave }) {
         </div>
         <div className="mb-5" style={{ margin: 'auto', width: '50vw' }}>
           {mode === 'editing' && formSteps}
-          {mode === 'preview' && wizard}
+          {mode === 'preview' && formEntry}
         </div>
 
         {/* <button type="submit" className="btn" onClick={handleSubmit}>Review Form</button> */}
