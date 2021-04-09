@@ -10,17 +10,24 @@ import {
 import CustomFormEntry from './CustomFormEntry';
 import CustomFormAddMenu from './CustomFormAddMenu';
 
-export default function CustomFormBuilder({ handleSave }) {
+export default function CustomFormBuilder({ handleSave, state, setState }) {
   CustomFormBuilder.propTypes = {
     handleSave: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    state: PropTypes.object.isRequired,
+    setState: PropTypes.func.isRequired,
   };
   const emptyHeader = {
     type: 'header',
     prompt: '',
+    errors: false,
+    helperText: '',
   };
   const emptyDescription = {
     type: 'description',
     prompt: '',
+    errors: false,
+    helperText: '',
   };
   const emptyNumericInput = {
     type: 'number',
@@ -38,8 +45,6 @@ export default function CustomFormBuilder({ handleSave }) {
     errors: false,
     helperText: '',
   };
-  const initState = { ...emptyHeader };
-  const [state, setState] = React.useState([initState]);
   const [formSteps, setFormSteps] = React.useState([]);
   const [formEntry, setFormEntry] = React.useState();
   const [mode, setMode] = React.useState('editing');
@@ -47,15 +52,6 @@ export default function CustomFormBuilder({ handleSave }) {
 
   const handleSubmit = () => {
     handleSave(JSON.stringify(state));
-  };
-  const updateState = (index, event, value) => {
-    // console.log(`updateState(${index}, ${event}, ${value})`);
-    const prevState = [...state];
-    prevState[index] = {
-      ...prevState[index],
-      [event]: value,
-    };
-    setState(prevState);
   };
   const handleChange = (e, index) => {
     console.log(`handleChange(${e.target.name}, ${e.target.value}, ${index})`);
@@ -66,11 +62,6 @@ export default function CustomFormBuilder({ handleSave }) {
     };
     console.log(nextState);
     setState(nextState);
-  };
-  const createStep = (index) => {
-    const prevState = [...state];
-    prevState.splice(index + 1, 0, ...emptyHeader);
-    setState(prevState);
   };
   const deleteStep = (index) => {
     console.log(`deleteStep with id: ${index}\tprevState, nextState`);
@@ -123,17 +114,6 @@ export default function CustomFormBuilder({ handleSave }) {
       index={index}
     />
   );
-
-  // const toolbar = (
-  //   <>
-  //     <span>
-  //       <TitlePopoverIcon message="Add Header" onClick={() => addElement('header')} />
-  //       <TitlePopoverIcon message="Add User Prompt" onClick={() => addElement('description')} />
-  //       <NumberInputPopoverIcon message="Add Numeric Input" onClick={() => addElement('number')} />
-  //       <TextFieldPopoverIcon message="Add Text Input" onClick={() => addElement('text')} />
-  //     </span>
-  //   </>
-  // );
 
   React.useEffect(() => {
     const steps = state.map((entry, index) => {

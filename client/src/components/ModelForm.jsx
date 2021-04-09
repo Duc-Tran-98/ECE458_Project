@@ -164,6 +164,22 @@ export default function ModelForm({
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
+  const [customFormState, setCustomFormState] = React.useState({
+    type: 'header',
+    prompt: '',
+    errors: false,
+    helperText: '',
+  });
+  const handleUpdateCustomFormState = (e, index) => {
+    console.log(`handleUpdateCustomFormState(${e.target.name}, ${e.target.value}, ${index})`);
+    const nextState = [...customFormState];
+    nextState[index] = {
+      ...nextState[index],
+      [e.target.name]: e.target.value,
+    };
+    console.log(nextState);
+    setCustomFormState(nextState);
+  };
   return (
     <Formik
       initialValues={{
@@ -356,16 +372,13 @@ export default function ModelForm({
             <Form.Label className="h5 mt-3">Calibration Information</Form.Label>
             <div className="col">
               <FormControlLabel
-                  // control={<Checkbox checked={false} onChange={handleChange} name="checkedA" />}
                 control={<Checkbox checked={values.requiresCalibrationApproval} name="requiresCalibrationApproval" onChange={handleChange} color="primary" />}
                 label="Requires Approval"
                 disabled={disabled}
               />
             </div>
             <div className="col-auto">
-              {/* TODO: Determine how to set values in least invasive way */}
               <RadioGroup row aria-label="calibrationType" name="calibrationType" value={values.calibrationType} onChange={handleChange}>
-                {/* value={value} onChange={handleChange}> */}
                 <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="Standard" />
                 <FormControlLabel value="loadBank" disabled={disabled} control={<Radio color="primary" />} label="Load Bank" />
                 <FormControlLabel value="klufe" disabled={disabled} control={<Radio color="primary" />} label="Klufe 5700" />
@@ -380,6 +393,8 @@ export default function ModelForm({
                 contents={(
                   <CustomFormBuilder
                     handleSave={(customFormJSON) => setFieldValue('customForm', customFormJSON)}
+                    state={customFormState}
+                    setState={handleUpdateCustomFormState}
                   />
             )}
               />

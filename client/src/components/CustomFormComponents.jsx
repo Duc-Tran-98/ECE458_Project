@@ -141,7 +141,7 @@ export function CustomUserPromptInput({
       </div>
       <div className="col">
         <TextField
-          label="User Prompt"
+          label="User prompt"
           className={classes.textFieldLarge}
           autoFocus={autoFocus}
           margin="normal"
