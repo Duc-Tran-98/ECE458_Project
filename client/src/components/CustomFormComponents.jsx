@@ -205,8 +205,7 @@ export function CustomNumericInput({
             multiline
             rowsMax={4}
           />
-          {/* <span style={{ display: 'flex', flexDirection: 'column' }} className="col"> */}
-          <div className="col-sm-auto">
+          <div className="col-sm-auto mt-3">
             <div className="row">
               <FormControlLabel
                 control={(
@@ -236,7 +235,6 @@ export function CustomNumericInput({
               />
             </div>
           </div>
-          {/* </span> */}
 
           {state.checkedMin
       && (
