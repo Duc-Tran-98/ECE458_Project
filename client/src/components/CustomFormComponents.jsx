@@ -101,12 +101,13 @@ export function CustomHeaderInput({
   };
   const classes = useStyles();
   return (
-    <div className={`${customFormBoxClass} row`}>
+    <div key={error} className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
         {addButton}
       </div>
       <div className="col">
+        {/* trigger re render anytime error changes */}
         <TextField
           label="Header"
           id="custom-form-header"

@@ -160,6 +160,7 @@ export default function ModelForm({
     </div>
   );
   const [customFormState, setCustomFormState] = React.useState([emptyHeader]);
+  const [shouldUpdateCustomForm, setShouldUpdateCustomForm] = React.useState(0);
 
   // Helper function to validate custom form
   // Iterates through form state, assigning errors
@@ -183,8 +184,10 @@ export default function ModelForm({
         };
       }
     });
-    console.log(`inspected all fields, errorCount=${errorCount}`);
+    console.log(`inspected all fields, errorCount=${errorCount}\nsettingFormState: `);
+    console.log(nextState);
     setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
     return errorCount === 0;
   };
 
@@ -215,8 +218,10 @@ export default function ModelForm({
         // First, validate custom form has no errors
         console.log('onSubmit in Formik ModelForm');
         if (!validCustomForm()) {
+          console.log('custom form is invalid, returning');
           return;
         }
+        console.log('validated custom form, submitting');
         const filteredValues = {
           modelNumber: values.modelNumber,
           vendor: values.vendor,
@@ -416,6 +421,7 @@ export default function ModelForm({
                     handleSave={(customFormJSON) => setFieldValue('customForm', customFormJSON)}
                     state={customFormState}
                     setState={setCustomFormState}
+                    update={shouldUpdateCustomForm}
                   />
             )}
               />

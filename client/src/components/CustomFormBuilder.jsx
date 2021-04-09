@@ -13,12 +13,15 @@ import {
   emptyHeader, emptyDescription, emptyTextInput, emptyNumericInput,
 } from './FormContsants';
 
-export default function CustomFormBuilder({ handleSave, state, setState }) {
+export default function CustomFormBuilder({
+  handleSave, state, setState, update,
+}) {
   CustomFormBuilder.propTypes = {
     handleSave: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     state: PropTypes.object.isRequired,
     setState: PropTypes.func.isRequired,
+    update: PropTypes.number.isRequired, // force updates on error handling
   };
 
   const [formSteps, setFormSteps] = React.useState([]);
@@ -92,6 +95,7 @@ export default function CustomFormBuilder({ handleSave, state, setState }) {
   );
 
   React.useEffect(() => {
+    console.log('CustomFormBuilder, triggering render of all children with new state');
     const steps = state.map((entry, index) => {
       switch (entry.type) {
         case 'header':
@@ -151,7 +155,7 @@ export default function CustomFormBuilder({ handleSave, state, setState }) {
       }
     });
     setFormSteps(steps);
-  }, [state]);
+  }, [state, update]);
 
   React.useEffect(() => {
     setFormEntry(<CustomFormEntry getSteps={() => state} handleSubmit={() => alert('just finished')} />);
