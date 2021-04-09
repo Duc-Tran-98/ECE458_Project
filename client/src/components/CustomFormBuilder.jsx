@@ -9,6 +9,9 @@ import {
 } from './CustomFormComponents';
 import CustomFormEntry from './CustomFormEntry';
 import CustomFormAddMenu from './CustomFormAddMenu';
+import {
+  emptyHeader, emptyDescription, emptyTextInput, emptyNumericInput,
+} from './FormContsants';
 
 export default function CustomFormBuilder({ handleSave, state, setState }) {
   CustomFormBuilder.propTypes = {
@@ -17,34 +20,7 @@ export default function CustomFormBuilder({ handleSave, state, setState }) {
     state: PropTypes.object.isRequired,
     setState: PropTypes.func.isRequired,
   };
-  const emptyHeader = {
-    type: 'header',
-    prompt: '',
-    errors: false,
-    helperText: '',
-  };
-  const emptyDescription = {
-    type: 'description',
-    prompt: '',
-    errors: false,
-    helperText: '',
-  };
-  const emptyNumericInput = {
-    type: 'number',
-    prompt: '',
-    value: 0,
-    min: 0,
-    max: 0,
-    errors: false,
-    helperText: '',
-  };
-  const emptyTextInput = {
-    type: 'text',
-    prompt: '',
-    value: '',
-    errors: false,
-    helperText: '',
-  };
+
   const [formSteps, setFormSteps] = React.useState([]);
   const [formEntry, setFormEntry] = React.useState();
   const [mode, setMode] = React.useState('editing');
@@ -122,6 +98,8 @@ export default function CustomFormBuilder({ handleSave, state, setState }) {
           return (
             <CustomHeaderInput
               header={entry.prompt}
+              error={entry.error}
+              helperText={entry.helperText}
               index={index}
               handleChange={handleChange}
               handleDelete={deleteStep}

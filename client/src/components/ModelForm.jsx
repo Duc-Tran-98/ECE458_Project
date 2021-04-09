@@ -22,6 +22,9 @@ import ModalAlert from './ModalAlert';
 import EditModel from './EditModel';
 import CustomFormBuilder from './CustomFormBuilder';
 import AccordionWrapper from './AccordionWrapper';
+import {
+  emptyHeader,
+} from './FormContsants';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -164,12 +167,7 @@ export default function ModelForm({
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
-  const [customFormState, setCustomFormState] = React.useState([{
-    type: 'header',
-    prompt: '',
-    errors: false,
-    helperText: '',
-  }]);
+  const [customFormState, setCustomFormState] = React.useState([emptyHeader]);
   return (
     <Formik
       initialValues={{

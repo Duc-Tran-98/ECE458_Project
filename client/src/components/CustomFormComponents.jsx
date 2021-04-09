@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 const customFormBoxClass = 'customFormBasicBox';
 
 export function CustomHeaderInput({
-  header, index, handleChange, handleDelete, showDelete, addButton, autoFocus,
+  header, index, handleChange, handleDelete, showDelete, addButton, autoFocus, error, helperText,
 }) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
@@ -96,6 +96,8 @@ export function CustomHeaderInput({
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
     autoFocus: PropTypes.bool.isRequired,
+    error: PropTypes.bool.isRequired,
+    helperText: PropTypes.string.isRequired,
   };
   const classes = useStyles();
   return (
@@ -114,6 +116,8 @@ export function CustomHeaderInput({
           name="prompt"
           onChange={(e) => handleChange(e, index)}
           value={header}
+          error={error}
+          helperText={helperText}
         />
       </div>
     </div>
