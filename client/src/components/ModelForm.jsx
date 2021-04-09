@@ -159,6 +159,34 @@ export default function ModelForm({
       )}
     </div>
   );
+  const [customFormState, setCustomFormState] = React.useState([emptyHeader]);
+
+  // Helper function to validate custom form
+  // Iterates through form state, assigning errors
+  // If errors exist, then return false, else return true
+  const validCustomForm = () => {
+    console.log('validatingCustomForm');
+    console.log(customFormState);
+    const nextState = customFormState;
+    let errorCount = 0;
+    customFormState.forEach((element, index) => {
+      console.log(element);
+      console.log(index);
+      const isEmpty = element.prompt === '';
+      if (isEmpty) {
+        console.log('found empty field');
+        errorCount += 1;
+        nextState[index] = {
+          ...nextState[index],
+          error: true,
+          helperText: 'Please enter a prompt',
+        };
+      }
+    });
+    console.log(`inspected all fields, errorCount=${errorCount}`);
+    setCustomFormState(nextState);
+    return errorCount === 0;
+  };
 
   const getCalibrationType = () => {
     if (supportCustomCalibration) { return 'custom'; }
@@ -167,7 +195,7 @@ export default function ModelForm({
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
-  const [customFormState, setCustomFormState] = React.useState([emptyHeader]);
+
   return (
     <Formik
       initialValues={{
@@ -184,6 +212,11 @@ export default function ModelForm({
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
+        // First, validate custom form has no errors
+        console.log('onSubmit in Formik ModelForm');
+        if (!validCustomForm()) {
+          return;
+        }
         const filteredValues = {
           modelNumber: values.modelNumber,
           vendor: values.vendor,

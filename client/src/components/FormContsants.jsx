@@ -7,7 +7,7 @@ export const emptyHeader = {
 export const emptyDescription = {
   type: 'description',
   prompt: '',
-  errors: false,
+  error: false,
   helperText: '',
 };
 export const emptyNumericInput = {
@@ -16,13 +16,13 @@ export const emptyNumericInput = {
   value: 0,
   min: 0,
   max: 0,
-  errors: false,
+  error: false,
   helperText: '',
 };
 export const emptyTextInput = {
   type: 'text',
   prompt: '',
   value: '',
-  errors: false,
+  error: false,
   helperText: '',
 };
