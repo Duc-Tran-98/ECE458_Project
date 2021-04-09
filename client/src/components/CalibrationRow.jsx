@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import MouseOverPopover from './PopOver';
 import UserContext from './UserContext';
+import AssetChips from './AssetChips';
 
 export default function CalibrationRow({
   handleDelete,
@@ -131,6 +132,9 @@ export default function CalibrationRow({
               </Form.Control.Feedback>
             </Form.Group>
           </div>
+        </div>
+        <div className="row w-100 mx-auto">
+          <AssetChips />
         </div>
         <div className="row w-100 mx-auto">
           <div className="col-4">
