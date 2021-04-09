@@ -99,19 +99,23 @@ export function CustomHeaderInput({
   };
   const classes = useStyles();
   return (
-    <div className={customFormBoxClass}>
-      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
-      {addButton}
-      <TextField
-        label="Header"
-        id="custom-form-header"
-        className={classes.textFieldHeader}
-        autoFocus={autoFocus}
-        margin="normal"
-        name="prompt"
-        onChange={(e) => handleChange(e, index)}
-        value={header}
-      />
+    <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+        {addButton}
+      </div>
+      <div className="col">
+        <TextField
+          label="Header"
+          id="custom-form-header"
+          className={classes.textFieldHeader}
+          autoFocus={autoFocus}
+          margin="normal"
+          name="prompt"
+          onChange={(e) => handleChange(e, index)}
+          value={header}
+        />
+      </div>
     </div>
   );
 }
@@ -130,21 +134,25 @@ export function CustomUserPromptInput({
   };
   const classes = useStyles();
   return (
-    <div className={customFormBoxClass}>
-      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
-      {addButton}
-      <TextField
-        label="User Prompt"
-        className={classes.textFieldLarge}
-        autoFocus={autoFocus}
-        margin="normal"
-        name="prompt"
-        onChange={(e) => handleChange(e, index)}
-        value={userPrompt}
-        multiline
-        rows={1}
-        rowsMax={100}
-      />
+    <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+        {addButton}
+      </div>
+      <div className="col">
+        <TextField
+          label="User Prompt"
+          className={classes.textFieldLarge}
+          autoFocus={autoFocus}
+          margin="normal"
+          name="prompt"
+          onChange={(e) => handleChange(e, index)}
+          value={userPrompt}
+          multiline
+          rows={1}
+          rowsMax={100}
+        />
+      </div>
     </div>
   );
 }
@@ -178,49 +186,59 @@ export function CustomNumericInput({
   };
 
   return (
-    <div className={`${customFormBoxClass}`}>
-      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
-      {addButton}
-      <TextField
-        label="Numeric input label"
-        className={classes.textFieldMedium}
-        margin="normal"
-        name="prompt"
-        type="text"
-        onChange={(e) => handleChange(e, index)}
-        value={prompt}
-        autoFocus={autoFocus}
-        multiline
-        rowsMax={4}
-      />
-      {/* <span style={{ display: 'flex', flexDirection: 'column' }} className="col"> */}
-      <FormControlLabel
-        control={(
-          <Switch
-            checked={state.checkedMin}
-            onChange={handleChecked}
-            name="checkedMin"
-            color="primary"
-            size="small"
+    <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+        {addButton}
+      </div>
+      <div className="col">
+        <div className="row">
+          <TextField
+            label="Numeric input label"
+            className={classes.textFieldMedium}
+            margin="normal"
+            name="prompt"
+            type="text"
+            onChange={(e) => handleChange(e, index)}
+            value={prompt}
+            autoFocus={autoFocus}
+            multiline
+            rowsMax={4}
           />
+          {/* <span style={{ display: 'flex', flexDirection: 'column' }} className="col"> */}
+          <div className="col-sm-auto">
+            <div className="row">
+              <FormControlLabel
+                control={(
+                  <Switch
+                    checked={state.checkedMin}
+                    onChange={handleChecked}
+                    name="checkedMin"
+                    color="primary"
+                    size="small"
+                  />
         )}
-        label="Min"
-      />
-      <FormControlLabel
-        control={(
-          <Switch
-            checked={state.checkedMax}
-            onChange={handleChecked}
-            name="checkedMax"
-            color="primary"
-            size="small"
-          />
+                label="Min"
+              />
+            </div>
+            <div className="row">
+              <FormControlLabel
+                control={(
+                  <Switch
+                    checked={state.checkedMax}
+                    onChange={handleChecked}
+                    name="checkedMax"
+                    color="primary"
+                    size="small"
+                  />
         )}
-        label="Max"
-      />
-      {/* </span> */}
+                label="Max"
+              />
+            </div>
+          </div>
+          {/* </span> */}
 
-      {state.checkedMin
+          {state.checkedMin
       && (
       <TextField
         label="Min"
@@ -232,7 +250,7 @@ export function CustomNumericInput({
         value={min}
       />
       )}
-      {state.checkedMax
+          {state.checkedMax
       && (
       <TextField
         label="Max"
@@ -244,6 +262,8 @@ export function CustomNumericInput({
         value={max}
       />
       )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -264,20 +284,24 @@ export function CustomTextInput({
   const classes = useStyles();
 
   return (
-    <div className={customFormBoxClass}>
-      {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
-      {addButton}
-      <TextField
-        label="Text input label"
-        id="margin-normal"
-        className={classes.textFieldMedium}
-        margin="normal"
-        type="text"
-        name="prompt"
-        onChange={(e) => handleChange(e, index)}
-        value={prompt}
-        autoFocus={autoFocus}
-      />
+    <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
+        {addButton}
+      </div>
+      <div className="col">
+        <TextField
+          label="Text input label"
+          id="margin-normal"
+          className={classes.textFieldLarge}
+          margin="normal"
+          type="text"
+          name="prompt"
+          onChange={(e) => handleChange(e, index)}
+          value={prompt}
+          autoFocus={autoFocus}
+        />
+      </div>
     </div>
   );
 }
