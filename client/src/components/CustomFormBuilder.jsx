@@ -95,7 +95,6 @@ export default function CustomFormBuilder({
   );
 
   React.useEffect(() => {
-    console.log('CustomFormBuilder, triggering render of all children with new state');
     const steps = state.map((entry, index) => {
       switch (entry.type) {
         case 'header':
@@ -116,6 +115,8 @@ export default function CustomFormBuilder({
           return (
             <CustomUserPromptInput
               userPrompt={entry.prompt}
+              error={entry.error}
+              helperText={entry.helperText}
               index={index}
               handleChange={handleChange}
               handleDelete={deleteStep}
@@ -128,6 +129,8 @@ export default function CustomFormBuilder({
           return (
             <CustomNumericInput
               prompt={entry.prompt}
+              error={entry.error}
+              helperText={entry.helperText}
               min={entry.min}
               max={entry.max}
               index={index}
@@ -142,6 +145,8 @@ export default function CustomFormBuilder({
           return (
             <CustomTextInput
               prompt={entry.prompt}
+              error={entry.error}
+              helperText={entry.helperText}
               handleChange={handleChange}
               index={index}
               handleDelete={deleteStep}

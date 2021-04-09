@@ -199,6 +199,25 @@ export default function ModelForm({
   };
   const initCalibrationType = getCalibrationType();
 
+  // Check if errors should be removed from custom form
+  React.useEffect(() => {
+    const nextState = customFormState;
+    customFormState.forEach((element, index) => {
+      if (element.error === true && element.helperText === 'Please enter a prompt') {
+        console.log('found previously field');
+        if (element.prompt !== '') {
+          nextState[index] = {
+            ...nextState[index],
+            error: false,
+            helperText: '',
+          };
+        }
+      }
+    });
+    setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
+  }, [customFormState]);
+
   return (
     <Formik
       initialValues={{
@@ -219,6 +238,7 @@ export default function ModelForm({
         console.log('onSubmit in Formik ModelForm');
         if (!validCustomForm()) {
           console.log('custom form is invalid, returning');
+          setSubmitting(false);
           return;
         }
         console.log('validated custom form, submitting');
@@ -236,6 +256,7 @@ export default function ModelForm({
           supportLoadBankCalibration: values.calibrationType.includes('load'),
           customForm: values.customForm,
         };
+        console.log('setting submit to true');
         setSubmitting(true);
         setTimeout(() => {
           handleFormSubmit(filteredValues, resetForm);

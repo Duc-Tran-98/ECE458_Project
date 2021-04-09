@@ -101,7 +101,7 @@ export function CustomHeaderInput({
   };
   const classes = useStyles();
   return (
-    <div key={error} className={`${customFormBoxClass} row`}>
+    <div className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
         {addButton}
@@ -126,7 +126,7 @@ export function CustomHeaderInput({
 }
 
 export function CustomUserPromptInput({
-  userPrompt, index, handleChange, handleDelete, showDelete, addButton, autoFocus,
+  userPrompt, index, handleChange, handleDelete, showDelete, addButton, autoFocus, error, helperText,
 }) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
@@ -136,6 +136,8 @@ export function CustomUserPromptInput({
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
     autoFocus: PropTypes.bool.isRequired,
+    error: PropTypes.bool.isRequired,
+    helperText: PropTypes.string.isRequired,
   };
   const classes = useStyles();
   return (
@@ -156,6 +158,8 @@ export function CustomUserPromptInput({
           multiline
           rows={1}
           rowsMax={100}
+          error={error}
+          helperText={helperText}
         />
       </div>
     </div>
@@ -163,7 +167,7 @@ export function CustomUserPromptInput({
 }
 
 export function CustomNumericInput({
-  prompt, min, max, handleChange, index, handleDelete, showDelete, addButton, autoFocus,
+  prompt, min, max, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -175,6 +179,8 @@ export function CustomNumericInput({
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
     autoFocus: PropTypes.bool.isRequired,
+    error: PropTypes.bool.isRequired,
+    helperText: PropTypes.string.isRequired,
 
   };
   const classes = useStyles();
@@ -209,6 +215,8 @@ export function CustomNumericInput({
             autoFocus={autoFocus}
             multiline
             rowsMax={4}
+            error={error}
+            helperText={helperText}
           />
           <div className="col-sm-auto mt-3">
             <div className="row">
@@ -272,7 +280,7 @@ export function CustomNumericInput({
 }
 
 export function CustomTextInput({
-  prompt, handleChange, index, handleDelete, showDelete, addButton, autoFocus,
+  prompt, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
 }) {
   CustomTextInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -282,6 +290,8 @@ export function CustomTextInput({
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
     autoFocus: PropTypes.bool.isRequired,
+    error: PropTypes.bool.isRequired,
+    helperText: PropTypes.string.isRequired,
 
   };
   const classes = useStyles();
@@ -303,6 +313,8 @@ export function CustomTextInput({
           onChange={(e) => handleChange(e, index)}
           value={prompt}
           autoFocus={autoFocus}
+          error={error}
+          helperText={helperText}
         />
       </div>
     </div>
