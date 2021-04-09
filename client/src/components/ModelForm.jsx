@@ -164,22 +164,12 @@ export default function ModelForm({
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
-  const [customFormState, setCustomFormState] = React.useState({
+  const [customFormState, setCustomFormState] = React.useState([{
     type: 'header',
     prompt: '',
     errors: false,
     helperText: '',
-  });
-  const handleUpdateCustomFormState = (e, index) => {
-    console.log(`handleUpdateCustomFormState(${e.target.name}, ${e.target.value}, ${index})`);
-    const nextState = [...customFormState];
-    nextState[index] = {
-      ...nextState[index],
-      [e.target.name]: e.target.value,
-    };
-    console.log(nextState);
-    setCustomFormState(nextState);
-  };
+  }]);
   return (
     <Formik
       initialValues={{
@@ -394,7 +384,7 @@ export default function ModelForm({
                   <CustomFormBuilder
                     handleSave={(customFormJSON) => setFieldValue('customForm', customFormJSON)}
                     state={customFormState}
-                    setState={handleUpdateCustomFormState}
+                    setState={setCustomFormState}
                   />
             )}
               />
