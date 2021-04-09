@@ -2,6 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
+import Input from '@material-ui/core/Input';
+import Button from '@material-ui/core/Button';
 import TagFacesIcon from '@material-ui/icons/TagFaces';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,30 +30,50 @@ export default function ChipsArray() {
     { key: 4, label: 'Vue.js' },
   ]);
 
+  const [current, setCurrent] = React.useState('');
+
   const handleDelete = (chipToDelete) => () => {
     setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
   };
 
   return (
-    <Paper component="ul" className={classes.root}>
-      {chipData.map((data) => {
-        let icon;
+    <div>
+      Enter Asset Tag of Instrument(s) used in this calibration:
+      <Input
+        type="number"
+        color="primary"
+        onChange={((event) => {
+          setCurrent(event.target.value);
+        })}
+      />
+      <Button onClick={() => {
+        setChipData([...chipData, { key: chipData.length, label: current }]);
+      }}
+      >
+        Add
+      </Button>
+      <Paper component="ul" className={classes.root}>
+        {chipData.map((data) => {
+          let icon;
 
-        if (data.label === 'React') {
-          icon = <TagFacesIcon />;
-        }
+          if (data.label === 'React') {
+            icon = <TagFacesIcon />;
+          }
 
-        return (
-          <li key={data.key}>
-            <Chip
-              icon={icon}
-              label={data.label}
-              onDelete={handleDelete(data)}
-              className={classes.chip}
-            />
-          </li>
-        );
-      })}
-    </Paper>
+          return (
+            <div>
+              <li key={data.key}>
+                <Chip
+                  icon={icon}
+                  label={data.label}
+                  onDelete={handleDelete(data)}
+                  className={classes.chip}
+                />
+              </li>
+            </div>
+          );
+        })}
+      </Paper>
+    </div>
   );
 }
