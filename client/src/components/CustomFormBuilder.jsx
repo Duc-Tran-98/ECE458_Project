@@ -14,7 +14,7 @@ import {
 } from './FormContsants';
 
 export default function CustomFormBuilder({
-  handleSave, state, setState, update,
+  handleSave, state, setState, update, editEnabled,
 }) {
   CustomFormBuilder.propTypes = {
     handleSave: PropTypes.func.isRequired,
@@ -22,11 +22,13 @@ export default function CustomFormBuilder({
     state: PropTypes.object.isRequired,
     setState: PropTypes.func.isRequired,
     update: PropTypes.number.isRequired, // force updates on error handling
+    editEnabled: PropTypes.bool.isRequired,
   };
 
+  const initMode = editEnabled === true ? 'editing' : 'preview';
   const [formSteps, setFormSteps] = React.useState([]);
   const [formEntry, setFormEntry] = React.useState();
-  const [mode, setMode] = React.useState('editing');
+  const [mode, setMode] = React.useState(initMode);
   const [focus, setFocus] = React.useState(0); // index of element to focus on
 
   const handleSubmit = () => {
@@ -171,11 +173,17 @@ export default function CustomFormBuilder({
   // Nonexistant labels are errors (on submit)
   // Min/Max are errors if value
 
+  const toolbar = (
+    <>
+      {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
+      {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
+    </>
+  );
+
   return (
     <>
       <div style={{ margin: 'auto', justifyContents: 'center' }}>
-        {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
-        {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
+        {editEnabled && toolbar}
         <div className="mb-5" style={{ margin: 'auto', width: '50vw' }}>
           {mode === 'editing' && formSteps}
           {mode === 'preview' && formEntry}

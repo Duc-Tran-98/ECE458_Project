@@ -448,6 +448,7 @@ export default function ModelForm({
                     state={customFormState}
                     setState={setCustomFormState}
                     update={shouldUpdateCustomForm}
+                    editEnabled={!disabled}
                   />
             )}
               />
