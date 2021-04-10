@@ -198,7 +198,7 @@ export default function ModelForm({
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
-  console.log(`initCalibrationType: ${initCalibrationType}`);
+  // console.log(`initCalibrationType: ${initCalibrationType}`);
 
   // Check if errors should be removed from custom form
   React.useEffect(() => {
@@ -231,7 +231,6 @@ export default function ModelForm({
         calibratorCategories: calibratorCategories || [],
         requiresCalibrationApproval: requiresCalibrationApproval || false,
         calibrationType: initCalibrationType,
-        customForm: customForm || '',
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -255,8 +254,9 @@ export default function ModelForm({
           supportCustomCalibration: values.calibrationType.includes('custom'),
           supportKlufeCalibration: values.calibrationType.includes('klufe'),
           supportLoadBankCalibration: values.calibrationType.includes('load'),
-          customForm: values.customForm,
+          customForm: JSON.stringify(customFormState),
         };
+        console.log(filteredValues);
         console.log('setting submit to true');
         setSubmitting(true);
         setTimeout(() => {
