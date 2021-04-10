@@ -55,8 +55,19 @@ export default function CustomFormEntry({
 
   const classes = useStyles();
   const steps = getSteps();
+  const [state, setState] = React.useState(steps);
   console.log('Creating CustomFormWizard with steps: ');
   console.log(steps);
+
+  const handleChange = (e, index) => {
+    console.log(`handleChange(${e.target.value}, ${index})`);
+    const nextState = state;
+    nextState[index] = {
+      ...nextState[index],
+      value: parseInt(e.target.value, 10),
+    };
+    setState(state);
+  };
 
   const headerStep = (step) => (
     <TextField
@@ -82,10 +93,22 @@ export default function CustomFormEntry({
     />
   );
 
-  const numberStep = (step) => (
+  const numberStep = (step, index) => (
     <>
-      <p>{`${step.prompt} between ${step.min} and ${step.max}`}</p>
-      <input />
+      <TextField
+        className={classes.textFieldLarge}
+        margin="normal"
+        value={`${step.prompt} between ${step.min} and ${step.max}`}
+        disabled
+        InputProps={{ disableUnderline: true }}
+      />
+      <TextField
+        className={classes.textFieldNumber}
+        margin="normal"
+        type="number"
+        onChange={(e) => handleChange(e, index)}
+        value={state[index].value}
+      />
     </>
   );
   const textStep = (step) => (
@@ -95,14 +118,14 @@ export default function CustomFormEntry({
     </>
   );
 
-  const formEntrySteps = steps.map((step) => {
+  const formEntrySteps = steps.map((step, index) => {
     switch (step.type) {
       case 'header':
         return headerStep(step);
       case 'description':
         return descriptionStep(step);
       case 'number':
-        return numberStep(step);
+        return numberStep(step, index);
       case 'text':
         return textStep(step);
       default:
