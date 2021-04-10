@@ -1,5 +1,49 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  textFieldHeader: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '90%',
+    lineHight: '20px',
+    fontSize: '25px',
+  },
+  textFieldLarge: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '90%',
+  },
+  textFieldMedium: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '40%',
+  },
+  textFieldSmall: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '20%',
+  },
+  textFieldNumber: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '10%',
+  },
+  underline: {
+    '&&&:before': {
+      borderBottom: 'none',
+    },
+    '&&:after': {
+      borderBottom: 'none',
+    },
+  },
+}));
 
 export default function CustomFormEntry({
   getSteps, handleSubmit,
@@ -9,12 +53,35 @@ export default function CustomFormEntry({
     handleSubmit: PropTypes.func.isRequired,
   };
 
+  const classes = useStyles();
   const steps = getSteps();
   console.log('Creating CustomFormWizard with steps: ');
   console.log(steps);
 
-  const headerStep = (step) => <h1>{step.prompt}</h1>;
-  const descriptionStep = (step) => <h4>{step.prompt}</h4>;
+  const headerStep = (step) => (
+    <TextField
+      id="custom-form-header"
+      className={classes.textFieldHeader}
+      margin="normal"
+      name="prompt"
+      value={step.prompt}
+      disabled
+      InputProps={{ disableUnderline: true }}
+    />
+  );
+
+  const descriptionStep = (step) => (
+    <TextField
+      className={classes.textFieldLarge}
+      margin="normal"
+      value={step.prompt}
+      multiline
+      rowsMax={100}
+      disabled
+      InputProps={{ disableUnderline: true }}
+    />
+  );
+
   const numberStep = (step) => (
     <>
       <p>{`${step.prompt} between ${step.min} and ${step.max}`}</p>
