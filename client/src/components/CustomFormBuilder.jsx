@@ -167,6 +167,7 @@ export default function CustomFormBuilder({
   }, [state]);
 
   // TODO: Add useEffect to assign error values on state changes
+  // These are currently lifted into model form (must check errors there?)
   // IDEA: Iter through, depending on type assign errors
   // Nonexistant labels are errors (on submit)
   // Min/Max are errors if value
