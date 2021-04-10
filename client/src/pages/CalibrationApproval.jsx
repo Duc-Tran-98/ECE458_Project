@@ -8,6 +8,7 @@ import { approvalCols } from '../utils/CalibTable';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import { StateLessCloseModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
+import MouseOverPopover from '../components/PopOver';
 
 export default function CalibrationApprovalPage() {
   // eslint-disable-next-line no-unused-vars
@@ -79,8 +80,10 @@ export default function CalibrationApprovalPage() {
     });
   }, []);
   const cellHandler = (e) => {
-    setSelectedRow(e.row);
-    setShow(true);
+    if (!(e.field === 'fileName' && e.row.fileName)) { // if click on fileName field and fileName has a value, don't setShow to true because that's a link
+      setSelectedRow(e.row);
+      setShow(true);
+    }
   };
   return (
     <>
@@ -159,6 +162,21 @@ export default function CalibrationApprovalPage() {
                 <span className="h5">Calibration Data</span>
                 <br />
                 <Form.Control as="textarea" rows={3} value="TBD" disabled />
+              </div>
+            </div>
+            <div className="row mx-3 mt-3 pt-3 border-top border-dark">
+              <div className="col d-flex justify-content-center">
+                <MouseOverPopover message="Approve this calibration event">
+                  <button type="button" className="btn">
+                    Approve
+                  </button>
+                </MouseOverPopover>
+                <span className="mx-3" />
+                <MouseOverPopover message="Deny this calibration event">
+                  <button type="button" className="btn btn-delete">
+                    Deny
+                  </button>
+                </MouseOverPopover>
               </div>
             </div>
           </>
