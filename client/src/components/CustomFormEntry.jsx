@@ -71,6 +71,21 @@ export default function CustomFormEntry({
     setUpdate(update + 1);
   };
 
+  const getNumberLabel = (step) => {
+    const {
+      minSet, maxSet, min, max,
+    } = step;
+    if (minSet && maxSet) {
+      return `Between ${min} and ${max}`;
+    }
+    if (minSet) {
+      return `Greater than ${min}`;
+    }
+    if (maxSet) {
+      return `Less than ${max}`;
+    }
+  };
+
   const headerStep = (step) => (
     <TextField
       id="custom-form-header"
@@ -100,7 +115,8 @@ export default function CustomFormEntry({
       <TextField
         className={classes.textFieldLarge}
         margin="normal"
-        value={`${step.prompt} between ${step.min} and ${step.max}`}
+        value={step.prompt}
+        helperText={getNumberLabel(step)}
         disabled
         InputProps={{ disableUnderline: true }}
       />
