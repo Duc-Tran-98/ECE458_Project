@@ -33,22 +33,17 @@ export default function CustomFormBuilder({
     handleSave(JSON.stringify(state));
   };
   const handleChange = (e, index) => {
-    console.log(`handleChange(${e.target.name}, ${e.target.value}, ${index})`);
     const nextState = [...state];
     nextState[index] = {
       ...nextState[index],
       [e.target.name]: e.target.value,
     };
-    console.log(nextState);
     setState(nextState);
   };
   const deleteStep = (index) => {
-    console.log(`deleteStep with id: ${index}\tprevState, nextState`);
     if (state.length > 1) {
       const prevState = [...state];
       const nextState = prevState.filter((item, i) => index !== i);
-      console.log(prevState);
-      console.log(nextState);
       setState(nextState);
     }
   };
@@ -56,29 +51,22 @@ export default function CustomFormBuilder({
   const addElement = (type, index) => {
     const insertIndex = index !== null ? index : state.length;
     setFocus(insertIndex + 1);
-    console.log(`addElement(${type}, ${index}, ${insertIndex})`);
     let obj = { ...emptyHeader };
     // eslint-disable-next-line default-case
     switch (type) {
       case 'header':
-        console.log('found header');
         obj = { ...emptyHeader };
         break;
       case 'description':
-        console.log('found description');
         obj = { ...emptyDescription };
         break;
       case 'number':
-        console.log('found number');
         obj = { ...emptyNumericInput };
         break;
       case 'text':
-        console.log('found text');
         obj = { ...emptyTextInput };
         break;
     }
-    console.log('adding obj:');
-    console.log(obj);
     const prevState = [...state];
     prevState.splice(insertIndex + 1, 0, obj);
     setState(prevState);

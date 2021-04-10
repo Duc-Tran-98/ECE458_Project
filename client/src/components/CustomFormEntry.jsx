@@ -56,17 +56,19 @@ export default function CustomFormEntry({
   const classes = useStyles();
   const steps = getSteps();
   const [state, setState] = React.useState(steps);
+  const [formSteps, setFormSteps] = React.useState(null);
+  const [update, setUpdate] = React.useState(0);
   console.log('Creating CustomFormWizard with steps: ');
   console.log(steps);
 
   const handleChange = (e, index) => {
-    console.log(`handleChange(${e.target.value}, ${index})`);
     const nextState = state;
     nextState[index] = {
       ...nextState[index],
       value: parseInt(e.target.value, 10),
     };
     setState(state);
+    setUpdate(update + 1);
   };
 
   const headerStep = (step) => (
@@ -118,24 +120,27 @@ export default function CustomFormEntry({
     </>
   );
 
-  const formEntrySteps = steps.map((step, index) => {
-    switch (step.type) {
-      case 'header':
-        return headerStep(step);
-      case 'description':
-        return descriptionStep(step);
-      case 'number':
-        return numberStep(step, index);
-      case 'text':
-        return textStep(step);
-      default:
-        return null;
-    }
-  });
+  React.useEffect(() => {
+    const formEntrySteps = steps.map((step, index) => {
+      switch (step.type) {
+        case 'header':
+          return headerStep(step);
+        case 'description':
+          return descriptionStep(step);
+        case 'number':
+          return numberStep(step, index);
+        case 'text':
+          return textStep(step);
+        default:
+          return null;
+      }
+    });
+    setFormSteps(formEntrySteps);
+  }, [state, update]);
 
   return (
     <div>
-      {formEntrySteps}
+      {formSteps}
       <button type="submit" onClick={handleSubmit}>Submit</button>
     </div>
   );
