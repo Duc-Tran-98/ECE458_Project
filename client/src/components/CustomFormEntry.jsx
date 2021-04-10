@@ -65,7 +65,7 @@ export default function CustomFormEntry({
     const nextState = state;
     nextState[index] = {
       ...nextState[index],
-      value: parseInt(e.target.value, 10),
+      value: e.target.value,
     };
     setState(state);
     setUpdate(update + 1);
@@ -105,7 +105,7 @@ export default function CustomFormEntry({
         InputProps={{ disableUnderline: true }}
       />
       <TextField
-        className={classes.textFieldNumber}
+        className={classes.textFieldMedium}
         margin="normal"
         type="number"
         onChange={(e) => handleChange(e, index)}
@@ -113,10 +113,24 @@ export default function CustomFormEntry({
       />
     </>
   );
-  const textStep = (step) => (
+  const textStep = (step, index) => (
     <>
-      <p>{step.prompt}</p>
-      <input />
+      <TextField
+        className={classes.textFieldLarge}
+        margin="normal"
+        value={step.prompt}
+        disabled
+        InputProps={{ disableUnderline: true }}
+      />
+      <TextField
+        id="margin-normal"
+        className={classes.textFieldLarge}
+        margin="normal"
+        type="text"
+        name="prompt"
+        onChange={(e) => handleChange(e, index)}
+        value={state[index].value}
+      />
     </>
   );
 
@@ -130,7 +144,7 @@ export default function CustomFormEntry({
         case 'number':
           return numberStep(step, index);
         case 'text':
-          return textStep(step);
+          return textStep(step, index);
         default:
           return null;
       }

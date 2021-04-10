@@ -40,6 +40,14 @@ export default function CustomFormBuilder({
     };
     setState(nextState);
   };
+  const handleChecked = (e, index) => {
+    const nextState = [...state];
+    nextState[index] = {
+      ...nextState[index],
+      [e.target.name]: e.target.checked,
+    };
+    setState(nextState);
+  };
   const deleteStep = (index) => {
     if (state.length > 1) {
       const prevState = [...state];
@@ -120,10 +128,13 @@ export default function CustomFormBuilder({
               error={entry.error}
               helperText={entry.helperText}
               min={entry.min}
+              minSet={entry.minSet}
               max={entry.max}
+              maxSet={entry.maxSet}
               index={index}
               handleChange={handleChange}
               handleDelete={deleteStep}
+              handleChecked={handleChecked}
               showDelete={state.length > 1}
               addButton={addButton(index)}
               autoFocus={focus === index}
@@ -167,7 +178,6 @@ export default function CustomFormBuilder({
           {/* {toolbar} */}
           {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
           {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
-          <MuiSaveButton onClick={handleSubmit} color="primary" />
         </div>
         <div className="mb-5" style={{ margin: 'auto', width: '50vw' }}>
           {mode === 'editing' && formSteps}

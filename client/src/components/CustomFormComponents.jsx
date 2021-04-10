@@ -167,14 +167,17 @@ export function CustomUserPromptInput({
 }
 
 export function CustomNumericInput({
-  prompt, min, max, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
+  prompt, min, max, minSet, maxSet, handleChecked, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
     min: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired,
+    minSet: PropTypes.bool.isRequired,
+    maxSet: PropTypes.bool.isRequired,
     handleChange: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
+    handleChecked: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,
     showDelete: PropTypes.bool.isRequired,
     addButton: PropTypes.node.isRequired,
@@ -184,17 +187,17 @@ export function CustomNumericInput({
 
   };
   const classes = useStyles();
-  const [state, setState] = React.useState({
-    checkedMin: false,
-    checkedMax: false,
-  });
+  // const [state, setState] = React.useState({
+  //   checkedMin: false,
+  //   checkedMax: false,
+  // });
 
-  const handleChecked = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.checked,
-    });
-  };
+  // const handleChecked = (e) => {
+  //   setState({
+  //     ...state,
+  //     [e.target.name]: e.target.checked,
+  //   });
+  // };
 
   return (
     <div className={`${customFormBoxClass} row`}>
@@ -223,9 +226,9 @@ export function CustomNumericInput({
               <FormControlLabel
                 control={(
                   <Switch
-                    checked={state.checkedMin}
-                    onChange={handleChecked}
-                    name="checkedMin"
+                    checked={minSet}
+                    onChange={(e) => handleChecked(e, index)}
+                    name="minSet"
                     color="primary"
                     size="small"
                   />
@@ -237,9 +240,9 @@ export function CustomNumericInput({
               <FormControlLabel
                 control={(
                   <Switch
-                    checked={state.checkedMax}
-                    onChange={handleChecked}
-                    name="checkedMax"
+                    checked={maxSet}
+                    onChange={(e) => handleChecked(e, index)}
+                    name="maxSet"
                     color="primary"
                     size="small"
                   />
@@ -249,7 +252,7 @@ export function CustomNumericInput({
             </div>
           </div>
 
-          {state.checkedMin
+          {minSet
       && (
       <TextField
         label="Min"
@@ -261,7 +264,7 @@ export function CustomNumericInput({
         value={min}
       />
       )}
-          {state.checkedMax
+          {maxSet
       && (
       <TextField
         label="Max"
