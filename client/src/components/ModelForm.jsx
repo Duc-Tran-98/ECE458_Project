@@ -192,12 +192,13 @@ export default function ModelForm({
   };
 
   const getCalibrationType = () => {
-    if (supportCustomCalibration) { return 'custom'; }
+    if (supportCustomCalibration) { return 'customForm'; }
     if (supportKlufeCalibration) { return 'klufe'; }
     if (supportLoadBankCalibration) { return 'loadBank'; }
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
+  console.log(`initCalibrationType: ${initCalibrationType}`);
 
   // Check if errors should be removed from custom form
   React.useEffect(() => {
