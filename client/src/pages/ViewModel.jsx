@@ -36,6 +36,8 @@ export default function DetailedModelView() {
   const [fetched, setFetched] = React.useState(false);
   const [update, setUpdate] = React.useState(false);
   const handleFindModel = (response) => {
+    console.log('found model with response: ');
+    console.log(response);
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
     const calibratorCategories = response.calibratorCategories.map((item) => item.name);

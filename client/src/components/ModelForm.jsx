@@ -159,7 +159,11 @@ export default function ModelForm({
       )}
     </div>
   );
-  const [customFormState, setCustomFormState] = React.useState([emptyHeader]);
+  console.log(`customForm prop: ${customForm}`);
+  const initCustomFormState = customForm !== '' ? JSON.parse(customForm) : [emptyHeader];
+  console.log('initCustomFormState: ');
+  console.log(initCustomFormState);
+  const [customFormState, setCustomFormState] = React.useState(initCustomFormState);
   const [shouldUpdateCustomForm, setShouldUpdateCustomForm] = React.useState(0);
 
   // Helper function to validate custom form
