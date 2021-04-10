@@ -174,11 +174,8 @@ export default function CustomFormBuilder({
   return (
     <>
       <div style={{ margin: 'auto', justifyContents: 'center' }}>
-        <div className="m-4">
-          {/* {toolbar} */}
-          {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
-          {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
-        </div>
+        {mode === 'editing' && <PreviewButton onClick={() => setMode('preview')} message="Preview" />}
+        {mode === 'preview' && <EditPopoverIcon onClick={() => setMode('editing')} message="Edit" />}
         <div className="mb-5" style={{ margin: 'auto', width: '50vw' }}>
           {mode === 'editing' && formSteps}
           {mode === 'preview' && formEntry}

@@ -46,11 +46,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, handleSubmit,
+  getSteps, handleSubmit, preview,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
     handleSubmit: PropTypes.func.isRequired,
+    preview: PropTypes.bool,
+  };
+  CustomFormEntry.defaultProps = {
+    preview: true,
   };
 
   const classes = useStyles();
@@ -58,8 +62,9 @@ export default function CustomFormEntry({
   const [state, setState] = React.useState(steps);
   const [formSteps, setFormSteps] = React.useState(null);
   const [update, setUpdate] = React.useState(0);
-  console.log('Creating CustomFormWizard with steps: ');
-  console.log(steps);
+
+  const inputProps = { disableUnderline: true };
+  const divClass = 'border-top border-dark mt-3';
 
   const handleChange = (e, index) => {
     const nextState = state;
@@ -84,6 +89,7 @@ export default function CustomFormEntry({
     if (maxSet) {
       return `Less than ${max}`;
     }
+    return '';
   };
 
   const headerStep = (step) => (
@@ -94,7 +100,7 @@ export default function CustomFormEntry({
       name="prompt"
       value={step.prompt}
       disabled
-      InputProps={{ disableUnderline: true }}
+      InputProps={inputProps}
     />
   );
 
@@ -106,19 +112,19 @@ export default function CustomFormEntry({
       multiline
       rowsMax={100}
       disabled
-      InputProps={{ disableUnderline: true }}
+      InputProps={inputProps}
     />
   );
 
   const numberStep = (step, index) => (
-    <>
+    <div className={divClass}>
       <TextField
         className={classes.textFieldLarge}
         margin="normal"
         value={step.prompt}
         helperText={getNumberLabel(step)}
         disabled
-        InputProps={{ disableUnderline: true }}
+        InputProps={inputProps}
       />
       <TextField
         className={classes.textFieldMedium}
@@ -127,16 +133,16 @@ export default function CustomFormEntry({
         onChange={(e) => handleChange(e, index)}
         value={state[index].value}
       />
-    </>
+    </div>
   );
   const textStep = (step, index) => (
-    <>
+    <div className={divClass}>
       <TextField
         className={classes.textFieldLarge}
         margin="normal"
         value={step.prompt}
         disabled
-        InputProps={{ disableUnderline: true }}
+        InputProps={inputProps}
       />
       <TextField
         id="margin-normal"
@@ -147,7 +153,7 @@ export default function CustomFormEntry({
         onChange={(e) => handleChange(e, index)}
         value={state[index].value}
       />
-    </>
+    </div>
   );
 
   React.useEffect(() => {
@@ -168,10 +174,22 @@ export default function CustomFormEntry({
     setFormSteps(formEntrySteps);
   }, [state, update]);
 
+  // // Effect to set errors on number invalid
+  // React.useEffect(() => {
+  //   const nextState = state;
+  //   const errorCount = 0;
+  //   steps.map((step, index) => {
+  //     switch(step.type) {
+
+  //     }
+  //   })
+
+  // }, [state, update]);
+
   return (
     <div>
       {formSteps}
-      <button type="submit" onClick={handleSubmit}>Submit</button>
+      {!preview && <button type="submit" onClick={handleSubmit}>Submit</button>}
     </div>
   );
 }
