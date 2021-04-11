@@ -118,6 +118,10 @@ module.exports = {
       limit,
       offset,
     }),
+    getAllPendingCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllPendingCalibrationEvents({
+      limit,
+      offset,
+    }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, assetTag },
@@ -152,6 +156,8 @@ module.exports = {
       offset,
       orderBy,
     }),
+    getCetificateForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getCetificateForInstrument({ assetTag }),
+    getChainOfTruthForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getChainOfTruthForInstrument({ assetTag }),
   },
   Mutation: {
     bulkImportData: async (
@@ -305,7 +311,12 @@ module.exports = {
     addCalibrationEventByAssetTag: async (
       _,
       {
-        assetTag, user, date, comment, fileLocation, fileName,
+        assetTag,
+        user,
+        date,
+        comment,
+        fileLocation,
+        fileName,
       },
       { dataSources },
     ) => {
@@ -324,7 +335,11 @@ module.exports = {
     addLoadBankCalibration: async (
       _,
       {
-        assetTag, user, date, comment, loadBankData,
+        assetTag,
+        user,
+        date,
+        comment,
+        loadBankData,
       },
       { dataSources },
     ) => {
@@ -342,7 +357,11 @@ module.exports = {
     addKlufeCalibration: async (
       _,
       {
-        assetTag, user, date, comment, klufeData,
+        assetTag,
+        user,
+        date,
+        comment,
+        klufeData,
       },
       { dataSources },
     ) => {
@@ -357,10 +376,35 @@ module.exports = {
       );
       return response;
     },
+    addCustomCalibration: async (
+      _,
+      {
+        assetTag,
+        user,
+        date,
+        comment,
+        customFormData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCustomCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          customFormData,
+        },
+      );
+      return response;
+    },
     addCalibrationEventById: async (
       _,
       {
-        calibrationHistoryIdReference, user, date, comment,
+        calibrationHistoryIdReference,
+        user,
+        date,
+        comment,
       },
       { dataSources },
     ) => {
