@@ -397,6 +397,7 @@ module.exports.createStore = async (useTestDB) => {
     sourceKey: 'id',
     targetKey: 'id',
   });
+
   instrumentCategories.belongsToMany(instruments, {
     as: 'instruments',
     through: {
@@ -477,11 +478,6 @@ module.exports.createStore = async (useTestDB) => {
     constraints: false,
   });
 
-  // instruments.hasMany(instrumentCategoryRelationships);
-  // instrumentCategoryRelationships.belongsTo(instruments);
-  // instrumentCategories.hasMany(instrumentCategoryRelationships);
-  // instrumentCategoryRelationships.belongsTo(instrumentCategories);
-
   instruments.belongsToMany(modelCategories, {
     as: 'modelCategories',
     through: {
@@ -492,6 +488,7 @@ module.exports.createStore = async (useTestDB) => {
     foreignKey: 'modelId',
     constraints: false,
   });
+
   modelCategories.belongsToMany(instruments, {
     as: 'instrumentsOfModels',
     through: {
@@ -502,18 +499,6 @@ module.exports.createStore = async (useTestDB) => {
     foreignKey: 'modelCategoryId',
     constraints: false,
   });
-  // instruments.hasMany(modelCategoryRelationships, {
-  //   // as: 'inToModCatRel',
-  //   sourceKey: 'modelReference',
-  //   foreignKey: 'modelId',
-  //   constraints: false,
-  // });
-  // modelCategoryRelationships.belongsTo(instruments, {
-  //   // as: 'modCatRelToIn',
-  //   foreignKey: 'modelId',
-  //   targetKey: 'modelReference',
-  //   constraints: false,
-  // });
 
   const calibrationEvents = db.define(
     'calibrationEvents',
@@ -537,6 +522,14 @@ module.exports.createStore = async (useTestDB) => {
         type: SQL.STRING,
         allowNull: false,
       },
+      userFirstName: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
+      userLastName: {
+        type: SQL.STRING,
+        allowNull: false,
+      },
       date: {
         type: SQL.DATEONLY,
         allowNull: false,
@@ -546,6 +539,21 @@ module.exports.createStore = async (useTestDB) => {
       fileName: SQL.STRING,
       loadBankData: SQL.TEXT,
       klufeData: SQL.TEXT,
+      customFormData: SQL.TEXT,
+      // Approval states
+      // 0 - awaiting approval
+      // 1 - approved
+      // 2 - rejected
+      // 3 - no approval required
+      approvalStatus: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      approverUsername: SQL.STRING,
+      approverFirstName: SQL.STRING,
+      approverLastName: SQL.STRING,
+      approvalDate: SQL.DATEONLY,
+      approvalComment: SQL.STRING(2000),
     },
     { freezeTableName: true },
     {
@@ -555,6 +563,71 @@ module.exports.createStore = async (useTestDB) => {
       },
     },
   );
+
+  const calibratedByRelationships = db.define(
+    'calibratedByRelationships',
+    {
+      id: {
+        type: SQL.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      calibration: {
+        type: SQL.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'calibrationEvents',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      calibratedInstrument: {
+        type: SQL.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'instruments',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      calibratedBy: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+      byVendor: {
+        type: SQL.STRING(30),
+        allowNull: false,
+      },
+      byModelNumber: {
+        type: SQL.STRING(40),
+        allowNull: false,
+      },
+      bySerialNumber: {
+        type: SQL.STRING(40),
+        allowNull: true,
+      },
+      byAssetTag: {
+        type: SQL.INTEGER,
+        allowNull: false,
+      },
+    },
+    { freezeTableName: true },
+    {
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
+    },
+  );
+
+  calibrationEvents.hasMany(calibratedByRelationships, {
+    as: 'calibratedBy',
+    sourceKey: 'id',
+    foreignKey: 'calibration',
+    constraints: false,
+  });
 
   instruments.hasMany(calibrationEvents, {
     as: 'recentCalibration',
@@ -589,6 +662,7 @@ module.exports.createStore = async (useTestDB) => {
     models,
     instruments,
     calibrationEvents,
+    calibratedByRelationships,
     modelCategories,
     modelCategoryRelationships,
     instrumentCategories,

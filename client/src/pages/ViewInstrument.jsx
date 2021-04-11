@@ -7,6 +7,8 @@ import axios from 'axios';
 import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
+import DataGrid from '../components/UITable';
+import { cols } from '../utils/CalibTable';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
@@ -457,12 +459,9 @@ export default function DetailedInstrumentView() {
               </div>
             </div>
             {formState.calibrationFrequency > 0 ? (
-              <CalibrationTable
+              <DataGrid
                 rows={calibHist.filter((ele) => ele.viewOnly)}
-                deleteRow={deleteRow}
-                onChangeCalibRow={onChangeCalibRow}
-                showSaveButton
-                onSaveClick={handleSubmit}
+                cols={cols}
               />
             ) : (
               <div className="row mt-3">

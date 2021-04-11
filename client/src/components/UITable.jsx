@@ -36,6 +36,34 @@ import CreateButton from './CreateButton';
 // import UserContext from './UserContext';
 import { GenerateBarcodesIcon } from './GenerateBarcodes';
 
+let paginationContainer;
+
+function CustomPagination(props) {
+  const { state, api } = props;
+  CustomPagination.propTypes = {
+    /**
+     * ApiRef that let you manipulate the grid.
+     */
+    api: PropTypes.shape({
+      current: PropTypes.object.isRequired,
+    }).isRequired,
+    /**
+     * The GridState object containing the current grid state.
+     */
+    state: PropTypes.object.isRequired,
+  };
+  return (
+    <Portal container={paginationContainer.current}>
+      <Pagination
+        page={state.pagination.page}
+        count={state.pagination.pageCount}
+        onChange={(event, value) => api.current.setPage(value)}
+        siblingCount={2}
+      />
+    </Portal>
+  );
+}
+
 export default function DisplayGrid({
   rows, cols, cellHandler,
 }) {
@@ -44,9 +72,21 @@ export default function DisplayGrid({
     cols: PropTypes.array.isRequired,
     cellHandler: PropTypes.func,
   };
+  paginationContainer = React.useRef(null);
+  React.useEffect(() => {
+    setTimeout(() => $('.MuiDataGrid-footer').first().remove(), 1);
+  }, []);
 
   return (
-    <div style={{ width: '100%' }}>
+    <div
+      className="rounded"
+      style={{
+        // maxHeight: '77vh',
+        overflowY: 'auto',
+        width: '100%',
+        overflowX: 'hidden',
+      }}
+    >
       <DataGrid
         rows={rows}
         columns={cols}
@@ -61,6 +101,9 @@ export default function DisplayGrid({
           toolbarDensityComfortable: 'Large',
         }}
         autoHeight
+        components={{
+          Pagination: CustomPagination,
+        }}
         onCellClick={(e) => {
           if (cellHandler) {
             cellHandler(e);
@@ -69,39 +112,13 @@ export default function DisplayGrid({
         disableSelectionOnClick
         className="bg-light"
       />
+      <div className="row bg-offset rounded py-2 mx-auto">
+        {/* This is where the footer starts */}
+        <div className="col-auto me-auto" ref={paginationContainer} />
+      </div>
     </div>
   );
 }
-
-let paginationContainer;
-
-function CustomPagination(props) {
-  const { state, api } = props;
-
-  return (
-    <Portal container={paginationContainer.current}>
-      <Pagination
-        page={state.pagination.page}
-        count={state.pagination.pageCount}
-        onChange={(event, value) => api.current.setPage(value)}
-        siblingCount={2}
-      />
-    </Portal>
-  );
-}
-
-CustomPagination.propTypes = {
-  /**
-   * ApiRef that let you manipulate the grid.
-   */
-  api: PropTypes.shape({
-    current: PropTypes.object.isRequired,
-  }).isRequired,
-  /**
-   * The GridState object containing the current grid state.
-   */
-  state: PropTypes.object.isRequired,
-};
 
 export function ServerPaginationGrid({
   fetchData,
@@ -205,6 +222,7 @@ export function ServerPaginationGrid({
         .find(":contains('Material-UI X Unlicensed product')")
         .first()
         .remove(); // remove watermark
+      $('.MuiDataGrid-footer').first().remove(); // remove unused footer cell
     }, 1);
   }, []);
 

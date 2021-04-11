@@ -102,6 +102,7 @@ class UserAPI extends DataSource {
           modelPermission: false,
           instrumentPermission: false,
           calibrationPermission: false,
+          calibrationApproverPermission: false,
         });
         response.message = 'Created account for user';
         // 1 day = 8.64e7 ms

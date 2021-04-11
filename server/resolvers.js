@@ -2,6 +2,11 @@
 // Resolvers define the technique for fetching the types defined in the
 // schema.
 const bcrypt = require('bcryptjs');
+const { PubSub } = require('apollo-server');
+const { withFilter } = require('apollo-server');
+
+const pubsub = new PubSub();
+const triggerWord = 'USER_MODIFIED';
 // For hashing password
 const saltRounds = 10;
 module.exports = {
@@ -113,6 +118,10 @@ module.exports = {
       limit,
       offset,
     }),
+    getAllPendingCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllPendingCalibrationEvents({
+      limit,
+      offset,
+    }),
     getCalibrationEventsByInstrument: async (
       _,
       { modelNumber, vendor, assetTag },
@@ -129,16 +138,26 @@ module.exports = {
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
       calibrationHistoryIdReference,
     }),
-    getAllModelCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.modelAPI.getAllModelCategories({
+    getAllModelCategories: async (
+      _,
+      { limit, offset, orderBy },
+      { dataSources },
+    ) => await dataSources.modelAPI.getAllModelCategories({
       limit,
       offset,
       orderBy,
     }),
-    getAllInstrumentCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentCategories({
+    getAllInstrumentCategories: async (
+      _,
+      { limit, offset, orderBy },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentCategories({
       limit,
       offset,
       orderBy,
     }),
+    getCetificateForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getCetificateForInstrument({ assetTag }),
+    getChainOfTruthForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getChainOfTruthForInstrument({ assetTag }),
   },
   Mutation: {
     bulkImportData: async (
@@ -292,7 +311,12 @@ module.exports = {
     addCalibrationEventByAssetTag: async (
       _,
       {
-        assetTag, user, date, comment, fileLocation, fileName,
+        assetTag,
+        user,
+        date,
+        comment,
+        fileLocation,
+        fileName,
       },
       { dataSources },
     ) => {
@@ -311,7 +335,11 @@ module.exports = {
     addLoadBankCalibration: async (
       _,
       {
-        assetTag, user, date, comment, loadBankData,
+        assetTag,
+        user,
+        date,
+        comment,
+        loadBankData,
       },
       { dataSources },
     ) => {
@@ -329,7 +357,11 @@ module.exports = {
     addKlufeCalibration: async (
       _,
       {
-        assetTag, user, date, comment, klufeData,
+        assetTag,
+        user,
+        date,
+        comment,
+        klufeData,
       },
       { dataSources },
     ) => {
@@ -344,10 +376,35 @@ module.exports = {
       );
       return response;
     },
+    addCustomCalibration: async (
+      _,
+      {
+        assetTag,
+        user,
+        date,
+        comment,
+        customFormData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCustomCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          customFormData,
+        },
+      );
+      return response;
+    },
     addCalibrationEventById: async (
       _,
       {
-        calibrationHistoryIdReference, user, date, comment,
+        calibrationHistoryIdReference,
+        user,
+        date,
+        comment,
       },
       { dataSources },
     ) => {
@@ -455,14 +512,22 @@ module.exports = {
         calibrationApproverPermission,
       },
       { dataSources },
-    ) => await dataSources.userAPI.editPermissions({
-      userName,
-      isAdmin,
-      modelPermission,
-      calibrationPermission,
-      instrumentPermission,
-      calibrationApproverPermission,
-    }),
+    ) => {
+      const response = await dataSources.userAPI.editPermissions({
+        userName,
+        isAdmin,
+        modelPermission,
+        calibrationPermission,
+        instrumentPermission,
+        calibrationApproverPermission,
+      });
+      if (response.user) {
+        pubsub.publish(triggerWord, {
+          userChanged: response.user,
+        });
+      }
+      return response;
+    },
     deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (_, { name }, { dataSources }) => {
       const response = await dataSources.modelAPI.addModelCategory({
@@ -567,6 +632,15 @@ module.exports = {
         },
       );
       return response;
+    },
+  },
+  Subscription: {
+    userChanged: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(triggerWord),
+        (payload, variables) => (payload.userChanged.userName === variables.userName)
+        ,
+      ),
     },
   },
 };

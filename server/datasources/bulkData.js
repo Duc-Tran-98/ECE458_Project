@@ -259,6 +259,11 @@ class BulkDataAPI extends DataSource {
                       {
                         calibrationHistoryIdReference: instrumentId,
                         user: calibrationUser,
+                        // TODO update firstname, lastName, and approval
+                        // this is temp patch so import still works
+                        userFirstName: 'first name placeHolder - update import later',
+                        userLastName: 'last name placeHolder - update import later',
+                        approvalStatus: 3,
                         date: calibrationDate,
                         comment: calibrationComment,
                       },
@@ -411,6 +416,11 @@ class BulkDataAPI extends DataSource {
                         user: calibrationUser,
                         date: calibrationDate,
                         comment: calibrationComment,
+                        // TODO update firstname, lastName, and approval
+                        // this is temp patch so import still works
+                        userFirstName: 'first name placeHolder - update import later',
+                        userLastName: 'last name placeHolder - update import later',
+                        approvalStatus: 3,
                       },
                       { transaction: t },
                     );
@@ -462,6 +472,7 @@ class BulkDataAPI extends DataSource {
       await t.rollback();
       response.success = false;
       if (error.errors) {
+        console.log(error.errors[0]);
         response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
       } else {
         response.message = error.message;
@@ -605,6 +616,11 @@ class BulkDataAPI extends DataSource {
                     user: calibrationUser,
                     date: calibrationDate,
                     comment: calibrationComment,
+                    // TODO update firstname, lastName, and approval
+                    // this is temp patch so import still works
+                    userFirstName: 'first name placeHolder - update import later',
+                    userLastName: 'last name placeHolder - update import later',
+                    approvalStatus: 3,
                   });
                 }
                 added.push(i);

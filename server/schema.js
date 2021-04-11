@@ -4,6 +4,9 @@ const typeDefs = gql`
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each.
   type Query {
+    getCetificateForInstrument(assetTag: Int!): CertificateInfo
+    getChainOfTruthForInstrument(assetTag: Int!): [CertificateInfo]
+
     # User Related Queries
     isAdmin(userName: String!): Boolean!
     getUser(userName: String!): User!
@@ -65,6 +68,7 @@ const typeDefs = gql`
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
+    getAllPendingCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
     getCalibrationEventsByInstrument(
       modelNumber: String!
       vendor: String!
@@ -89,6 +93,43 @@ const typeDefs = gql`
     countInstrumentCategories: Int!
     countModelsAttachedToCategory(name: String!): Int!
     countInstrumentsAttachedToCategory(name: String!): Int!
+  }
+
+  type CertificateInfo {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String
+    assetTag: Int!
+    modelDescription: String!
+    calibrationFrequency: Int
+    calibrationComment: String
+    calibrationDate: String
+    calibratorUserName: String
+    calibratorFirstName: String
+    calibratorLastName: String
+    approvalStatus: String!
+    approvalComment: String
+    approvalDate: String
+    approverUserName: String
+    approverFirstName: String
+    approverLastName: String
+    isFileAttached: Boolean!
+    fileLocation: String
+    fileName: String
+    isKlufe: Boolean!
+    klufeData: String
+    isLoadBank: Boolean!
+    loadBankData: String
+    isCustomForm: Boolean!
+    customFormData: String
+    calibratedBy: [CalibratedByInfo]
+  }
+
+  type CalibratedByInfo {
+    vendor: String!
+    modelNumber: String!
+    serialNumber: String
+    assetTag: String!
   }
 
   type User {
@@ -229,12 +270,21 @@ const typeDefs = gql`
     id: ID!
     calibrationHistoryIdReference: Int!
     user: String!
+    userFirstName: String!
+    userLastName: String!
     date: String!
     comment: String
     fileLocation: String
     fileName: String
     loadBankData: String
     klufeData: String
+    customFormData: String
+    approvalStatus: Int!
+    approverUsername: String
+    approverFirstName: String
+    approverLastName: String
+    approvalDate: String
+    approvalComment: String
   }
 
   input ModelInput {
@@ -274,11 +324,13 @@ const typeDefs = gql`
     # User related mutations
     login(userName: String!, password: String!): String!
     oauthLogin(netId: String!, firstName: String!, lastName: String!): String!
+    
     changePassword(
       userName: String!
       oldPassword: String!
       newPassword: String!
     ): String!
+
     signup(
       email: String!
       firstName: String!
@@ -291,6 +343,7 @@ const typeDefs = gql`
       calibrationPermission: Boolean
       calibrationApproverPermission: Boolean
     ): String!
+
     editPermissions(
       userName: String!
       isAdmin: Boolean!
@@ -299,6 +352,7 @@ const typeDefs = gql`
       calibrationPermission: Boolean!
       calibrationApproverPermission: Boolean!
     ): UserCacheUpdate
+
     deleteUser(userName: String!): String!
 
     # Model related Mutations
@@ -316,6 +370,7 @@ const typeDefs = gql`
       supportCustomCalibration: Boolean!
       customForm: String
     ): ModelCacheUpdate
+
     deleteModel(modelNumber: String!, vendor: String!): String!
     editModel(
       id: ID!
@@ -342,6 +397,7 @@ const typeDefs = gql`
       comment: String
       categories: [String]
     ): InstrumentCacheUpdate
+
     editInstrument(
       modelNumber: String!
       vendor: String!
@@ -351,6 +407,7 @@ const typeDefs = gql`
       id: ID!
       categories: [String]
     ): InstrumentCacheUpdate
+
     deleteInstrument(id: ID!): String!
 
     # Calibration Events related mutations
@@ -390,21 +447,23 @@ const typeDefs = gql`
       klufeData: String!
     ): String!
 
-    #bulk import
-    # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
-    bulkImportData(
-      models: [ModelInput]
-      instruments: [InstrumentInput]
+    addCustomCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      customFormData: String!
     ): String!
-    bulkImportModels(models: [ModelInput]): String!
-    bulkImportInstruments(instruments: [InstrumentInput]): String!
+
     addCalibrationEventById(
       calibrationHistoryIdReference: Int!
       date: String!
       user: String!
       comment: String
     ): String!
+
     deleteCalibrationEvent(id: ID!): String!
+
     editCalibrationEvent(
       user: String
       date: String
@@ -412,16 +471,30 @@ const typeDefs = gql`
       id: ID!
     ): String!
 
+    #bulk import
+    # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
+    bulkImportData(
+      models: [ModelInput]
+      instruments: [InstrumentInput]
+    ): String!
+
+    bulkImportModels(models: [ModelInput]): String!
+    bulkImportInstruments(instruments: [InstrumentInput]): String!
+
     # category related mutations
     addModelCategory(name: String!): CategoryCacheUpdate
+
     removeModelCategory(name: String!): String!
+
     editModelCategory(
       currentName: String!
       updatedName: String!
     ): CategoryCacheUpdate
 
     addInstrumentCategory(name: String!): CategoryCacheUpdate
+
     removeInstrumentCategory(name: String!): String!
+
     editInstrumentCategory(
       currentName: String!
       updatedName: String!
@@ -432,6 +505,7 @@ const typeDefs = gql`
       modelNumber: String!
       category: String!
     ): String!
+
     removeCategoryFromModel(
       vendor: String!
       modelNumber: String!
@@ -444,12 +518,17 @@ const typeDefs = gql`
       serialNumber: String!
       category: String!
     ): String!
+
     removeCategoryFromInstrument(
       vendor: String!
       modelNumber: String!
       serialNumber: String!
       category: String!
     ): String!
+  }
+
+  type Subscription {
+    userChanged(userName: String!): User
   }
 `;
 

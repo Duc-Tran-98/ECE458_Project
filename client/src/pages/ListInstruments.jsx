@@ -441,12 +441,7 @@ export default function ListInstruments() {
         onPageSizeChange={(page, limit) => {
           updateUrlOnPageChange(page, limit);
         }}
-        initialOrder={() => {
-          if (orderBy) {
-            return [[orderBy, sortBy]];
-          }
-          return null;
-        }}
+        initialOrder={orderBy ? [[orderBy, sortBy]] : []}
         onSortModelChange={(order, sort) => {
           updateUrlOnOrderChange(order, sort);
         }}
@@ -466,18 +461,20 @@ export default function ListInstruments() {
             const copyOfRes = JSON.parse(JSON.stringify(response)); // make deep copy of response b/c cannot add new properties to response
             copyOfRes.instruments.forEach((element) => {
               if (element !== null) {
-                element.categories = element.modelCategories.concat(element.instrumentCategories);
+                element.categories = element.modelCategories.concat(
+                  element.instrumentCategories,
+                );
                 element.calibrationStatus = element.calibrationFrequency === null
-                || element.calibrationFrequency === 0
+                    || element.calibrationFrequency === 0
                   ? 'N/A'
                   : 'Out of Calibration';
                 element.recentCalDate = 'N/A';
                 if (
                   element.calibrationFrequency
-                  && element.recentCalibration
-                  && element.recentCalibration[0]
+                    && element.recentCalibration
+                    && element.recentCalibration[0]
                 ) {
-                // eslint-disable-next-line prefer-destructuring
+                  // eslint-disable-next-line prefer-destructuring
                   element.calibrationStatus = new Date(
                     element.recentCalibration[0].date,
                   )
@@ -497,7 +494,7 @@ export default function ListInstruments() {
         filterOptions={filterOptions}
         filename="instruments.csv"
         showToolBar
-        showImport={(user.isAdmin || user.instrumentPermission)}
+        showImport={user.isAdmin || user.instrumentPermission}
         onCreate={() => {
           setUpdate(true);
           setUpdate(false);

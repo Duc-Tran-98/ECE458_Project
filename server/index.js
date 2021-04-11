@@ -39,7 +39,9 @@ const server = new ApolloServer({
     }
     const auth = (req.headers && req.headers.authorization) || ''; // get jwt from header
     const verifyWithPromise = createVerifier({ key: async () => 'secret' });
-    const user = await verifyWithPromise(auth).then((value) => value).catch(() => (null)); // decode jwt
+    const user = await verifyWithPromise(auth)
+      .then((value) => value)
+      .catch(() => null); // decode jwt
     // let { query } = req.body;
     // query = JSON.stringify(query);
     // if (!user && !(query.includes('mutation LoginMutation') || query.includes('mutation OAuthSignOn'))) {
@@ -49,24 +51,40 @@ const server = new ApolloServer({
     // }
     // // if decode ok
     const storeModel = await store;
-    const userVals = await storeModel.users.findAll({ where: { userName: user?.userName || req.body?.variables?.userName } }).then((val) => {
-      if (val && val[0]) { // look up user and return their info
-        return val[0].dataValues;
-      }
-      return null; // return null if user no longer exists
-    }).catch(() => null);
+    const userVals = await storeModel.users
+      .findAll({
+        where: { userName: user?.userName || req.body?.variables?.userName },
+      })
+      .then((val) => {
+        if (val && val[0]) {
+          // look up user and return their info
+          return val[0].dataValues;
+        }
+        return null; // return null if user no longer exists
+      })
+      .catch(() => null);
     return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
   },
   // Additional constructor options
   typeDefs,
   resolvers,
   dataSources,
+  subscriptions: {
+    // eslint-disable-next-line no-unused-vars
+    onConnect: (connectionParams, webSocket) => {
+      console.log('connected: ');
+    },
+    // eslint-disable-next-line no-unused-vars
+    onDisconnect: (connectionParams, webSocket) => {
+      console.log('disconnected: ');
+    },
+  },
 });
 
-server.listen().then(() => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`
-    Server is running!
-    Listening on port 4000
+    Server is running at ${url}\n
+    Subscriptions Ready at ${subscriptionsUrl}
     Explore at https://studio.apollographql.com/dev
   `);
 });
