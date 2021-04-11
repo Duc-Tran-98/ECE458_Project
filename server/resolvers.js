@@ -340,12 +340,6 @@ module.exports = {
         date,
         comment,
         loadBankData,
-        approvalStatus,
-        approverUsername,
-        approverFirstName,
-        approverLastName,
-        approvalDate,
-        approvalComment,
       },
       { dataSources },
     ) => {
@@ -356,12 +350,6 @@ module.exports = {
           date,
           comment,
           loadBankData,
-          approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         },
       );
       return response;
@@ -374,12 +362,6 @@ module.exports = {
         date,
         comment,
         klufeData,
-        approvalStatus,
-        approverUsername,
-        approverFirstName,
-        approverLastName,
-        approvalDate,
-        approvalComment,
       },
       { dataSources },
     ) => {
@@ -390,12 +372,6 @@ module.exports = {
           date,
           comment,
           klufeData,
-          approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         },
       );
       return response;
@@ -408,12 +384,6 @@ module.exports = {
         date,
         comment,
         customFormData,
-        approvalStatus,
-        approverUsername,
-        approverFirstName,
-        approverLastName,
-        approvalDate,
-        approvalComment,
       },
       { dataSources },
     ) => {
@@ -424,12 +394,6 @@ module.exports = {
           date,
           comment,
           customFormData,
-          approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         },
       );
       return response;
