@@ -4,9 +4,11 @@ import { useHistory } from 'react-router-dom';
 import { ServerPaginationGrid } from '../components/UITable';
 import UserContext from '../components/UserContext';
 import { approvalCols } from '../utils/CalibTable';
-import GetCalibHistory from '../queries/GetCalibHistory';
+// import GetCalibHistory from '../queries/GetCalibHistory';
 import { StateLessCloseModal } from '../components/ModalAlert';
 import DetailedCalibrationView from '../components/DetailedCalibrationView';
+import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
+import { FindInstrumentById } from '../queries/FindInstrument';
 
 export default function CalibrationApprovalPage() {
   // eslint-disable-next-line no-unused-vars
@@ -79,9 +81,7 @@ export default function CalibrationApprovalPage() {
         title="Approval Request"
         size="xl"
       >
-        {selectedRow && (
-          <DetailedCalibrationView selectedRow={selectedRow} />
-        )}
+        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} />}
       </StateLessCloseModal>
       <ServerPaginationGrid
         shouldUpdate={update}
@@ -105,21 +105,28 @@ export default function CalibrationApprovalPage() {
           <div className="ps-3 h5 py-2">Calibration Approval Table</div>
         }
         // eslint-disable-next-line no-unused-vars
-        fetchData={(limit, offset, ordering) => {
-          const calibEvents = GetCalibHistory({ id: 1 }).then((data) => {
+        fetchData={(limit, offset, ordering) => GetAllPendingCalibEvents({ limit, offset, fetchPolicy: 'no-cache' }).then(
+          (data) => {
             data.forEach((element) => {
-              element.vendor = 'Fluke';
-              element.modelNumber = '458'; // TODO: fill in instrument info for each row
-              element.assetTag = 100000;
-              element.serialNumber = 'XYZ';
-              element.description = 'TEST';
-              element.calibrationFrequency = 30;
+              FindInstrumentById({ // TODO: remove query inside this loop because slow
+                id: element.calibrationHistoryIdReference,
+                handleResponse: (response) => {
+                  const {
+                    vendor, modelNumber, assetTag, serialNumber, description, calibrationFrequency,
+                  } = response;
+                  element.vendor = vendor;
+                  element.modelNumber = modelNumber;
+                  element.assetTag = assetTag;
+                  element.serialNumber = serialNumber;
+                  element.description = description;
+                  element.calibrationFrequency = calibrationFrequency;
+                },
+              });
             });
             return data;
-          });
-          return calibEvents;
-        }}
-        rowCount={() => GetCalibHistory({ id: 1 }).then((data) => data.length)}
+          },
+        )}
+        rowCount={() => GetAllPendingCalibEvents({ fetchPolicy: 'no-cache', limit: 1, offset: 0 }).then((data) => data.length)}
       />
     </>
   );

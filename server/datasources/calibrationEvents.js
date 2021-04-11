@@ -190,7 +190,7 @@ class CalibrationEventAPI extends DataSource {
             id: modelId,
           },
         });
-        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
           where: {
             userName: user,

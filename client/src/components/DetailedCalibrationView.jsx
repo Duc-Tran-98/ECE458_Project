@@ -82,7 +82,6 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
           />
         </div>
       </div>
-      {/* TODO: dynamically render any instruments used in calibration */}
       <div className="row mx-3 mt-3 pt-3 border-top border-dark">
         <div className="col">
           <span className="h5">Comment</span>
@@ -101,6 +100,12 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
         <br />
         {getCalibrationType() === 'Load Bank' && (
           <TableLoadBank loadBankData={JSON.parse(selectedRow.loadBankData)} />
+        )}
+        {/* TODO: dynamically render any instruments used in calibration */}
+        {getCalibrationType() === 'Plain' && (
+          <div className="ms-4">
+            No data on record
+          </div>
         )}
       </div>
       {!isForInstrumentPage && (
