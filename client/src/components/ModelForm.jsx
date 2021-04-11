@@ -449,7 +449,6 @@ export default function ModelForm({
                 header="Custom Form"
                 contents={(
                   <CustomFormBuilder
-                    handleSave={(customFormJSON) => setFieldValue('customForm', customFormJSON)}
                     state={customFormState}
                     setState={setCustomFormState}
                     update={shouldUpdateCustomForm}

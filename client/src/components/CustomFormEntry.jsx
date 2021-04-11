@@ -46,15 +46,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, handleSubmit, preview,
+  getSteps, handleSubmit,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
-    handleSubmit: PropTypes.func.isRequired,
-    preview: PropTypes.bool,
+    handleSubmit: PropTypes.func,
   };
   CustomFormEntry.defaultProps = {
-    preview: true,
+    handleSubmit: null,
   };
 
   const classes = useStyles();
@@ -184,22 +183,10 @@ export default function CustomFormEntry({
     setFormSteps(formEntrySteps);
   }, [state, update]);
 
-  // // Effect to set errors on number invalid
-  // React.useEffect(() => {
-  //   const nextState = state;
-  //   const errorCount = 0;
-  //   steps.map((step, index) => {
-  //     switch(step.type) {
-
-  //     }
-  //   })
-
-  // }, [state, update]);
-
   return (
     <div>
       {formSteps}
-      {!preview && <button type="submit" onClick={handleSubmit}>Submit</button>}
+      {handleSubmit !== null && <button type="submit" className="btn" onClick={handleSubmit}>Finish</button>}
     </div>
   );
 }

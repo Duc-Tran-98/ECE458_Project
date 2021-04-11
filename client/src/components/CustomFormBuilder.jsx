@@ -14,10 +14,9 @@ import {
 } from './FormContsants';
 
 export default function CustomFormBuilder({
-  handleSave, state, setState, update, editEnabled,
+  state, setState, update, editEnabled,
 }) {
   CustomFormBuilder.propTypes = {
-    handleSave: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     state: PropTypes.object.isRequired,
     setState: PropTypes.func.isRequired,
@@ -31,9 +30,6 @@ export default function CustomFormBuilder({
   const [mode, setMode] = React.useState(initMode);
   const [focus, setFocus] = React.useState(0); // index of element to focus on
 
-  const handleSubmit = () => {
-    handleSave(JSON.stringify(state));
-  };
   const handleChange = (e, index) => {
     const nextState = [...state];
     nextState[index] = {
@@ -164,7 +160,7 @@ export default function CustomFormBuilder({
   }, [state, update]);
 
   React.useEffect(() => {
-    setFormEntry(<CustomFormEntry getSteps={() => state} handleSubmit={() => alert('just finished')} />);
+    setFormEntry(<CustomFormEntry getSteps={() => state} />);
   }, [state]);
 
   // TODO: Add useEffect to assign error values on state changes
