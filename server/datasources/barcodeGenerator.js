@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 const JsBarcode = require('jsbarcode');
 const { createCanvas } = require('canvas');
+// eslint-disable-next-line no-unused-vars
 const fs = require('fs');
 const { PDFDocument } = require('pdf-lib');
 
