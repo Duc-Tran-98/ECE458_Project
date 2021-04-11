@@ -191,10 +191,10 @@ export function ServerPaginationGrid({
     }
     setTotal(val);
     setRows(newRows);
-    if (window.location.href.includes('/viewInstruments') || window.location.href.includes('/viewCalibration')) { // TODO: remove /viewCalibration and setTimeout val should be 10
+    if (window.location.href.includes('/viewInstruments')) {
       setTimeout(() => { // lots of data/queries from this route, so
         setLoading(false); // GUI needs more time to update
-      }, 100);
+      }, 10);
     } else {
       setLoading(false);
     }

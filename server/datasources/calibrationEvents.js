@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 const SQL = require('sequelize');
@@ -53,6 +54,7 @@ class CalibrationEventAPI extends DataSource {
   }
 
   async getAllPendingCalibrationEvents({ limit = null, offset = null }) {
+    const response = [];
     const storeModel = await this.store;
     this.store = storeModel;
     const calibrationEvents = await this.store.calibrationEvents.findAll({
@@ -62,7 +64,17 @@ class CalibrationEventAPI extends DataSource {
         approvalStatus: 0,
       },
     });
-    return calibrationEvents;
+    for (let i = 0; i < calibrationEvents.length; i += 1) {
+      const instrument = await this.instrumentAPI.getInstrumentById({
+        id: calibrationEvents[i].dataValues.calibrationHistoryIdReference,
+      });
+      delete instrument.id;
+      response.push({
+        ...calibrationEvents[i].dataValues,
+        ...instrument,
+      });
+    }
+    return response;
   }
 
   async getCalibrationEventsByInstrument({ modelNumber, vendor, assetTag }) {

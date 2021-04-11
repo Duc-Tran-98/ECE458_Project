@@ -68,7 +68,10 @@ const typeDefs = gql`
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
-    getAllPendingCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
+    getAllPendingCalibrationEvents(
+      limit: Int
+      offset: Int
+    ): [InstrumentWithCalibration]
     getCalibrationEventsByInstrument(
       modelNumber: String!
       vendor: String!
@@ -235,17 +238,35 @@ const typeDefs = gql`
   type InstrumentWithCalibration {
     vendor: String!
     modelNumber: String!
-    serialNumber: String!
+    serialNumber: String
     modelReference: Int!
     calibrationFrequency: Int
-    comment: String
+    instrumentCategories: [Category]
     description: String!
-    assetTag: Int!
     id: ID!
+    assetTag: Int!
     supportLoadBankCalibration: Boolean
-    recentCalDate: String
-    recentCalUser: String
-    recentCalComment: String
+    supportKlufeCalibration: Boolean
+    requiresCalibrationApproval: Boolean!
+    supportCustomCalibration: Boolean!
+    customForm: String
+    calibrationHistoryIdReference: Int!
+    user: String!
+    userFirstName: String!
+    userLastName: String!
+    date: String!
+    comment: String
+    fileLocation: String
+    fileName: String
+    loadBankData: String
+    klufeData: String
+    customFormData: String
+    approvalStatus: Int!
+    approverUsername: String
+    approverFirstName: String
+    approverLastName: String
+    approvalDate: String
+    approvalComment: String
   }
 
   type ModelCacheUpdate {
@@ -324,7 +345,7 @@ const typeDefs = gql`
     # User related mutations
     login(userName: String!, password: String!): String!
     oauthLogin(netId: String!, firstName: String!, lastName: String!): String!
-    
+
     changePassword(
       userName: String!
       oldPassword: String!

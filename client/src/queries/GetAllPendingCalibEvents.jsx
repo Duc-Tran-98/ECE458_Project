@@ -16,26 +16,25 @@ export default async function GetAllPendingCalibEvents({
     fetchPolicy: PropTypes.string,
   };
   const GET_PENDING = gql`
-    query Pending(
-      $limit: Int
-      $offset: Int
-    ) {
-      getAllPendingCalibrationEvents(
-        limit: $limit
-        offset: $offset
-      ) {
+    query Pending($limit: Int, $offset: Int) {
+      getAllPendingCalibrationEvents(limit: $limit, offset: $offset) {
         id
-        calibrationHistoryIdReference
-        user
-        userFirstName
-        userLastName
+        assetTag
+        serialNumber
+        modelNumber
+        vendor
+        description
+        calibrationFrequency
         date
-        comment
-        fileLocation
-        fileName
-        loadBankData
         klufeData
         customFormData
+        loadBankData
+        user
+        approvalStatus
+        comment
+        fileName
+        fileLocation
+        calibrationHistoryIdReference
       }
     }
   `;
