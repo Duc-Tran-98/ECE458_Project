@@ -437,12 +437,6 @@ const typeDefs = gql`
       user: String!
       comment: String
       loadBankData: String!
-      approvalStatus: Int!
-      approverUsername: String
-      approverFirstName: String
-      approverLastName: String
-      approvalDate: String
-      approvalComment: String
     ): String!
 
     addKlufeCalibration(
@@ -451,12 +445,6 @@ const typeDefs = gql`
       user: String!
       comment: String
       klufeData: String!
-      approvalStatus: Int!
-      approverUsername: String
-      approverFirstName: String
-      approverLastName: String
-      approvalDate: String
-      approvalComment: String
     ): String!
 
     addCustomCalibration(
@@ -465,12 +453,6 @@ const typeDefs = gql`
       user: String!
       comment: String
       customFormData: String!
-      approvalStatus: Int!
-      approverUsername: String
-      approverFirstName: String
-      approverLastName: String
-      approvalDate: String
-      approvalComment: String
     ): String!
 
     addCalibrationEventById(
