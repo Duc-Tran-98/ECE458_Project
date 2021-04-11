@@ -46,15 +46,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, handleSubmit,
+  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
-    handleSubmit: PropTypes.func,
+    modelNumber: PropTypes.string,
+    vendor: PropTypes.string,
+    serialNumber: PropTypes.string,
+    assetTag: PropTypes.number,
+    onFinish: PropTypes.func,
   };
   CustomFormEntry.defaultProps = {
-    handleSubmit: null,
+    modelNumber: '',
+    vendor: '',
+    serialNumber: '',
+    assetTag: 0,
+    onFinish: null,
   };
+
+  // TODO: Add query for this
+  const handleSubmit = () => {
+    console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
+    onFinish();
+  };
+  const canSubmit = false;
 
   const classes = useStyles();
   const steps = getSteps();
@@ -186,7 +201,7 @@ export default function CustomFormEntry({
   return (
     <div>
       {formSteps}
-      {handleSubmit !== null && <button type="submit" className="btn" onClick={handleSubmit}>Finish</button>}
+      {onFinish !== null && <button type="submit" className="btn" disabled={!canSubmit} onClick={handleSubmit}>Finish</button>}
     </div>
   );
 }

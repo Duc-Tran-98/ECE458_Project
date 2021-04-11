@@ -357,8 +357,11 @@ export default function DetailedInstrumentView() {
               >
                 <CustomFormEntry
                   getSteps={() => customForm}
-                  handleSubmit={() => alert('submitting custom form')}
-                  preview
+                  onFinish={fetchData}
+                  modelNumber={formState.modelNumber}
+                  serialNumber={formState.serialNumber}
+                  assetTag={formState.assetTag}
+                  vendor={formState.vendor}
                 />
               </ModalAlert>
             </div>
