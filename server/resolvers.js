@@ -460,7 +460,7 @@ module.exports = {
       },
       { dataSources },
     ) => {
-      const response = await dataSources.calibrationEventAPI.approveCalibrationEvent({
+      const response = await dataSources.calibrationEventAPI.rejectCalibrationEvent({
         calibrationEventId, approverId, approvalDate, approvalComment,
       });
       return response;
