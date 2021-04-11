@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import InstrumentForm from './InstrumentForm';
 import MouseOverPopover from './PopOver';
+import TableLoadBank from './TableLoadBank';
 
 export default function DetailedCalibrationView({ selectedRow, isForInstrumentPage = false }) {
   DetailedCalibrationView.propTypes = {
@@ -94,11 +95,13 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
             disabled
           />
         </div>
-        <div className="col">
-          <span className="h5">Calibration Data</span>
-          <br />
-          <Form.Control as="textarea" rows={3} value="TBD" disabled />
-        </div>
+      </div>
+      <div className="row mx-3 mt-3 pt-3 border-top border-dark">
+        <span className="h5">Calibration Data</span>
+        <br />
+        {getCalibrationType() === 'Load Bank' && (
+          <TableLoadBank loadBankData={JSON.parse(selectedRow.loadBankData)} />
+        )}
       </div>
       {!isForInstrumentPage && (
         <div className="row mx-3 mt-3 pt-3 border-top border-dark">
