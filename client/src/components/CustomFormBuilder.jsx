@@ -127,8 +127,12 @@ export default function CustomFormBuilder({
               helperText={entry.helperText}
               min={entry.min}
               minSet={entry.minSet}
+              minError={entry.minError}
+              minHelperText={entry.minHelperText}
               max={entry.max}
               maxSet={entry.maxSet}
+              maxError={entry.maxError}
+              maxHelperText={entry.maxHelperText}
               index={index}
               handleChange={handleChange}
               handleDelete={deleteStep}

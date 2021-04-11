@@ -167,7 +167,7 @@ export function CustomUserPromptInput({
 }
 
 export function CustomNumericInput({
-  prompt, min, max, minSet, maxSet, handleChecked, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
+  prompt, min, max, minSet, maxSet, minError, minHelperText, maxError, maxHelperText, handleChecked, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -175,6 +175,10 @@ export function CustomNumericInput({
     max: PropTypes.number.isRequired,
     minSet: PropTypes.bool.isRequired,
     maxSet: PropTypes.bool.isRequired,
+    minError: PropTypes.bool.isRequired,
+    minHelperText: PropTypes.string.isRequired,
+    maxError: PropTypes.bool.isRequired,
+    maxHelperText: PropTypes.string.isRequired,
     handleChange: PropTypes.func.isRequired,
     index: PropTypes.number.isRequired,
     handleChecked: PropTypes.func.isRequired,
@@ -187,18 +191,6 @@ export function CustomNumericInput({
 
   };
   const classes = useStyles();
-  // const [state, setState] = React.useState({
-  //   checkedMin: false,
-  //   checkedMax: false,
-  // });
-
-  // const handleChecked = (e) => {
-  //   setState({
-  //     ...state,
-  //     [e.target.name]: e.target.checked,
-  //   });
-  // };
-
   return (
     <div className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -262,6 +254,8 @@ export function CustomNumericInput({
         type="number"
         onChange={(e) => handleChange(e, index)}
         value={min}
+        error={minError}
+        helperText={minHelperText}
       />
       )}
           {maxSet
@@ -274,6 +268,8 @@ export function CustomNumericInput({
         type="number"
         onChange={(e) => handleChange(e, index)}
         value={max}
+        error={maxError}
+        helperText={maxHelperText}
       />
       )}
         </div>

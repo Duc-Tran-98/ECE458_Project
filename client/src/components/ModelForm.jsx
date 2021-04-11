@@ -189,6 +189,49 @@ export default function ModelForm({
           helperText: 'Please enter a prompt',
         };
       }
+      if (element.type === 'number') {
+        // Validate min/max are valid numerically (if set)
+        console.log('numeric element');
+        console.log(element);
+        if (element.minSet && Number.isNaN(Number.parseFloat(element.min))) {
+          console.log('min is set but not parseable as float');
+          nextState[index] = {
+            ...nextState[index],
+            minError: true,
+            minHelperText: 'Invalid number',
+          };
+          errorCount += 1;
+        }
+        if (element.maxSet && Number.isNaN(Number.parseFloat(element.max))) {
+          console.log('max is set but not parseable as float');
+          nextState[index] = {
+            ...nextState[index],
+            maxError: true,
+            maxHelperText: 'Invalid number',
+          };
+          errorCount += 1;
+        }
+
+        // Validate correct min/max comparison
+        if (element.minSet && element.maxSet) {
+          const minFloat = Number.parseFloat(element.min);
+          const maxFloat = Number.parseFloat(element.max);
+          console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
+          if (!Number.isNaN(minFloat) && !Number.isNaN(maxFloat)) {
+            if (minFloat >= maxFloat) { // TODO: Variance request on min >= max? what if the same?
+              console.log('min and max set, but values comparison incorrect');
+              nextState[index] = {
+                ...nextState[index],
+                maxError: true,
+                maxHelperText: 'Must be greater than min',
+                minError: true,
+                minHelperText: 'Must be less than max',
+              };
+              errorCount += 1;
+            }
+          }
+        }
+      }
     });
     console.log(`inspected all fields, errorCount=${errorCount}\nsettingFormState: `);
     console.log(nextState);
@@ -218,6 +261,55 @@ export default function ModelForm({
             error: false,
             helperText: '',
           };
+        }
+      }
+    });
+    setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
+  }, [customFormState]);
+
+  // Check if numeric errors should be removed from custom form
+  React.useEffect(() => {
+    const nextState = customFormState;
+    customFormState.forEach((element, index) => {
+      if (element.type === 'number') {
+        if (element.minSet && !Number.isNaN(Number.parseFloat(element.min))) {
+          nextState[index] = {
+            ...nextState[index],
+            minError: false,
+            minHelperText: '',
+          };
+        }
+        if (element.maxSet && !Number.isNaN(Number.parseFloat(element.max))) {
+          nextState[index] = {
+            ...nextState[index],
+            maxError: false,
+            maxHelperText: '',
+          };
+        }
+        if (element.minSet && element.maxSet) {
+          const minFloat = Number.parseFloat(element.min);
+          const maxFloat = Number.parseFloat(element.max);
+          console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
+          if (!Number.isNaN(minFloat) && !Number.isNaN(maxFloat)) {
+            if (minFloat < maxFloat) { // TODO: Variance request on min >= max? what if the same?
+              nextState[index] = {
+                ...nextState[index],
+                maxError: false,
+                maxHelperText: '',
+                minError: false,
+                minHelperText: '',
+              };
+            } else {
+              nextState[index] = {
+                ...nextState[index],
+                maxError: true,
+                maxHelperText: 'Must be greater than min',
+                minError: true,
+                minHelperText: 'Must be less than max',
+              };
+            }
+          }
         }
       }
     });

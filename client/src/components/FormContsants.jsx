@@ -16,8 +16,12 @@ export const emptyNumericInput = {
   value: 0,
   minSet: false,
   min: 0,
+  minError: false,
+  minHelperText: '',
   maxSet: false,
   max: 0,
+  maxError: false,
+  maxHelperText: '',
   error: false,
   helperText: '',
 };
