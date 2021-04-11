@@ -248,10 +248,13 @@ export default function DetailedInstrumentView() {
         queryName: 'getModel',
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
-          setCustomForm(response.customForm);
+          console.log(response);
+          if (response.supportCustomCalibration) {
+            setSupportsCustomForm(response.supportCustomCalibration);
+            setCustomForm(JSON.parse(response.customForm));
+          }
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
           setSupportsKlufeWiz(response.supportKlufeCalibration);
-          setSupportsCustomForm(response.supportCustomCalibration);
         },
       });
       FindInstrument({
