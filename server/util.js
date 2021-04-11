@@ -397,6 +397,7 @@ module.exports.createStore = async (useTestDB) => {
     sourceKey: 'id',
     targetKey: 'id',
   });
+
   instrumentCategories.belongsToMany(instruments, {
     as: 'instruments',
     through: {
@@ -487,6 +488,7 @@ module.exports.createStore = async (useTestDB) => {
     foreignKey: 'modelId',
     constraints: false,
   });
+
   modelCategories.belongsToMany(instruments, {
     as: 'instrumentsOfModels',
     through: {
@@ -619,6 +621,13 @@ module.exports.createStore = async (useTestDB) => {
       },
     },
   );
+
+  calibrationEvents.hasMany(calibratedByRelationships, {
+    as: 'calibratedBy',
+    sourceKey: 'id',
+    foreignKey: 'calibration',
+    constraints: false,
+  });
 
   instruments.hasMany(calibrationEvents, {
     as: 'recentCalibration',
