@@ -160,7 +160,7 @@ export default function ModelForm({
     </div>
   );
   console.log(`customForm prop: ${customForm}`);
-  const initCustomFormState = customForm !== '' ? JSON.parse(customForm) : [emptyHeader];
+  const initCustomFormState = customForm ? JSON.parse(customForm) : [emptyHeader];
   console.log('initCustomFormState: ');
   console.log(initCustomFormState);
   const [customFormState, setCustomFormState] = React.useState(initCustomFormState);
