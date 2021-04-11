@@ -1,4 +1,6 @@
-// This file deals with what methods a model model should have
+/* eslint-disable no-continue */
+/* eslint-disable no-await-in-loop */
+const SQL = require('sequelize');
 const { DataSource } = require('apollo-datasource');
 const InstrumentAPI = require('./instruments');
 
@@ -50,13 +52,26 @@ class CalibrationEventAPI extends DataSource {
     return calibrationEvents;
   }
 
+  async getAllPendingCalibrationEvents({ limit = null, offset = null }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const calibrationEvents = await this.store.calibrationEvents.findAll({
+      limit,
+      offset,
+      where: {
+        approvalStatus: 0,
+      },
+    });
+    return calibrationEvents;
+  }
+
   async getCalibrationEventsByInstrument({ modelNumber, vendor, assetTag }) {
     let calibrationHistoryIdReference = -1;
     const storeModel = await this.store;
     this.store = storeModel;
     await this.store.instruments.findAll({
       where:
-      { modelNumber, vendor, assetTag },
+        { modelNumber, vendor, assetTag },
     }).then((instrument) => {
       if (instrument && instrument[0]) {
         calibrationHistoryIdReference = instrument[0].dataValues.id;
@@ -102,21 +117,35 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { modelNumber, vendor, serialNumber },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
-          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD!';
           return;
         }
-        console.log(`line 111 inside calib event: ${fileLocation} ${fileName}`);
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           fileLocation,
           fileName,
+          approvalStatus,
         });
         response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {
@@ -149,21 +178,35 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        console.log(`line 158 in calib evnet: ${fileLocation} ${fileName}`);
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           fileLocation,
           fileName,
+          approvalStatus,
         });
         response.message = `Added calibration event on ${date} to instrument ${assetTag}.`;
       } else {
@@ -195,19 +238,34 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           loadBankData,
+          approvalStatus,
         });
         response.message = `Added new load bank calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
@@ -240,19 +298,94 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           klufeData,
+          approvalStatus,
+        });
+        response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
+        response.success = true;
+      } else {
+        response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
+  async addCustomCalibration({
+    assetTag,
+    user,
+    date,
+    comment,
+    customFormData,
+  }) {
+    const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    const validation = validateEvent(comment);
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.findAll({
+      where: { assetTag },
+    }).then(async (instrument) => {
+      if (instrument && instrument[0]) {
+        if (!isValidDate(date)) { // checks if date is valid
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          return;
+        }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
+        this.store.calibrationEvents.create({
+          calibrationHistoryIdReference,
+          user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
+          date,
+          comment,
+          customFormData,
+          approvalStatus,
         });
         response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
@@ -386,6 +519,196 @@ class CalibrationEventAPI extends DataSource {
     response.message = `Updated calibration event with ID: ${id}`;
     response.success = true;
     return JSON.stringify(response);
+  }
+
+  async getCetificateForInstrument({ assetTag }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const instrument = await this.store.instruments.findOne({
+      where: { assetTag },
+    });
+    if (instrument === null) return null;
+    // eslint-disable-next-line prefer-destructuring
+    const id = instrument.dataValues.id;
+    const calibration = await this.store.calibrationEvents.findOne({
+      where: {
+        calibrationHistoryIdReference: id,
+        approvalStatus: [1, 3],
+      },
+      order: [['date', 'DESC']],
+      include: {
+        model: this.store.calibratedByRelationships,
+        as: 'calibratedBy',
+      },
+    });
+    if (calibration === null) return null;
+    const relations = [];
+    for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
+      const inst = calibration.calibratedBy[i];
+      const currentId = inst.dataValues.calibratedBy;
+      // eslint-disable-next-line no-await-in-loop
+      const found = await this.store.instruments.findOne({
+        where: {
+          id: currentId,
+        },
+      });
+      if (found) {
+        relations.push({
+          vendor: found.dataValues.vendor,
+          modelNumber: found.dataValues.modelNumber,
+          // eslint-disable-next-line max-len
+          serialNumber: (found.dataValues.serialNumber === null || found.dataValues.serialNumber.length === 0) ? null : found.dataValues.serialNumber,
+          assetTag: found.dataValues.assetTag,
+        });
+      } else {
+        relations.push({
+          vendor: inst.dataValues.byVendor,
+          modelNumber: inst.dataValues.byModelNumber,
+          // eslint-disable-next-line max-len
+          serialNumber: (inst.dataValues.serialNumber === null || inst.dataValues.serialNumber.length === 0) ? null : inst.dataValues.serialNumber,
+          assetTag: inst.dataValues.byAssetTag,
+        });
+      }
+    }
+    const result = {
+      vendor: instrument.dataValues.vendor,
+      modelNumber: instrument.dataValues.modelNumber,
+      // eslint-disable-next-line max-len
+      serialNumber: (instrument.dataValues.serialNumber === null || instrument.dataValues.serialNumber.length === 0) ? null : instrument.dataValues.serialNumber,
+      assetTag: instrument.dataValues.assetTag,
+      modelDescription: instrument.dataValues.description,
+      calibrationFrequency: instrument.dataValues.calibrationFrequency,
+      calibrationComment: calibration.dataValues.comment,
+      calibrationDate: calibration.dataValues.date,
+      calibratorUserName: calibration.dataValues.user,
+      calibratorFirstName: calibration.dataValues.userFirstName,
+      calibratorLastName: calibration.dataValues.userLastName,
+      approvalStatus: calibration.dataValues.approvalStatus === 1 ? 'Approved' : 'Not Required',
+      approvalComment: calibration.dataValues.approvalComment,
+      approvalDate: calibration.dataValues.approvalDate,
+      approverUserName: calibration.dataValues.approverUsername,
+      approverFirstName: calibration.dataValues.approverFirstName,
+      approverLastName: calibration.dataValues.approverLastName,
+      // eslint-disable-next-line max-len
+      isFileAttached: calibration.dataValues.fileLocation !== null && calibration.dataValues.fileName !== null,
+      fileLocation: calibration.dataValues.fileLocation,
+      fileName: calibration.dataValues.fileName,
+      isKlufe: calibration.dataValues.klufeData !== null,
+      klufeData: calibration.dataValues.klufeData,
+      isLoadBank: calibration.dataValues.loadBankData !== null,
+      loadBankData: calibration.dataValues.loadBankData,
+      isCustomForm: calibration.dataValues.customFormData !== null,
+      customFormData: calibration.dataValues.customFormData,
+      calibratedBy: relations,
+    };
+    return result;
+  }
+
+  async getChainOfTruthForInstrument({ assetTag }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const assetTagArray = [];
+    const result = [];
+    const dates = new Map();
+    assetTagArray.push(assetTag);
+    let count = 0;
+    while (count < assetTagArray.length) {
+      const instrument = await this.store.instruments.findOne({
+        where: { assetTag: assetTagArray[count] },
+      });
+      count += 1;
+      if (instrument === null) continue;
+      // eslint-disable-next-line prefer-destructuring
+      const id = instrument.dataValues.id;
+      const filters = [];
+      filters.push({
+        calibrationHistoryIdReference: id,
+        approvalStatus: [1, 3],
+      });
+      if (count !== 1) {
+        filters.push({
+          date: SQL.where(
+            SQL.fn('date', SQL.col('date')),
+            '<=',
+            dates.get(instrument.dataValues.assetTag),
+          ),
+        });
+      }
+      const calibration = await this.store.calibrationEvents.findOne({
+        where: filters,
+        order: [['date', 'DESC']],
+        include: {
+          model: this.store.calibratedByRelationships,
+          as: 'calibratedBy',
+        },
+      });
+      if (calibration === null) continue;
+      const relations = [];
+      for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
+        const inst = calibration.calibratedBy[i];
+        const currentId = inst.dataValues.calibratedBy;
+        // eslint-disable-next-line no-await-in-loop
+        const found = await this.store.instruments.findOne({
+          where: {
+            id: currentId,
+          },
+        });
+        if (found) {
+          relations.push({
+            vendor: found.dataValues.vendor,
+            modelNumber: found.dataValues.modelNumber,
+            // eslint-disable-next-line max-len
+            serialNumber: (found.dataValues.serialNumber === null || found.dataValues.serialNumber.length === 0) ? null : found.dataValues.serialNumber,
+            assetTag: found.dataValues.assetTag,
+          });
+          dates.set(found.dataValues.assetTag, calibration.dataValues.date);
+          assetTagArray.push(found.dataValues.assetTag);
+        } else {
+          relations.push({
+            vendor: inst.dataValues.byVendor,
+            modelNumber: inst.dataValues.byModelNumber,
+            // eslint-disable-next-line max-len
+            serialNumber: (inst.dataValues.serialNumber === null || inst.dataValues.serialNumber.length === 0) ? null : inst.dataValues.serialNumber,
+            assetTag: inst.dataValues.byAssetTag,
+          });
+          dates.set(inst.dataValues.assetTag, calibration.dataValues.date);
+          assetTagArray.push(inst.dataValues.assetTag);
+        }
+      }
+      const cert = {
+        vendor: instrument.dataValues.vendor,
+        modelNumber: instrument.dataValues.modelNumber,
+        // eslint-disable-next-line max-len
+        serialNumber: (instrument.dataValues.serialNumber === null || instrument.dataValues.serialNumber.length === 0) ? null : instrument.dataValues.serialNumber,
+        assetTag: instrument.dataValues.assetTag,
+        modelDescription: instrument.dataValues.description,
+        calibrationFrequency: instrument.dataValues.calibrationFrequency,
+        calibrationComment: calibration.dataValues.comment,
+        calibrationDate: calibration.dataValues.date,
+        calibratorUserName: calibration.dataValues.user,
+        calibratorFirstName: calibration.dataValues.userFirstName,
+        calibratorLastName: calibration.dataValues.userLastName,
+        approvalStatus: calibration.dataValues.approvalStatus === 1 ? 'Approved' : 'Not Required',
+        approvalComment: calibration.dataValues.approvalComment,
+        approvalDate: calibration.dataValues.approvalDate,
+        approverUserName: calibration.dataValues.approverUsername,
+        approverFirstName: calibration.dataValues.approverFirstName,
+        approverLastName: calibration.dataValues.approverLastName,
+        // eslint-disable-next-line max-len
+        isFileAttached: calibration.dataValues.fileLocation !== null && calibration.dataValues.fileName !== null,
+        fileLocation: calibration.dataValues.fileLocation,
+        fileName: calibration.dataValues.fileName,
+        isKlufe: calibration.dataValues.klufeData !== null,
+        klufeData: calibration.dataValues.klufeData,
+        isLoadBank: calibration.dataValues.loadBankData !== null,
+        loadBankData: calibration.dataValues.loadBankData,
+        isCustomForm: calibration.dataValues.customFormData !== null,
+        customFormData: calibration.dataValues.customFormData,
+        calibratedBy: relations,
+      };
+      result.push(cert);
+    }
+    return result;
   }
 }
 

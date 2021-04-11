@@ -26,7 +26,7 @@ export default async function AddCustomFormCalibration({
       comment: String!
       customFormData: String!
     ){
-      addCustomFormCalibration (
+      addCustomCalibration (
         assetTag: Int!
         date: String!
         user: String!
@@ -36,7 +36,7 @@ export default async function AddCustomFormCalibration({
     }
   `;
   const query = ADD_CUSTOM_CALIRBATION;
-  const queryName = 'addCustomFormCalibration';
+  const queryName = 'addCustomCalibration';
   const getVariables = () => ({
     assetTag,
     user,
