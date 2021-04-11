@@ -434,9 +434,9 @@ export default function ModelForm({
             </div>
             <div className="col-auto mt-3">
               {/* <Form.Label className="h5">Calibration Mode</Form.Label> */}
-              <FormLabel component="legend">Calibration Type</FormLabel>
+              <FormLabel component="legend">Special Calibration Type</FormLabel>
               <RadioGroup row aria-label="calibrationType" name="calibrationType" value={values.calibrationType} onChange={handleChange}>
-                <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="Standard" />
+                <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="None" />
                 <FormControlLabel value="loadBank" disabled={disabled} control={<Radio color="primary" />} label="Load Bank" />
                 <FormControlLabel value="klufe" disabled={disabled} control={<Radio color="primary" />} label="Klufe 5700" />
                 <FormControlLabel value="customForm" disabled={disabled} control={<Radio color="primary" />} label="Custom Form" />

@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
+import { toast } from 'react-toastify';
+import AddCustomFormCalibration from '../queries/AddCustomFormCalibration';
+import UserContext from './UserContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,6 +67,7 @@ export default function CustomFormEntry({
     onFinish: null,
   };
 
+  const user = React.useContext(UserContext);
   const classes = useStyles();
   const steps = getSteps();
   const [state, setState] = React.useState(steps);
@@ -73,10 +77,24 @@ export default function CustomFormEntry({
   const inputProps = { disableUnderline: true };
   const divClass = 'border-top border-dark mt-3';
 
-  // TODO: Add query for this
+  const handleResponse = (response) => {
+    console.log(response);
+    if (response.success) {
+      toast.success(response.message);
+    }
+  };
+
   const handleSubmit = () => {
     console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
     console.log(JSON.stringify(state));
+    AddCustomFormCalibration({
+      assetTag,
+      user: user.userName,
+      date: '2021-04-11', // TODO: Set this correctly
+      comment: '',
+      customFormData: JSON.stringify(state),
+      handleResponse,
+    });
     onFinish();
   };
   const canSubmit = true;

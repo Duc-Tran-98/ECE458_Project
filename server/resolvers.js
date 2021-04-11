@@ -357,6 +357,24 @@ module.exports = {
       );
       return response;
     },
+    addCustomFormCalibration: async (
+      _,
+      {
+        assetTag, user, date, comment, customFormData,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCustomFormCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          customFormData,
+        },
+      );
+      return response;
+    },
     addCalibrationEventById: async (
       _,
       {

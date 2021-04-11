@@ -263,6 +263,51 @@ class CalibrationEventAPI extends DataSource {
     return JSON.stringify(response);
   }
 
+  async addCustomFormCalibration({
+    assetTag,
+    user,
+    date,
+    comment,
+    customFormData,
+  }) {
+    const response = { message: '', success: false };
+    if (!this.checkPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    const validation = validateEvent(comment);
+    if (!validation[0]) {
+      // eslint-disable-next-line prefer-destructuring
+      response.message = validation[1];
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    await this.store.instruments.findAll({
+      where: { assetTag },
+    }).then((instrument) => {
+      if (instrument && instrument[0]) {
+        if (!isValidDate(date)) { // checks if date is valid
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          return;
+        }
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
+        this.store.calibrationEvents.create({
+          calibrationHistoryIdReference,
+          user,
+          date,
+          comment,
+          customFormData,
+        });
+        response.message = `Added new custom form calibration event to instrument tag: ${assetTag}!`;
+        response.success = true;
+      } else {
+        response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
+      }
+    });
+    return JSON.stringify(response);
+  }
+
   async addCalibrationEventById({
     calibrationHistoryIdReference,
     user,

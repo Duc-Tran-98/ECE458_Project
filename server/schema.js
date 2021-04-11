@@ -235,6 +235,7 @@ const typeDefs = gql`
     fileName: String
     loadBankData: String
     klufeData: String
+    customFormData: String
   }
 
   input ModelInput {
@@ -388,6 +389,14 @@ const typeDefs = gql`
       user: String!
       comment: String
       klufeData: String!
+    ): String!
+
+    addCustomFormCalibration(
+      assetTag: Int!
+      date: String!
+      user: String!
+      comment: String
+      customFormData: String!
     ): String!
 
     #bulk import
