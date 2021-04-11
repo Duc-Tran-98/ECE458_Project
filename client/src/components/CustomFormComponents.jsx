@@ -103,8 +103,8 @@ export function CustomHeaderInput({
   return (
     <div className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
-        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
         {addButton}
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
       <div className="col">
         {/* trigger re render anytime error changes */}
@@ -143,8 +143,8 @@ export function CustomUserPromptInput({
   return (
     <div className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
-        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
         {addButton}
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
       <div className="col">
         <TextField
@@ -202,8 +202,8 @@ export function CustomNumericInput({
   return (
     <div className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
-        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
         {addButton}
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
       <div className="col">
         <div className="row">
@@ -302,8 +302,8 @@ export function CustomTextInput({
   return (
     <div className={`${customFormBoxClass} row`}>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
-        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
         {addButton}
+        {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
       <div className="col">
         <TextField

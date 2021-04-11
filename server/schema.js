@@ -279,15 +279,12 @@ const typeDefs = gql`
     loadBankData: String
     klufeData: String
     customFormData: String
-<<<<<<< HEAD
-=======
     approvalStatus: Int!
     approverUsername: String
     approverFirstName: String
     approverLastName: String
     approvalDate: String
     approvalComment: String
->>>>>>> main
   }
 
   input ModelInput {

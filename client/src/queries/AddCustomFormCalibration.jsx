@@ -19,21 +19,21 @@ export default async function AddCustomFormCalibration({
     handleResponse: PropTypes.func.isRequired,
   };
   const ADD_CUSTOM_CALIRBATION = gql`
-    mutation AddCustomFormCalib (
-      assetTag: Int!
-      date: String!
-      user: String!
-      comment: String!
-      customFormData: String!
+  mutation AddCustomCalibration (
+    $assetTag: Int!
+    $date: String!
+    $user: String!
+    $comment: String
+    $customFormData: String!
     ){
-      addCustomCalibration (
-        assetTag: Int!
-        date: String!
-        user: String!
-        comment: String
-        customFormData: String!
-      )
-    }
+      addCustomCalibration(
+      assetTag: $assetTag,
+      date: $date,
+      user: $user,
+      comment: $comment,
+      customFormData: $customFormData,
+    )
+  }
   `;
   const query = ADD_CUSTOM_CALIRBATION;
   const queryName = 'addCustomCalibration';
@@ -44,11 +44,22 @@ export default async function AddCustomFormCalibration({
     comment,
     customFormData,
   });
+  const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
+    || null;
+  const refetchQueries = refetch !== null
+    ? [
+      {
+        query: refetch.query,
+        variables: refetch.variables,
+      },
+    ]
+    : [];
   Query({
     query,
     queryName,
     getVariables,
     handleResponse,
     fetchPolicy: 'no-cache',
+    refetchQueries,
   });
 }
