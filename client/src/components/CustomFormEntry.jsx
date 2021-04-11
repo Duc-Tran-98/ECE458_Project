@@ -64,13 +64,6 @@ export default function CustomFormEntry({
     onFinish: null,
   };
 
-  // TODO: Add query for this
-  const handleSubmit = () => {
-    console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
-    onFinish();
-  };
-  const canSubmit = false;
-
   const classes = useStyles();
   const steps = getSteps();
   const [state, setState] = React.useState(steps);
@@ -79,6 +72,14 @@ export default function CustomFormEntry({
 
   const inputProps = { disableUnderline: true };
   const divClass = 'border-top border-dark mt-3';
+
+  // TODO: Add query for this
+  const handleSubmit = () => {
+    console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
+    console.log(JSON.stringify(state));
+    onFinish();
+  };
+  const canSubmit = true;
 
   const handleChange = (e, index) => {
     const nextState = state;
