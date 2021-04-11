@@ -83,6 +83,7 @@ export default function CustomFormEntry({
       toast.success(response.message);
     }
   };
+  const today = new Date().toISOString().split('T')[0]; // TODO: Can this be set?
 
   const handleSubmit = () => {
     console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
@@ -90,7 +91,7 @@ export default function CustomFormEntry({
     AddCustomFormCalibration({
       assetTag,
       user: user.userName,
-      date: '2021-04-11', // TODO: Set this correctly
+      date: today,
       comment: '',
       customFormData: JSON.stringify(state),
       handleResponse,
