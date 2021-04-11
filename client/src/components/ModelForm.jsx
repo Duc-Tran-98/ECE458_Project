@@ -13,6 +13,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import FormLabel from '@material-ui/core/FormLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormLabel from '@material-ui/core/FormLabel';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
@@ -22,6 +23,7 @@ import ModalAlert from './ModalAlert';
 import EditModel from './EditModel';
 import CustomFormBuilder from './CustomFormBuilder';
 import AccordionWrapper from './AccordionWrapper';
+
 import {
   emptyHeader,
 } from './FormContsants';
@@ -421,15 +423,18 @@ export default function ModelForm({
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
-            <Form.Label className="h5 mt-3">Calibration Information</Form.Label>
-            <div className="col">
+            {/* <Form.Label className="h5 mt-3">Calibration Information</Form.Label> */}
+            <div className="col mt-3">
+              <FormLabel component="legend">Approval</FormLabel>
               <FormControlLabel
                 control={<Checkbox checked={values.requiresCalibrationApproval} name="requiresCalibrationApproval" onChange={handleChange} color="primary" />}
                 label="Requires Approval"
                 disabled={disabled}
               />
             </div>
-            <div className="col-auto">
+            <div className="col-auto mt-3">
+              {/* <Form.Label className="h5">Calibration Mode</Form.Label> */}
+              <FormLabel component="legend">Calibration Type</FormLabel>
               <RadioGroup row aria-label="calibrationType" name="calibrationType" value={values.calibrationType} onChange={handleChange}>
                 <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="Standard" />
                 <FormControlLabel value="loadBank" disabled={disabled} control={<Radio color="primary" />} label="Load Bank" />

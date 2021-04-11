@@ -117,42 +117,52 @@ export default function CustomFormEntry({
   );
 
   const numberStep = (step, index) => (
-    <div className={divClass}>
-      <TextField
-        className={classes.textFieldLarge}
-        margin="normal"
-        value={step.prompt}
-        helperText={getNumberLabel(step)}
-        disabled
-        InputProps={inputProps}
-      />
-      <TextField
-        className={classes.textFieldMedium}
-        margin="normal"
-        type="number"
-        onChange={(e) => handleChange(e, index)}
-        value={state[index].value}
-      />
+    <div className={`${divClass} row`}>
+      <div className="col-auto">
+        <TextField
+          className={classes.textFieldLarge}
+          margin="normal"
+          value={step.prompt}
+          helperText={getNumberLabel(step)}
+          disabled
+          InputProps={inputProps}
+        />
+      </div>
+      <div className="col">
+        <TextField
+          className={classes.textFieldSmall}
+          margin="normal"
+          type="number"
+          onChange={(e) => handleChange(e, index)}
+          value={state[index].value}
+          variant="outlined"
+        />
+      </div>
     </div>
   );
   const textStep = (step, index) => (
-    <div className={divClass}>
-      <TextField
-        className={classes.textFieldLarge}
-        margin="normal"
-        value={step.prompt}
-        disabled
-        InputProps={inputProps}
-      />
-      <TextField
-        id="margin-normal"
-        className={classes.textFieldLarge}
-        margin="normal"
-        type="text"
-        name="prompt"
-        onChange={(e) => handleChange(e, index)}
-        value={state[index].value}
-      />
+    <div className={`${divClass} row`}>
+      <div className="col-auto">
+        <TextField
+          className={classes.textFieldLarge}
+          margin="normal"
+          value={step.prompt}
+          disabled
+          InputProps={inputProps}
+        />
+      </div>
+      <div className="col">
+        <TextField
+          id="margin-normal"
+          className={classes.textFieldMedium}
+          margin="normal"
+          type="text"
+          name="prompt"
+          onChange={(e) => handleChange(e, index)}
+          value={state[index].value}
+          variant="outlined"
+        />
+      </div>
     </div>
   );
 

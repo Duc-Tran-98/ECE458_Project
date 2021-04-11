@@ -336,6 +336,7 @@ export default function DetailedInstrumentView() {
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
                 popOverText="Add calibration via Klufe"
+
               >
                 <KlufeWiz
                   initModelNumber={formState.modelNumber}
@@ -350,8 +351,8 @@ export default function DetailedInstrumentView() {
           {supportsCustomForm && (
             <div className="ms-2">
               <ModalAlert
-                btnText="Custom Form Calibration"
-                title="Add Custom Form Calibration"
+                btnText="Add Custom Calibration"
+                title="Calibrating Using Custom Form"
                 popOverText="Calibrate instrument via custom form"
               >
                 <CustomFormEntry
