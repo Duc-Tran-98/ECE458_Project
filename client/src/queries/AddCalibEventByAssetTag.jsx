@@ -18,17 +18,23 @@ export default async function AddCalibEventByAssetTag({
       $assetTag: Int!
       $date: String!
       $user: String!
+      $userFirstName: String!
+      $userLastName: String!
       $comment: String
       $fileLocation: String
       $fileName: String
+      $approvalStatus: Int!
     ) {
       addCalibrationEventByAssetTag(
         assetTag: $assetTag
-        comment: $comment
         user: $user
+        userFirstName: $userFirstName
+        userLastName: $userLastName
         date: $date
+        comment: $comment
         fileLocation: $fileLocation
         fileName: $fileName
+        approvalStatus: $approvalStatus
       )
     }
   `;
@@ -51,6 +57,9 @@ export default async function AddCalibEventByAssetTag({
       fileName: entry.fileName,
       comment: entry.comment,
       user: entry.user,
+      userFirstName: entry.userFirstName,
+      userLastName: entry.userLastName,
+      approvalStatus: entry.approvalStatus,
       date: entry.date,
     });
     Query({
