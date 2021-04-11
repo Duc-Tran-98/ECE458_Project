@@ -420,12 +420,6 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
-      approvalStatus: Int!
-      approverUsername: String
-      approverFirstName: String
-      approverLastName: String
-      approvalDate: String
-      approvalComment: String
     ): String!
 
     addCalibrationEventByAssetTag(
@@ -435,12 +429,6 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
-      approvalStatus: Int!
-      approverUsername: String
-      approverFirstName: String
-      approverLastName: String
-      approvalDate: String
-      approvalComment: String
     ): String!
 
     addLoadBankCalibration(

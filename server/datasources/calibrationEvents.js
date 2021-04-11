@@ -101,12 +101,6 @@ class CalibrationEventAPI extends DataSource {
     comment,
     fileLocation,
     fileName,
-    approvalStatus,
-    approverUsername,
-    approverFirstName,
-    approverLastName,
-    approvalDate,
-    approvalComment,
   }) {
     const response = { message: '' };
     if (!this.checkPermission()) {
@@ -123,30 +117,35 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { modelNumber, vendor, serialNumber },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD!';
           return;
         }
-        if (approvalStatus < 0 || approvalStatus > 3) {
-          response.message = 'ERROR: Approval status outside of permitted options!';
-          return;
-        }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           fileLocation,
           fileName,
           approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         });
         response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
       } else {
@@ -163,12 +162,6 @@ class CalibrationEventAPI extends DataSource {
     comment,
     fileLocation,
     fileName,
-    approvalStatus,
-    approverUsername,
-    approverFirstName,
-    approverLastName,
-    approvalDate,
-    approvalComment,
   }) {
     const response = { message: '' };
     if (!this.checkPermission()) {
@@ -185,30 +178,35 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        if (approvalStatus < 0 || approvalStatus > 3) {
-          response.message = 'ERROR: Approval status outside of permitted options!';
-          return;
-        }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           fileLocation,
           fileName,
           approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         });
         response.message = `Added calibration event on ${date} to instrument ${assetTag}.`;
       } else {

@@ -291,12 +291,6 @@ module.exports = {
         comment,
         fileLocation,
         fileName,
-        approvalStatus,
-        approverUsername,
-        approverFirstName,
-        approverLastName,
-        approvalDate,
-        approvalComment,
       },
       { dataSources },
     ) => {
@@ -310,12 +304,6 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
-          approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         },
       );
       return response;
@@ -329,12 +317,6 @@ module.exports = {
         comment,
         fileLocation,
         fileName,
-        approvalStatus,
-        approverUsername,
-        approverFirstName,
-        approverLastName,
-        approvalDate,
-        approvalComment,
       },
       { dataSources },
     ) => {
@@ -346,12 +328,6 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
-          approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         },
       );
       return response;
