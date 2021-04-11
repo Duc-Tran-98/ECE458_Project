@@ -45,6 +45,14 @@ class CalibrationEventAPI extends DataSource {
     return user.isAdmin || user.calibrationPermission;
   }
 
+  checkApprovalPermission() {
+    const { user } = this.context;
+    if (process.env.NODE_ENV.includes('dev')) {
+      return true;
+    }
+    return user.isAdmin || user.calibrationApproverPermission;
+  }
+
   async getAllCalibrationEvents({ limit = null, offset = null }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -387,7 +395,7 @@ class CalibrationEventAPI extends DataSource {
           customFormData,
           approvalStatus,
         });
-        response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
+        response.message = `Added new Custom Form calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
       } else {
         response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
@@ -476,6 +484,80 @@ class CalibrationEventAPI extends DataSource {
     return JSON.stringify(response);
   }
 
+  async approveCalibrationEvent({
+    calibrationEventId,
+    approverId,
+    approvalDate,
+    approvalComment,
+  }) {
+    const response = { message: '' };
+    if (!this.checkApprovalPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const approver = await this.store.users.findOne({
+      where: { id: approverId },
+    });
+    if (!isValidDate(approvalDate)) { // checks if date is valid
+      response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+      return JSON.stringify(response);
+    }
+    await this.store.calibrationEvents.update(
+      {
+        approvalStatus: 1,
+        approverUsername: approver.username,
+        approverFirstName: approver.firstName,
+        approverLastName: approver.lastName,
+        approvalDate,
+        approvalComment,
+      },
+      {
+        where: { id: calibrationEventId },
+      },
+    );
+    response.message = 'Calibration Event Approved';
+    return JSON.stringify(response);
+  }
+
+  async rejectCalibrationEvent({
+    calibrationEventId,
+    approverId,
+    approvalDate,
+    approvalComment,
+  }) {
+    const response = { message: '' };
+    if (!this.checkApprovalPermission()) {
+      response.message = 'ERROR: User does not have permission.';
+      return JSON.stringify(response);
+    }
+    const storeModel = await this.store;
+    this.store = storeModel;
+    const approver = await this.store.users.findOne({
+      where: { id: approverId },
+    });
+    if (!isValidDate(approvalDate)) { // checks if date is valid
+      response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+      return JSON.stringify(response);
+    }
+    await this.store.calibrationEvents.update(
+      {
+        approvalStatus: 2,
+        approverUsername: approver.username,
+        approverFirstName: approver.firstName,
+        approverLastName: approver.lastName,
+        approvalDate,
+        approvalComment,
+      },
+      {
+        where: { id: calibrationEventId },
+      },
+    );
+    response.message = 'Calibration Event Approved';
+    return JSON.stringify(response);
+  }
+
   async getCetificateForInstrument({ assetTag }) {
     const storeModel = await this.store;
     this.store = storeModel;
@@ -541,7 +623,7 @@ class CalibrationEventAPI extends DataSource {
       approvalStatus: calibration.dataValues.approvalStatus === 1 ? 'Approved' : 'Not Required',
       approvalComment: calibration.dataValues.approvalComment,
       approvalDate: calibration.dataValues.approvalDate,
-      approverUserName: calibration.dataValues.approverUsername,
+      approverUsername: calibration.dataValues.approverUsername,
       approverFirstName: calibration.dataValues.approverFirstName,
       approverLastName: calibration.dataValues.approverLastName,
       // eslint-disable-next-line max-len
@@ -646,7 +728,7 @@ class CalibrationEventAPI extends DataSource {
         approvalStatus: calibration.dataValues.approvalStatus === 1 ? 'Approved' : 'Not Required',
         approvalComment: calibration.dataValues.approvalComment,
         approvalDate: calibration.dataValues.approvalDate,
-        approverUserName: calibration.dataValues.approverUsername,
+        approverUsername: calibration.dataValues.approverUsername,
         approverFirstName: calibration.dataValues.approverFirstName,
         approverLastName: calibration.dataValues.approverLastName,
         // eslint-disable-next-line max-len

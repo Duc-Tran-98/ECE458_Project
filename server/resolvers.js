@@ -441,6 +441,30 @@ module.exports = {
       );
       return response;
     },
+    approveCalibrationEvent: async (
+      _,
+      {
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.approveCalibrationEvent({
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      });
+      return response;
+    },
+    rejectCalibrationEvent: async (
+      _,
+      {
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.approveCalibrationEvent({
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      });
+      return response;
+    },
     login: async (_, { userName, password }, { dataSources }) => {
       const response = await dataSources.userAPI.login({
         userName,

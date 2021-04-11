@@ -471,6 +471,20 @@ const typeDefs = gql`
       id: ID!
     ): String!
 
+    approveCalibrationEvent(
+      calibrationEventId: ID!
+      approverId: ID!
+      approvalDate: String!
+      approvalComment: String
+    ): String!
+
+    rejectCalibrationEvent(
+      calibrationEventId: ID!
+      approverId: ID!
+      approvalDate: String!
+      approvalComment: String
+    ): String!
+
     #bulk import
     # bulkImportData(models: [ModelInput], instruments: [InstrumentInput], calibrationEvents: [CalibrationEventInput]): String!
     bulkImportData(
