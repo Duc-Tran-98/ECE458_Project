@@ -222,12 +222,6 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     loadBankData,
-    approvalStatus,
-    approverUsername,
-    approverFirstName,
-    approverLastName,
-    approvalDate,
-    approvalComment,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -244,29 +238,34 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        if (approvalStatus < 0 || approvalStatus > 3) {
-          response.message = 'ERROR: Approval status outside of permitted options!';
-          return;
-        }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           loadBankData,
           approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         });
         response.message = `Added new load bank calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
@@ -283,12 +282,6 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     klufeData,
-    approvalStatus,
-    approverUsername,
-    approverFirstName,
-    approverLastName,
-    approvalDate,
-    approvalComment,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -305,29 +298,34 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        if (approvalStatus < 0 || approvalStatus > 3) {
-          response.message = 'ERROR: Approval status outside of permitted options!';
-          return;
-        }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           klufeData,
           approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         });
         response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
@@ -344,12 +342,6 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     customFormData,
-    approvalStatus,
-    approverUsername,
-    approverFirstName,
-    approverLastName,
-    approvalDate,
-    approvalComment,
   }) {
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
@@ -366,29 +358,34 @@ class CalibrationEventAPI extends DataSource {
     this.store = storeModel;
     await this.store.instruments.findAll({
       where: { assetTag },
-    }).then((instrument) => {
+    }).then(async (instrument) => {
       if (instrument && instrument[0]) {
         if (!isValidDate(date)) { // checks if date is valid
           response.message = 'ERROR: Date must be in format YYYY-MM-DD';
           return;
         }
-        if (approvalStatus < 0 || approvalStatus > 3) {
-          response.message = 'ERROR: Approval status outside of permitted options!';
-          return;
-        }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval === 1 ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         this.store.calibrationEvents.create({
           calibrationHistoryIdReference,
           user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
           date,
           comment,
           customFormData,
           approvalStatus,
-          approverUsername,
-          approverFirstName,
-          approverLastName,
-          approvalDate,
-          approvalComment,
         });
         response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
