@@ -588,7 +588,10 @@ function newCertificate() {
           file={file}
           onLoadSuccess={onDocumentLoadSuccess}
         >
-          <Page pageNumber={pageNumber} />
+          <Page
+            pageNumber={pageNumber}
+            scale={2}
+          />
         </Document>
       </div>
     </>
