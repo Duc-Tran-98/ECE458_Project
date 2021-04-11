@@ -4,7 +4,6 @@ import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import TagFacesIcon from '@material-ui/icons/TagFaces';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,13 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChipsArray() {
   const classes = useStyles();
-  const [chipData, setChipData] = React.useState([
-    { key: 0, label: 'Angular' },
-    { key: 1, label: 'jQuery' },
-    { key: 2, label: 'Polymer' },
-    { key: 3, label: 'React' },
-    { key: 4, label: 'Vue.js' },
-  ]);
+  const [chipData, setChipData] = React.useState([]);
 
   const [current, setCurrent] = React.useState('');
 
@@ -55,10 +48,6 @@ export default function ChipsArray() {
       <Paper component="ul" className={classes.root}>
         {chipData.map((data) => {
           let icon;
-
-          if (data.label === 'React') {
-            icon = <TagFacesIcon />;
-          }
 
           return (
             <div>
