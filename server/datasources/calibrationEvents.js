@@ -554,7 +554,7 @@ class CalibrationEventAPI extends DataSource {
         where: { id: calibrationEventId },
       },
     );
-    response.message = 'Calibration Event Approved';
+    response.message = 'Calibration Event Rejected';
     return JSON.stringify(response);
   }
 
