@@ -229,14 +229,27 @@ class CalibrationEventAPI extends DataSource {
           },
         });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
-
+        const relations = [];
         if (calibratedBy) {
           for (let cal = 0; cal < calibratedBy.length; cal += 1) {
             const tag = calibratedBy[cal];
-            console.log(tag);
             if (tag < 100000 || tag > 999999) {
-              console.log('sSENFING error');
               response.message = 'ERROR: Asset tag must be in range 100000-999999!';
+              return;
+            }
+            const calWith = await this.store.instruments.findOne({
+              where: { assetTag: tag },
+            });
+            if (calWith) {
+              relations.push({
+                calibratedBy: calWith.dataValues.id,
+                byVendor: calWith.dataValues.vendor,
+                byModelNumber: calWith.dataValues.modelNumber,
+                bySerialNumber: calWith.dataValues.serialNumber,
+                byAssetTag: calWith.dataValues.assetTag,
+              });
+            } else {
+              response.message = `ERROR: Instrument ${tag} does not exist!`;
               return;
             }
           }
@@ -244,7 +257,7 @@ class CalibrationEventAPI extends DataSource {
         const t = await this.store.db.transaction();
 
         try {
-          await this.store.calibrationEvents.create({
+          const event = await this.store.calibrationEvents.create({
             calibrationHistoryIdReference,
             user,
             userFirstName: calibrationUser.firstName,
@@ -255,6 +268,18 @@ class CalibrationEventAPI extends DataSource {
             fileName,
             approvalStatus,
           }, { transaction: t });
+          console.log(relations);
+          for (let i = 0; i < relations.length; i += 1) {
+            await this.store.calibratedByRelationships.create({
+              calibration: event.dataValues.id,
+              calibratedInstrument: instrument[0].dataValues.id,
+              calibratedBy: relations[i].calibratedBy,
+              byVendor: relations[i].byVendor,
+              byModelNumber: relations[i].byModelNumber,
+              bySerialNumber: relations[i].bySerialNumber,
+              byAssetTag: relations[i].byAssetTag,
+            }, { transaction: t });
+          }
         } catch (error) {
           console.log(error);
           await t.rollback();
