@@ -21,6 +21,7 @@ export default async function AddCalibEventByAssetTag({
       $comment: String
       $fileLocation: String
       $fileName: String
+      $calibratedBy: [Int]
     ) {
       addCalibrationEventByAssetTag(
         assetTag: $assetTag
@@ -29,6 +30,7 @@ export default async function AddCalibEventByAssetTag({
         date: $date
         fileLocation: $fileLocation
         fileName: $fileName
+        calibratedBy: $calibratedBy
       )
     }
   `;
@@ -52,6 +54,7 @@ export default async function AddCalibEventByAssetTag({
       comment: entry.comment,
       user: entry.user,
       date: entry.date,
+      calibratedBy: entry.calibratedBy,
     });
     Query({
       query,
