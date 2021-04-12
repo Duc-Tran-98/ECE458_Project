@@ -146,18 +146,38 @@ class CalibrationEventAPI extends DataSource {
           },
         });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
-        this.store.calibrationEvents.create({
-          calibrationHistoryIdReference,
-          user,
-          userFirstName: calibrationUser.firstName,
-          userLastName: calibrationUser.lastName,
-          date,
-          comment,
-          fileLocation,
-          fileName,
-          approvalStatus,
-        });
-        response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+
+        for (let cal = 0; cal < calibratedBy.length; cal += 1) {
+          const tag = calibratedBy[cal];
+          console.log(tag);
+          if (tag < 100000 || tag > 999999) {
+            response.message = 'ERROR: Asset tag must be in range 100000-999999!';
+            return;
+          }
+        }
+
+        const t = await this.store.db.transaction();
+
+        try {
+          this.store.calibrationEvents.create({
+            calibrationHistoryIdReference,
+            user,
+            userFirstName: calibrationUser.firstName,
+            userLastName: calibrationUser.lastName,
+            date,
+            comment,
+            fileLocation,
+            fileName,
+            approvalStatus,
+          }, { transaction: t });
+
+          response.message = `Added new calibration event to instrument ${vendor} ${modelNumber} ${serialNumber}!`;
+        } catch (error) {
+          console.log(error);
+          await t.rollback();
+          response.success = false;
+          response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+        }
       } else {
         response.message = `ERROR: Instrument ${vendor} ${modelNumber} ${serialNumber} does not exists`;
       }
@@ -175,7 +195,7 @@ class CalibrationEventAPI extends DataSource {
     calibratedBy,
   }) {
     console.log(`add by asset tag ${calibratedBy}`);
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
       return JSON.stringify(response);
@@ -209,18 +229,41 @@ class CalibrationEventAPI extends DataSource {
           },
         });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
-        this.store.calibrationEvents.create({
-          calibrationHistoryIdReference,
-          user,
-          userFirstName: calibrationUser.firstName,
-          userLastName: calibrationUser.lastName,
-          date,
-          comment,
-          fileLocation,
-          fileName,
-          approvalStatus,
-        });
-        response.message = `Added calibration event on ${date} to instrument ${assetTag}.`;
+
+        if (calibratedBy) {
+          for (let cal = 0; cal < calibratedBy.length; cal += 1) {
+            const tag = calibratedBy[cal];
+            console.log(tag);
+            if (tag < 100000 || tag > 999999) {
+              console.log('sSENFING error');
+              response.message = 'ERROR: Asset tag must be in range 100000-999999!';
+              return;
+            }
+          }
+        }
+        const t = await this.store.db.transaction();
+
+        try {
+          await this.store.calibrationEvents.create({
+            calibrationHistoryIdReference,
+            user,
+            userFirstName: calibrationUser.firstName,
+            userLastName: calibrationUser.lastName,
+            date,
+            comment,
+            fileLocation,
+            fileName,
+            approvalStatus,
+          }, { transaction: t });
+        } catch (error) {
+          console.log(error);
+          await t.rollback();
+          response.success = false;
+          response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+        }
+        await t.commit();
+        response.success = true;
+        response.message = `Added calibration event on ${date} to instrument ${assetTag}!`;
       } else {
         response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
       }

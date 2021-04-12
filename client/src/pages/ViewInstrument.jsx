@@ -166,8 +166,12 @@ export default function DetailedInstrumentView() {
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag: formState.assetTag,
-      handleResponse: () => {
-        toast.success(`Added calibration event on ${entry.date}`);
+      handleResponse: (res) => {
+        if (res.success) {
+          toast.success(res.message);
+        } else {
+          toast.error(res.message);
+        }
         fetchData(entry);
       },
     });
