@@ -395,7 +395,7 @@ class ModelAPI extends DataSource {
       }, {
         model: this.store.modelCategories,
         as: 'calibratorCategories',
-        through: 'calibratorCategoriesRelationships',
+        through: 'calibratorCategoryRelationships',
       }],
     });
     if (model && model[0]) {
@@ -416,7 +416,7 @@ class ModelAPI extends DataSource {
       }, {
         model: this.store.modelCategories,
         as: 'calibratorCategories',
-        through: 'calibratorCategoriesRelationships',
+        through: 'calibratorCategoryRelationships',
       }],
     });
     if (model && model[0]) {

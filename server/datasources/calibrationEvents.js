@@ -221,6 +221,11 @@ class CalibrationEventAPI extends DataSource {
           where: {
             id: modelId,
           },
+          include: {
+            model: this.store.modelCategories,
+            as: 'calibratorCategories',
+            through: 'calibratorCategoryRelationships',
+          },
         });
         const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
@@ -241,13 +246,40 @@ class CalibrationEventAPI extends DataSource {
               where: { assetTag: tag },
             });
             if (calWith) {
-              relations.push({
-                calibratedBy: calWith.dataValues.id,
-                byVendor: calWith.dataValues.vendor,
-                byModelNumber: calWith.dataValues.modelNumber,
-                bySerialNumber: calWith.dataValues.serialNumber,
-                byAssetTag: calWith.dataValues.assetTag,
+              if (calWith.dataValues.assetTag === assetTag) {
+                response.message = 'ERROR: Cannot calibrate an instrument with itself!';
+                return;
+              }
+              const modWith = await this.store.models.findOne({
+                where: { id: calWith.dataValues.modelReference },
+                include: {
+                  model: this.store.modelCategories,
+                  as: 'categories',
+                  through: 'modelCategoryRelationships',
+                },
               });
+              console.log('**************************************');
+              const calibrationCategories = model.calibratorCategories.map((e) => e.name);
+              console.log(calibrationCategories);
+              console.log('**************************************');
+              const modelCategories = modWith.categories.map((e) => e.name);
+              console.log(modelCategories);
+              console.log('**************************************');
+              // eslint-disable-next-line max-len
+              const matchArray = calibrationCategories.filter((value) => modelCategories.includes(value));
+              console.log(matchArray);
+              if (matchArray.length > 0) {
+                relations.push({
+                  calibratedBy: calWith.dataValues.id,
+                  byVendor: calWith.dataValues.vendor,
+                  byModelNumber: calWith.dataValues.modelNumber,
+                  bySerialNumber: calWith.dataValues.serialNumber,
+                  byAssetTag: calWith.dataValues.assetTag,
+                });
+              } else {
+                response.message = `ERROR: instrument ${calWith.dataValues.assetTag} is not in a valid calibration category!`;
+                return;
+              }
             } else {
               response.message = `ERROR: Instrument ${tag} does not exist!`;
               return;
