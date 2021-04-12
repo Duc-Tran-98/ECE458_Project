@@ -109,7 +109,9 @@ class CalibrationEventAPI extends DataSource {
     comment,
     fileLocation,
     fileName,
+    calibratedBy,
   }) {
+    console.log(`basic add ${calibratedBy}`);
     const response = { message: '' };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -170,7 +172,9 @@ class CalibrationEventAPI extends DataSource {
     comment,
     fileLocation,
     fileName,
+    calibratedBy,
   }) {
+    console.log(`add by asset tag ${calibratedBy}`);
     const response = { message: '' };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -230,7 +234,9 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     loadBankData,
+    calibratedBy,
   }) {
+    console.log(`load bank add ${calibratedBy}`);
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -290,7 +296,9 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     klufeData,
+    calibratedBy,
   }) {
+    console.log(`klufe calibration add ${calibratedBy}`);
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -350,7 +358,9 @@ class CalibrationEventAPI extends DataSource {
     date,
     comment,
     customFormData,
+    calibratedBy,
   }) {
+    console.log(`add custom calibration ${calibratedBy}`);
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';

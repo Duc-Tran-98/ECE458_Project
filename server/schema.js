@@ -420,6 +420,7 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+      calibratedBy: [Int]
     ): String!
 
     addCalibrationEventByAssetTag(
@@ -429,6 +430,7 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+      calibratedBy: [Int]
     ): String!
 
     addLoadBankCalibration(
@@ -437,6 +439,7 @@ const typeDefs = gql`
       user: String!
       comment: String
       loadBankData: String!
+      calibratedBy: [Int]
     ): String!
 
     addKlufeCalibration(
@@ -445,6 +448,7 @@ const typeDefs = gql`
       user: String!
       comment: String
       klufeData: String!
+      calibratedBy: [Int]
     ): String!
 
     addCustomCalibration(
@@ -453,6 +457,7 @@ const typeDefs = gql`
       user: String!
       comment: String
       customFormData: String!
+      calibratedBy: [Int]
     ): String!
 
     addCalibrationEventById(
