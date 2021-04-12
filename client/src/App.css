@@ -258,3 +258,11 @@ div.MuiPaper-root.MuiPaper-elevation0{
   margin-top: 0!important;
   /* margin-bottom: 15px!important; */
 }
+
+.customFormBasicBox {
+  margin: 12px 0px;
+  border-radius: 20px;
+  border: 1px solid #14213d;
+  background-color: whitesmoke;
+  box-shadow: 1px 1px 2px 2px #ccc;
+}

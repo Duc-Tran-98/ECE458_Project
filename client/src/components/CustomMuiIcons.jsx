@@ -9,6 +9,9 @@ import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import TitleIcon from '@material-ui/icons/Title';
+import TextFieldsIcon from '@material-ui/icons/TextFields';
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 
 import { PopOverFragment } from './PopOver';
 
@@ -131,6 +134,14 @@ export const DeletePopOver = ({ title, onClick }) => (
   </PopOverFragment>
 );
 
+export const CustomFormDeletePopOver = ({ title, onClick }) => (
+  <PopOverFragment message={title}>
+    <IconButton onClick={onClick}>
+      <DeleteIcon style={{ color: '#fc2311' }} />
+    </IconButton>
+  </PopOverFragment>
+);
+
 export const MuiEditButton = ({ onClick }) => (
   <IconButton onClick={onClick}>
     <EditIcon />
@@ -156,6 +167,30 @@ export const EditPopoverIcon = ({ message, onClick }) => (
   <PopOverFragment message={message}>
     <IconButton onClick={onClick}>
       <EditIcon />
+    </IconButton>
+  </PopOverFragment>
+);
+
+export const TitlePopoverIcon = ({ message, onClick }) => (
+  <PopOverFragment message={message}>
+    <IconButton onClick={onClick}>
+      <TitleIcon />
+    </IconButton>
+  </PopOverFragment>
+);
+
+export const TextFieldPopoverIcon = ({ message, onClick }) => (
+  <PopOverFragment message={message}>
+    <IconButton onClick={onClick}>
+      <TextFieldsIcon />
+    </IconButton>
+  </PopOverFragment>
+);
+
+export const NumberInputPopoverIcon = ({ message, onClick }) => (
+  <PopOverFragment message={message}>
+    <IconButton onClick={onClick}>
+      <FormatListNumberedIcon />
     </IconButton>
   </PopOverFragment>
 );

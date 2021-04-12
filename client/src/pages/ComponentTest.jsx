@@ -1,12 +1,11 @@
 import React from 'react';
 import CustomFormBuilder from '../components/CustomFormBuilder';
-import CalibrationApprovalPage from './CalibrationApproval';
+import AccordionWrapper from '../components/AccordionWrapper';
 
 export default function ComponentTest() {
   return (
     <>
-      <CustomFormBuilder />
-      <CalibrationApprovalPage />
+      <AccordionWrapper header="Custom Form" contents={<CustomFormBuilder />} />
     </>
   );
 }

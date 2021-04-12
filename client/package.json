@@ -29,6 +29,7 @@
     "graphql": "^15.5.0",
     "jquery": "^3.6.0",
     "jwt-decode": "^3.1.2",
+    "license-checker": "^25.0.1",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "pdfjs": "^2.4.2",
