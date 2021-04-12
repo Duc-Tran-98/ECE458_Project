@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
@@ -136,6 +137,8 @@ export default function DetailedInstrumentView() {
         data.append('file', e.target.files[0]);
         newHistory[index].file = data;
       }
+    } else if (e.target.name === 'calibratedBy') {
+      newHistory[index].calibratedBy = e.target.value;
     } else {
       newHistory[index].comment = e.target.value;
     }

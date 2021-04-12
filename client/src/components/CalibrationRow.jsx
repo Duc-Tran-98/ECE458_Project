@@ -134,7 +134,7 @@ export default function CalibrationRow({
           </div>
         </div>
         <div className="row w-100 mx-auto">
-          <AssetChips />
+          <AssetChips onChangeCalib={onChangeCalibRow} entry={entry} />
         </div>
         <div className="row w-100 mx-auto">
           <div className="col-4">
