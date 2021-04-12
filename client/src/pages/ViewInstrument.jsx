@@ -21,6 +21,7 @@ import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
 import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
+import CustomFormEntry from '../components/CustomFormEntry';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
@@ -37,6 +38,8 @@ export default function DetailedInstrumentView() {
   const [loading, setLoading] = React.useState(false); // loading status of delete query
   const [supportsLoadBankWiz, setSupportsLoadBankWiz] = React.useState(false); // bool for load bank wiz support
   const [supportsKlufeWiz, setSupportsKlufeWiz] = React.useState(false);
+  const [supportsCustomForm, setSupportsCustomForm] = React.useState(false);
+  const [customForm, setCustomForm] = React.useState('');
   const [show, setShow] = React.useState(false); // show add calib event modal or not
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
   const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
@@ -237,12 +240,19 @@ export default function DetailedInstrumentView() {
             getModel(modelNumber: $modelNumber, vendor: $vendor) {
               supportLoadBankCalibration
               supportKlufeCalibration
+              supportCustomCalibration
+              customForm
             }
           }
         `,
         queryName: 'getModel',
         getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
         handleResponse: (response) => {
+          console.log(response);
+          if (response.supportCustomCalibration) {
+            setSupportsCustomForm(response.supportCustomCalibration);
+            setCustomForm(JSON.parse(response.customForm));
+          }
           setSupportsLoadBankWiz(response.supportLoadBankCalibration);
           setSupportsKlufeWiz(response.supportKlufeCalibration);
         },
@@ -326,6 +336,7 @@ export default function DetailedInstrumentView() {
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
                 popOverText="Add calibration via Klufe"
+
               >
                 <KlufeWiz
                   initModelNumber={formState.modelNumber}
@@ -333,6 +344,24 @@ export default function DetailedInstrumentView() {
                   initAssetTag={formState.assetTag}
                   initVendor={formState.vendor}
                   onFinish={fetchData}
+                />
+              </ModalAlert>
+            </div>
+          )}
+          {supportsCustomForm && (
+            <div className="ms-2">
+              <ModalAlert
+                btnText="Add Custom Calibration"
+                title="Calibrating Using Custom Form"
+                popOverText="Calibrate instrument via custom form"
+              >
+                <CustomFormEntry
+                  getSteps={() => customForm}
+                  onFinish={fetchData}
+                  modelNumber={formState.modelNumber}
+                  serialNumber={formState.serialNumber}
+                  assetTag={formState.assetTag}
+                  vendor={formState.vendor}
                 />
               </ModalAlert>
             </div>

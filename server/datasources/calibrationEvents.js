@@ -387,7 +387,7 @@ class CalibrationEventAPI extends DataSource {
           customFormData,
           approvalStatus,
         });
-        response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
+        response.message = `Added new Custom Form calibration event to instrument tag: ${assetTag}!`;
         response.success = true;
       } else {
         response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
