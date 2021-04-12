@@ -37,6 +37,8 @@ export default function EditModel({ initVendor, initModelNumber, deleteBtn }) {
   const [completeFetch, setCompleteFetch] = useState(false); // wait to render ModelForm until all fields ready
 
   const handleFindModel = (response) => {
+    console.log('found model with response: ');
+    console.log(response);
     const categories = response.categories.map((item) => item.name);
     const calibratorCategories = response.calibratorCategories.map((item) => item.name);
     const {
