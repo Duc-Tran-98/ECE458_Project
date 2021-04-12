@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import InstrumentForm from './InstrumentForm';
 import MouseOverPopover from './PopOver';
 import TableLoadBank from './TableLoadBank';
+import KlufeDetailedView from './KlufeDetailedView';
 
 export default function DetailedCalibrationView({ selectedRow, isForInstrumentPage = false }) {
   DetailedCalibrationView.propTypes = {
@@ -20,7 +21,6 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
       return 'Klufe';
     }
     if (selectedRow.customFormData) {
-      // TODO: Update this field to match DB name
       return 'Custom';
     }
     return 'Plain';
@@ -106,6 +106,9 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
           <div className="ms-4">
             No data on record
           </div>
+        )}
+        {getCalibrationType() === 'Klufe' && (
+        <KlufeDetailedView klufeData={JSON.parse(selectedRow.klufeData)} />
         )}
       </div>
       {!isForInstrumentPage && (
