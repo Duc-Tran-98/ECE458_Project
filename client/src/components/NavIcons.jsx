@@ -16,15 +16,14 @@ export default function NavIcons({ handleSignOut }) {
     handleSignOut: PropTypes.func.isRequired,
   };
   const history = useHistory();
-  // eslint-disable-next-line no-unused-vars
   const user = useContext(UserContext);
-  const approvalPermissions = true;
+  const approvalPermissions = user.calibrationApproverPermission;
   // const { userName } = user;
   // console.log(userName);
   const notifications = 12;
 
   // TODO: Implement handlers for onclick events
-  const handleClick = () => console.log('click');
+  const handleClick = () => history.push('/viewCalibrationArppovals?page=1&limit=25');
 
   return (
     <>

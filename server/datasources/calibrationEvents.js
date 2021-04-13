@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 const SQL = require('sequelize');
@@ -61,6 +62,7 @@ class CalibrationEventAPI extends DataSource {
   }
 
   async getAllPendingCalibrationEvents({ limit = null, offset = null }) {
+    const response = [];
     const storeModel = await this.store;
     this.store = storeModel;
     const calibrationEvents = await this.store.calibrationEvents.findAll({
@@ -70,7 +72,18 @@ class CalibrationEventAPI extends DataSource {
         approvalStatus: 0,
       },
     });
-    return calibrationEvents;
+    for (let i = 0; i < calibrationEvents.length; i += 1) {
+      const instrument = await this.instrumentAPI.getInstrumentById({
+        id: calibrationEvents[i].dataValues.calibrationHistoryIdReference,
+      });
+      delete instrument.id;
+      delete instrument.comment;
+      response.push({
+        ...calibrationEvents[i].dataValues,
+        ...instrument,
+      });
+    }
+    return response;
   }
 
   async getCalibrationEventsByInstrument({ modelNumber, vendor, assetTag }) {
@@ -142,7 +155,7 @@ class CalibrationEventAPI extends DataSource {
             id: modelId,
           },
         });
-        const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
+        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
           where: {
             userName: user,
@@ -230,7 +243,7 @@ class CalibrationEventAPI extends DataSource {
             through: 'calibratorCategoryRelationships',
           },
         });
-        const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
+        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
           where: {
             userName: user,
@@ -430,7 +443,7 @@ class CalibrationEventAPI extends DataSource {
             through: 'calibratorCategoryRelationships',
           },
         });
-        const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
+        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
           where: {
             userName: user,
@@ -629,7 +642,7 @@ class CalibrationEventAPI extends DataSource {
             through: 'calibratorCategoryRelationships',
           },
         });
-        const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
+        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
           where: {
             userName: user,
@@ -983,6 +996,36 @@ class CalibrationEventAPI extends DataSource {
         } else {
           response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
         }
+<<<<<<< HEAD
+=======
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+        });
+        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
+        this.store.calibrationEvents.create({
+          calibrationHistoryIdReference,
+          user,
+          userFirstName: calibrationUser.firstName,
+          userLastName: calibrationUser.lastName,
+          date,
+          comment,
+          customFormData,
+          approvalStatus,
+        });
+        response.message = `Added new Custom Form calibration event to instrument tag: ${assetTag}!`;
+        response.success = true;
+      } else {
+        response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
+>>>>>>> faefbd66ae8922af4deead5dcccca8a6b114fbed
       }
     });
     return JSON.stringify(response);

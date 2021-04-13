@@ -184,7 +184,7 @@ export default function LoadBankWiz({
     const maxDay = new Date(Date.now());
     input.setHours(0, 0, 0, 0);
     maxDay.setHours(0, 0, 0, 0);
-    console.log(input <= maxDay, input, maxDay, date);
+    // console.log(input <= maxDay, input, maxDay, date);
     return input >= maxDay;
   };
   const canAdvance = (step) => { // whether or not user can advance a step

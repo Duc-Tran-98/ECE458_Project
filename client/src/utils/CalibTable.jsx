@@ -29,6 +29,19 @@ const showTableBoolean = (params) => (params.value ? (
     </svg>
   </div>
 ));
+
+const getCalibrationType = (params) => {
+  if (params.row.loadBankData) {
+    return 'Load Bank';
+  }
+  if (params.row.klufeData) {
+    return 'Klufe';
+  }
+  if (params.row.customFormData) { // TODO: Update this field to match DB name
+    return 'Custom';
+  }
+  return 'Plain';
+};
 export const cols = [
   {
     field: 'date',
@@ -75,5 +88,71 @@ export const cols = [
     width: 100,
     description: 'Calibrated via Klufe',
     renderCell: (params) => showTableBoolean(params),
+  },
+];
+
+export const approvalCols = [
+  {
+    field: 'date',
+    headerName: 'Date',
+    width: 120,
+    description: 'Date',
+  },
+  {
+    field: 'user',
+    headerName: 'User',
+    width: 120,
+    description: 'User',
+  },
+  {
+    field: 'fileName',
+    headerName: 'File',
+    width: 150,
+    description: 'File name',
+    renderCell: (params) => (
+      <>
+        {params.value ? (
+          <a
+            href={`../data/${params.row.fileLocation}`}
+            download={params.value}
+          >
+            {params.value}
+          </a>
+        ) : (
+          'N/A'
+        )}
+      </>
+    ),
+  },
+  {
+    field: 'calibrationType',
+    headerName: 'Type',
+    description: 'Type of calibration',
+    width: 100,
+    renderCell: (params) => getCalibrationType(params),
+  },
+  {
+    field: 'vendor',
+    headerName: 'Vendor',
+    width: 120,
+    description: 'Vendor',
+  },
+  {
+    field: 'modelNumber',
+    headerName: 'Model Number',
+    width: 170,
+    description: 'Model Number',
+  },
+  {
+    field: 'assetTag',
+    headerName: 'Asset Tag',
+    width: 140,
+    description: 'Asset Tag',
+  },
+  {
+    field: 'serialNumber',
+    headerName: 'Serial Number',
+    width: 150,
+    description: 'Serial Number',
   },
 ];

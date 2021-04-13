@@ -70,7 +70,14 @@ export function StateLessCloseModal({
     size: PropTypes.string,
   };
   return (
-    <Modal show={show} size={size} centered contentClassName="bg-theme rounded">
+    <Modal
+      show={show}
+      size={size}
+      centered
+      onHide={handleClose}
+      contentClassName="bg-theme rounded"
+      animation={false}
+    >
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
         <IconButton onClick={handleClose} className="close">
