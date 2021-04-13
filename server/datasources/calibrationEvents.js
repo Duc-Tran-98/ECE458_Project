@@ -258,16 +258,10 @@ class CalibrationEventAPI extends DataSource {
                   through: 'modelCategoryRelationships',
                 },
               });
-              console.log('**************************************');
               const calibrationCategories = model.calibratorCategories.map((e) => e.name);
-              console.log(calibrationCategories);
-              console.log('**************************************');
               const modelCategories = modWith.categories.map((e) => e.name);
-              console.log(modelCategories);
-              console.log('**************************************');
               // eslint-disable-next-line max-len
               const matchArray = calibrationCategories.filter((value) => modelCategories.includes(value));
-              console.log(matchArray);
               if (matchArray.length > 0) {
                 relations.push({
                   calibratedBy: calWith.dataValues.id,
@@ -302,6 +296,73 @@ class CalibrationEventAPI extends DataSource {
           }, { transaction: t });
           console.log(relations);
           for (let i = 0; i < relations.length; i += 1) {
+            // check cycles
+            const assetTagArray = [];
+            const dates = new Map();
+            assetTagArray.push(relations[i].byAssetTag);
+            let count = 0;
+            while (count < assetTagArray.length) {
+              // ////////////////////////////
+              console.log(`checking cycles for inst ${assetTag}`);
+              console.log(`currently checking ${assetTagArray[count]}`);
+              const curr = await this.store.instruments.findOne({
+                where: { assetTag: assetTagArray[count] },
+              });
+              count += 1;
+              if (curr === null) continue;
+              // eslint-disable-next-line prefer-destructuring
+              const id = curr.dataValues.id;
+              const filters = [];
+              filters.push({
+                calibrationHistoryIdReference: id,
+                approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+              });
+              if (count !== 1) {
+                filters.push({
+                  date: SQL.where(
+                    SQL.fn('date', SQL.col('date')),
+                    '<=',
+                    dates.get(curr.dataValues.assetTag),
+                  ),
+                });
+              }
+              const calibration = await this.store.calibrationEvents.findOne({
+                where: filters,
+                order: [['date', 'DESC']],
+                include: {
+                  model: this.store.calibratedByRelationships,
+                  as: 'calibratedBy',
+                },
+              });
+              if (calibration === null) continue;
+              // const relations = [];
+              for (let j = 0; j < calibration.calibratedBy.length; j += 1) {
+                const inst = calibration.calibratedBy[j];
+                const currentId = inst.dataValues.calibratedBy;
+                // eslint-disable-next-line no-await-in-loop
+                const found = await this.store.instruments.findOne({
+                  where: {
+                    id: currentId,
+                  },
+                });
+                if (found) {
+                  if (found.dataValues.assetTag === assetTag) {
+                    response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                    return;
+                  }
+                  dates.set(found.dataValues.assetTag, calibration.dataValues.date);
+                  assetTagArray.push(found.dataValues.assetTag);
+                } else {
+                  if (inst.dataValues.assetTag === assetTag) {
+                    response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                    return;
+                  }
+                  dates.set(inst.dataValues.assetTag, calibration.dataValues.date);
+                  assetTagArray.push(inst.dataValues.assetTag);
+                }
+              }
+            }
+
             await this.store.calibratedByRelationships.create({
               calibration: event.dataValues.id,
               calibratedInstrument: instrument[0].dataValues.id,
@@ -317,6 +378,7 @@ class CalibrationEventAPI extends DataSource {
           await t.rollback();
           response.success = false;
           response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+          return;
         }
         await t.commit();
         response.success = true;
