@@ -996,36 +996,6 @@ class CalibrationEventAPI extends DataSource {
         } else {
           response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
         }
-<<<<<<< HEAD
-=======
-        const modelId = instrument[0].dataValues.modelReference;
-        const model = await this.store.models.findOne({
-          where: {
-            id: modelId,
-          },
-        });
-        const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
-        const calibrationUser = await this.store.users.findOne({
-          where: {
-            userName: user,
-          },
-        });
-        const calibrationHistoryIdReference = instrument[0].dataValues.id;
-        this.store.calibrationEvents.create({
-          calibrationHistoryIdReference,
-          user,
-          userFirstName: calibrationUser.firstName,
-          userLastName: calibrationUser.lastName,
-          date,
-          comment,
-          customFormData,
-          approvalStatus,
-        });
-        response.message = `Added new Custom Form calibration event to instrument tag: ${assetTag}!`;
-        response.success = true;
-      } else {
-        response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
->>>>>>> faefbd66ae8922af4deead5dcccca8a6b114fbed
       }
     });
     return JSON.stringify(response);
