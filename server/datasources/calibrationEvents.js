@@ -327,7 +327,7 @@ class CalibrationEventAPI extends DataSource {
               const filters = [];
               filters.push({
                 calibrationHistoryIdReference: id,
-                approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+                approvalStatus: [0, 1, 3],
               });
               if (count !== 1) {
                 filters.push({
@@ -526,7 +526,7 @@ class CalibrationEventAPI extends DataSource {
               const filters = [];
               filters.push({
                 calibrationHistoryIdReference: id,
-                approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+                approvalStatus: [0, 1, 3],
               });
               if (count !== 1) {
                 filters.push({
@@ -725,7 +725,7 @@ class CalibrationEventAPI extends DataSource {
               const filters = [];
               filters.push({
                 calibrationHistoryIdReference: id,
-                approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+                approvalStatus: [0, 1, 3],
               });
               if (count !== 1) {
                 filters.push({
@@ -925,7 +925,7 @@ class CalibrationEventAPI extends DataSource {
                 const filters = [];
                 filters.push({
                   calibrationHistoryIdReference: id,
-                  approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+                  approvalStatus: [0, 1, 3],
                 });
                 if (count !== 1) {
                   filters.push({
