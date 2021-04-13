@@ -21,6 +21,7 @@ import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
 import KlufeWiz from '../components/KlufeWiz';
 import FindInstrument, { FindInstrumentById } from '../queries/FindInstrument';
+import DetailedCalibrationView from '../components/DetailedCalibrationView';
 import CustomFormEntry from '../components/CustomFormEntry';
 
 const route = process.env.NODE_ENV.includes('dev')
@@ -43,6 +44,8 @@ export default function DetailedInstrumentView() {
   const [show, setShow] = React.useState(false); // show add calib event modal or not
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
   const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
+  const [selectedRow, setSelectedRow] = React.useState(null); // selected calib event
+  const [showDetailedCalibInfo, setShowDetailedCalibInfo] = React.useState(false); // control show/hide state of calib event info
   const [formState, setFormState] = React.useState({ // our state we display to user
     modelNumber: urlParams.get('modelNumber'),
     vendor: urlParams.get('vendor'),
@@ -100,12 +103,19 @@ export default function DetailedInstrumentView() {
       setNextId(counter);
     });
   };
+  const cellHandler = (e) => { // defines what happens when user clicks on cell of calib event table
+    setSelectedRow(e.row);
+    setShowDetailedCalibInfo(true);
+  };
   const addRow = () => {
     // This adds an entry to the array(array = calibration history)
     if (calibHist.filter((ele) => !ele.viewOnly).length === 0) {
       const newHistory = calibHist;
       newHistory.push({
         user: user.userName,
+        userLastName: user.lastName,
+        userFirstName: user.firstName,
+        approvalStatus: 3, // TODO: assign correct approval status
         date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
         comment: '',
         id: nextId,
@@ -185,7 +195,7 @@ export default function DetailedInstrumentView() {
     return () => { active = false; };
   });
 
-  const updateState = (response) => { // function to update our state
+  const updateState = (response) => { // function to update our state after user edits it
     setFetched(false);
     const categories = response.instrumentCategories.map((item) => item.name);
     let {
@@ -381,6 +391,19 @@ export default function DetailedInstrumentView() {
           )}
         </>
       )}
+      {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+        <MouseOverPopover
+          className="ms-2"
+          message="View instrument's calibration certificate"
+        >
+          <Link
+            className="btn text-nowrap"
+            to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
+          >
+            View Certificate
+          </Link>
+        </MouseOverPopover>
+      )}
     </div>
   );
 
@@ -438,6 +461,14 @@ export default function DetailedInstrumentView() {
   const ref = React.useRef(null);
   return (
     <>
+      <StateLessCloseModal
+        show={showDetailedCalibInfo}
+        handleClose={() => setShowDetailedCalibInfo(false)}
+        title="Calibration Information"
+        size="xl"
+      >
+        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} isForInstrumentPage />}
+      </StateLessCloseModal>
       <div className="row">
         <div className="col p-3 border border-right border-dark">
           {fetched && (
@@ -491,6 +522,7 @@ export default function DetailedInstrumentView() {
               <DataGrid
                 rows={calibHist.filter((ele) => ele.viewOnly)}
                 cols={cols}
+                cellHandler={(e) => cellHandler(e)}
               />
             ) : (
               <div className="row mt-3">
