@@ -635,7 +635,6 @@ module.exports.createStore = async (useTestDB) => {
     foreignKey: 'calibrationHistoryIdReference',
     constraints: false,
   });
-
   db.sync();
   const adminExist = await users.findAll({ where: { userName: adminUsername } });
 
@@ -653,6 +652,33 @@ module.exports.createStore = async (useTestDB) => {
       calibrationApproverPermission: true,
       modelPermission: true,
       instrumentPermission: true,
+    });
+  }
+
+  const checkVoltmeter = await modelCategories.findOne({
+    where: { name: 'voltmeter' },
+  });
+  if (checkVoltmeter === null) {
+    await modelCategories.create({
+      name: 'voltmeter',
+    });
+  }
+
+  const checkShuntmeter = await modelCategories.findOne({
+    where: { name: 'current-shunt-meter' },
+  });
+  if (checkShuntmeter === null) {
+    await modelCategories.create({
+      name: 'current-shunt-meter',
+    });
+  }
+
+  const checkKlufe = await modelCategories.findOne({
+    where: { name: 'klufe-K5700-compatible' },
+  });
+  if (checkKlufe === null) {
+    await modelCategories.create({
+      name: 'klufe-K5700-compatible',
     });
   }
 
