@@ -415,176 +415,174 @@ class CalibrationEventAPI extends DataSource {
       where: { assetTag },
     }).then(async (instrument) => {
       if (instrument && instrument[0]) {
-        if (instrument && instrument[0]) {
-          if (!isValidDate(date)) { // checks if date is valid
-            response.message = 'ERROR: Date must be in format YYYY-MM-DD';
-            return;
-          }
-          const modelId = instrument[0].dataValues.modelReference;
-          const model = await this.store.models.findOne({
-            where: {
-              id: modelId,
-            },
-            include: {
-              model: this.store.modelCategories,
-              as: 'calibratorCategories',
-              through: 'calibratorCategoryRelationships',
-            },
-          });
-          const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
-          const calibrationUser = await this.store.users.findOne({
-            where: {
-              userName: user,
-            },
-          });
-          const calibrationHistoryIdReference = instrument[0].dataValues.id;
-          const relations = [];
-          if (calibratedBy) {
-            for (let cal = 0; cal < calibratedBy.length; cal += 1) {
-              const tag = calibratedBy[cal];
-              if (tag < 100000 || tag > 999999) {
-                response.message = 'ERROR: Asset tag must be in range 100000-999999!';
-                return;
-              }
-              const calWith = await this.store.instruments.findOne({
-                where: { assetTag: tag },
-              });
-              if (calWith) {
-                if (calWith.dataValues.assetTag === assetTag) {
-                  response.message = 'ERROR: Cannot calibrate an instrument with itself!';
-                  return;
-                }
-                const modWith = await this.store.models.findOne({
-                  where: { id: calWith.dataValues.modelReference },
-                  include: {
-                    model: this.store.modelCategories,
-                    as: 'categories',
-                    through: 'modelCategoryRelationships',
-                  },
-                });
-                const calibrationCategories = model.calibratorCategories.map((e) => e.name);
-                const modelCategories = modWith.categories.map((e) => e.name);
-                // eslint-disable-next-line max-len
-                const matchArray = calibrationCategories.filter((value) => modelCategories.includes(value));
-                if (matchArray.length > 0) {
-                  relations.push({
-                    calibratedBy: calWith.dataValues.id,
-                    byVendor: calWith.dataValues.vendor,
-                    byModelNumber: calWith.dataValues.modelNumber,
-                    bySerialNumber: calWith.dataValues.serialNumber,
-                    byAssetTag: calWith.dataValues.assetTag,
-                  });
-                } else {
-                  response.message = `ERROR: instrument ${calWith.dataValues.assetTag} is not in a valid calibration category!`;
-                  return;
-                }
-              } else {
-                response.message = `ERROR: Instrument ${tag} does not exist!`;
-                return;
-              }
-            }
-          }
-          const t = await this.store.db.transaction();
-
-          try {
-            const event = await this.store.calibrationEvents.create({
-              calibrationHistoryIdReference,
-              user,
-              userFirstName: calibrationUser.firstName,
-              userLastName: calibrationUser.lastName,
-              date,
-              comment,
-              loadBankData,
-              approvalStatus,
-            }, { transaction: t });
-            for (let i = 0; i < relations.length; i += 1) {
-              // check cycles
-              const assetTagArray = [];
-              const dates = new Map();
-              assetTagArray.push(relations[i].byAssetTag);
-              let count = 0;
-              while (count < assetTagArray.length) {
-                const curr = await this.store.instruments.findOne({
-                  where: { assetTag: assetTagArray[count] },
-                });
-                count += 1;
-                if (curr === null) continue;
-                // eslint-disable-next-line prefer-destructuring
-                const id = curr.dataValues.id;
-                const filters = [];
-                filters.push({
-                  calibrationHistoryIdReference: id,
-                  approvalStatus: [1, 3], // need to check this, do pending events create cycle???
-                });
-                if (count !== 1) {
-                  filters.push({
-                    date: SQL.where(
-                      SQL.fn('date', SQL.col('date')),
-                      '<=',
-                      dates.get(curr.dataValues.assetTag),
-                    ),
-                  });
-                }
-                const calibration = await this.store.calibrationEvents.findOne({
-                  where: filters,
-                  order: [['date', 'DESC']],
-                  include: {
-                    model: this.store.calibratedByRelationships,
-                    as: 'calibratedBy',
-                  },
-                });
-                if (calibration === null) continue;
-                // const relations = [];
-                for (let j = 0; j < calibration.calibratedBy.length; j += 1) {
-                  const inst = calibration.calibratedBy[j];
-                  const currentId = inst.dataValues.calibratedBy;
-                  // eslint-disable-next-line no-await-in-loop
-                  const found = await this.store.instruments.findOne({
-                    where: {
-                      id: currentId,
-                    },
-                  });
-                  if (found) {
-                    if (found.dataValues.assetTag === assetTag) {
-                      response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
-                      return;
-                    }
-                    dates.set(found.dataValues.assetTag, calibration.dataValues.date);
-                    assetTagArray.push(found.dataValues.assetTag);
-                  } else {
-                    if (inst.dataValues.assetTag === assetTag) {
-                      response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
-                      return;
-                    }
-                    dates.set(inst.dataValues.assetTag, calibration.dataValues.date);
-                    assetTagArray.push(inst.dataValues.assetTag);
-                  }
-                }
-              }
-
-              await this.store.calibratedByRelationships.create({
-                calibration: event.dataValues.id,
-                calibratedInstrument: instrument[0].dataValues.id,
-                calibratedBy: relations[i].calibratedBy,
-                byVendor: relations[i].byVendor,
-                byModelNumber: relations[i].byModelNumber,
-                bySerialNumber: relations[i].bySerialNumber,
-                byAssetTag: relations[i].byAssetTag,
-              }, { transaction: t });
-            }
-          } catch (error) {
-            console.log(error);
-            await t.rollback();
-            response.success = false;
-            response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
-            return;
-          }
-          await t.commit();
-          response.success = true;
-          response.message = `Added new load bank wizard calibration event to instrument tag: ${assetTag}!`;
-        } else {
-          response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
+        if (!isValidDate(date)) { // checks if date is valid
+          response.message = 'ERROR: Date must be in format YYYY-MM-DD';
+          return;
         }
+        const modelId = instrument[0].dataValues.modelReference;
+        const model = await this.store.models.findOne({
+          where: {
+            id: modelId,
+          },
+          include: {
+            model: this.store.modelCategories,
+            as: 'calibratorCategories',
+            through: 'calibratorCategoryRelationships',
+          },
+        });
+        const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
+        const calibrationUser = await this.store.users.findOne({
+          where: {
+            userName: user,
+          },
+        });
+        const calibrationHistoryIdReference = instrument[0].dataValues.id;
+        const relations = [];
+        if (calibratedBy) {
+          for (let cal = 0; cal < calibratedBy.length; cal += 1) {
+            const tag = calibratedBy[cal];
+            if (tag < 100000 || tag > 999999) {
+              response.message = 'ERROR: Asset tag must be in range 100000-999999!';
+              return;
+            }
+            const calWith = await this.store.instruments.findOne({
+              where: { assetTag: tag },
+            });
+            if (calWith) {
+              if (calWith.dataValues.assetTag === assetTag) {
+                response.message = 'ERROR: Cannot calibrate an instrument with itself!';
+                return;
+              }
+              const modWith = await this.store.models.findOne({
+                where: { id: calWith.dataValues.modelReference },
+                include: {
+                  model: this.store.modelCategories,
+                  as: 'categories',
+                  through: 'modelCategoryRelationships',
+                },
+              });
+              const calibrationCategories = model.calibratorCategories.map((e) => e.name);
+              const modelCategories = modWith.categories.map((e) => e.name);
+              // eslint-disable-next-line max-len
+              const matchArray = calibrationCategories.filter((value) => modelCategories.includes(value));
+              if (matchArray.length > 0) {
+                relations.push({
+                  calibratedBy: calWith.dataValues.id,
+                  byVendor: calWith.dataValues.vendor,
+                  byModelNumber: calWith.dataValues.modelNumber,
+                  bySerialNumber: calWith.dataValues.serialNumber,
+                  byAssetTag: calWith.dataValues.assetTag,
+                });
+              } else {
+                response.message = `ERROR: instrument ${calWith.dataValues.assetTag} is not in a valid calibration category!`;
+                return;
+              }
+            } else {
+              response.message = `ERROR: Instrument ${tag} does not exist!`;
+              return;
+            }
+          }
+        }
+        const t = await this.store.db.transaction();
+
+        try {
+          const event = await this.store.calibrationEvents.create({
+            calibrationHistoryIdReference,
+            user,
+            userFirstName: calibrationUser.firstName,
+            userLastName: calibrationUser.lastName,
+            date,
+            comment,
+            loadBankData,
+            approvalStatus,
+          }, { transaction: t });
+          for (let i = 0; i < relations.length; i += 1) {
+            // check cycles
+            const assetTagArray = [];
+            const dates = new Map();
+            assetTagArray.push(relations[i].byAssetTag);
+            let count = 0;
+            while (count < assetTagArray.length) {
+              const curr = await this.store.instruments.findOne({
+                where: { assetTag: assetTagArray[count] },
+              });
+              count += 1;
+              if (curr === null) continue;
+              // eslint-disable-next-line prefer-destructuring
+              const id = curr.dataValues.id;
+              const filters = [];
+              filters.push({
+                calibrationHistoryIdReference: id,
+                approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+              });
+              if (count !== 1) {
+                filters.push({
+                  date: SQL.where(
+                    SQL.fn('date', SQL.col('date')),
+                    '<=',
+                    dates.get(curr.dataValues.assetTag),
+                  ),
+                });
+              }
+              const calibration = await this.store.calibrationEvents.findOne({
+                where: filters,
+                order: [['date', 'DESC']],
+                include: {
+                  model: this.store.calibratedByRelationships,
+                  as: 'calibratedBy',
+                },
+              });
+              if (calibration === null) continue;
+              // const relations = [];
+              for (let j = 0; j < calibration.calibratedBy.length; j += 1) {
+                const inst = calibration.calibratedBy[j];
+                const currentId = inst.dataValues.calibratedBy;
+                // eslint-disable-next-line no-await-in-loop
+                const found = await this.store.instruments.findOne({
+                  where: {
+                    id: currentId,
+                  },
+                });
+                if (found) {
+                  if (found.dataValues.assetTag === assetTag) {
+                    response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                    return;
+                  }
+                  dates.set(found.dataValues.assetTag, calibration.dataValues.date);
+                  assetTagArray.push(found.dataValues.assetTag);
+                } else {
+                  if (inst.dataValues.assetTag === assetTag) {
+                    response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                    return;
+                  }
+                  dates.set(inst.dataValues.assetTag, calibration.dataValues.date);
+                  assetTagArray.push(inst.dataValues.assetTag);
+                }
+              }
+            }
+
+            await this.store.calibratedByRelationships.create({
+              calibration: event.dataValues.id,
+              calibratedInstrument: instrument[0].dataValues.id,
+              calibratedBy: relations[i].calibratedBy,
+              byVendor: relations[i].byVendor,
+              byModelNumber: relations[i].byModelNumber,
+              bySerialNumber: relations[i].bySerialNumber,
+              byAssetTag: relations[i].byAssetTag,
+            }, { transaction: t });
+          }
+        } catch (error) {
+          console.log(error);
+          await t.rollback();
+          response.success = false;
+          response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+          return;
+        }
+        await t.commit();
+        response.success = true;
+        response.message = `Added new load bank wizard calibration event to instrument tag: ${assetTag}!`;
+      } else {
+        response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
       }
     });
     return JSON.stringify(response);
@@ -625,6 +623,11 @@ class CalibrationEventAPI extends DataSource {
           where: {
             id: modelId,
           },
+          include: {
+            model: this.store.modelCategories,
+            as: 'calibratorCategories',
+            through: 'calibratorCategoryRelationships',
+          },
         });
         const approvalStatus = (model.dataValues.requiresCalibrationApproval) ? 0 : 3;
         const calibrationUser = await this.store.users.findOne({
@@ -633,18 +636,150 @@ class CalibrationEventAPI extends DataSource {
           },
         });
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
-        this.store.calibrationEvents.create({
-          calibrationHistoryIdReference,
-          user,
-          userFirstName: calibrationUser.firstName,
-          userLastName: calibrationUser.lastName,
-          date,
-          comment,
-          klufeData,
-          approvalStatus,
-        });
-        response.message = `Added new Klufe calibration event to instrument tag: ${assetTag}!`;
+        const relations = [];
+        if (calibratedBy) {
+          for (let cal = 0; cal < calibratedBy.length; cal += 1) {
+            const tag = calibratedBy[cal];
+            if (tag < 100000 || tag > 999999) {
+              response.message = 'ERROR: Asset tag must be in range 100000-999999!';
+              return;
+            }
+            const calWith = await this.store.instruments.findOne({
+              where: { assetTag: tag },
+            });
+            if (calWith) {
+              if (calWith.dataValues.assetTag === assetTag) {
+                response.message = 'ERROR: Cannot calibrate an instrument with itself!';
+                return;
+              }
+              const modWith = await this.store.models.findOne({
+                where: { id: calWith.dataValues.modelReference },
+                include: {
+                  model: this.store.modelCategories,
+                  as: 'categories',
+                  through: 'modelCategoryRelationships',
+                },
+              });
+              const calibrationCategories = model.calibratorCategories.map((e) => e.name);
+              const modelCategories = modWith.categories.map((e) => e.name);
+              // eslint-disable-next-line max-len
+              const matchArray = calibrationCategories.filter((value) => modelCategories.includes(value));
+              if (matchArray.length > 0) {
+                relations.push({
+                  calibratedBy: calWith.dataValues.id,
+                  byVendor: calWith.dataValues.vendor,
+                  byModelNumber: calWith.dataValues.modelNumber,
+                  bySerialNumber: calWith.dataValues.serialNumber,
+                  byAssetTag: calWith.dataValues.assetTag,
+                });
+              } else {
+                response.message = `ERROR: instrument ${calWith.dataValues.assetTag} is not in a valid calibration category!`;
+                return;
+              }
+            } else {
+              response.message = `ERROR: Instrument ${tag} does not exist!`;
+              return;
+            }
+          }
+        }
+        const t = await this.store.db.transaction();
+
+        try {
+          const event = await this.store.calibrationEvents.create({
+            calibrationHistoryIdReference,
+            user,
+            userFirstName: calibrationUser.firstName,
+            userLastName: calibrationUser.lastName,
+            date,
+            comment,
+            klufeData,
+            approvalStatus,
+          }, { transaction: t });
+          for (let i = 0; i < relations.length; i += 1) {
+            // check cycles
+            const assetTagArray = [];
+            const dates = new Map();
+            assetTagArray.push(relations[i].byAssetTag);
+            let count = 0;
+            while (count < assetTagArray.length) {
+              const curr = await this.store.instruments.findOne({
+                where: { assetTag: assetTagArray[count] },
+              });
+              count += 1;
+              if (curr === null) continue;
+              // eslint-disable-next-line prefer-destructuring
+              const id = curr.dataValues.id;
+              const filters = [];
+              filters.push({
+                calibrationHistoryIdReference: id,
+                approvalStatus: [1, 3], // need to check this, do pending events create cycle???
+              });
+              if (count !== 1) {
+                filters.push({
+                  date: SQL.where(
+                    SQL.fn('date', SQL.col('date')),
+                    '<=',
+                    dates.get(curr.dataValues.assetTag),
+                  ),
+                });
+              }
+              const calibration = await this.store.calibrationEvents.findOne({
+                where: filters,
+                order: [['date', 'DESC']],
+                include: {
+                  model: this.store.calibratedByRelationships,
+                  as: 'calibratedBy',
+                },
+              });
+              if (calibration === null) continue;
+              // const relations = [];
+              for (let j = 0; j < calibration.calibratedBy.length; j += 1) {
+                const inst = calibration.calibratedBy[j];
+                const currentId = inst.dataValues.calibratedBy;
+                // eslint-disable-next-line no-await-in-loop
+                const found = await this.store.instruments.findOne({
+                  where: {
+                    id: currentId,
+                  },
+                });
+                if (found) {
+                  if (found.dataValues.assetTag === assetTag) {
+                    response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                    return;
+                  }
+                  dates.set(found.dataValues.assetTag, calibration.dataValues.date);
+                  assetTagArray.push(found.dataValues.assetTag);
+                } else {
+                  if (inst.dataValues.assetTag === assetTag) {
+                    response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                    return;
+                  }
+                  dates.set(inst.dataValues.assetTag, calibration.dataValues.date);
+                  assetTagArray.push(inst.dataValues.assetTag);
+                }
+              }
+            }
+
+            await this.store.calibratedByRelationships.create({
+              calibration: event.dataValues.id,
+              calibratedInstrument: instrument[0].dataValues.id,
+              calibratedBy: relations[i].calibratedBy,
+              byVendor: relations[i].byVendor,
+              byModelNumber: relations[i].byModelNumber,
+              bySerialNumber: relations[i].bySerialNumber,
+              byAssetTag: relations[i].byAssetTag,
+            }, { transaction: t });
+          }
+        } catch (error) {
+          console.log(error);
+          await t.rollback();
+          response.success = false;
+          response.message = `ERROR (type: ${error.errors[0].type}) (value: ${error.errors[0].value})`;
+          return;
+        }
+        await t.commit();
         response.success = true;
+        response.message = `Added new klufe calibration event to instrument tag: ${assetTag}!`;
       } else {
         response.message = `ERROR: Instrument tag: ${assetTag} does not exists`;
       }
