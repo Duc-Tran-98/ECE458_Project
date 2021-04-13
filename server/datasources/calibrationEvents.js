@@ -100,6 +100,9 @@ class CalibrationEventAPI extends DataSource {
     return calibrationEvents;
   }
 
+  /*
+  * DEPRECATED, no longer in user as of ev3
+  */
   async addCalibrationEvent({
     modelNumber,
     vendor,
@@ -294,7 +297,6 @@ class CalibrationEventAPI extends DataSource {
             fileName,
             approvalStatus,
           }, { transaction: t });
-          console.log(relations);
           for (let i = 0; i < relations.length; i += 1) {
             // check cycles
             const assetTagArray = [];
@@ -302,9 +304,6 @@ class CalibrationEventAPI extends DataSource {
             assetTagArray.push(relations[i].byAssetTag);
             let count = 0;
             while (count < assetTagArray.length) {
-              // ////////////////////////////
-              console.log(`checking cycles for inst ${assetTag}`);
-              console.log(`currently checking ${assetTagArray[count]}`);
               const curr = await this.store.instruments.findOne({
                 where: { assetTag: assetTagArray[count] },
               });
@@ -576,6 +575,9 @@ class CalibrationEventAPI extends DataSource {
     return JSON.stringify(response);
   }
 
+  /*
+  * DEPRECATED, no longer in user as of ev3
+  */
   async addCalibrationEventById({
     calibrationHistoryIdReference,
     user,
