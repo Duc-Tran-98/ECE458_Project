@@ -522,6 +522,10 @@ class ModelAPI extends DataSource {
       response.message = 'ERROR: User does not have permission.';
       return JSON.stringify(response);
     }
+    if (name === 'voltmeter' || name === 'current-shunt-meter' || name === 'klufe-K5700-compatible') {
+      response.message = 'ERROR: cannot delete special category';
+      return JSON.stringify(response);
+    }
     await this.getModelCategory({ name }).then((value) => {
       if (value) {
         this.store.modelCategories.destroy({
@@ -546,6 +550,11 @@ class ModelAPI extends DataSource {
 
   async editModelCategory({ currentName, updatedName }) {
     const response = { message: '', success: false, category: null };
+    if (currentName === 'voltmeter' || currentName === 'current-shunt-meter' || currentName === 'klufe-K5700-compatible') {
+      response.message = 'ERROR: cannot modify special category';
+      return response;
+    }
+
     if (hasWhiteSpace(updatedName)) {
       response.message = 'ERROR: category cannot have white spaces';
       return response;
