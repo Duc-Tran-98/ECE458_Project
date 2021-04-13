@@ -73,14 +73,24 @@ export default async function GetCalibHistory({
   const GET_ALL_CALIB_HIST = gql`
     query GetCalibHist($id: Int!) {
       getCalibrationEventsByReferenceId(calibrationHistoryIdReference: $id) {
-        date
+        id
+        calibrationHistoryIdReference
         user
+        userFirstName
+        userLastName
+        date
         comment
         fileLocation
         fileName
         loadBankData
         klufeData
-        id
+        customFormData
+        approvalStatus
+        approverUsername
+        approverFirstName
+        approverLastName
+        approvalDate
+        approvalComment
       }
     }
   `;

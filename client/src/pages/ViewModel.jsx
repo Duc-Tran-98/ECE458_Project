@@ -228,7 +228,7 @@ export default function DetailedModelView() {
             </>
           )}
         </div>
-        <div className="col p-3 border border-left border-dark" id="remove-if-empty">
+        <div className="col-lg p-3 border border-left border-dark" id="remove-if-empty">
           <div id="scrollableDiv" style={{ maxHeight: '72vh', overflowY: 'auto', minHeight: '72vh' }}>
             <InfinityScroll
               title="Instances:"
