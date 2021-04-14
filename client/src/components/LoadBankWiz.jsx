@@ -171,6 +171,7 @@ export default function LoadBankWiz({
     handleRestart();
   };
   const validateCalibrationDate = ({ date, calibrationFrequency }) => {
+    if (calibrationFrequency === 0) return true;
     if (date) {
       const todayToo = new Date();
       const calibDate = new Date(date);
@@ -642,8 +643,8 @@ export default function LoadBankWiz({
                 <div className="">
                   <AsyncSuggest
                     query={gql`
-                      query Instruments($description: String) {
-                        getInstrumentsWithFilter(description: $description) {
+                      query Instruments($modelCategories: [String]) {
+                        getInstrumentsWithFilter(modelCategories: $modelCategories) {
                           instruments {
                             vendor
                             modelNumber
@@ -657,20 +658,20 @@ export default function LoadBankWiz({
                       }
                     `}
                     queryName="getInstrumentsWithFilter"
-                    getVariables={() => ({ description: 'voltmeter' })}
+                    getVariables={() => ({ modelCategories: ['voltmeter'] })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
-                      if (!DEBUG) {
-                        const voltMeterOk = validateCalibrationDate({
-                          date: v?.recentCalibration[0]?.date,
-                          calibrationFrequency: v.calibrationFrequency,
-                        });
-                        setFormState({
-                          ...formState,
-                          voltMeter: v,
-                          voltMeterOk,
-                        });
-                      }
+                      // if (!DEBUG) {
+                      const voltMeterOk = validateCalibrationDate({
+                        date: v?.recentCalibration[0]?.date,
+                        calibrationFrequency: v.calibrationFrequency,
+                      });
+                      setFormState({
+                        ...formState,
+                        voltMeter: v,
+                        voltMeterOk,
+                      });
+                      // }
                     }}
                     label="Select a voltmeter"
                     getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
@@ -690,37 +691,35 @@ export default function LoadBankWiz({
                 <div className="">
                   <AsyncSuggest
                     query={gql`
-                      query Instruments($description: String) {
-                        getInstrumentsWithFilter(description: $description) {
-                          instruments {
-                            vendor
-                            modelNumber
-                            assetTag
-                            calibrationFrequency
-                            recentCalibration {
-                              date
-                            }
+                    query Instruments($modelCategories: [String]) {
+                      getInstrumentsWithFilter(modelCategories: $modelCategories) {
+                        instruments {
+                          vendor
+                          modelNumber
+                          assetTag
+                          calibrationFrequency
+                          recentCalibration {
+                            date
                           }
                         }
                       }
-                    `}
+                    }
+                  `}
                     queryName="getInstrumentsWithFilter"
-                    getVariables={() => ({
-                      description: 'current shunt meter',
-                    })}
+                    getVariables={() => ({ modelCategories: ['current_shunt_meter'] })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
-                      if (!DEBUG) {
-                        const shuntMeterOk = validateCalibrationDate({
-                          date: v?.recentCalibration[0]?.date,
-                          calibrationFrequency: v.calibrationFrequency,
-                        });
-                        setFormState({
-                          ...formState,
-                          shuntMeter: v,
-                          shuntMeterOk,
-                        });
-                      }
+                      // if (!DEBUG) {
+                      const shuntMeterOk = validateCalibrationDate({
+                        date: v?.recentCalibration[0]?.date,
+                        calibrationFrequency: v.calibrationFrequency,
+                      });
+                      setFormState({
+                        ...formState,
+                        shuntMeter: v,
+                        shuntMeterOk,
+                      });
+                      // }
                     }}
                     label="Select a shunt meter"
                     getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
