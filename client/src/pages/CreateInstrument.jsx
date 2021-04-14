@@ -7,7 +7,6 @@ import axios from 'axios';
 import CreateInstrument from '../queries/CreateInstrument';
 import UserContext from '../components/UserContext';
 import InstrumentForm from '../components/InstrumentForm';
-import CalibrationTable from '../components/CalibrationTable';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
 
 // eslint-disable-next-line no-unused-vars
