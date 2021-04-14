@@ -177,17 +177,17 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
 });
 
 app.get(`${whichRoute}/certificate`, async (req, res) => {
-  let calibrationID;
+  let assetTag;
   let chainOfTruth;
-  if (req.query.calibrationID) {
-    calibrationID = req.query.calibrationID || null;
+  if (req.query.assetTag) {
+    assetTag = req.query.assetTag || null;
     chainOfTruth = req.query.chainOfTruth || null;
   } else {
     res.status(400);
-    res.send('Calibration ID Missing');
+    res.send('Asset Tag Missing');
     return;
   }
-  const pdf = await generateCertificate({ calibrationID, chainOfTruth });
+  const pdf = await generateCertificate({ assetTag, chainOfTruth });
   const filename = 'calibration_certificate.pdf';
   const readStream = new Stream.PassThrough();
   readStream.end(pdf);

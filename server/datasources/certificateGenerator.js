@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 // localhost:4001/api/certificate?calibrationID=10&chainOfTruth=true
 const React = require('react');
@@ -18,6 +19,8 @@ let store;
 createDB().then(() => {
   store = createStore(false);
 });
+
+let calEvent;
 
 // Create styles
 const styles = StyleSheet.create({
@@ -75,6 +78,7 @@ const styles = StyleSheet.create({
   },
   outerBorder: {
     border: '5pt solid black',
+    height: '100%',
   },
   image: {
     padding: 20,
@@ -114,141 +118,172 @@ const styles = StyleSheet.create({
   },
 });
 
-const generateInfoPage = () => (
+async function getFileType(url) {
+  if (url) {
+    return url.split(/[#?]/)[0].split('.').pop().trim();
+  }
+  return '';
+}
 
-  // React.createElement(
-  //   Document,
-  //   null,
-  //   React.createElement(
-  //     Page,
-  //     { size: 'A4', style: styles.page },
-  //     React.createElement(
-  //       View,
-  //       { style: styles.section },
-  //       React.createElement(Text, null, 'Section #1'),
-  //     ),
-  //     React.createElement(
-  //       View,
-  //       { style: styles.section },
-  //       React.createElement(Text, null, 'Section #2'),
-  //     ),
-  //   ),
-  // )
-
-  React.createElement(
-    Document,
-    null,
+const displayLink = async () => (
+  (((await getFileType(calEvent.fileLocation) === 'pdf') || (await getFileType(calEvent.fileLocation) === 'xlsx') || (await getFileType(calEvent.fileLocation) === 'gif'))) ? (
     React.createElement(
-      Page,
-      { style: styles.page, size: 'LETTER' },
+      Link,
+      { src: calEvent.fileLocation },
+      React.createElement(
+        Text,
+        { style: styles.largeText },
+        `\n${calEvent.fileName}\n`,
+      ),
+    )
+  ) : (null)
+);
+
+const displayImage = async () => (
+  ((await getFileType(calEvent.fileLocation) === 'jpeg') || (await getFileType(calEvent.fileLocation) === 'jpg') || (await getFileType(calEvent.fileLocation) === 'png')) ? (
+    React.createElement(
+      View,
+      { style: styles.centerView },
+      React.createElement(
+        Image,
+        { style: styles.image, src: calEvent.fileLocation },
+      ),
+    )
+  ) : (null)
+);
+
+const generateInfoPage = async () => (
+  React.createElement(
+    Page,
+    { style: styles.page, size: 'LETTER' },
+    React.createElement(
+      View,
+      { style: styles.outerBorder },
       React.createElement(
         View,
-        { style: styles.outerBorder },
+        { style: styles.innerBorder },
         React.createElement(
           View,
-          { style: styles.innerBorder },
+          { style: styles.centerView },
+          React.createElement(
+            Image,
+            { style: styles.logo, src: './templates/HPT_logo.png' },
+          ),
+        ),
+        React.createElement(
+          Text,
+          { style: styles.title },
+          'Certificate of Calibration\n\n',
+        ),
+        React.createElement(
+          View,
+          { style: styles.columnView },
           React.createElement(
             View,
-            { style: styles.centerView },
+            { style: styles.rightColumn },
             React.createElement(
-              Image,
-              { style: styles.logo, src: './templates/HPT_logo.png' },
-            ),
-          ),
-          React.createElement(
-            Text,
-            { style: styles.title },
-            'Certificate of Calibration\n\n',
-          ),
-          React.createElement(
-            View,
-            { style: styles.columnView },
-            React.createElement(
-              View,
-              { style: styles.rightColumn },
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                'Vendor: {vendor}',
-              ),
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                'Model Number: {modelNumber}',
-              ),
+              Text,
+              { style: styles.largeText },
+              `Vendor: ${calEvent.vendor}`,
             ),
             React.createElement(
-              View,
-              { style: styles.leftColumn },
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                'Serial Number: {serialNumber}',
-              ),
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                'Asset Tag: {assetTag}',
-              ),
+              Text,
+              { style: styles.largeText },
+              `Model Number: ${calEvent.modelNumber}`,
             ),
-          ),
-          React.createElement(
-            Text,
-            { style: styles.largeText },
-            '\nModel Description:',
-          ),
-          React.createElement(
-            Text,
-            { style: styles.smallText },
-            '{description}',
-          ),
-          React.createElement(
-            Text,
-            { style: styles.largeText },
-            '\nComment:',
-          ),
-          React.createElement(
-            Text,
-            { style: styles.smallText },
-            '{comment}',
           ),
           React.createElement(
             View,
-            { style: styles.columnView },
+            { style: styles.leftColumn },
             React.createElement(
-              View,
-              { style: styles.rightColumn },
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                '\nCalibrated By: {name}',
-              ),
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                'Username: {username}',
-              ),
+              Text,
+              { style: styles.largeText },
+              `Serial Number: ${calEvent.serialNumber ? `${calEvent.serialNumber}` : ''}`,
             ),
             React.createElement(
-              View,
-              { style: styles.leftColumn },
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                '\nDate of Calibration: {calibrationDate}',
-              ),
-              React.createElement(
-                Text,
-                { style: styles.largeText },
-                'Date of Expiration: {expirationDate}',
-              ),
+              Text,
+              { style: styles.largeText },
+              `Asset Tag: ${calEvent.assetTag}`,
             ),
           ),
         ),
+        React.createElement(
+          Text,
+          { style: styles.largeText },
+          '\nModel Description:',
+        ),
+        React.createElement(
+          Text,
+          { style: styles.smallText },
+          `${calEvent.modelDescription}`,
+        ),
+        React.createElement(
+          Text,
+          { style: styles.largeText },
+          '\nComment:',
+        ),
+        React.createElement(
+          Text,
+          { style: styles.smallText },
+          calEvent.calibrationComment ? `${calEvent.calibrationComment}` : '',
+        ),
+        React.createElement(
+          View,
+          { style: styles.columnView },
+          React.createElement(
+            View,
+            { style: styles.rightColumn },
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `\nCalibrated By: ${calEvent.calibratorFirstName} ${calEvent.calibratorLastName}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `Username: ${calEvent.calibratorUserName}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `\n\nApproval Status: ${calEvent.approvalStatus}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `${calEvent.approverFirstName ? `Approved By: ${calEvent.approverFirstName} ${calEvent.approverLastName}` : ''}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `${calEvent.approverUserName ? `Approved By: ${calEvent.approverUserName}` : ''}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.leftColumn },
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `\nDate of Calibration: ${calEvent.calibrationDate}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `Date of Expiration: ${new Date(new Date(calEvent.calibrationDate).getTime() + 86400000 * calEvent.calibrationFrequency).toISOString().split('T')[0]}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `\n\n${calEvent.approvalDate ? `Approval Date: ${calEvent.approvalDate}` : ''}`,
+            ),
+          ),
+        ),
+        await displayLink(),
+        await displayImage(),
       ),
     ),
   )
-
 );
 
 // const generateDataTables = () => (
@@ -259,10 +294,18 @@ const generateInfoPage = () => (
 
 //   )
 
-async function go() {
+const assemblePDF = async () => (
+  React.createElement(
+    Document,
+    null,
+    await generateInfoPage(),
+  )
+);
+
+async function convertToSendPDF() {
   const fname = `${__dirname}/${uuidv4()}.pdf`;
   await ReactPDF.render(
-    React.createElement(generateInfoPage, null),
+    await assemblePDF(),
     fname,
   );
   const res = await fs.readFileSync(fname);
@@ -270,38 +313,16 @@ async function go() {
   return tou8(res);
 }
 
-const generateCertificate = async ({ assetTag, chainOfTruth }) => {
-  // const templatePath = path.join(__dirname, 'bb493b84-b15b-40fc-a648-d7c7787009da.pdf');
-  // const blankPagePath = path.join(__dirname, 'bb493b84-b15b-40fc-a648-d7c7787009da.pdf');
-  // const templateBytes = fs.readFileSync(templatePath);
-  // const blankPageBytes = fs.readFileSync(blankPagePath);
+const generateCertificate = async (assetTag, chainOfTruth) => {
+  // Query for calibration data
+  const cal = new CalibrationEventAPI({ store });
+  if (chainOfTruth) {
+    calEvent = await cal.getChainOfTruthForInstrument(assetTag);
+  } else {
+    calEvent = await cal.getCetificateForInstrument(assetTag);
+  }
 
-  // const pdfDoc = await PDFDocument.load(templateBytes);
-  // const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-
-  // // const pdfPage = pdfDoc.addPage();
-  // // const { width, height } = pdfPage.getSize();
-  // const pages = pdfDoc.getPages();
-  // const firstPage = pages[0];
-  // const largeFontSize = 16;
-
-  // Query for calibration data (no chain of truth)
-
-  const vendor = 'Fluke';
-  const serialNum = '12345';
-  const modelNum = '87';
-  const description = 'this is a description';
-  const comment = 'this is a comment';
-  const name = 'Natasha von Seelen';
-  const username = 'nlv10';
-  const calibrationDate = '01-14-1999';
-  const expirationDate = '01-14-2021';
-
-  // pdfDoc.save().then((result) => { console.log('saved', result); });
-  // go().then((result) => { console.log('new', result); });
-
-  // return pdfDoc.save();
-  return go();
+  return convertToSendPDF();
 };
 
 module.exports = generateCertificate;

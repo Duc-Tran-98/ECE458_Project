@@ -558,10 +558,14 @@ function newCertificate() {
     console.log(response.status);
   };
 
-  const calibrationID = 10;
+  // This code is getting params from url
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+
+  const assetTag = urlParams.get('assetTag');
   const chainOfTruth = false;
   const calibrationQuery = async () => {
-    const expressParam = `/api/certificate?calibrationID=${calibrationID}&chainOfTruth=${chainOfTruth}`;
+    const expressParam = `/api/certificate?assetTag=${assetTag}&chainOfTruth=${chainOfTruth}`;
     ExpressQuery({
       endpoint: expressParam, method: 'get', queryJSON: { }, handleResponse, responseType: 'arraybuffer',
     });
