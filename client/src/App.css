@@ -272,3 +272,8 @@ div.MuiPaper-root.MuiPaper-elevation0{
   margin: auto;
   justify-content: center;
 }
+
+.bg-secondary {
+  background-color: #86A0D8!important;
+  color: black!important;
+}
