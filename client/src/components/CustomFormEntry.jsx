@@ -75,6 +75,7 @@ export default function CustomFormEntry({
   const [formSteps, setFormSteps] = React.useState(null);
   const [update, setUpdate] = React.useState(0);
   const [checkErrors, setCheckErrors] = React.useState(0);
+  const [shouldValidate, setShouldValidate] = React.useState(false);
 
   const inputProps = { disableUnderline: true };
   const divClass = 'border-top border-dark mt-4';
@@ -144,73 +145,76 @@ export default function CustomFormEntry({
 
   // Effect to remove errors and helper text as they are resolved
   React.useEffect(() => {
-    const nextState = state;
-    let errorCount = 0;
-    state.forEach((element, index) => {
-      switch (element.type) {
-        case 'number':
+    if (shouldValidate) {
+      const nextState = state;
+      let errorCount = 0;
+      state.forEach((element, index) => {
+        switch (element.type) {
+          case 'number':
           // Validate number present
-          if (element.value !== '' && !Number.isNaN(parseFloat(element.value))) {
-            nextState[index] = {
-              ...nextState[index],
-              error: false,
-              helperText: '',
-            };
-            if (element.minSet) {
-              if (parseFloat(element.value) >= element.min) {
-                nextState[index] = {
-                  ...nextState[index],
-                  error: false,
-                  helperText: '',
-                };
-              } else {
-                errorCount += 1;
-                nextState[index] = {
-                  ...nextState[index],
-                  error: true,
-                  helperText: 'Must be greater than min',
-                };
-                break;
+            if (element.value !== '' && !Number.isNaN(parseFloat(element.value))) {
+              nextState[index] = {
+                ...nextState[index],
+                error: false,
+                helperText: '',
+              };
+              if (element.minSet) {
+                if (parseFloat(element.value) >= element.min) {
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: false,
+                    helperText: '',
+                  };
+                } else {
+                  errorCount += 1;
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: true,
+                    helperText: 'Must be greater than min',
+                  };
+                  break;
+                }
+              }
+              if (element.maxSet) {
+                if (parseFloat(element.value) <= element.max) {
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: false,
+                    helperText: '',
+                  };
+                } else {
+                  errorCount += 1;
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: true,
+                    helperText: 'Must be less than max',
+                  };
+                }
               }
             }
-            if (element.maxSet) {
-              if (parseFloat(element.value) <= element.max) {
-                nextState[index] = {
-                  ...nextState[index],
-                  error: false,
-                  helperText: '',
-                };
-              } else {
-                errorCount += 1;
-                nextState[index] = {
-                  ...nextState[index],
-                  error: true,
-                  helperText: 'Must be less than max',
-                };
-              }
-            }
-          }
-          break;
-        case 'text':
+            break;
+          case 'text':
           // Validate text present
-          if (element.error && element.value !== '') {
-            nextState[index] = {
-              ...nextState[index],
-              error: false,
-              helperText: '',
-            };
-          }
-          break;
-        default:
-          break;
+            if (element.error && element.value !== '') {
+              nextState[index] = {
+                ...nextState[index],
+                error: false,
+                helperText: '',
+              };
+            }
+            break;
+          default:
+            break;
+        }
+      });
+      setState(nextState);
+      if (errorCount > 0) {
+        setUpdate(update + 1);
       }
-    });
-    setState(nextState);
-    if (errorCount > 0) {
-      setUpdate(update + 1);
     }
   }, [checkErrors]);
 
+  // TODO: Add handle close on modal
   const handleSubmit = () => {
     if (!validForm()) {
       toast.error('Invalid fields in form, please fix before submitting', { toastId: -87 });
@@ -236,6 +240,7 @@ export default function CustomFormEntry({
       ...nextState[index],
       value: e.target.value,
     };
+    setShouldValidate(true);
     setState(state);
     setUpdate(update + 1);
     setCheckErrors(checkErrors + 1);
