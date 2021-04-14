@@ -1,13 +1,23 @@
 /* eslint-disable no-unused-vars */
 // localhost:4001/api/certificate?calibrationID=10&chainOfTruth=true
+const React = require('react');
 const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
+const { default: ReactPDF } = require('@react-pdf/renderer');
 const {
   PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
 } = require('@react-pdf/renderer');
-
 const strftime = require('strftime');
+const { v4: uuidv4 } = require('uuid');
+const tou8 = require('utf8-to-uint8array');
+const { createStore, createDB } = require('../util');
+const CalibrationEventAPI = require('./calibrationEvents');
+
+let store;
+createDB().then(() => {
+  store = createStore(false);
+});
 
 // Create styles
 const styles = StyleSheet.create({
@@ -22,7 +32,6 @@ const styles = StyleSheet.create({
     height: '100%',
     orientation: 'portrait',
     padding: 10,
-    border: '10pt solid #ff0000',
   },
   centerView: {
     alignItems: 'center',
@@ -106,156 +115,193 @@ const styles = StyleSheet.create({
 });
 
 const generateInfoPage = () => (
- 
-  <Document>
-       <Page style={styles.page} size="LETTER">
-         <View style={styles.outerBorder}>
-           <View style={styles.innerBorder}>
-             <View style={styles.centerView}>
-               <Image style={styles.logo} src="/HPT_logo.png" />
-             </View>
 
-             <Text style={styles.title}>
-               Certificate of Calibration
-               {'\n\n'}
-             </Text>
+  // React.createElement(
+  //   Document,
+  //   null,
+  //   React.createElement(
+  //     Page,
+  //     { size: 'A4', style: styles.page },
+  //     React.createElement(
+  //       View,
+  //       { style: styles.section },
+  //       React.createElement(Text, null, 'Section #1'),
+  //     ),
+  //     React.createElement(
+  //       View,
+  //       { style: styles.section },
+  //       React.createElement(Text, null, 'Section #2'),
+  //     ),
+  //   ),
+  // )
 
-             <View style={styles.columnView}>
-               <View style={styles.rightColumn}>
-                 <Text style={styles.largeText}>
-                   Vendor:
-                   {' '}
-                   {vendor}
-                 </Text>
-                 <Text style={styles.largeText}>
-                   Model Number:
-                   {' '}
-                   {modelNumber}
-                 </Text>
-               </View>
-               <View style={styles.leftColumn}>
-                 <Text style={styles.largeText}>
-                   Serial Number:
-                   {' '}
-                   {serialNumber}
-                 </Text>
-                 <Text style={styles.largeText}>
-                   Asset Tag:
-                   {' '}
-                   {assetTag}
-                 </Text>
-               </View>
-             </View>
-
-             <Text style={styles.largeText}>
-               {'\n'}
-               Model Description:
-             </Text>
-             <Text style={styles.smallText}>{description}</Text>
-
-             <Text style={styles.largeText}>
-               {'\n'}
-               Comment:
-             </Text>
-             <Text style={styles.smallText}>{comment}</Text>
-
-             <View style={styles.columnView}>
-               <View style={styles.rightColumn}>
-                 <Text style={styles.largeText}>
-                   {'\n'}
-                   Calibrated By:
-                   {' '}
-                   {name}
-                 </Text>
-                 <Text style={styles.largeText}>
-                   Username:
-                   {' '}
-                   {username}
-                 </Text>
-               </View>
-
-               <View style={styles.leftColumn}>
-                 <Text style={styles.largeText}>
-                   {'\n'}
-                   Date of Calibration:
-                   {' '}
-                   {calibrationDate}
-                 </Text>
-                 <Text style={styles.largeText}>
-                   Date of Expiration:
-                   {' '}
-                   {expirationDate}
-                 </Text>
-               </View>
-             </View>
-
-             (((evidenceFileType === 'pdf') || (evidenceFileType === 'xlsx') || (evidenceFileType === 'gif'))) ? (
-     <Text style={styles.largeText}>
-       {'\n'}
-       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
-       <Link src={evidenceFile}> View Evidence </Link>
-       {'\n'}
-     </Text>
-   ) : (null);
-
-   ((evidenceFileType === 'jpeg') || (evidenceFileType === 'jpg') || (evidenceFileType === 'png')) ? (
-     <View style={styles.centerView}>
-       <Image style={styles.image} src={evidenceFile} />
-     </View>
-   ) : (null);
-
-           </View>
-         </View>
-       </Page>
-       {(loadBankData) && (
-        <>
-          <Page style={styles.page}>
-            {displayLoadBank}
-          </Page>
-          <Page style={styles.page}>
-            {displayLoadBankVoltage}
-          </Page>
-        </>
-      )}
-      {(klufeData) && (
-        <>
-          <Page style={styles.page}>
-            {displayKlufe}
-          </Page>
-        </>
-      )}
-    </Document>
-)
-
-const generateDataTables = () => (
-
-)
-
-const generateDependencyPage = () => (
-  
+  React.createElement(
+    Document,
+    null,
+    React.createElement(
+      Page,
+      { style: styles.page, size: 'LETTER' },
+      React.createElement(
+        View,
+        { style: styles.outerBorder },
+        React.createElement(
+          View,
+          { style: styles.innerBorder },
+          React.createElement(
+            View,
+            { style: styles.centerView },
+            React.createElement(
+              Image,
+              { style: styles.logo, src: './templates/HPT_logo.png' },
+            ),
+          ),
+          React.createElement(
+            Text,
+            { style: styles.title },
+            'Certificate of Calibration\n\n',
+          ),
+          React.createElement(
+            View,
+            { style: styles.columnView },
+            React.createElement(
+              View,
+              { style: styles.rightColumn },
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                'Vendor: {vendor}',
+              ),
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                'Model Number: {modelNumber}',
+              ),
+            ),
+            React.createElement(
+              View,
+              { style: styles.leftColumn },
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                'Serial Number: {serialNumber}',
+              ),
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                'Asset Tag: {assetTag}',
+              ),
+            ),
+          ),
+          React.createElement(
+            Text,
+            { style: styles.largeText },
+            '\nModel Description:',
+          ),
+          React.createElement(
+            Text,
+            { style: styles.smallText },
+            '{description}',
+          ),
+          React.createElement(
+            Text,
+            { style: styles.largeText },
+            '\nComment:',
+          ),
+          React.createElement(
+            Text,
+            { style: styles.smallText },
+            '{comment}',
+          ),
+          React.createElement(
+            View,
+            { style: styles.columnView },
+            React.createElement(
+              View,
+              { style: styles.rightColumn },
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                '\nCalibrated By: {name}',
+              ),
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                'Username: {username}',
+              ),
+            ),
+            React.createElement(
+              View,
+              { style: styles.leftColumn },
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                '\nDate of Calibration: {calibrationDate}',
+              ),
+              React.createElement(
+                Text,
+                { style: styles.largeText },
+                'Date of Expiration: {expirationDate}',
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
   )
 
-const generateCertificate = async ({ calibrationID, chainOfTruth }) => {
-  const templatePath = path.join(__dirname, '../templates/certificateTemplate.pdf');
-  const blankPagePath = path.join(__dirname, '../templates/certificateBlankPage.pdf');
-  const templateBytes = fs.readFileSync('./templates/certificateTemplate.pdf');
-  const blankPageBytes = fs.readFileSync('./templates/certificateBlankPage.pdf');
+);
 
-  const pdfDoc = await PDFDocument.load(templateBytes);
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+// const generateDataTables = () => (
 
-  // const pdfPage = pdfDoc.addPage();
-  // const { width, height } = pdfPage.getSize();
-  const pages = pdfDoc.getPages();
-  const firstPage = pages[0];
-  const largeFontSize = 16;
+// )
+
+// const generateDependencyPage = () => (
+
+//   )
+
+async function go() {
+  const fname = `${__dirname}/${uuidv4()}.pdf`;
+  await ReactPDF.render(
+    React.createElement(generateInfoPage, null),
+    fname,
+  );
+  const res = await fs.readFileSync(fname);
+  await fs.unlinkSync(fname);
+  return tou8(res);
+}
+
+const generateCertificate = async ({ assetTag, chainOfTruth }) => {
+  // const templatePath = path.join(__dirname, 'bb493b84-b15b-40fc-a648-d7c7787009da.pdf');
+  // const blankPagePath = path.join(__dirname, 'bb493b84-b15b-40fc-a648-d7c7787009da.pdf');
+  // const templateBytes = fs.readFileSync(templatePath);
+  // const blankPageBytes = fs.readFileSync(blankPagePath);
+
+  // const pdfDoc = await PDFDocument.load(templateBytes);
+  // const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+  // // const pdfPage = pdfDoc.addPage();
+  // // const { width, height } = pdfPage.getSize();
+  // const pages = pdfDoc.getPages();
+  // const firstPage = pages[0];
+  // const largeFontSize = 16;
+
+  // Query for calibration data (no chain of truth)
 
   const vendor = 'Fluke';
   const serialNum = '12345';
   const modelNum = '87';
-  const assetTag = '100000';
-  
-  return pdfDoc.save();
+  const description = 'this is a description';
+  const comment = 'this is a comment';
+  const name = 'Natasha von Seelen';
+  const username = 'nlv10';
+  const calibrationDate = '01-14-1999';
+  const expirationDate = '01-14-2021';
+
+  // pdfDoc.save().then((result) => { console.log('saved', result); });
+  // go().then((result) => { console.log('new', result); });
+
+  // return pdfDoc.save();
+  return go();
 };
 
 module.exports = generateCertificate;

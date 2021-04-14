@@ -546,11 +546,12 @@ function newCertificate() {
   const [loaded, setLoaded] = React.useState(false);
 
   const handleResponse = async (response) => {
+    console.log('this is the response: ', response);
     // create pdf from bytestream and download in browser
     const blob = new Blob([response.data], { type: 'application/pdf' });
-    const buf = await blob.arrayBuffer();
+    // const buf = await blob.arrayBuffer();
     const fUrl = URL.createObjectURL(blob);
-    console.log(buf);
+    // console.log(buf);
     console.log(fUrl);
     setFile(fUrl);
     // window.open(fUrl);

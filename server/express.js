@@ -192,7 +192,7 @@ app.get(`${whichRoute}/certificate`, async (req, res) => {
   const readStream = new Stream.PassThrough();
   readStream.end(pdf);
   res.set('Content-disposition', `attachment; filename=${filename}`);
-  res.set('Content-Type', 'application/pdf');
+  res.set('Content-Type', 'arraybuffer');
   readStream.pipe(res);
   // res.status(200);
   // res.send('good job!');
