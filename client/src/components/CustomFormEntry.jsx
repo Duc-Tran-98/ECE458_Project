@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
+import Form from 'react-bootstrap/Form';
 import { makeStyles } from '@material-ui/core/styles';
 import { toast } from 'react-toastify';
 import AddCustomFormCalibration from '../queries/AddCustomFormCalibration';
@@ -271,17 +272,18 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col">
-        <TextField
-          className={classes.textFieldSmall}
-          margin="normal"
+      <div className="col" style={{ margin: 'auto 0px', maxWidth: '30%' }}>
+        <Form.Control
           type="number"
-          onChange={(e) => handleChange(e, index)}
+          name="comment"
           value={state[index].value}
-          variant="outlined"
+          onChange={(e) => handleChange(e, index)}
+          isInvalid={!!state[index].error}
           error={state[index].error}
-          helperText={state[index].helperText}
         />
+        <Form.Control.Feedback type="invalid">
+          {state[index].helperText}
+        </Form.Control.Feedback>
       </div>
     </div>
   );
@@ -296,19 +298,20 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col">
-        <TextField
-          id="margin-normal"
-          className={classes.textFieldMedium}
-          margin="normal"
+      <div className="col" style={{ margin: 'auto 0px', maxWidth: '30%' }}>
+        <Form.Control
           type="text"
-          name="prompt"
-          onChange={(e) => handleChange(e, index)}
+          name="comment"
+          as="textarea"
+          rows={3}
           value={state[index].value}
-          variant="outlined"
+          onChange={(e) => handleChange(e, index)}
+          isInvalid={!!state[index].error}
           error={state[index].error}
-          helperText={state[index].helperText}
         />
+        <Form.Control.Feedback type="invalid">
+          {state[index].helperText}
+        </Form.Control.Feedback>
       </div>
     </div>
   );
