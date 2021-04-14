@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish,
+  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
@@ -59,6 +59,7 @@ export default function CustomFormEntry({
     serialNumber: PropTypes.string,
     assetTag: PropTypes.number,
     onFinish: PropTypes.func,
+    handleClose: PropTypes.func,
   };
   CustomFormEntry.defaultProps = {
     modelNumber: '',
@@ -66,6 +67,7 @@ export default function CustomFormEntry({
     serialNumber: '',
     assetTag: 0,
     onFinish: null,
+    handleClose: null,
   };
 
   const user = React.useContext(UserContext);
@@ -230,6 +232,7 @@ export default function CustomFormEntry({
       customFormData: JSON.stringify(state),
       handleResponse,
     });
+    handleClose();
     onFinish();
   };
   const canSubmit = true;
@@ -363,7 +366,20 @@ export default function CustomFormEntry({
   return (
     <div className="customFormEntryBox">
       {formSteps}
-      {onFinish !== null && <button type="submit" className="btn" disabled={!canSubmit} onClick={handleSubmit}>Finish</button>}
+      {onFinish !== null && (
+      <div className="m-3 text-center">
+        <button
+          type="submit"
+          className="btn"
+          disabled={!canSubmit}
+          onClick={handleSubmit}
+          style={{ margin: 'auto' }}
+        >
+          Finish
+
+        </button>
+      </div>
+      )}
     </div>
   );
 }
