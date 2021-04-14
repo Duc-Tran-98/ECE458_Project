@@ -35,8 +35,10 @@ export default function LoadBankWiz({
     date: today,
     user: user.userName,
     comment: '',
+    voltTag: null,
     voltMeter: null,
     voltMeterOk: true,
+    shuntTag: null,
     shuntMeter: null,
     shuntMeterOk: true,
     visualCheckOk: false,
@@ -139,6 +141,7 @@ export default function LoadBankWiz({
             $user: String!,
             $comment: String,
             $loadBankData: String!,
+            $calibratedBy: [Int]
           ){
           addLoadBankCalibration(
             assetTag: $assetTag,
@@ -146,6 +149,7 @@ export default function LoadBankWiz({
             user: $user,
             comment: $comment,
             loadBankData: $loadBankData,
+            calibratedBy: $calibratedBy
           )
         }
       `,
@@ -156,6 +160,7 @@ export default function LoadBankWiz({
         user: user.userName,
         comment,
         loadBankData,
+        calibratedBy: [formState.voltTag, formState.shuntTag],
       }),
       handleResponse: (response) => {
         if (response.success) {
@@ -670,6 +675,7 @@ export default function LoadBankWiz({
                         ...formState,
                         voltMeter: v,
                         voltMeterOk,
+                        voltTag: v.assetTag,
                       });
                       // }
                     }}
@@ -718,6 +724,7 @@ export default function LoadBankWiz({
                         ...formState,
                         shuntMeter: v,
                         shuntMeterOk,
+                        shuntTag: v.assetTag,
                       });
                       // }
                     }}
