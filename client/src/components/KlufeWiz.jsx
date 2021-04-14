@@ -39,6 +39,7 @@ export default function KlufeWiz({
     assetTag: initAssetTag,
     date: today,
     user: user.userName,
+    calibratedBy: 0,
     comment: '',
     step4ok: false,
     step7ok: false,
@@ -90,6 +91,7 @@ export default function KlufeWiz({
       step11ok,
       step13ok,
     });
+    console.log([parseInt(formState.calibratedBy, 10)]);
     Query({
       query: gql`
         mutation AddKlufeCalib (
@@ -98,6 +100,7 @@ export default function KlufeWiz({
             $user: String!,
             $comment: String,
             $klufeData: String!,
+            $calibratedBy: [Int]
           ){
           addKlufeCalibration(
             assetTag: $assetTag,
@@ -105,6 +108,7 @@ export default function KlufeWiz({
             user: $user,
             comment: $comment,
             klufeData: $klufeData,
+            calibratedBy: $calibratedBy
           )
         }
       `,
@@ -115,6 +119,7 @@ export default function KlufeWiz({
         user: user.userName,
         comment,
         klufeData,
+        calibratedBy: [parseInt(formState.calibratedBy, 10)],
       }),
       fetchPolicy: 'no-cache',
       handleResponse: (response) => {
@@ -373,6 +378,22 @@ export default function KlufeWiz({
                 />
                 <Form.Control.Feedback type="invalid">
                   Please enter a shorter calibration comment.
+                </Form.Control.Feedback>
+              </Form.Group>
+            </div>
+            <div className="row my-2">
+              <Form.Group className="col">
+                <Form.Label className="h6">Enter asset tag of Klufe 5700 compatible calibrator used in this calibration:</Form.Label>
+                <Form.Control
+                  type="number"
+                  rows={1}
+                  name="calibratedBy"
+                  value={formState.calibratedBy}
+                  onChange={(e) => setFormState({ ...formState, calibratedBy: e.target.value })}
+                  isInvalid={Number.isNaN(formState.calibratedBy) || formState.calibratedBy > 999999 || formState.calibratedBy < 100000}
+                />
+                <Form.Control.Feedback type="invalid">
+                  Asset Tag must be in range 100000-999999
                 </Form.Control.Feedback>
               </Form.Group>
             </div>
