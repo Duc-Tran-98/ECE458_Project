@@ -46,19 +46,19 @@ export const cols = [
   {
     field: 'date',
     headerName: 'Date',
-    width: 120,
+    width: 110,
     description: 'Date',
   },
   {
     field: 'user',
     headerName: 'User',
-    width: 120,
+    width: 110,
     description: 'User',
   },
   {
     field: 'fileName',
     headerName: 'File',
-    width: 150,
+    width: 130,
     description: 'File name',
     renderCell: (params) => (
       <>
@@ -78,15 +78,22 @@ export const cols = [
   {
     field: 'loadBankData',
     headerName: 'Load Bank',
-    width: 130,
+    width: 125,
     description: 'Calibrated as load bank',
     renderCell: (params) => showTableBoolean(params),
   },
   {
     field: 'klufeData',
     headerName: 'Klufe',
-    width: 100,
+    width: 90,
     description: 'Calibrated via Klufe',
+    renderCell: (params) => showTableBoolean(params),
+  },
+  {
+    field: 'customFormData',
+    headerName: 'Custom',
+    width: 110,
+    description: 'Calibrated via custom form',
     renderCell: (params) => showTableBoolean(params),
   },
 ];

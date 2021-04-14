@@ -84,7 +84,7 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
       </div>
       <div className="row mx-3 mt-3 pt-3 border-top border-dark">
         <div className="col">
-          <span className="h5">Comment</span>
+          <span className="h5">Calibration Comment</span>
           <br />
           <Form.Control
             as="textarea"
@@ -103,30 +103,42 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
         )}
         {/* TODO: dynamically render any instruments used in calibration */}
         {getCalibrationType() === 'Plain' && (
-          <div className="ms-4">
-            No data on record
-          </div>
+          <div className="ms-4">No data on record</div>
         )}
         {getCalibrationType() === 'Klufe' && (
-        <KlufeDetailedView klufeData={JSON.parse(selectedRow.klufeData)} />
+          <KlufeDetailedView klufeData={JSON.parse(selectedRow.klufeData)} />
         )}
       </div>
       {!isForInstrumentPage && (
-        <div className="row mx-3 mt-3 pt-3 border-top border-dark">
-          <div className="col d-flex justify-content-center">
-            <MouseOverPopover message="Approve this calibration event">
-              <button type="button" className="btn">
-                Approve
-              </button>
-            </MouseOverPopover>
-            <span className="mx-3" />
-            <MouseOverPopover message="Deny this calibration event">
-              <button type="button" className="btn btn-delete">
-                Deny
-              </button>
-            </MouseOverPopover>
+        <>
+          <div className="row mx-3 mt-3 pt-3 border-top border-dark">
+            <div className="col">
+              <span className="h5">Approval Comment</span>
+              <br />
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="comment"
+                id="approvalCommentInput"
+              />
+            </div>
           </div>
-        </div>
+          <div className="row mx-3 mt-3 pt-3 border-top border-dark">
+            <div className="col d-flex justify-content-center">
+              <MouseOverPopover message="Approve this calibration event">
+                <button type="button" className="btn">
+                  Approve
+                </button>
+              </MouseOverPopover>
+              <span className="mx-3" />
+              <MouseOverPopover message="Deny this calibration event">
+                <button type="button" className="btn btn-delete">
+                  Deny
+                </button>
+              </MouseOverPopover>
+            </div>
+          </div>
+        </>
       )}
     </>
   );

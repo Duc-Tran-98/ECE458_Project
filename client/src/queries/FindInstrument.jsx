@@ -14,26 +14,23 @@ export default function FindInstrument({
     handleResponse: PropTypes.func.isRequired,
   };
   const FIND_INSTRUMENT = gql`
-        query FindInst(
-            $assetTag: Int!
-        ) {
-            getInstrumentByAssetTag(
-              assetTag: $assetTag
-            ) {
-              modelNumber
-              vendor
-              serialNumber
-              assetTag
-              calibrationFrequency
-              comment
-              description
-              id
-              instrumentCategories{
-                  name
-              }
-            }
+    query FindInst($assetTag: Int!) {
+      getInstrumentByAssetTag(assetTag: $assetTag) {
+        modelNumber
+        vendor
+        serialNumber
+        assetTag
+        calibrationFrequency
+        comment
+        description
+        id
+        requiresCalibrationApproval
+        instrumentCategories {
+          name
         }
-    `;
+      }
+    }
+  `;
   const query = FIND_INSTRUMENT;
   const queryName = 'getInstrumentByAssetTag';
   const getVariables = () => ({ assetTag });
@@ -56,6 +53,8 @@ export function FindInstrumentById({ id, handleResponse }) {
         assetTag
         calibrationFrequency
         comment
+        requiresCalibrationApproval
+        id
         description
         instrumentCategories {
           name

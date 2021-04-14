@@ -333,7 +333,7 @@ export default function ModelForm({
       onSubmit={(values, { setSubmitting, resetForm }) => {
         // First, validate custom form has no errors
         console.log('onSubmit in Formik ModelForm');
-        if (!validCustomForm()) {
+        if (values.calibrationType.includes('custom') && !validCustomForm()) {
           console.log('custom form is invalid, returning');
           setSubmitting(false);
           return;

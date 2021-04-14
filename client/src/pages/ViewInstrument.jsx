@@ -8,15 +8,13 @@ import axios from 'axios';
 import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
-import DataGrid from '../components/UITable';
-import { cols } from '../utils/CalibTable';
+import CalibrationTable, { TabCalibrationTable } from '../components/CalibrationTable';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
-import CalibrationTable from '../components/CalibrationTable';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
-import ModalAlert, { StateLessModal, StateLessCloseModal } from '../components/ModalAlert';
+import ModalAlert, { StateLessModal, StateLessCloseModal, StateLessCloseButtonModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
@@ -53,11 +51,13 @@ export default function DetailedInstrumentView() {
     serialNumber: '',
     description: '',
     categories: [],
+    requiresCalibrationApproval: false,
     comment: '',
     id: 0,
     calibrationFrequency: 0,
     assetTag: parseInt(urlParams.get('assetTag'), 10),
   });
+  const [showCustomForm, setShowCustomForm] = React.useState(false);
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setShowDelete(false);
@@ -214,6 +214,7 @@ export default function DetailedInstrumentView() {
       serialNumber,
       assetTag,
       id,
+      requiresCalibrationApproval,
     } = response;
     if (typeof id === 'undefined') {
       id = formState.id;
@@ -229,6 +230,7 @@ export default function DetailedInstrumentView() {
     assetTag = assetTag || '';
     calibrationFrequency = calibrationFrequency || '';
     description = description || '';
+    requiresCalibrationApproval = requiresCalibrationApproval || false;
     setFormState({
       ...formState,
       comment,
@@ -240,6 +242,7 @@ export default function DetailedInstrumentView() {
       serialNumber,
       assetTag,
       id,
+      requiresCalibrationApproval,
     });
     setUpdate(false);
     setFetched(true);
@@ -367,34 +370,25 @@ export default function DetailedInstrumentView() {
           )}
           {supportsCustomForm && (
             <div className="ms-2">
-              <ModalAlert
-                btnText="Add Custom Calibration"
+              <StateLessCloseButtonModal
+                handleOpen={() => setShowCustomForm(true)}
+                handleClose={() => setShowCustomForm(false)}
+                show={showCustomForm}
+                buttonText="Add Custom Calibration"
                 title="Calibrating Using Custom Form"
                 popOverText="Calibrate instrument via custom form"
               >
                 <CustomFormEntry
                   getSteps={() => customForm}
                   onFinish={fetchData}
+                  handleClose={() => setShowCustomForm(false)}
                   modelNumber={formState.modelNumber}
                   serialNumber={formState.serialNumber}
                   assetTag={formState.assetTag}
                   vendor={formState.vendor}
                 />
-              </ModalAlert>
+              </StateLessCloseButtonModal>
             </div>
-          )}
-          {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-            <MouseOverPopover
-              className="ms-2"
-              message="View instrument's calibration certificate"
-            >
-              <Link
-                className="btn text-nowrap"
-                to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
-              >
-                View Certificate
-              </Link>
-            </MouseOverPopover>
           )}
         </>
       )}
@@ -474,7 +468,12 @@ export default function DetailedInstrumentView() {
         title="Calibration Information"
         size="xl"
       >
-        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} isForInstrumentPage />}
+        {selectedRow && (
+          <DetailedCalibrationView
+            selectedRow={selectedRow}
+            isForInstrumentPage
+          />
+        )}
       </StateLessCloseModal>
       <div className="row">
         <div className="col p-3 border border-right border-dark">
@@ -505,7 +504,7 @@ export default function DetailedInstrumentView() {
           )}
         </div>
         <div
-          className="col p-3 border border-left border-dark"
+          className="col-lg p-3 border border-left border-dark"
           id="remove-if-empty"
         >
           <div
@@ -526,10 +525,13 @@ export default function DetailedInstrumentView() {
               </div>
             </div>
             {formState.calibrationFrequency > 0 ? (
-              <DataGrid
+              <TabCalibrationTable
+                instrumentId={formState.id}
                 rows={calibHist.filter((ele) => ele.viewOnly)}
-                cols={cols}
                 cellHandler={(e) => cellHandler(e)}
+                requiresCalibrationApproval={
+                  formState.requiresCalibrationApproval
+                }
               />
             ) : (
               <div className="row mt-3">
