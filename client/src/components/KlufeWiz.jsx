@@ -400,7 +400,7 @@ export default function KlufeWiz({
             <div className="row my-2">
               <Form.Group className="col mx-2">
                 <Form.Label className="h6 my-auto">
-                  Klufe 5700 compatible to be used: (Vendor-Model number-Asset Tag)
+                  Klufe 5700 compatible calibrator to be used: (Vendor-Model number-Asset Tag)
                 </Form.Label>
                 <div className="">
                   <AsyncSuggest
