@@ -93,13 +93,31 @@ export default function CustomFormEntry({
       switch (element.type) {
         case 'number':
           // Validate number present
-          if (element.value === '') {
+          if (element.value === '' || Number.isNaN(parseFloat(element.value))) {
             errorCount += 1;
             nextState[index] = {
               ...nextState[index],
               error: true,
               helperText: 'Please enter number',
             };
+          } else {
+            // console.log(`minSet: ${element.minSet}\tminSet: ${element.maxSet}\telement.value: ${element.value}\tparseFloat(element.value): ${parseFloat(element.value)}`);
+            if (element.minSet && parseFloat(element.value) < element.min) {
+              errorCount += 1;
+              nextState[index] = {
+                ...nextState[index],
+                error: true,
+                helperText: 'Must be greater than min',
+              };
+            }
+            if (element.maxSet && parseFloat(element.value) > element.max) {
+              errorCount += 1;
+              nextState[index] = {
+                ...nextState[index],
+                error: true,
+                helperText: 'Must be less than max',
+              };
+            }
           }
           break;
         case 'text':
@@ -112,6 +130,7 @@ export default function CustomFormEntry({
               helperText: 'Please make observation',
             };
           }
+
           break;
         default:
           break;
@@ -129,13 +148,29 @@ export default function CustomFormEntry({
       switch (element.type) {
         case 'number':
           // Validate number present
-          if (element.value !== '') {
+          if (element.value !== '' && !Number.isNaN(parseFloat(element.value))) {
             nextState[index] = {
               ...nextState[index],
-              error: true,
-              helperText: 'Please enter number',
+              error: false,
+              helperText: '',
             };
+          } else {
+            if (element.minSet && parseFloat(element.value) >= element.min) {
+              nextState[index] = {
+                ...nextState[index],
+                error: false,
+                helperText: '',
+              };
+            }
+            if (element.maxSet && parseFloat(element.value) <= element.max) {
+              nextState[index] = {
+                ...nextState[index],
+                error: false,
+                helperText: '',
+              };
+            }
           }
+
           break;
         case 'text':
           // Validate text present
@@ -244,6 +279,8 @@ export default function CustomFormEntry({
           onChange={(e) => handleChange(e, index)}
           value={state[index].value}
           variant="outlined"
+          error={state[index].error}
+          helperText={state[index].helperText}
         />
       </div>
     </div>
