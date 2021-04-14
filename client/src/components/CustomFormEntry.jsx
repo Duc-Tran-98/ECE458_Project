@@ -145,6 +145,7 @@ export default function CustomFormEntry({
   // Effect to remove errors and helper text as they are resolved
   React.useEffect(() => {
     const nextState = state;
+    let errorCount = 0;
     state.forEach((element, index) => {
       switch (element.type) {
         case 'number':
@@ -155,23 +156,40 @@ export default function CustomFormEntry({
               error: false,
               helperText: '',
             };
-          } else {
-            if (element.minSet && parseFloat(element.value) >= element.min) {
-              nextState[index] = {
-                ...nextState[index],
-                error: false,
-                helperText: '',
-              };
+            if (element.minSet) {
+              if (parseFloat(element.value) >= element.min) {
+                nextState[index] = {
+                  ...nextState[index],
+                  error: false,
+                  helperText: '',
+                };
+              } else {
+                errorCount += 1;
+                nextState[index] = {
+                  ...nextState[index],
+                  error: true,
+                  helperText: 'Must be greater than min',
+                };
+                break;
+              }
             }
-            if (element.maxSet && parseFloat(element.value) <= element.max) {
-              nextState[index] = {
-                ...nextState[index],
-                error: false,
-                helperText: '',
-              };
+            if (element.maxSet) {
+              if (parseFloat(element.value) <= element.max) {
+                nextState[index] = {
+                  ...nextState[index],
+                  error: false,
+                  helperText: '',
+                };
+              } else {
+                errorCount += 1;
+                nextState[index] = {
+                  ...nextState[index],
+                  error: true,
+                  helperText: 'Must be less than max',
+                };
+              }
             }
           }
-
           break;
         case 'text':
           // Validate text present
@@ -188,6 +206,9 @@ export default function CustomFormEntry({
       }
     });
     setState(nextState);
+    if (errorCount > 0) {
+      setUpdate(update + 1);
+    }
   }, [checkErrors]);
 
   const handleSubmit = () => {
