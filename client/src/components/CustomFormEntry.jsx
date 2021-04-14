@@ -262,7 +262,7 @@ export default function CustomFormEntry({
 
   const numberStep = (step, index) => (
     <div className={`${divClass} row`}>
-      <div className="col-auto">
+      <div className="col">
         <TextField
           className={classes.textFieldLarge}
           margin="normal"
@@ -272,7 +272,7 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col" style={{ margin: 'auto 0px', maxWidth: '30%' }}>
+      <div className="col" style={{ margin: 'auto 0px' }}>
         <Form.Control
           type="number"
           name="comment"
@@ -289,7 +289,7 @@ export default function CustomFormEntry({
   );
   const textStep = (step, index) => (
     <div className={`${divClass} row`}>
-      <div className="col-auto">
+      <div className="col">
         <TextField
           className={classes.textFieldLarge}
           margin="normal"
@@ -298,7 +298,7 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col mt-3" style={{ margin: 'auto 0px', maxWidth: '30%' }}>
+      <div className="col mt-3" style={{ margin: 'auto 0px' }}>
         <Form.Control
           type="text"
           name="comment"
