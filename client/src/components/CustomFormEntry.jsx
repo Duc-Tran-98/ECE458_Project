@@ -73,6 +73,7 @@ export default function CustomFormEntry({
   const [state, setState] = React.useState(steps);
   const [formSteps, setFormSteps] = React.useState(null);
   const [update, setUpdate] = React.useState(0);
+  const [checkErrors, setCheckErrors] = React.useState(0);
 
   const inputProps = { disableUnderline: true };
   const divClass = 'border-top border-dark mt-3';
@@ -85,7 +86,79 @@ export default function CustomFormEntry({
   };
   const today = new Date().toISOString().split('T')[0]; // TODO: Can this be set?
 
+  const validForm = () => {
+    let errorCount = 0;
+    const nextState = state;
+    state.forEach((element, index) => {
+      switch (element.type) {
+        case 'number':
+          // Validate number present
+          if (element.value === '') {
+            errorCount += 1;
+            nextState[index] = {
+              ...nextState[index],
+              error: true,
+              helperText: 'Please enter number',
+            };
+          }
+          break;
+        case 'text':
+          // Validate text present
+          if (element.value === '') {
+            errorCount += 1;
+            nextState[index] = {
+              ...nextState[index],
+              error: true,
+              helperText: 'Please make observation',
+            };
+          }
+          break;
+        default:
+          break;
+      }
+    });
+    setState(nextState);
+    setUpdate(update + 1);
+    return errorCount === 0;
+  };
+
+  // Effect to remove errors and helper text as they are resolved
+  React.useEffect(() => {
+    const nextState = state;
+    state.forEach((element, index) => {
+      switch (element.type) {
+        case 'number':
+          // Validate number present
+          if (element.value !== '') {
+            nextState[index] = {
+              ...nextState[index],
+              error: true,
+              helperText: 'Please enter number',
+            };
+          }
+          break;
+        case 'text':
+          // Validate text present
+          if (element.error && element.value !== '') {
+            nextState[index] = {
+              ...nextState[index],
+              error: false,
+              helperText: '',
+            };
+          }
+          break;
+        default:
+          break;
+      }
+    });
+    setState(nextState);
+  }, [checkErrors]);
+
   const handleSubmit = () => {
+    if (!validForm()) {
+      toast.error('Invalid fields in form, please fix before submitting', { toastId: -87 });
+      return;
+    }
     console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
     console.log(JSON.stringify(state));
     AddCustomFormCalibration({
@@ -108,6 +181,7 @@ export default function CustomFormEntry({
     };
     setState(state);
     setUpdate(update + 1);
+    setCheckErrors(checkErrors + 1);
   };
 
   const getNumberLabel = (step) => {
@@ -195,6 +269,8 @@ export default function CustomFormEntry({
           onChange={(e) => handleChange(e, index)}
           value={state[index].value}
           variant="outlined"
+          error={state[index].error}
+          helperText={state[index].helperText}
         />
       </div>
     </div>
