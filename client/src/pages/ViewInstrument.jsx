@@ -13,7 +13,7 @@ import GetCalibHistory from '../queries/GetCalibHistory';
 import MouseOverPopover from '../components/PopOver';
 import UserContext from '../components/UserContext';
 import AddCalibEventByAssetTag from '../queries/AddCalibEventByAssetTag';
-import ModalAlert, { StateLessModal, StateLessCloseModal } from '../components/ModalAlert';
+import ModalAlert, { StateLessModal, StateLessCloseModal, StateLessCloseButtonModal } from '../components/ModalAlert';
 import InstrumentForm from '../components/InstrumentForm';
 import Query from '../components/UseQuery';
 import LoadBankWiz from '../components/LoadBankWiz';
@@ -56,6 +56,7 @@ export default function DetailedInstrumentView() {
     calibrationFrequency: 0,
     assetTag: parseInt(urlParams.get('assetTag'), 10),
   });
+  const [showCustomForm, setShowCustomForm] = React.useState(false);
   const handleResponse = (response) => { // handle deletion
     setLoading(false);
     setShowDelete(false);
@@ -362,20 +363,24 @@ export default function DetailedInstrumentView() {
           )}
           {supportsCustomForm && (
             <div className="ms-2">
-              <ModalAlert
-                btnText="Add Custom Calibration"
+              <StateLessCloseButtonModal
+                handleOpen={() => setShowCustomForm(true)}
+                handleClose={() => setShowCustomForm(false)}
+                show={showCustomForm}
+                buttonText="Add Custom Calibration"
                 title="Calibrating Using Custom Form"
                 popOverText="Calibrate instrument via custom form"
               >
                 <CustomFormEntry
                   getSteps={() => customForm}
                   onFinish={fetchData}
+                  handleClose={() => setShowCustomForm(false)}
                   modelNumber={formState.modelNumber}
                   serialNumber={formState.serialNumber}
                   assetTag={formState.assetTag}
                   vendor={formState.vendor}
                 />
-              </ModalAlert>
+              </StateLessCloseButtonModal>
             </div>
           )}
         </>

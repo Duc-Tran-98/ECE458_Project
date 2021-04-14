@@ -277,3 +277,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
   background-color: #86A0D8!important;
   color: black!important;
 }
+
+.custom-form-entry-modal {
+  width: 90%;
+}
