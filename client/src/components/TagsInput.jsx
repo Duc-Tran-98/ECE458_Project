@@ -15,6 +15,7 @@ const TagsInput = (props) => {
   const [selectedCat, setSelectedCat] = React.useState(null);
   // const [update, setUpdate] = React.useState(false);
   const models = React.useState(props.models);
+  const special = React.useState(props.special);
   // eslint-disable-next-line prefer-destructuring
   const dis = props.dis;
   let query;
@@ -40,7 +41,6 @@ const TagsInput = (props) => {
     query = GET_INST_CAT;
     queryName = 'getAllInstrumentCategories';
   }
-
   const removeTags = (indexToRemove) => {
     if (!dis) {
       setRemoved([...removed, tags[indexToRemove]]);
@@ -63,6 +63,24 @@ const TagsInput = (props) => {
     addTags(v.name);
     setSelectedCat(v);
   };
+
+  if (props.special === 'loadBank') {
+    for (let i = 0; i < tags.length; i += 1) {
+      if (tags[i] !== 'voltmeter' && tags[i] !== 'current_shunt_meter') {
+        removeTags(i);
+      }
+    }
+    addTags('voltmeter');
+    addTags('current_shunt_meter');
+  }
+  if (props.special === 'klufe') {
+    for (let i = 0; i < tags.length; i += 1) {
+      if (tags[i] !== 'Klufe_K5700-compatible') {
+        removeTags(i);
+      }
+    }
+    addTags('Klufe_K5700-compatible');
+  }
 
   if (startTags) {
     startTags.forEach((element) => {
