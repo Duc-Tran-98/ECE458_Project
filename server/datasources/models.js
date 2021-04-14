@@ -522,7 +522,7 @@ class ModelAPI extends DataSource {
       response.message = 'ERROR: User does not have permission.';
       return JSON.stringify(response);
     }
-    if (name === 'voltmeter' || name === 'current-shunt-meter' || name === 'klufe-K5700-compatible') {
+    if (name === 'voltmeter' || name === 'current_shunt_meter' || name === 'Klufe_K5700-compatible') {
       response.message = 'ERROR: cannot delete special category';
       return JSON.stringify(response);
     }
@@ -550,7 +550,7 @@ class ModelAPI extends DataSource {
 
   async editModelCategory({ currentName, updatedName }) {
     const response = { message: '', success: false, category: null };
-    if (currentName === 'voltmeter' || currentName === 'current-shunt-meter' || currentName === 'klufe-K5700-compatible') {
+    if (currentName === 'voltmeter' || currentName === 'current_shunt_meter' || currentName === 'Klufe_K5700-compatible') {
       response.message = 'ERROR: cannot modify special category';
       return response;
     }

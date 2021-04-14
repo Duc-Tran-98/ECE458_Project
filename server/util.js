@@ -665,20 +665,20 @@ module.exports.createStore = async (useTestDB) => {
   }
 
   const checkShuntmeter = await modelCategories.findOne({
-    where: { name: 'current-shunt-meter' },
+    where: { name: 'current_shunt_meter' },
   });
   if (checkShuntmeter === null) {
     await modelCategories.create({
-      name: 'current-shunt-meter',
+      name: 'current_shunt_meter',
     });
   }
 
   const checkKlufe = await modelCategories.findOne({
-    where: { name: 'klufe-K5700-compatible' },
+    where: { name: 'Klufe_K5700-compatible' },
   });
   if (checkKlufe === null) {
     await modelCategories.create({
-      name: 'klufe-K5700-compatible',
+      name: 'Klufe_K5700-compatible',
     });
   }
 
