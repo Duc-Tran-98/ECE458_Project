@@ -77,7 +77,7 @@ export default function CustomFormEntry({
   const [checkErrors, setCheckErrors] = React.useState(0);
 
   const inputProps = { disableUnderline: true };
-  const divClass = 'border-top border-dark mt-3';
+  const divClass = 'border-top border-dark mt-4';
 
   const handleResponse = (response) => {
     console.log(response);
@@ -298,7 +298,7 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col" style={{ margin: 'auto 0px', maxWidth: '30%' }}>
+      <div className="col mt-3" style={{ margin: 'auto 0px', maxWidth: '30%' }}>
         <Form.Control
           type="text"
           name="comment"
@@ -335,7 +335,7 @@ export default function CustomFormEntry({
   }, [state, update]);
 
   return (
-    <div>
+    <div className="customFormEntryBox">
       {formSteps}
       {onFinish !== null && <button type="submit" className="btn" disabled={!canSubmit} onClick={handleSubmit}>Finish</button>}
     </div>
