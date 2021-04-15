@@ -117,6 +117,7 @@ class BulkDataAPI extends DataSource {
               console.log('not inside map, throwing error');
               response.message = `ERROR: Calibrator Category ${calibratorCategory} does not exist`;
               response.success = false;
+              await t.rollback();
               return JSON.stringify(response);
             }
             console.log('creating relationship');
