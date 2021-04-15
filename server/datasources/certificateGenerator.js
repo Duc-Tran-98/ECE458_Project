@@ -22,6 +22,28 @@ createDB().then(() => {
 
 let calEvent;
 
+const loadLevels = ['No Load', '1 x 100A', '2 x 100A', '3 x 100A', '4 x 100A', '5 x 100A', '6 x 100A', '7 x 100A', '8 x 100A', '9 x 100A', '10 x 100A', '10 x 100A + 1 x 20A', '10 x 100A + 2 x 20A', '10 x 100A + 3 x 20A', '10 x 100A + 4 x 20A', '10 x 100A + 5 x 20A', '10 x 100A + 5 x 20A + 1 x 1A', '10 x 100A + 5 x 20A + 2 x 1A', '10 x 100A + 5 x 20A + 3 x 1A', '10 x 100A + 5 x 20A + 4 x 1A', '10 x 100A + 5 x 20A + 5 x 1A', '10 x 100A + 5 x 20A + 6 x 1A', '10 x 100A + 5 x 20A + 7 x 1A', '10 x 100A + 5 x 20A + 8 x 1A', '10 x 100A + 5 x 20A + 9 x 1A', '10 x 100A + 5 x 20A + 10 x 1A', '10 x 100A + 5 x 20A + 11 x 1A', '10 x 100A + 5 x 20A + 12 x 1A', '10 x 100A + 5 x 20A + 13 x 1A', '10 x 100A + 5 x 20A + 14 x 1A', '10 x 100A + 5 x 20A + 15 x 1A', '10 x 100A + 5 x 20A + 16 x 1A', '10 x 100A + 5 x 20A + 17 x 1A', '10 x 100A + 5 x 20A + 18 x 1A', '10 x 100A + 5 x 20A + 19 x 1A', '10 x 100A + 5 x 20A + 20 x 1A'];
+const idealCurrents = [ // values copied from excel spread sheet
+  0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1020, 1040, 1060, 1080, 1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1117, 1118, 1119, 1120,
+];
+const klufeStepInfo = {
+  4: {
+    lower: 3.499, upper: 3.501, range: '3.500 ± 0.001', source: '3.500V DC', message: 'Adjust R21 to obtain the proper display.',
+  },
+  7: {
+    lower: 3.498, upper: 3.502, range: '3.500 ± 0.002', source: '3.513V 50Hz', message: 'Adjust R34 to obtain the proper display.',
+  },
+  9: {
+    lower: 99.8, upper: 100.2, range: '100.0 ± 0.2', source: '100V 20kHz', message: 'Adjust C37 to obtain the proper display.',
+  },
+  11: {
+    lower: 3.496, upper: 3.504, range: '3.500 ± 0.004', source: '3.500V 10kHz', message: 'Addjust C2 to obtain the proper display.',
+  },
+  13: {
+    lower: 34.96, upper: 35.04, range: '35.00 ± 0.04', source: '35V 10kHz', message: 'Adjust C3 to obtain the proper display.',
+  },
+};
+
 // Create styles
 const styles = StyleSheet.create({
   viewer: {
@@ -167,7 +189,7 @@ const generateInfoPage = async () => (
           { style: styles.centerView },
           React.createElement(
             Image,
-            { style: styles.logo, src: './templates/HPT_logo.png' },
+            { style: styles.logo, src: './certificateAssets/HPT_logo.png' },
           ),
         ),
         React.createElement(
@@ -286,43 +308,473 @@ const generateInfoPage = async () => (
   )
 );
 
-// const displayLoadBank = async() => (
-
-// )
-
-const generateDataTables = () => (
+const lbRow = (p, i) => (
   React.createElement(
+    View,
+    { style: styles.tableRow },
     React.createElement(
-      Page,
-      { style: styles.page, size: 'LETTER' },
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${loadLevels[i]}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${p.currentReadings[i].cr}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${p.currentReadings[i].ca}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${idealCurrents[i]}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${Number(p.currentReadings[i].crError).toFixed(5)}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${p.currentReadings[i].crOk ? 'OK' : 'NOT OK'}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${Number(p.currentReadings[i].caError).toFixed(5)}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.lbTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${p.currentReadings[i].caOk ? 'OK' : 'NOT OK'}`,
+      ),
+    ),
+  )
+
+);
+
+function fillLBCurrent() {
+  const infoList = [];
+  for (let i = 0; i < 36; i += 1) {
+    for (let j = 0; j < 36; j += 1) {
+      if (i === JSON.parse(calEvent.loadBankData).currentReadings[j].id) {
+        infoList.push(lbRow(JSON.parse(calEvent.loadBankData), i));
+        break;
+      }
+    }
+  }
+  return infoList;
+}
+
+const displayLoadBank = async () => (
+  React.createElement(
+    View,
+    { style: styles.table },
+    React.createElement(
+      View,
+      { style: styles.tableRow },
       React.createElement(
         View,
-        { style: styles.outerBorder },
+        { style: styles.lbTableCol },
         React.createElement(
-          View,
-          { style: styles.innerBorder },
-          React.createElement(
-            View,
-            // calEvent.isLoadBank ? displayLoadBank() : null,
-            // calEvent.isKlufe ? displayKlufe() : null,
-            // calEvent.isCustomForm ? displayCustom() : null,
-          ),
+          Text,
+          { style: styles.tableCell },
+          'Load Level',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Current Reported [A]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Current Actual [A]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Ideal Current [A]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'CR Error [%]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'CR ok?',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'CA Error [%]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'CA ok?',
+        ),
+      ),
+    ),
+    fillLBCurrent(),
+  )
+
+);
+
+const displayLoadBankVoltage = () => (
+  React.createElement(
+    View,
+    { style: styles.table },
+    React.createElement(
+      View,
+      { style: styles.tableRow },
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          '',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Voltage Reported [V]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Voltage Actual [V]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Test Voltage [V]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'VR Error [%]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'VR ok?',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'VA Error [%]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'VA ok?',
         ),
       ),
     ),
     React.createElement(
-      Page,
-      { style: styles.page, size: 'LETTER' },
+      View,
+      { style: styles.tableRow },
       React.createElement(
         View,
-        { style: styles.outerBorder },
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Voltages with all blanks on:',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          `${JSON.parse(calEvent.loadBankData).voltageReading.vr}`,
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          `${JSON.parse(calEvent.loadBankData).voltageReading.va}`,
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          '48',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          `${Number(JSON.parse(calEvent.loadBankData).voltageReading.vrError).toFixed(5)}`,
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          `${JSON.parse(calEvent.loadBankData).voltageReading.vrOk ? 'OK' : 'NOT OK'}`,
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          `${Number(JSON.parse(calEvent.loadBankData).voltageReading.vaError).toFixed(5)}`,
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.lbTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          `${JSON.parse(calEvent.loadBankData).voltageReading.vaOk ? 'OK' : 'NOT OK'}`,
+        ),
+      ),
+    ),
+  )
+);
+
+const klufeRow = (step) => (
+  React.createElement(
+    View,
+    { style: styles.tableRow },
+    React.createElement(
+      View,
+      { style: styles.klufeTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${klufeStepInfo[step].source}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.klufeTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${klufeStepInfo[step].range}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.klufeTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        `${JSON.parse(calEvent.klufeData).readings[step]}`,
+      ),
+    ),
+    React.createElement(
+      View,
+      { style: styles.klufeTableCol },
+      React.createElement(
+        Text,
+        { style: styles.tableCell },
+        'OK',
+      ),
+    ),
+  )
+);
+
+const displayKlufe = () => (
+  React.createElement(
+    View,
+    { style: styles.table },
+    React.createElement(
+      View,
+      { style: styles.tableRow },
+      React.createElement(
+        View,
+        { style: styles.klufeTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Source',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.klufeTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Acceptable Range [V]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.klufeTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'Actual Value [V]',
+        ),
+      ),
+      React.createElement(
+        View,
+        { style: styles.klufeTableCol },
+        React.createElement(
+          Text,
+          { style: styles.tableCell },
+          'OK?',
+        ),
+      ),
+    ),
+    klufeRow(4),
+    klufeRow(7),
+    klufeRow(9),
+    klufeRow(11),
+    klufeRow(13),
+  )
+);
+
+const generateDataTablesPage1 = async () => (
+  React.createElement(
+    Page,
+    { style: styles.page, size: 'LETTER' },
+    React.createElement(
+      View,
+      { style: styles.outerBorder },
+      React.createElement(
+        View,
+        { style: styles.innerBorder },
         React.createElement(
           View,
-          { style: styles.innerBorder },
-          React.createElement(
-            View,
-            // calEvent.isLoadBank ? displayLoadBankVoltage() : null,
-          ),
+          null,
+          calEvent.isLoadBank ? await displayLoadBank() : null,
+          calEvent.isKlufe ? displayKlufe() : null,
+          // calEvent.isCustomForm ? displayCustom() : null,
+        ),
+      ),
+    ),
+  )
+);
+const generateDataTablesPage2 = async () => (
+  React.createElement(
+    Page,
+    { style: styles.page, size: 'LETTER' },
+    React.createElement(
+      View,
+      { style: styles.outerBorder },
+      React.createElement(
+        View,
+        { style: styles.innerBorder },
+        React.createElement(
+          View,
+          null,
+          calEvent.isLoadBank ? displayLoadBankVoltage() : null,
         ),
       ),
     ),
@@ -338,7 +790,9 @@ const assemblePDF = async () => (
     Document,
     null,
     await generateInfoPage(),
-    await generateDataTables(),
+    (calEvent.isKlufe || calEvent.isLoadBank || calEvent.isCustomForm) ? await generateDataTablesPage1() : null,
+
+    (calEvent.isKlufe || calEvent.isLoadBank || calEvent.isCustomForm) ? await generateDataTablesPage2() : null,
   )
 );
 
@@ -361,6 +815,7 @@ const generateCertificate = async (assetTag, chainOfTruth) => {
   } else {
     calEvent = await cal.getCetificateForInstrument(assetTag);
   }
+  console.log(displayLoadBankVoltage());
 
   return convertToSendPDF();
 };

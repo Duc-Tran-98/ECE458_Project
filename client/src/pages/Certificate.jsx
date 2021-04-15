@@ -546,6 +546,14 @@ function newCertificate() {
   const [loaded, setLoaded] = React.useState(false);
 
   const handleResponse = async (response) => {
+    const loading = document.getElementById('loadingText');
+    const viewer = document.getElementById('pdfDisplay');
+
+    if (loading && viewer) {
+      loading.hidden = false;
+      viewer.hidden = true;
+    }
+
     console.log('this is the response: ', response);
     // create pdf from bytestream and download in browser
     const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -556,6 +564,11 @@ function newCertificate() {
     setFile(fUrl);
     // window.open(fUrl);
     console.log(response.status);
+
+    if (loading && viewer) {
+      loading.hidden = true;
+      viewer.hidden = false;
+    }
   };
 
   // This code is getting params from url
@@ -580,26 +593,35 @@ function newCertificate() {
   const [pageNumber, setPageNumber] = React.useState(1);
 
   // eslint-disable-next-line no-shadow
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-    setPageNumber(pageNumber);
-    setPageNumber(pageNumber + 1); // this is probably broken
+  function onDocumentLoadSuccess({ numPages: nextNumPages }) {
+    setNumPages(nextNumPages);
   }
 
   return (
-    <>
-      <div className="main">
+    <div height="100%">
+      <p id="loadingText">LOADING...</p>
+      <iframe id="pdfDisplay" title="Document" src={file} width="100%" height={window.innerHeight - 100} />
+      {/* <div className="main">
         <Document
           file={file}
           onLoadSuccess={onDocumentLoadSuccess}
+          noData="Generating PDF..."
         >
-          <Page
-            pageNumber={pageNumber}
-            scale={2}
-          />
+          {
+              Array.from(
+                new Array(numPages),
+                (el, index) => (
+                  <Page
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    width="100%"
+                  />
+                ),
+              )
+            }
         </Document>
-      </div>
-    </>
+      </div> */}
+    </div>
   );
 }
 
