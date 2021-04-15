@@ -57,8 +57,6 @@ export default function KlufeWiz({
   const maxCalibrationComment = 2000;
 
   const validateCalibrationDate = ({ date, calibrationFrequency }) => {
-    console.log(date);
-    console.log(calibrationFrequency);
     if (calibrationFrequency === 0) return true;
     if (date) {
       const todayToo = new Date();
