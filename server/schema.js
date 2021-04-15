@@ -244,6 +244,7 @@ const typeDefs = gql`
     fileName: String
     loadBankData: String
     klufeData: String
+    customFormData: String
   }
 
   type InstrumentWithCalibration {
