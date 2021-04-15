@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { toast } from 'react-toastify';
 import AddCustomFormCalibration from '../queries/AddCustomFormCalibration';
 import UserContext from './UserContext';
+import CalibratedWith from './CalibratedWith';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose,
+  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose, disabled,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
@@ -60,6 +61,7 @@ export default function CustomFormEntry({
     assetTag: PropTypes.number,
     onFinish: PropTypes.func,
     handleClose: PropTypes.func,
+    disabled: PropTypes.bool,
   };
   CustomFormEntry.defaultProps = {
     modelNumber: '',
@@ -68,12 +70,18 @@ export default function CustomFormEntry({
     assetTag: 0,
     onFinish: null,
     handleClose: null,
+    disabled: false,
   };
 
+  console.log(`CustomFormEntry, disabled=${disabled}`);
   const user = React.useContext(UserContext);
   const classes = useStyles();
   const steps = getSteps();
   const [state, setState] = React.useState(steps);
+  const today = new Date().toISOString().split('T')[0]; // TODO: Can this be set?
+  const [date, setDate] = React.useState(today);
+  const [comment, setComment] = React.useState('');
+  const [calibratedWith, setCalibratedWith] = React.useState([]);
   const [formSteps, setFormSteps] = React.useState(null);
   const [update, setUpdate] = React.useState(0);
   const [checkErrors, setCheckErrors] = React.useState(0);
@@ -88,7 +96,6 @@ export default function CustomFormEntry({
       toast.success(response.message);
     }
   };
-  const today = new Date().toISOString().split('T')[0]; // TODO: Can this be set?
 
   const validForm = () => {
     let errorCount = 0;
@@ -227,8 +234,9 @@ export default function CustomFormEntry({
     AddCustomFormCalibration({
       assetTag,
       user: user.userName,
-      date: today,
-      comment: '',
+      date,
+      comment,
+      calibratedBy: calibratedWith,
       customFormData: JSON.stringify(state),
       handleResponse,
     });
@@ -238,15 +246,17 @@ export default function CustomFormEntry({
   const canSubmit = true;
 
   const handleChange = (e, index) => {
-    const nextState = state;
-    nextState[index] = {
-      ...nextState[index],
-      value: e.target.value,
-    };
-    setShouldValidate(true);
-    setState(state);
-    setUpdate(update + 1);
-    setCheckErrors(checkErrors + 1);
+    if (!disabled) {
+      const nextState = state;
+      nextState[index] = {
+        ...nextState[index],
+        value: e.target.value,
+      };
+      setShouldValidate(true);
+      setState(state);
+      setUpdate(update + 1);
+      setCheckErrors(checkErrors + 1);
+    }
   };
 
   const getNumberLabel = (step) => {
@@ -309,6 +319,7 @@ export default function CustomFormEntry({
           onChange={(e) => handleChange(e, index)}
           isInvalid={!!state[index].error}
           error={state[index].error}
+          disabled={disabled}
         />
         <Form.Control.Feedback type="invalid">
           {state[index].helperText}
@@ -337,6 +348,7 @@ export default function CustomFormEntry({
           onChange={(e) => handleChange(e, index)}
           isInvalid={!!state[index].error}
           error={state[index].error}
+          disabled={disabled}
         />
         <Form.Control.Feedback type="invalid">
           {state[index].helperText}
@@ -363,22 +375,83 @@ export default function CustomFormEntry({
     setFormSteps(formEntrySteps);
   }, [state, update]);
 
+  // eslint-disable-next-line no-unused-vars
+  const onChangeCalibRow = (e, entry) => {
+    setCalibratedWith(e.target.value);
+  };
+
   return (
     <div className="customFormEntryBox">
       {formSteps}
       {onFinish !== null && (
-      <div className="m-3 text-center">
-        <button
-          type="submit"
-          className="btn"
-          disabled={!canSubmit}
-          onClick={handleSubmit}
-          style={{ margin: 'auto' }}
-        >
-          Finish
+        <div>
+          <Form.Group className="col">
+            <Form.Label className="row my-auto" style={{ paddingTop: 20 }}>
+              <TextField
+                id="custom-form-header"
+                className={classes.textFieldHeader}
+                margin="normal"
+                name="prompt"
+                value="Calibration Metadata"
+                disabled
+                InputProps={inputProps}
+              />
+            </Form.Label>
+            <Form.Group className="row">
+              <TextField
+                className={classes.textFieldMedium}
+                margin="normal"
+                name="prompt"
+                value="Calibration Comment"
+                disabled
+                InputProps={inputProps}
+              />
+              <Form.Control
+                as="textarea"
+                rows={2}
+                name="comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="row">
+              <Form.Label className="row my-auto">
+                <TextField
+                  className={classes.textFieldMedium}
+                  margin="normal"
+                  name="prompt"
+                  value="Date of Calibration"
+                  disabled
+                  InputProps={inputProps}
+                />
+              </Form.Label>
+              <Form.Control
+                name="date"
+                type="date"
+                max={today}
+                onChange={(e) => setDate(e.target.value)}
+                required
+                value={date}
+                className=""
+              />
+            </Form.Group>
+            <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} />
+            <div className={divClass}>
+              <div className=" m-3 text-center">
+                <button
+                  type="submit"
+                  className="btn"
+                  disabled={!canSubmit}
+                  onClick={handleSubmit}
+                  style={{ margin: 'auto' }}
+                >
+                  Finish
 
-        </button>
-      </div>
+                </button>
+              </div>
+            </div>
+          </Form.Group>
+        </div>
       )}
     </div>
   );
