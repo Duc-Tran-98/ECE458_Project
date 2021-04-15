@@ -7,6 +7,7 @@ export default async function AddCustomFormCalibration({
   user,
   date,
   comment,
+  calibratedBy,
   customFormData,
   handleResponse,
 }) {
@@ -17,6 +18,8 @@ export default async function AddCustomFormCalibration({
     comment: PropTypes.string.isRequired,
     customFormData: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    calibratedBy: PropTypes.array.isRequired,
   };
   const ADD_CUSTOM_CALIRBATION = gql`
   mutation AddCustomCalibration (
@@ -25,6 +28,7 @@ export default async function AddCustomFormCalibration({
     $user: String!
     $comment: String
     $customFormData: String!
+    $calibratedBy: [Int]
     ){
       addCustomCalibration(
       assetTag: $assetTag,
@@ -32,6 +36,7 @@ export default async function AddCustomFormCalibration({
       user: $user,
       comment: $comment,
       customFormData: $customFormData,
+      calibratedBy: $calibratedBy
     )
   }
   `;
@@ -43,6 +48,7 @@ export default async function AddCustomFormCalibration({
     date,
     comment,
     customFormData,
+    calibratedBy,
   });
   const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
     || null;
