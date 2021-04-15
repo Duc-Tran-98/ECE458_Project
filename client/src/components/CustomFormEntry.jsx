@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose,
+  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose, disabled,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
@@ -61,6 +61,7 @@ export default function CustomFormEntry({
     assetTag: PropTypes.number,
     onFinish: PropTypes.func,
     handleClose: PropTypes.func,
+    disabled: PropTypes.bool,
   };
   CustomFormEntry.defaultProps = {
     modelNumber: '',
@@ -69,8 +70,10 @@ export default function CustomFormEntry({
     assetTag: 0,
     onFinish: null,
     handleClose: null,
+    disabled: false,
   };
 
+  console.log(`CustomFormEntry, disabled=${disabled}`);
   const user = React.useContext(UserContext);
   const classes = useStyles();
   const steps = getSteps();
@@ -243,15 +246,17 @@ export default function CustomFormEntry({
   const canSubmit = true;
 
   const handleChange = (e, index) => {
-    const nextState = state;
-    nextState[index] = {
-      ...nextState[index],
-      value: e.target.value,
-    };
-    setShouldValidate(true);
-    setState(state);
-    setUpdate(update + 1);
-    setCheckErrors(checkErrors + 1);
+    if (!disabled) {
+      const nextState = state;
+      nextState[index] = {
+        ...nextState[index],
+        value: e.target.value,
+      };
+      setShouldValidate(true);
+      setState(state);
+      setUpdate(update + 1);
+      setCheckErrors(checkErrors + 1);
+    }
   };
 
   const getNumberLabel = (step) => {
@@ -314,6 +319,7 @@ export default function CustomFormEntry({
           onChange={(e) => handleChange(e, index)}
           isInvalid={!!state[index].error}
           error={state[index].error}
+          disabled={disabled}
         />
         <Form.Control.Feedback type="invalid">
           {state[index].helperText}
@@ -342,6 +348,7 @@ export default function CustomFormEntry({
           onChange={(e) => handleChange(e, index)}
           isInvalid={!!state[index].error}
           error={state[index].error}
+          disabled={disabled}
         />
         <Form.Control.Feedback type="invalid">
           {state[index].helperText}

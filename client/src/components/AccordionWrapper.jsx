@@ -18,16 +18,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // https://material-ui.com/components/accordion/
-export default function AccordionWrapper({ header, contents }) {
+export default function AccordionWrapper({ header, contents, defaultExpanded }) {
   AccordionWrapper.propTypes = {
     header: PropTypes.string.isRequired,
     contents: PropTypes.node.isRequired,
+    defaultExpanded: PropTypes.bool,
+  };
+  AccordionWrapper.defaultProps = {
+    defaultExpanded: false,
   };
   const classes = useStyles();
 
   return (
     <>
-      <Accordion className="bg-theme">
+      <Accordion className="bg-theme" defaultExpanded={defaultExpanded}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.heading}>{header}</Typography>
         </AccordionSummary>
