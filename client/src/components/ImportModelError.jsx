@@ -34,6 +34,11 @@ export default function ImportModelError({ allRowErrors, errorList }) {
         {`Unable to parse Special-Calibration-Support: (${rowError.data.specialCalibrationSupport})`}
       </li>
       )}
+      {rowError.invalidApproval && (
+      <li>
+        {`Invalid Calibration Approval: (${rowError.data.calibrationRequiresApproval})`}
+      </li>
+      )}
     </div>
 
   );
