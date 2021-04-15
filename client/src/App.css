@@ -276,6 +276,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
 .bg-secondary {
   background-color: #86A0D8!important;
   color: black!important;
+  font-weight: bolder;
 }
 
 .custom-form-entry-modal {

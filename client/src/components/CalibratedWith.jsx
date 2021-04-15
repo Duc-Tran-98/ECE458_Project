@@ -2,13 +2,32 @@
 /* eslint-disable react/require-default-props */
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect } from 'react';
-import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
-import DeleteIcon from '@material-ui/icons/Delete';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import Query from './UseQuery';
 import AsyncSuggest from './AsyncSuggest';
+import { CustomFormDeletePopOver } from './CustomMuiIcons';
+
+const useStyles = makeStyles((theme) => ({
+  textFieldLarge: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '90%',
+  },
+  textFieldMedium: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '40%',
+  },
+  textFieldSmall: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '20%',
+  },
+}));
 
 export default function CalibratedWith({
   vendor,
@@ -29,6 +48,7 @@ export default function CalibratedWith({
   };
   const [fetched, setFetched] = React.useState(false);
   const [cats, setCats] = React.useState([]);
+  const classes = useStyles();
 
   const getCats = async () => {
     if (vendor !== null && modelNumber !== null) {
@@ -89,6 +109,24 @@ export default function CalibratedWith({
   const [rows, setRows] = React.useState([]);
   const [now, setNow] = React.useState(false);
   // const space = ' ';
+  const inputProps = { disableUnderline: true };
+  const validatedWithHelperText = `Valid categories: ${cats.length > 0 ? cats.map((i) => `${i}, `) : 'NONE'}`;
+  const addButton = (
+    <button
+      type="button"
+      className="btn"
+      onClick={() => {
+        if (cats.length > 0) {
+          const newRows = [...rows, {
+            key: rows.length, tag: null, ok: false, with: null,
+          }];
+          setRows(newRows);
+        }
+      }}
+    >
+      Add Calibrator
+    </button>
+  );
 
   return (
     <>
@@ -96,35 +134,28 @@ export default function CalibratedWith({
       <div className="d-flex justify-content-center w-100">
         <div className="col">
           <div className="row">
-            <div className="col-3">
-              <Button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  if (cats.length > 0) {
-                    const newRows = [...rows, {
-                      key: rows.length, tag: null, ok: false, with: null,
-                    }];
-                    setRows(newRows);
-                  }
-                }}
-              >
-                Add calibrator
-              </Button>
-            </div>
             <div className="col">
-              Valid categories:
-              {' '}
-              {cats.length > 0 ? cats.map((i) => `${i}, `) : 'NONE'}
+              <TextField
+                className={classes.textFieldLarge}
+                margin="normal"
+                value="Calibrated With"
+                disabled
+                InputProps={inputProps}
+                helperText={validatedWithHelperText}
+              />
+            </div>
+            <div className="col" style={{ margin: 'auto 0px' }}>
+              <div className="text-center">
+                {addButton}
+              </div>
             </div>
           </div>
-
+          {rows.length === 0 && (
+            <p className="MuiFormHelperText-root Mui-disabled" style={{ paddingLeft: '8px' }}>Currently none set</p>
+          )}
           {rows.map((data) => (
             <div className="row">
               <Form.Group className="col mx-2">
-                {/* <Form.Label className="h6 my-auto">
-                  {space}
-                </Form.Label> */}
                 <div
                   className="row "
                   style={{
@@ -178,28 +209,25 @@ export default function CalibratedWith({
                       value={data.with}
                     />
                   </div>
-                  <div className="col-1">
-                    <Button onClick={() => {
-                      const newRows = rows.filter((chip) => chip.key !== data.key);
-                      const tagArr = newRows.map((el) => el.tag);
-                      setRows((chips) => chips.filter((chip) => chip.key !== data.key));
-                      console.log(rows);
-                      const e = {
-                        target: {
-                          name: 'calibratedBy',
-                          value: tagArr,
-                        },
-                      };
-                      onChangeCalib(e, entry);
-                    }}
-                    >
-                      <DeleteIcon />
-                    </Button>
+                  <div className="col-2">
+                    <CustomFormDeletePopOver
+                      title="Remove Instrument"
+                      onClick={() => {
+                        const newRows = rows.filter((chip) => chip.key !== data.key);
+                        const tagArr = newRows.map((el) => el.tag);
+                        setRows((chips) => chips.filter((chip) => chip.key !== data.key));
+                        console.log(rows);
+                        const e = {
+                          target: {
+                            name: 'calibratedBy',
+                            value: tagArr,
+                          },
+                        };
+                        onChangeCalib(e, entry);
+                      }}
+                    />
                   </div>
                 </div>
-                {/* <Form.Label className="h6 my-auto">
-                  {space}
-                </Form.Label> */}
               </Form.Group>
             </div>
           ))}
