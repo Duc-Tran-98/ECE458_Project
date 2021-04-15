@@ -539,6 +539,7 @@ export default function ModelForm({
             <div className="mt-2">
               <AccordionWrapper
                 header="Custom Form"
+                defaultExpanded
                 contents={(
                   <CustomFormBuilder
                     state={customFormState}
