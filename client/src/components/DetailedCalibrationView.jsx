@@ -9,6 +9,7 @@ import TableLoadBank from './TableLoadBank';
 import KlufeDetailedView from './KlufeDetailedView';
 import ApproveCalibEvent from '../queries/ApproveCalibEvent';
 import RejectCalibEvent from '../queries/RejectCalibEvent';
+import CustomFormEntry from './CustomFormEntry';
 
 export default function DetailedCalibrationView({ selectedRow, isForInstrumentPage = false, approverId }) {
   DetailedCalibrationView.propTypes = {
@@ -116,17 +117,98 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
       <div className="row mx-3 mt-3 pt-3 border-top border-dark">
         <span className="h5">Calibration Data</span>
         <br />
+        {selectedRow.fileName && ( // if there was a file upload, display it
+          <a
+            href={`../data/${selectedRow.fileLocation}`}
+            download={selectedRow.fileName}
+            className="ms-4"
+          >
+            {selectedRow.fileName}
+          </a>
+        )}
         {getCalibrationType() === 'Load Bank' && (
           <TableLoadBank loadBankData={JSON.parse(selectedRow.loadBankData)} />
         )}
         {/* TODO: dynamically render any instruments used in calibration */}
-        {getCalibrationType() === 'Plain' && (
-          <div className="ms-4">No data on record</div>
+        {getCalibrationType() === 'Plain'
+          && !selectedRow.fileName && ( // plain & no file upload & no instruments used in calib event => no data
+            <div className="ms-4">No data on record</div>
         )}
         {getCalibrationType() === 'Klufe' && (
           <KlufeDetailedView klufeData={JSON.parse(selectedRow.klufeData)} />
         )}
+        {getCalibrationType() === 'Custom' && (
+          <CustomFormEntry
+            getSteps={() => JSON.parse(selectedRow.customFormData)}
+            modelNumber={selectedRow.modelNumber}
+            serialNumber={selectedRow.serialNumber}
+            assetTag={selectedRow.assetTag}
+            vendor={selectedRow.vendor}
+          />
+        )}
       </div>
+      {isForInstrumentPage && selectedRow.approvalStatus === 3 && (
+        <div className="row mx-3 my-3 pt-3 border-top border-dark">
+          <div className="col">
+            <span className="h5">Approval Data</span>
+            <br />
+            <div className="ms-4 pt-1">
+              This calibration event happened before approval was required.
+            </div>
+          </div>
+        </div>
+      )}
+      {isForInstrumentPage
+        && (selectedRow.approvalStatus === 1
+          || selectedRow.approvalStatus === 2) && ( // approvalStatus = 1 means this event was approved; 0=awaiting, 3=no approval, 2=rejected
+          <>
+            <div className="row mx-3 mt-3 pt-3 border-top border-dark">
+              <div className="col">
+                <span className="h5">Approver</span>
+                <br />
+                <input
+                  className="form-control mt-1"
+                  disabled
+                  value={`${selectedRow.approverFirstName} ${selectedRow.approverLastName}`}
+                  type="text"
+                />
+              </div>
+              <div className="col">
+                <span className="h5">Approver Username</span>
+                <br />
+                <input
+                  className="form-control mt-1"
+                  disabled
+                  value={selectedRow.approverUsername}
+                  type="text"
+                />
+              </div>
+              <div className="col">
+                <span className="h5">Approval Date</span>
+                <br />
+                <input
+                  className="form-control mt-1"
+                  disabled
+                  value={selectedRow.approvalDate}
+                  type="text"
+                />
+              </div>
+            </div>
+            <div className="row mx-3 my-3 pt-3 border-top border-dark">
+              <div className="col">
+                <span className="h5">Approval Comment</span>
+                <br />
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="comment"
+                  value={selectedRow.approvalComment}
+                  disabled
+                />
+              </div>
+            </div>
+          </>
+      )}
       {!isForInstrumentPage && (
         <>
           <div className="row mx-3 mt-3 pt-3 border-top border-dark">
@@ -153,7 +235,11 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
                   className="btn"
                   onClick={() => {
                     ApproveCalibEvent({
-                      handleResponse, calibrationEventId: selectedRow.id, approverId, approvalDate, approvalComment,
+                      handleResponse,
+                      calibrationEventId: selectedRow.id,
+                      approverId,
+                      approvalDate,
+                      approvalComment,
                     });
                   }}
                 >
