@@ -121,7 +121,7 @@ class BulkDataAPI extends DataSource {
             }
             console.log('creating relationship');
             const modelCategoryId = catMap.get(calibratorCategory.toLowerCase());
-            await this.store.modelCategoryRelationships.create({
+            await this.store.calibratorCategoryRelationships.create({
               modelId,
               modelCategoryId,
             }, { transaction: t });
