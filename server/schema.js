@@ -317,6 +317,7 @@ const typeDefs = gql`
     approverLastName: String
     approvalDate: String
     approvalComment: String
+    calibratedBy: [CalibratedByInfo]
   }
 
   input ModelInput {
