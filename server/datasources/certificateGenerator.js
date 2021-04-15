@@ -286,9 +286,48 @@ const generateInfoPage = async () => (
   )
 );
 
-// const generateDataTables = () => (
+const displayLoadBank = async() => (
+  
+)
 
-// )
+const generateDataTables = () => (
+  React.createElement(
+    React.createElement(
+      Page,
+      { style: styles.page, size: 'LETTER' },
+      React.createElement(
+        View,
+        { style: styles.outerBorder },
+        React.createElement(
+          View,
+          { style: styles.innerBorder },
+          React.createElement(
+            View,
+            calEvent.isLoadBank ? displayLoadBank() : null,
+            calEvent.isKlufe ? displayKlufe() : null,
+            calEvent.isCustomForm ? displayCustom() : null,
+          ),
+        ),
+      ),
+    ),
+    React.createElement(
+      Page,
+      { style: styles.page, size: 'LETTER' },
+      React.createElement(
+        View,
+        { style: styles.outerBorder },
+        React.createElement(
+          View,
+          { style: styles.innerBorder },
+          React.createElement(
+            View,
+            calEvent.isLoadBank ? displayLoadBankVoltage() : null,
+          ),
+        ),
+      ),
+    ),
+  )
+);
 
 // const generateDependencyPage = () => (
 
@@ -299,6 +338,7 @@ const assemblePDF = async () => (
     Document,
     null,
     await generateInfoPage(),
+    await generateDataTables(),
   )
 );
 
