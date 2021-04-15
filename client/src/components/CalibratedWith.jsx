@@ -127,19 +127,6 @@ export default function CalibratedWith({
       Add Calibrator
     </button>
   );
-  // const handleDeleteCalibrator = (data) => {
-  //   const newRows = rows.filter((chip) => chip.key !== data.key);
-  //   const tagArr = newRows.map((el) => el.tag);
-  //   setRows((chips) => chips.filter((chip) => chip.key !== data.key));
-  //   console.log(rows);
-  //   const e = {
-  //     target: {
-  //       name: 'calibratedBy',
-  //       value: tagArr,
-  //     },
-  //   };
-  //   onChangeCalib(e, entry);
-  // };
 
   return (
     <>
@@ -163,13 +150,12 @@ export default function CalibratedWith({
               </div>
             </div>
           </div>
-
+          {rows.length === 0 && (
+            <p className="MuiFormHelperText-root Mui-disabled" style={{ paddingLeft: '8px' }}>Currently none set</p>
+          )}
           {rows.map((data) => (
             <div className="row">
               <Form.Group className="col mx-2">
-                {/* <Form.Label className="h6 my-auto">
-                  {space}
-                </Form.Label> */}
                 <div
                   className="row "
                   style={{
@@ -223,7 +209,7 @@ export default function CalibratedWith({
                       value={data.with}
                     />
                   </div>
-                  <div className="col-1">
+                  <div className="col-2">
                     <CustomFormDeletePopOver
                       title="Remove Instrument"
                       onClick={() => {
