@@ -145,7 +145,7 @@ export default function CalibrationRow({
           <AssetChips onChangeCalib={onChangeCalibRow} entry={entry} />
         </div> */}
         <div className="row w-100 mx-auto">
-          <CalibratedWith vendor={vendor} modelNumber={modelNumber} />
+          <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} entry={entry} />
         </div>
         <div
           className="row w-100 mx-auto"

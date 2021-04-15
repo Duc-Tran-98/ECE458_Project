@@ -13,10 +13,15 @@ import AsyncSuggest from './AsyncSuggest';
 export default function CalibratedWith({
   vendor,
   modelNumber,
+  onChangeCalib,
+  entry,
 }) {
   CalibratedWith.propTypes = {
     vendor: PropTypes.string,
     modelNumber: PropTypes.string,
+    onChangeCalib: PropTypes.func.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    entry: PropTypes.object.isRequired,
   };
   CalibratedWith.defaultProps = {
     vendor: null,
@@ -97,9 +102,10 @@ export default function CalibratedWith({
                 className="btn"
                 onClick={() => {
                   if (cats.length > 0) {
-                    setRows([...rows, {
+                    const newRows = [...rows, {
                       key: rows.length, tag: null, ok: false, with: null,
-                    }]);
+                    }];
+                    setRows(newRows);
                   }
                 }}
               >
@@ -155,6 +161,13 @@ export default function CalibratedWith({
                         rows[data.key].tag = v.assetTag;
                         rows[data.key].with = v;
                         setNow(!now);
+                        const e = {
+                          target: {
+                            name: 'calibratedBy',
+                            value: rows.map((el) => el.tag),
+                          },
+                        };
+                        onChangeCalib(e, entry);
                       }}
                       label="Select a calibrator"
                       getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
@@ -167,7 +180,17 @@ export default function CalibratedWith({
                   </div>
                   <div className="col-1">
                     <Button onClick={() => {
+                      const newRows = rows.filter((chip) => chip.key !== data.key);
+                      const tagArr = newRows.map((el) => el.tag);
                       setRows((chips) => chips.filter((chip) => chip.key !== data.key));
+                      console.log(rows);
+                      const e = {
+                        target: {
+                          name: 'calibratedBy',
+                          value: tagArr,
+                        },
+                      };
+                      onChangeCalib(e, entry);
                     }}
                     >
                       <DeleteIcon />

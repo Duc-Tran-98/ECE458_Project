@@ -132,6 +132,7 @@ export default function DetailedInstrumentView() {
   };
   const onChangeCalibRow = (e, entry) => {
     // This method deals with updating a particular calibration event
+    console.log(e);
     const newHistory = [...calibHist];
     const index = newHistory.indexOf(entry);
     newHistory[index] = { ...entry };
@@ -173,6 +174,7 @@ export default function DetailedInstrumentView() {
         // console.log(err.message);
       });
     }
+    console.log(newHistory);
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag: formState.assetTag,
