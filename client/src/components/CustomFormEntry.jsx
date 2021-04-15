@@ -131,18 +131,18 @@ export default function CustomFormEntry({
             }
           }
           break;
-        case 'text':
-          // Validate text present
-          if (element.value === '') {
-            errorCount += 1;
-            nextState[index] = {
-              ...nextState[index],
-              error: true,
-              helperText: 'Please make observation',
-            };
-          }
+          // case 'text':
+          //   // Validate text present
+          //   if (element.value === '') {
+          //     errorCount += 1;
+          //     nextState[index] = {
+          //       ...nextState[index],
+          //       error: true,
+          //       helperText: 'Please make observation',
+          //     };
+          //   }
 
-          break;
+        //   break;
         default:
           break;
       }
@@ -202,16 +202,16 @@ export default function CustomFormEntry({
               }
             }
             break;
-          case 'text':
-          // Validate text present
-            if (element.error && element.value !== '') {
-              nextState[index] = {
-                ...nextState[index],
-                error: false,
-                helperText: '',
-              };
-            }
-            break;
+          // case 'text':
+          // // Validate text present
+          //   if (element.error && element.value !== '') {
+          //     nextState[index] = {
+          //       ...nextState[index],
+          //       error: false,
+          //       helperText: '',
+          //     };
+          //   }
+          //   break;
           default:
             break;
         }
@@ -441,7 +441,7 @@ export default function CustomFormEntry({
                 <button
                   type="submit"
                   className="btn"
-                  disabled={!canSubmit}
+                  disabled={!canSubmit || disabled}
                   onClick={handleSubmit}
                   style={{ margin: 'auto' }}
                 >
