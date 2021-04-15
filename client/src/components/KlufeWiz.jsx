@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import $ from 'jquery';
 import VerticalLinearStepper from './VerticalStepper';
 import UserContext from './UserContext';
+import AsyncSuggest from './AsyncSuggest';
 import { stepInfo } from '../utils/Klufe';
 import Query from './UseQuery';
 import {
@@ -39,7 +40,10 @@ export default function KlufeWiz({
     assetTag: initAssetTag,
     date: today,
     user: user.userName,
+    calibratedBy: 0,
     comment: '',
+    klufeCalOk: false,
+    klufeCalWith: null,
     step4ok: false,
     step7ok: false,
     step9ok: false,
@@ -51,6 +55,17 @@ export default function KlufeWiz({
     4: '', 7: '', 9: '', 11: '', 13: '',
   });
   const maxCalibrationComment = 2000;
+
+  const validateCalibrationDate = ({ date, calibrationFrequency }) => {
+    if (calibrationFrequency === 0) return true;
+    if (date) {
+      const todayToo = new Date();
+      const calibDate = new Date(date);
+      // today - calibDate <= calibration Frequency
+      return (Math.round((todayToo.getTime() - calibDate.getTime()) / (1000 * 3600 * 24)) <= calibrationFrequency);
+    }
+    return false;
+  };
 
   const handleRestart = (bool = true) => {
     setRestart(false);
@@ -90,6 +105,7 @@ export default function KlufeWiz({
       step11ok,
       step13ok,
     });
+    console.log([parseInt(formState.calibratedBy, 10)]);
     Query({
       query: gql`
         mutation AddKlufeCalib (
@@ -98,6 +114,7 @@ export default function KlufeWiz({
             $user: String!,
             $comment: String,
             $klufeData: String!,
+            $calibratedBy: [Int]
           ){
           addKlufeCalibration(
             assetTag: $assetTag,
@@ -105,6 +122,7 @@ export default function KlufeWiz({
             user: $user,
             comment: $comment,
             klufeData: $klufeData,
+            calibratedBy: $calibratedBy
           )
         }
       `,
@@ -115,6 +133,7 @@ export default function KlufeWiz({
         user: user.userName,
         comment,
         klufeData,
+        calibratedBy: [parseInt(formState.calibratedBy, 10)],
       }),
       fetchPolicy: 'no-cache',
       handleResponse: (response) => {
@@ -374,6 +393,53 @@ export default function KlufeWiz({
                 <Form.Control.Feedback type="invalid">
                   Please enter a shorter calibration comment.
                 </Form.Control.Feedback>
+              </Form.Group>
+            </div>
+            <div className="row my-2">
+              <Form.Group className="col mx-2">
+                <Form.Label className="h6 my-auto">
+                  Klufe 5700 compatible calibrator to be used: (Vendor-Model number-Asset Tag)
+                </Form.Label>
+                <div className="">
+                  <AsyncSuggest
+                    query={gql`
+                      query Instruments($modelCategories: [String]) {
+                        getInstrumentsWithFilter(modelCategories: $modelCategories) {
+                          instruments {
+                            vendor
+                            modelNumber
+                            assetTag
+                            calibrationFrequency
+                            recentCalibration {
+                              date
+                            }
+                          }
+                        }
+                      }
+                    `}
+                    queryName="getInstrumentsWithFilter"
+                    getVariables={() => ({ modelCategories: ['Klufe_K5700-compatible'] })}
+                    // eslint-disable-next-line no-unused-vars
+                    onInputChange={(_e, v) => {
+                      // if (!DEBUG) {
+                      const klufeCalOk = validateCalibrationDate({
+                        date: v?.recentCalibration[0]?.date,
+                        calibrationFrequency: v.calibrationFrequency,
+                      });
+                      setFormState({
+                        ...formState, calibratedBy: v.assetTag, klufeCalOk, klufeCalWith: v,
+                      });
+                      // }
+                    }}
+                    label="Select a klufe 5700 compatible calibrator"
+                    getOptionLabel={(option) => `${option.vendor}-${option.modelNumber}-${option.assetTag}`}
+                    getOptionSelected={(option, value) => (option.assetTag === value.assetTag && option.vendor)
+                        === value.vendor && option.modelNumber === value.modelNumber}
+                    isInvalid={formState.calibratedBy > 0 && !formState.klufeCalOk}
+                    invalidMsg="That klufe 5700 compatible calibrator is out of calibration!"
+                    value={formState.klufeCalWith}
+                  />
+                </div>
               </Form.Group>
             </div>
           </div>

@@ -119,7 +119,6 @@ export default function ModelForm({
     type: 'create',
     customForm: '',
   };
-
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && (user.isAdmin || user.modelPermission);
   const cats = [];
@@ -248,7 +247,7 @@ export default function ModelForm({
   };
   const initCalibrationType = getCalibrationType();
   // console.log(`initCalibrationType: ${initCalibrationType}`);
-
+  console.log(getCalibrationType());
   // Check if errors should be removed from custom form
   React.useEffect(() => {
     const nextState = customFormState;
@@ -510,6 +509,7 @@ export default function ModelForm({
                 tags={values.calibratorCategories}
                 dis={disabled}
                 models
+                special={values.calibrationType}
                 isInvalid={false}
               />
             </div>
