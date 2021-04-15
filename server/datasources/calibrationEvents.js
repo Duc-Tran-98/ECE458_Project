@@ -98,18 +98,90 @@ class CalibrationEventAPI extends DataSource {
         calibrationHistoryIdReference = instrument[0].dataValues.id;
       }
     });
-    const calibrationEvents = await this.store.calibrationEvents.findAll(
-      { where: { calibrationHistoryIdReference } },
-    );
+    const calibrationEvents = await this.store.calibrationEvents.findAll({
+      where: { calibrationHistoryIdReference },
+      include: {
+        model: this.store.calibratedByRelationships,
+        as: 'calibratedBy',
+      },
+    });
+    for (let j = 0; j < calibrationEvents.length; j += 1) {
+      const calibration = calibrationEvents[j];
+      const relations = [];
+      for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
+        const inst = calibration.calibratedBy[i];
+        const currentId = inst.dataValues.calibratedBy;
+        // eslint-disable-next-line no-await-in-loop
+        const found = await this.store.instruments.findOne({
+          where: {
+            id: currentId,
+          },
+        });
+        if (found) {
+          relations.push({
+            vendor: found.dataValues.vendor,
+            modelNumber: found.dataValues.modelNumber,
+            // eslint-disable-next-line max-len
+            serialNumber: (found.dataValues.serialNumber === null || found.dataValues.serialNumber.length === 0) ? null : found.dataValues.serialNumber,
+            assetTag: found.dataValues.assetTag,
+          });
+        } else {
+          relations.push({
+            vendor: inst.dataValues.byVendor,
+            modelNumber: inst.dataValues.byModelNumber,
+            // eslint-disable-next-line max-len
+            serialNumber: (inst.dataValues.serialNumber === null || inst.dataValues.serialNumber.length === 0) ? null : inst.dataValues.serialNumber,
+            assetTag: inst.dataValues.byAssetTag,
+          });
+        }
+      }
+      calibration.calibratedBy = relations;
+    }
     return calibrationEvents;
   }
 
   async getCalibrationEventsByReferenceId({ calibrationHistoryIdReference }) {
     const storeModel = await this.store;
     this.store = storeModel;
-    const calibrationEvents = await this.store.calibrationEvents.findAll(
-      { where: { calibrationHistoryIdReference } },
-    );
+    const calibrationEvents = await this.store.calibrationEvents.findAll({
+      where: { calibrationHistoryIdReference },
+      include: {
+        model: this.store.calibratedByRelationships,
+        as: 'calibratedBy',
+      },
+    });
+    for (let j = 0; j < calibrationEvents.length; j += 1) {
+      const calibration = calibrationEvents[j];
+      const relations = [];
+      for (let i = 0; i < calibration.calibratedBy.length; i += 1) {
+        const inst = calibration.calibratedBy[i];
+        const currentId = inst.dataValues.calibratedBy;
+        // eslint-disable-next-line no-await-in-loop
+        const found = await this.store.instruments.findOne({
+          where: {
+            id: currentId,
+          },
+        });
+        if (found) {
+          relations.push({
+            vendor: found.dataValues.vendor,
+            modelNumber: found.dataValues.modelNumber,
+            // eslint-disable-next-line max-len
+            serialNumber: (found.dataValues.serialNumber === null || found.dataValues.serialNumber.length === 0) ? null : found.dataValues.serialNumber,
+            assetTag: found.dataValues.assetTag,
+          });
+        } else {
+          relations.push({
+            vendor: inst.dataValues.byVendor,
+            modelNumber: inst.dataValues.byModelNumber,
+            // eslint-disable-next-line max-len
+            serialNumber: (inst.dataValues.serialNumber === null || inst.dataValues.serialNumber.length === 0) ? null : inst.dataValues.serialNumber,
+            assetTag: inst.dataValues.byAssetTag,
+          });
+        }
+      }
+      calibration.calibratedBy = relations;
+    }
     return calibrationEvents;
   }
 
