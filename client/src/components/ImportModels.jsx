@@ -57,6 +57,11 @@ export default function ImportModels() {
         const arr = value.trim().split(/\s+/);
         if (arr.length > 0 && arr[0] !== '') { return arr; }
         return null;
+      case 'calibratorCategories':
+        // eslint-disable-next-line no-case-declarations
+        const catArr = value.trim().split(/\s+/);
+        if (catArr.length > 0 && catArr[0] !== '') { return catArr; }
+        return null;
       default:
         return value.trim().length > 0 ? value.trim() : null;
     }
@@ -233,15 +238,25 @@ export default function ImportModels() {
     return true;
   };
 
+  const filterRequiresApproval = (requiresCalibrationApproval) => {
+    if (typeof (requiresCalibrationApproval) === 'string' && (requiresCalibrationApproval.toLowerCase() === 'y' || requiresCalibrationApproval.toLowerCase() === 'yes')) {
+      return true;
+    }
+    return false;
+  };
+
+  // NOTE: supportCustom is not included as this is not part of import
   const filterData = (fileInfo) => fileInfo.map((obj) => ({
     vendor: String(obj.vendor),
     modelNumber: String(obj.modelNumber),
     description: String(obj.description),
     categories: obj.categories,
+    calibratorCategories: obj.calibratorCategories,
     supportLoadBankCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'load-bank') || false,
     supportKlufeCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'klufe') || false,
     comment: String(obj.comment),
     calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
+    requiresCalibrationApproval: filterRequiresApproval(obj.requiresCalibrationApproval),
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
@@ -254,6 +269,7 @@ export default function ImportModels() {
     setImportStatus('Registering');
     // File has been validated, now push to database
     const models = filterData(fileInfo);
+    console.log(models);
     const getVariables = () => ({ models });
     const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
     const refetchQueries = refetch !== null

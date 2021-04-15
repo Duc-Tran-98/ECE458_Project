@@ -34,6 +34,7 @@ class BulkDataAPI extends DataSource {
   }
 
   async bulkImportModels({ models }) {
+    console.log(models);
     const response = { success: false, message: '' };
     if (!process.env.NODE_ENV.includes('dev')) {
       const { user } = this.context;
@@ -64,6 +65,7 @@ class BulkDataAPI extends DataSource {
         const categories = currentModel.categories;
         const supportLoadBankCalibration = currentModel.supportLoadBankCalibration;
         const supportKlufeCalibration = currentModel.supportKlufeCalibration;
+        const requiresCalibrationApproval = currentModel.requiresCalibrationApproval;
 
         const createdModel = await this.store.models.create(
           {
@@ -74,8 +76,8 @@ class BulkDataAPI extends DataSource {
             calibrationFrequency,
             supportLoadBankCalibration,
             supportKlufeCalibration,
+            requiresCalibrationApproval,
             supportCustomCalibration: false,
-            requiresCalibrationApproval: false,
           },
           { transaction: t },
         );
