@@ -386,15 +386,26 @@ export default function CustomFormEntry({
       {onFinish !== null && (
         <div>
           <Form.Group className="col">
+            <Form.Label className="row my-auto" style={{ paddingTop: 20 }}>
+              <TextField
+                id="custom-form-header"
+                className={classes.textFieldHeader}
+                margin="normal"
+                name="prompt"
+                value="Calibration Metadata"
+                disabled
+                InputProps={inputProps}
+              />
+            </Form.Label>
             <Form.Group className="row">
-              <Form.Label className="h3 my-auto" style={{ paddingTop: 20 }}>
-                Calibration Metadata
-              </Form.Label>
-            </Form.Group>
-            <Form.Group className="row">
-              <Form.Label className="h6 my-auto">
-                Enter calibration comment:
-              </Form.Label>
+              <TextField
+                className={classes.textFieldMedium}
+                margin="normal"
+                name="prompt"
+                value="Calibration Comment"
+                disabled
+                InputProps={inputProps}
+              />
               <Form.Control
                 as="textarea"
                 rows={2}
@@ -404,8 +415,15 @@ export default function CustomFormEntry({
               />
             </Form.Group>
             <Form.Group className="row">
-              <Form.Label className="h6 my-auto">
-                Date of calibration:
+              <Form.Label className="row my-auto">
+                <TextField
+                  className={classes.textFieldMedium}
+                  margin="normal"
+                  name="prompt"
+                  value="Date of Calibration"
+                  disabled
+                  InputProps={inputProps}
+                />
               </Form.Label>
               <Form.Control
                 name="date"
