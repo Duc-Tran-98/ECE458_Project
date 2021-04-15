@@ -1,11 +1,10 @@
 import React from 'react';
-import CustomFormBuilder from '../components/CustomFormBuilder';
-import AccordionWrapper from '../components/AccordionWrapper';
+import CalibratedWith from '../components/CalibratedWith';
 
 export default function ComponentTest() {
   return (
     <>
-      <AccordionWrapper header="Custom Form" contents={<CustomFormBuilder />} />
+      <CalibratedWith vendor="HPT" modelNumber="loadBank" />
     </>
   );
 }

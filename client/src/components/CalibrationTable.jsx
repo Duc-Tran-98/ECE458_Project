@@ -18,6 +18,8 @@ export default function CalibrationTable({
   showSaveButton,
   onSaveClick = () => undefined,
   showDeleteBtn = true,
+  vendor,
+  modelNumber,
 }) {
   CalibrationTable.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
@@ -28,13 +30,19 @@ export default function CalibrationTable({
     onSaveClick: PropTypes.func, // what to call when save button clicked
     // eslint-disable-next-line react/require-default-props
     showDeleteBtn: PropTypes.bool,
+    vendor: PropTypes.string,
+    modelNumber: PropTypes.string,
   };
   CalibrationTable.defaultProps = {
     showSaveButton: false,
+    vendor: '',
+    modelNumber: '',
   };
   // This list maps all the entries in an array to a calibration row
   const list = rows.map((entry) => (
     <CalibrationRow
+      vendor={vendor}
+      modelNumber={modelNumber}
       showDeleteBtn={showDeleteBtn}
       key={entry.id}
       handleDelete={deleteRow}

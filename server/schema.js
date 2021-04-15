@@ -65,6 +65,9 @@ const typeDefs = gql`
       offset: Int
       orderBy: [[String]]
     ): InstrumentOutput
+    getInstrumentsMatchingOneModelCategory(
+      modelCategories: [String]
+    ): [SpecialInstOutput]
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
@@ -223,6 +226,14 @@ const typeDefs = gql`
   type InstrumentOutput {
     instruments: [FilteredInstrument]
     total: Int!
+  }
+
+  type SpecialInstOutput {
+    vendor: String!
+    modelNumber: String!
+    assetTag: Int!
+    calibrationFrequency: Int!
+    recentCalibration: [Calibration]
   }
 
   type Calibration {
@@ -441,6 +452,7 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+      calibratedBy: [Int]
     ): String!
 
     addCalibrationEventByAssetTag(
@@ -450,6 +462,7 @@ const typeDefs = gql`
       comment: String
       fileLocation: String
       fileName: String
+      calibratedBy: [Int]
     ): String!
 
     addLoadBankCalibration(
@@ -458,6 +471,7 @@ const typeDefs = gql`
       user: String!
       comment: String
       loadBankData: String!
+      calibratedBy: [Int]
     ): String!
 
     addKlufeCalibration(
@@ -466,6 +480,7 @@ const typeDefs = gql`
       user: String!
       comment: String
       klufeData: String!
+      calibratedBy: [Int]
     ): String!
 
     addCustomCalibration(
@@ -474,6 +489,7 @@ const typeDefs = gql`
       user: String!
       comment: String
       customFormData: String!
+      calibratedBy: [Int]
     ): String!
 
     addCalibrationEventById(

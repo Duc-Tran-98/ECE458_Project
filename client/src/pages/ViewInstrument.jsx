@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
@@ -131,6 +132,7 @@ export default function DetailedInstrumentView() {
   };
   const onChangeCalibRow = (e, entry) => {
     // This method deals with updating a particular calibration event
+    console.log(e);
     const newHistory = [...calibHist];
     const index = newHistory.indexOf(entry);
     newHistory[index] = { ...entry };
@@ -146,6 +148,8 @@ export default function DetailedInstrumentView() {
         data.append('file', e.target.files[0]);
         newHistory[index].file = data;
       }
+    } else if (e.target.name === 'calibratedBy') {
+      newHistory[index].calibratedBy = e.target.value;
     } else {
       newHistory[index].comment = e.target.value;
     }
@@ -170,11 +174,16 @@ export default function DetailedInstrumentView() {
         // console.log(err.message);
       });
     }
+    console.log(newHistory);
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag: formState.assetTag,
-      handleResponse: () => {
-        toast.success(`Added calibration event on ${entry.date}`);
+      handleResponse: (res) => {
+        if (res.success) {
+          toast.success(res.message);
+        } else {
+          toast.error(res.message);
+        }
         fetchData(entry);
       },
     });
@@ -318,6 +327,8 @@ export default function DetailedInstrumentView() {
             handleClose={() => setShow(false)}
           >
             <CalibrationTable
+              vendor={formState.vendor}
+              modelNumber={formState.modelNumber}
               rows={calibHist.filter((ele) => !ele.viewOnly)}
               deleteRow={deleteRow}
               onChangeCalibRow={onChangeCalibRow}

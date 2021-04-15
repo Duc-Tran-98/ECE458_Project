@@ -164,14 +164,8 @@ export default function CustomFormBuilder({
   }, [state, update]);
 
   React.useEffect(() => {
-    setFormEntry(<CustomFormEntry getSteps={() => state} />);
+    setFormEntry(<CustomFormEntry getSteps={() => state} disabled={!editEnabled} />);
   }, [state]);
-
-  // TODO: Add useEffect to assign error values on state changes
-  // These are currently lifted into model form (must check errors there?)
-  // IDEA: Iter through, depending on type assign errors
-  // Nonexistant labels are errors (on submit)
-  // Min/Max are errors if value
 
   const toolbar = (
     <>

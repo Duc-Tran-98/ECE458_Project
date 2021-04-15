@@ -112,6 +112,15 @@ module.exports = {
       offset,
       orderBy,
     }),
+    getInstrumentsMatchingOneModelCategory: async (
+      _,
+      {
+        modelCategories,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrumentsMatchingOneModelCategory({
+      modelCategories,
+    }),
 
     // Calibration Queries
     getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
@@ -291,6 +300,7 @@ module.exports = {
         comment,
         fileLocation,
         fileName,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -304,6 +314,7 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+          calibratedBy,
         },
       );
       return response;
@@ -317,6 +328,7 @@ module.exports = {
         comment,
         fileLocation,
         fileName,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -328,6 +340,7 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+          calibratedBy,
         },
       );
       return response;
@@ -340,6 +353,7 @@ module.exports = {
         date,
         comment,
         loadBankData,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -350,6 +364,7 @@ module.exports = {
           date,
           comment,
           loadBankData,
+          calibratedBy,
         },
       );
       return response;
@@ -362,6 +377,7 @@ module.exports = {
         date,
         comment,
         klufeData,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -372,6 +388,7 @@ module.exports = {
           date,
           comment,
           klufeData,
+          calibratedBy,
         },
       );
       return response;
@@ -384,6 +401,7 @@ module.exports = {
         date,
         comment,
         customFormData,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -394,6 +412,7 @@ module.exports = {
           date,
           comment,
           customFormData,
+          calibratedBy,
         },
       );
       return response;
