@@ -109,20 +109,17 @@ class BulkDataAPI extends DataSource {
           }
         }
         if (calibratorCategories) {
-          console.log('checking calibrator categories');
           for (let j = 0; j < calibratorCategories.length; j += 1) {
             const calibratorCategory = calibratorCategories[j];
             console.log(`calibratorCategory: ${calibratorCategory}`);
             if (!catMap.has(calibratorCategory.toLowerCase())) {
-              console.log('not inside map, throwing error');
               response.message = `ERROR: Calibrator Category ${calibratorCategory} does not exist`;
               response.success = false;
               await t.rollback();
               return JSON.stringify(response);
             }
-            console.log('creating relationship');
             const modelCategoryId = catMap.get(calibratorCategory.toLowerCase());
-            await this.store.modelCategoryRelationships.create({
+            await this.store.calibratorCategoryRelationships.create({
               modelId,
               modelCategoryId,
             }, { transaction: t });
