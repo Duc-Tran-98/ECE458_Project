@@ -2,15 +2,14 @@
 /* eslint-disable react/require-default-props */
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect } from 'react';
-import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
-import DeleteIcon from '@material-ui/icons/Delete';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Query from './UseQuery';
 import AsyncSuggest from './AsyncSuggest';
+import { CustomFormDeletePopOver } from './CustomMuiIcons';
 
 const useStyles = makeStyles((theme) => ({
   textFieldLarge: {
@@ -128,6 +127,19 @@ export default function CalibratedWith({
       Add Calibrator
     </button>
   );
+  // const handleDeleteCalibrator = (data) => {
+  //   const newRows = rows.filter((chip) => chip.key !== data.key);
+  //   const tagArr = newRows.map((el) => el.tag);
+  //   setRows((chips) => chips.filter((chip) => chip.key !== data.key));
+  //   console.log(rows);
+  //   const e = {
+  //     target: {
+  //       name: 'calibratedBy',
+  //       value: tagArr,
+  //     },
+  //   };
+  //   onChangeCalib(e, entry);
+  // };
 
   return (
     <>
@@ -212,22 +224,22 @@ export default function CalibratedWith({
                     />
                   </div>
                   <div className="col-1">
-                    <Button onClick={() => {
-                      const newRows = rows.filter((chip) => chip.key !== data.key);
-                      const tagArr = newRows.map((el) => el.tag);
-                      setRows((chips) => chips.filter((chip) => chip.key !== data.key));
-                      console.log(rows);
-                      const e = {
-                        target: {
-                          name: 'calibratedBy',
-                          value: tagArr,
-                        },
-                      };
-                      onChangeCalib(e, entry);
-                    }}
-                    >
-                      <DeleteIcon />
-                    </Button>
+                    <CustomFormDeletePopOver
+                      title="Remove Instrument"
+                      onClick={() => {
+                        const newRows = rows.filter((chip) => chip.key !== data.key);
+                        const tagArr = newRows.map((el) => el.tag);
+                        setRows((chips) => chips.filter((chip) => chip.key !== data.key));
+                        console.log(rows);
+                        const e = {
+                          target: {
+                            name: 'calibratedBy',
+                            value: tagArr,
+                          },
+                        };
+                        onChangeCalib(e, entry);
+                      }}
+                    />
                   </div>
                 </div>
               </Form.Group>
