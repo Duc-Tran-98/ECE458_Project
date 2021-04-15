@@ -112,6 +112,15 @@ module.exports = {
       offset,
       orderBy,
     }),
+    getInstrumentsMatchingOneModelCategory: async (
+      _,
+      {
+        modelCategories,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrumentsMatchingOneModelCategory({
+      modelCategories,
+    }),
 
     // Calibration Queries
     getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({

@@ -65,6 +65,9 @@ const typeDefs = gql`
       offset: Int
       orderBy: [[String]]
     ): InstrumentOutput
+    getInstrumentsMatchingOneModelCategory(
+      modelCategories: [String]
+    ): [SpecialInstOutput]
 
     # Calibration Event Related Queries
     getAllCalibrationEvents(limit: Int, offset: Int): [CalibrationEvent]
@@ -223,6 +226,14 @@ const typeDefs = gql`
   type InstrumentOutput {
     instruments: [FilteredInstrument]
     total: Int!
+  }
+
+  type SpecialInstOutput {
+    vendor: String!
+    modelNumber: String!
+    assetTag: Int!
+    calibrationFrequency: Int!
+    recentCalibration: [Calibration]
   }
 
   type Calibration {
