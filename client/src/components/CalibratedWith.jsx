@@ -9,15 +9,15 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Query from './UseQuery';
 import AsyncSuggest from './AsyncSuggest';
 
-export default function CalibrationRow({
+export default function CalibratedWith({
   vendor,
   modelNumber,
 }) {
-  CalibrationRow.propTypes = {
+  CalibratedWith.propTypes = {
     vendor: PropTypes.string,
     modelNumber: PropTypes.string,
   };
-  CalibrationRow.defaultProps = {
+  CalibratedWith.defaultProps = {
     vendor: null,
     modelNumber: null,
   };
@@ -82,6 +82,7 @@ export default function CalibrationRow({
 
   const [rows, setRows] = React.useState([]);
   const [now, setNow] = React.useState(false);
+  const space = ' ';
 
   return (
     <>
@@ -89,7 +90,7 @@ export default function CalibrationRow({
       <div className="d-flex justify-content-center w-100">
         <div className="col">
           <div className="row">
-            <div className="col-4">
+            <div className="col-3">
               <Button
                 type="button"
                 className="btn"
@@ -103,13 +104,18 @@ export default function CalibrationRow({
                 Add calibrator
               </Button>
             </div>
+            <div className="col">
+              Valid categories:
+              {' '}
+              {cats.map((i) => `${i}, `)}
+            </div>
           </div>
 
           {rows.map((data) => (
             <div className="row">
               <Form.Group className="col mx-2">
                 <Form.Label className="h6 my-auto">
-                  Instrument
+                  {space}
                 </Form.Label>
                 <div className="row">
                   <div className="col-8">
