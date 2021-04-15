@@ -436,17 +436,19 @@ export default function CustomFormEntry({
               />
             </Form.Group>
             <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} />
-            <div className="m-3 text-center">
-              <button
-                type="submit"
-                className="btn"
-                disabled={!canSubmit}
-                onClick={handleSubmit}
-                style={{ margin: 'auto' }}
-              >
-                Finish
+            <div className={divClass}>
+              <div className=" m-3 text-center">
+                <button
+                  type="submit"
+                  className="btn"
+                  disabled={!canSubmit}
+                  onClick={handleSubmit}
+                  style={{ margin: 'auto' }}
+                >
+                  Finish
 
-              </button>
+                </button>
+              </div>
             </div>
           </Form.Group>
         </div>

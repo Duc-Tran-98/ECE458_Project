@@ -7,8 +7,28 @@ import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import { gql } from '@apollo/client';
 import DeleteIcon from '@material-ui/icons/Delete';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import Query from './UseQuery';
 import AsyncSuggest from './AsyncSuggest';
+
+const useStyles = makeStyles((theme) => ({
+  textFieldLarge: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '90%',
+  },
+  textFieldMedium: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '40%',
+  },
+  textFieldSmall: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: '20%',
+  },
+}));
 
 export default function CalibratedWith({
   vendor,
@@ -29,6 +49,7 @@ export default function CalibratedWith({
   };
   const [fetched, setFetched] = React.useState(false);
   const [cats, setCats] = React.useState([]);
+  const classes = useStyles();
 
   const getCats = async () => {
     if (vendor !== null && modelNumber !== null) {
@@ -89,6 +110,24 @@ export default function CalibratedWith({
   const [rows, setRows] = React.useState([]);
   const [now, setNow] = React.useState(false);
   // const space = ' ';
+  const inputProps = { disableUnderline: true };
+  const validatedWithHelperText = `Valid categories: ${cats.length > 0 ? cats.map((i) => `${i}, `) : 'NONE'}`;
+  const addButton = (
+    <button
+      type="button"
+      className="btn"
+      onClick={() => {
+        if (cats.length > 0) {
+          const newRows = [...rows, {
+            key: rows.length, tag: null, ok: false, with: null,
+          }];
+          setRows(newRows);
+        }
+      }}
+    >
+      Add Calibrator
+    </button>
+  );
 
   return (
     <>
@@ -96,26 +135,20 @@ export default function CalibratedWith({
       <div className="d-flex justify-content-center w-100">
         <div className="col">
           <div className="row">
-            <div className="col-3">
-              <Button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  if (cats.length > 0) {
-                    const newRows = [...rows, {
-                      key: rows.length, tag: null, ok: false, with: null,
-                    }];
-                    setRows(newRows);
-                  }
-                }}
-              >
-                Add calibrator
-              </Button>
-            </div>
             <div className="col">
-              Valid categories:
-              {' '}
-              {cats.length > 0 ? cats.map((i) => `${i}, `) : 'NONE'}
+              <TextField
+                className={classes.textFieldLarge}
+                margin="normal"
+                value="Calibrated With"
+                disabled
+                InputProps={inputProps}
+                helperText={validatedWithHelperText}
+              />
+            </div>
+            <div className="col" style={{ margin: 'auto 0px' }}>
+              <div className="text-center">
+                {addButton}
+              </div>
             </div>
           </div>
 
@@ -197,9 +230,6 @@ export default function CalibratedWith({
                     </Button>
                   </div>
                 </div>
-                {/* <Form.Label className="h6 my-auto">
-                  {space}
-                </Form.Label> */}
               </Form.Group>
             </div>
           ))}
