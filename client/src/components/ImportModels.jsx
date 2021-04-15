@@ -190,7 +190,7 @@ export default function ImportModels() {
     if (calibrationRequiresApproval) {
       if (typeof (calibrationRequiresApproval) === 'string') {
         const lower = calibrationRequiresApproval.toLowerCase();
-        return lower === 'y' || lower === 'Y';
+        return lower === 'y' || lower === 'yes';
       }
       return false;
     }

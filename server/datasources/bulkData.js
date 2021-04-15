@@ -63,6 +63,7 @@ class BulkDataAPI extends DataSource {
         const comment = currentModel.comment;
         const calibrationFrequency = currentModel.calibrationFrequency;
         const categories = currentModel.categories;
+        const calibratorCategories = currentModel.calibratorCategories;
         const supportLoadBankCalibration = currentModel.supportLoadBankCalibration;
         const supportKlufeCalibration = currentModel.supportKlufeCalibration;
         const requiresCalibrationApproval = currentModel.requiresCalibrationApproval;
@@ -107,8 +108,26 @@ class BulkDataAPI extends DataSource {
             }
           }
         }
+        if (calibratorCategories) {
+          console.log('checking calibrator categories');
+          for (let j = 0; j < calibratorCategories.length; j += 1) {
+            const calibratorCategory = calibratorCategories[j];
+            console.log(`calibratorCategory: ${calibratorCategory}`);
+            if (!catMap.has(calibratorCategory.toLowerCase())) {
+              console.log('not inside map, throwing error');
+              response.message = `ERROR: Calibrator Category ${calibratorCategory} does not exist`;
+              response.success = false;
+              return JSON.stringify(response);
+            }
+            console.log('creating relationship');
+            const modelCategoryId = catMap.get(calibratorCategory.toLowerCase());
+            await this.store.modelCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            }, { transaction: t });
+          }
+        }
       }
-
       // If the execution reaches this line, no errors were thrown.
       // We commit the transaction.
       await t.commit();
