@@ -4,7 +4,7 @@ import CalibratedWith from '../components/CalibratedWith';
 export default function ComponentTest() {
   return (
     <>
-      <CalibratedWith />
+      <CalibratedWith vendor="HPT" modelNumber="loadBank" />
     </>
   );
 }
