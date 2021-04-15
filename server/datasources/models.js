@@ -216,24 +216,25 @@ class ModelAPI extends DataSource {
     if (categories) {
       let includeData;
       if (categories) {
-        includeData = [
-          {
-            model: this.store.modelCategories,
-            as: 'categories',
-            through: 'modelCategoryRelationships',
-            // where: {
-            //   name: categories,
-            // },
-          },
-        ];
+        includeData = [{
+          model: this.store.modelCategories,
+          as: 'categories',
+          through: 'modelCategoryRelationships',
+        }, {
+          model: this.store.modelCategories,
+          as: 'calibratorCategories',
+          through: 'calibratorCategoryRelationships',
+        }];
       } else {
-        includeData = [
-          {
-            model: this.store.modelCategories,
-            as: 'categories',
-            through: 'modelCategoryRelationships',
-          },
-        ];
+        includeData = [{
+          model: this.store.modelCategories,
+          as: 'categories',
+          through: 'modelCategoryRelationships',
+        }, {
+          model: this.store.modelCategories,
+          as: 'calibratorCategories',
+          through: 'calibratorCategoryRelationships',
+        }];
       }
 
       // eslint-disable-next-line prefer-const
@@ -279,6 +280,11 @@ class ModelAPI extends DataSource {
               as: 'mcrtmc',
             },
           ],
+        },
+        {
+          model: this.store.modelCategories,
+          as: 'calibratorCategories',
+          through: 'calibratorCategoryRelationships',
         },
       ];
 
