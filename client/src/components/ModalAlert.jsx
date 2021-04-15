@@ -70,7 +70,14 @@ export function StateLessCloseModal({
     size: PropTypes.string,
   };
   return (
-    <Modal show={show} size={size} centered contentClassName="bg-theme rounded">
+    <Modal
+      show={show}
+      size={size}
+      centered
+      onHide={handleClose}
+      contentClassName="bg-theme rounded"
+      animation={false}
+    >
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
         <IconButton onClick={handleClose} className="close">
@@ -82,6 +89,59 @@ export function StateLessCloseModal({
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
     </Modal>
+  );
+}
+
+export function StateLessCloseButtonModal({
+  handleOpen,
+  handleClose,
+  show,
+  title,
+  children,
+  size = 'xl',
+  buttonText,
+  popOverText,
+}) {
+  // used with simple x button
+  StateLessCloseButtonModal.propTypes = {
+    handleClose: PropTypes.func.isRequired,
+    handleOpen: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+    size: PropTypes.string,
+    buttonText: PropTypes.string.isRequired,
+    popOverText: PropTypes.string.isRequired,
+  };
+  return (
+    <>
+      <MouseOverPopover message={popOverText}>
+        <button
+          type="button"
+          className="btn"
+          onClick={handleOpen}
+        >
+          {buttonText}
+        </button>
+      </MouseOverPopover>
+      <Modal
+        show={show}
+        size={size}
+        centered
+        onHide={handleClose}
+        contentClassName="bg-theme rounded"
+        animation={false}
+        dialogClassName="custom-form-entry-modal"
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
+          <IconButton onClick={handleClose} className="close">
+            <CloseIcon />
+          </IconButton>
+        </Modal.Header>
+        <Modal.Body>{children}</Modal.Body>
+      </Modal>
+    </>
   );
 }
 

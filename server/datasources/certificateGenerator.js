@@ -286,9 +286,9 @@ const generateInfoPage = async () => (
   )
 );
 
-const displayLoadBank = async() => (
-  
-)
+// const displayLoadBank = async() => (
+
+// )
 
 const generateDataTables = () => (
   React.createElement(
@@ -303,9 +303,9 @@ const generateDataTables = () => (
           { style: styles.innerBorder },
           React.createElement(
             View,
-            calEvent.isLoadBank ? displayLoadBank() : null,
-            calEvent.isKlufe ? displayKlufe() : null,
-            calEvent.isCustomForm ? displayCustom() : null,
+            // calEvent.isLoadBank ? displayLoadBank() : null,
+            // calEvent.isKlufe ? displayKlufe() : null,
+            // calEvent.isCustomForm ? displayCustom() : null,
           ),
         ),
       ),
@@ -321,7 +321,7 @@ const generateDataTables = () => (
           { style: styles.innerBorder },
           React.createElement(
             View,
-            calEvent.isLoadBank ? displayLoadBankVoltage() : null,
+            // calEvent.isLoadBank ? displayLoadBankVoltage() : null,
           ),
         ),
       ),

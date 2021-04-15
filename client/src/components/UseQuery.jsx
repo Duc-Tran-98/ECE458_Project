@@ -250,7 +250,6 @@ export function Subscribe({ query, getVariables = () => undefined }) {
     query: PropTypes.object,
     getVariables: PropTypes.func,
   };
-  console.log(getVariables());
   return client.subscribe({
     query,
     variables: getVariables(),

@@ -36,6 +36,8 @@ export default function DetailedModelView() {
   const [fetched, setFetched] = React.useState(false);
   const [update, setUpdate] = React.useState(false);
   const handleFindModel = (response) => {
+    console.log('found model with response: ');
+    console.log(response);
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
     const calibratorCategories = response.calibratorCategories.map((item) => item.name);
@@ -226,7 +228,7 @@ export default function DetailedModelView() {
             </>
           )}
         </div>
-        <div className="col p-3 border border-left border-dark" id="remove-if-empty">
+        <div className="col-lg p-3 border border-left border-dark" id="remove-if-empty">
           <div id="scrollableDiv" style={{ maxHeight: '72vh', overflowY: 'auto', minHeight: '72vh' }}>
             <InfinityScroll
               title="Instances:"

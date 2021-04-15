@@ -76,6 +76,7 @@ export default function InstrumentForm({
   updateCalibrationFrequency,
   id = null,
   editBtnRef = null,
+  hideLongFields = false,
 }) {
   InstrumentForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -89,11 +90,12 @@ export default function InstrumentForm({
     description: PropTypes.string,
     calibrationFrequency: PropTypes.number,
     type: PropTypes.string.isRequired,
-    deleteBtn: PropTypes.node,
-    footer: PropTypes.node,
-    updateCalibrationFrequency: PropTypes.func,
-    id: PropTypes.number,
-    editBtnRef: PropTypes.object,
+    deleteBtn: PropTypes.node, // delete btn to be displayed for edit instrument
+    footer: PropTypes.node, // what to display at the bottom of the form
+    updateCalibrationFrequency: PropTypes.func, // when to update calib frequenc
+    id: PropTypes.number, // id of instrument; used when you want to edit instrument
+    editBtnRef: PropTypes.object, // reference to edit button
+    hideLongFields: PropTypes.bool, // if you want to hide comment and categories
   };
   InstrumentForm.defaultProps = {
     handleFormSubmit: null,
@@ -110,16 +112,16 @@ export default function InstrumentForm({
   const footerBtns = (handleSubmit, isSubmitting) => (
     <div className="row">
       {!viewOnly
-                    && (isSubmitting ? (
-                      <CircularProgress />
-                    ) : (
-                      <CustomButton
-                        onClick={handleSubmit}
-                        divClass="col"
-                        buttonClass="btn text-nowrap"
-                        buttonLabel="Save Changes"
-                      />
-                    ))}
+        && (isSubmitting ? (
+          <CircularProgress />
+        ) : (
+          <CustomButton
+            onClick={handleSubmit}
+            divClass="col"
+            buttonClass="btn text-nowrap"
+            buttonLabel="Save Changes"
+          />
+        ))}
       {viewOnly && (
         <>
           <div className="col me-3">
@@ -292,40 +294,44 @@ export default function InstrumentForm({
               />
             </div>
           </div>
-          <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
-              <Form.Group controlId="formComment">
-                <Form.Label className="h5">Comment</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  name="comment"
-                  value={values.comment}
-                  onChange={handleChange}
-                  disabled={disabled}
-                  isInvalid={!!errors.comment}
-                  error={errors.comment}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.comment}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </div>
-          </div>
-          <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
-              <Form.Label className="h5">Categories</Form.Label>
-              <TagsInput
-                selectedTags={(tags) => {
-                  setFieldValue('categories', tags);
-                }}
-                tags={values.categories}
-                dis={disabled}
-                models={false}
-                isInvalid={false}
-              />
-            </div>
-          </div>
+          {!hideLongFields && (
+            <>
+              <div className="row mx-3 border-top border-dark mt-3">
+                <div className="col mt-3">
+                  <Form.Group controlId="formComment">
+                    <Form.Label className="h5">Comment</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      name="comment"
+                      value={values.comment}
+                      onChange={handleChange}
+                      disabled={disabled}
+                      isInvalid={!!errors.comment}
+                      error={errors.comment}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.comment}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row mx-3 border-top border-dark mt-3">
+                <div className="col mt-3">
+                  <Form.Label className="h5">Categories</Form.Label>
+                  <TagsInput
+                    selectedTags={(tags) => {
+                      setFieldValue('categories', tags);
+                    }}
+                    tags={values.categories}
+                    dis={disabled}
+                    models={false}
+                    isInvalid={false}
+                  />
+                </div>
+              </div>
+            </>
+          )}
           {type === 'create' && (
             <div className="d-flex justify-content-center my-3">
               {isSubmitting ? (
@@ -345,9 +351,9 @@ export default function InstrumentForm({
               </div>
           )}
           {showFooter && editBtnRef !== null && (
-          <Portal container={editBtnRef.current}>
-            {footerBtns(handleSubmit, isSubmitting)}
-          </Portal>
+            <Portal container={editBtnRef.current}>
+              {footerBtns(handleSubmit, isSubmitting)}
+            </Portal>
           )}
         </Form>
       )}

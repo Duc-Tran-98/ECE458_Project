@@ -73,29 +73,44 @@ export default async function GetCalibHistory({
   const GET_ALL_CALIB_HIST = gql`
     query GetCalibHist($id: Int!) {
       getCalibrationEventsByReferenceId(calibrationHistoryIdReference: $id) {
-        date
+        id
+        calibrationHistoryIdReference
         user
+        userFirstName
+        userLastName
+        date
         comment
         fileLocation
         fileName
         loadBankData
         klufeData
-        id
+        customFormData
+        approvalStatus
+        approverUsername
+        approverFirstName
+        approverLastName
+        approvalDate
+        approvalComment
       }
     }
   `;
   const sortRes = (response) => {
     let copyOfRes;
+    copyOfRes = JSON.parse(JSON.stringify(response));
+    if (mostRecent) {
+      copyOfRes = copyOfRes?.filter(
+        (ele) => ele.approvalStatus === 3 || ele.approvalStatus === 1,
+      );
+    }
     if (response) {
       // If response isn't null
-      response.sort((a, b) => {
+      copyOfRes.sort((a, b) => {
         const timeDiff = new Date(b.date) - new Date(a.date);
         if (timeDiff === 0) {
           return b.id - a.id;
         }
         return timeDiff;
       }); // This will sort calib events by date (most recent to least recent)
-      copyOfRes = JSON.parse(JSON.stringify(response));
       if (mostRecent) {
         // If you asked for most recent, return it
         return copyOfRes[0];

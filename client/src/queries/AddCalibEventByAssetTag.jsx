@@ -24,9 +24,9 @@ export default async function AddCalibEventByAssetTag({
     ) {
       addCalibrationEventByAssetTag(
         assetTag: $assetTag
-        comment: $comment
         user: $user
         date: $date
+        comment: $comment
         fileLocation: $fileLocation
         fileName: $fileName
       )
@@ -59,7 +59,7 @@ export default async function AddCalibEventByAssetTag({
       getVariables,
       handleResponse,
       fetchPolicy: 'no-cache',
-      refetchQueries,
+      refetchQueries, // refetch so can change expiration date
     });
   });
 }
