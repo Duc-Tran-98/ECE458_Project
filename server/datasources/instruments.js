@@ -109,11 +109,61 @@ class InstrumentAPI extends DataSource {
             assetTag: instrument.dataValues.assetTag,
             supportLoadBankCalibration:
               model.dataValues.supportLoadBankCalibration,
+            supportKlufeCalibration:
+              model.dataValues.supportKlufeCalibration,
+            supportCustomCalibration:
+              model.dataValues.supportCustomCalibration,
+            requiresCalibrationApproval:
+              model.dataValues.requiresCalibrationApproval,
+            customForm:
+              model.dataValues.customForm,
           };
           return instrumentInfo;
         });
     }
     return instrumentInfo;
+  }
+
+  async getInstrumentsMatchingOneModelCategory({ modelCategories }) {
+    const storeModel = await this.store;
+    this.store = storeModel;
+    console.log(modelCategories);
+    const includeData = [];
+
+    includeData.push({
+      model: this.store.modelCategories,
+      as: 'modelCategories',
+      through: 'modelCategoryRelationships',
+      where: {
+        name: modelCategories,
+      },
+
+    });
+
+    includeData.push({
+      model: this.store.calibrationEvents,
+      as: 'recentCalibration',
+      limit: 1,
+      order: [['date', 'DESC']],
+      where: {
+        approvalStatus: [1, 3],
+      },
+    });
+
+    const instruments = await this.store.instruments.findAll({
+      include: includeData,
+    });
+    const ret = [];
+    for (let i = 0; i < instruments.length; i += 1) {
+      ret.push({
+        vendor: instruments[i].dataValues.vendor,
+        modelNumber: instruments[i].dataValues.modelNumber,
+        assetTag: instruments[i].dataValues.assetTag,
+        calibrationFrequency: instruments[i].dataValues.calibrationFrequency,
+        recentCalibration: instruments[i].dataValues.recentCalibration,
+      });
+    }
+    return ret;
   }
 
   async getInstrumentsWithFilter({
@@ -180,6 +230,9 @@ class InstrumentAPI extends DataSource {
         as: 'recentCalibration',
         limit: 1,
         order: [['date', 'DESC']],
+        where: {
+          approvalStatus: [1, 3],
+        },
       });
 
       // eslint-disable-next-line prefer-const
@@ -292,6 +345,9 @@ class InstrumentAPI extends DataSource {
         as: 'recentCalibration',
         limit: 1,
         order: [['date', 'DESC']],
+        where: {
+          approvalStatus: [1, 3],
+        },
       });
 
       // eslint-disable-next-line prefer-const
@@ -509,6 +565,14 @@ class InstrumentAPI extends DataSource {
             assetTag: instrument.dataValues.assetTag,
             supportLoadBankCalibration:
               model.dataValues.supportLoadBankCalibration,
+            supportKlufeCalibration:
+              model.dataValues.supportKlufeCalibration,
+            supportCustomCalibration:
+              model.dataValues.supportCustomCalibration,
+            requiresCalibrationApproval:
+              model.dataValues.requiresCalibrationApproval,
+            customForm:
+              model.dataValues.customForm,
           };
         });
     }
@@ -545,6 +609,14 @@ class InstrumentAPI extends DataSource {
             assetTag: instrument.dataValues.assetTag,
             supportLoadBankCalibration:
               model.dataValues.supportLoadBankCalibration,
+            supportKlufeCalibration:
+              model.dataValues.supportKlufeCalibration,
+            supportCustomCalibration:
+              model.dataValues.supportCustomCalibration,
+            requiresCalibrationApproval:
+              model.dataValues.requiresCalibrationApproval,
+            customForm:
+              model.dataValues.customForm,
           };
           return instrumentInfo;
         });

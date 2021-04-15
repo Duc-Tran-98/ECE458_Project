@@ -73,23 +73,63 @@ export default async function GetCalibHistory({
   const GET_ALL_CALIB_HIST = gql`
     query GetCalibHist($id: Int!) {
       getCalibrationEventsByReferenceId(calibrationHistoryIdReference: $id) {
-        date
+        id
+        calibrationHistoryIdReference
         user
+        userFirstName
+        userLastName
+        date
         comment
         fileLocation
         fileName
         loadBankData
         klufeData
-        id
+        customFormData
+        approvalStatus
+        approverUsername
+        approverFirstName
+        approverLastName
+        approvalDate
+        approvalComment
       }
     }
   `;
+  const sortRes = (response) => {
+    let copyOfRes;
+    copyOfRes = JSON.parse(JSON.stringify(response));
+    if (mostRecent) {
+      copyOfRes = copyOfRes?.filter(
+        (ele) => ele.approvalStatus === 3 || ele.approvalStatus === 1,
+      );
+    }
+    if (response) {
+      // If response isn't null
+      copyOfRes.sort((a, b) => {
+        const timeDiff = new Date(b.date) - new Date(a.date);
+        if (timeDiff === 0) {
+          return b.id - a.id;
+        }
+        return timeDiff;
+      }); // This will sort calib events by date (most recent to least recent)
+      if (mostRecent) {
+        // If you asked for most recent, return it
+        return copyOfRes[0];
+      }
+    }
+    return copyOfRes;
+  };
   const query = dateOnly ? GET_DATE_HIST : GET_ALL_CALIB_HIST; // Pick which query to use
   const queryName = 'getCalibrationEventsByReferenceId';
   const getVariables = () => ({ id });
   if (handleResponse) { // If you passed a handler, call it
     Query({
-      query, queryName, getVariables, handleResponse,
+      query,
+      queryName,
+      getVariables,
+      handleResponse: (response) => {
+        handleResponse(sortRes(response));
+      },
+      fetchPolicy: 'no-cache',
     });
   } else { // Else, return response
     const response = await QueryAndThen({
@@ -98,20 +138,6 @@ export default async function GetCalibHistory({
       getVariables,
       fetchPolicy: 'no-cache',
     });
-    let copyOfRes;
-    if (response) { // If response isn't null
-      response.sort((a, b) => {
-        const timeDiff = new Date(b.date) - new Date(a.date);
-        if (timeDiff === 0) {
-          return b.id - a.id;
-        }
-        return timeDiff;
-      }); // This will sort calib events by date (most recent to least recent)
-      copyOfRes = JSON.parse(JSON.stringify(response));
-      if (mostRecent) { // If you asked for most recent, return it
-        return copyOfRes[0];
-      }
-    }
-    return copyOfRes;
+    return sortRes(response);
   }
 }

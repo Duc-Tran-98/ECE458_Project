@@ -22,6 +22,7 @@ const schema = Yup.object({
   modelPermission: Yup.bool(),
   instrumentPermission: Yup.bool(),
   calibrationPermission: Yup.bool(),
+  calibrationApproverPermission: Yup.bool(),
 });
 
 const initialValues = {
@@ -34,6 +35,7 @@ const initialValues = {
   modelPermission: false,
   instrumentPermission: false,
   calibrationPermission: false,
+  calibrationApproverPermission: false,
 };
 
 export default function SignUp({ onCreation }) {
@@ -81,6 +83,7 @@ export default function SignUp({ onCreation }) {
       modelPermission,
       instrumentPermission,
       calibrationPermission,
+      calibrationApproverPermission,
     } = values;
     const handleResponse = (response) => {
       if (response.success) {
@@ -101,6 +104,7 @@ export default function SignUp({ onCreation }) {
       modelPermission,
       instrumentPermission,
       calibrationPermission,
+      calibrationApproverPermission,
       handleResponse,
     });
   };
@@ -295,6 +299,27 @@ export default function SignUp({ onCreation }) {
                   <div className="">
                     <strong>
                       {(values.isAdmin || values.calibrationPermission) ? 'Yes' : 'No'}
+                    </strong>
+                  </div>
+                </div>
+                <div className="form-check form-switch mt-3">
+                  <label
+                    className="form-check-label h5"
+                    htmlFor="calibrationApproverPermissionCheck"
+                  >
+                    Calibration Approver Permissions?
+                  </label>
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="calibrationApproverPermissionCheck"
+                    name="calibrationApproverPermission"
+                    checked={values.isAdmin || values.calibrationApproverPermission}
+                    onChange={handleChange}
+                  />
+                  <div className="">
+                    <strong>
+                      {(values.isAdmin || values.calibrationApproverPermission) ? 'Yes' : 'No'}
                     </strong>
                   </div>
                 </div>

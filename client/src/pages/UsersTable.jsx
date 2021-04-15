@@ -91,7 +91,7 @@ export default function UsersTable() {
     {
       field: 'isAdmin',
       headerName: 'Admin',
-      width: 140,
+      width: 120,
       headerClassName: headerClass,
       renderCell: (params) => showTableBoolean(params),
     },
@@ -99,7 +99,7 @@ export default function UsersTable() {
       field: 'modelPermission',
       headerName: 'Model Perm',
       description: 'Model Permission',
-      width: 140,
+      width: 120,
       headerClassName: headerClass,
       renderCell: (params) => showTableBoolean(params),
     },
@@ -107,7 +107,7 @@ export default function UsersTable() {
       field: 'instrumentPermission',
       headerName: 'Inst Perm',
       description: 'Instrument Permission',
-      width: 140,
+      width: 120,
       headerClassName: headerClass,
       renderCell: (params) => showTableBoolean(params),
     },
@@ -115,7 +115,15 @@ export default function UsersTable() {
       field: 'calibrationPermission',
       headerName: 'Calib Perm',
       description: 'Calibration Permission',
-      width: 140,
+      width: 120,
+      headerClassName: headerClass,
+      renderCell: (params) => showTableBoolean(params),
+    },
+    {
+      field: 'calibrationApproverPermission',
+      headerName: 'Approver?',
+      description: 'Calibration Approver Permission',
+      width: 120,
       headerClassName: headerClass,
       renderCell: (params) => showTableBoolean(params),
     },
@@ -144,7 +152,13 @@ export default function UsersTable() {
         }}
         show={showEdit}
       >
-        <ViewUser userName={selectedUser} onDelete={() => { setShowEdit(false); setSelectedUser(''); }} />
+        <ViewUser
+          userName={selectedUser}
+          onDelete={() => {
+            setShowEdit(false);
+            setSelectedUser('');
+          }}
+        />
       </StateLessModal>
       <ServerPaginationGrid
         rowCount={() => CountAllUsers().then((val) => val)}
@@ -158,9 +172,7 @@ export default function UsersTable() {
           setShowEdit(true);
         }}
         shouldUpdate={update}
-        headerElement={(
-          createBtn
-        )}
+        headerElement={createBtn}
         cols={cols}
         initPage={initPage}
         initLimit={initLimit}
@@ -182,12 +194,7 @@ export default function UsersTable() {
             setInitPage(page);
           }
         }}
-        initialOrder={() => {
-          if (orderBy) {
-            return [[orderBy, sortBy]];
-          }
-          return null;
-        }}
+        initialOrder={orderBy ? [[orderBy, sortBy]] : []}
         onSortModelChange={(order, sort) => {
           const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
           if (window.location.search !== searchString) {

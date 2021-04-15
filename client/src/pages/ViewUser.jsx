@@ -26,6 +26,7 @@ export default function ViewUser({ userName, onDelete }) {
     modelPermission: false,
     instrumentPermission: false,
     calibrationPermission: false,
+    calibrationApproverPermission: false,
   });
   const disabledButtons = formState.userName === 'admin' || formState.userName === user.userName;
   React.useEffect(() => {
@@ -45,7 +46,7 @@ export default function ViewUser({ userName, onDelete }) {
     if (formState.userName !== 'admin') {
       if (event.target.name === 'isAdmin') { // isAdmin check changed
         setFormState({
-          ...formState, modelPermission: event.target.checked, instrumentPermission: event.target.checked, calibrationPermission: event.target.checked, isAdmin: event.target.checked,
+          ...formState, modelPermission: event.target.checked, instrumentPermission: event.target.checked, calibrationPermission: event.target.checked, calibrationApproverPermission: event.target.checked, isAdmin: event.target.checked,
         });
       } else if (event.target.name === 'modelPermission') {
         const { instrumentPermission } = formState;

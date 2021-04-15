@@ -21,14 +21,16 @@ export default async function AddCalibEventByAssetTag({
       $comment: String
       $fileLocation: String
       $fileName: String
+      $calibratedBy: [Int]
     ) {
       addCalibrationEventByAssetTag(
         assetTag: $assetTag
-        comment: $comment
         user: $user
         date: $date
+        comment: $comment
         fileLocation: $fileLocation
         fileName: $fileName
+        calibratedBy: $calibratedBy
       )
     }
   `;
@@ -52,6 +54,7 @@ export default async function AddCalibEventByAssetTag({
       comment: entry.comment,
       user: entry.user,
       date: entry.date,
+      calibratedBy: entry.calibratedBy,
     });
     Query({
       query,
@@ -59,7 +62,7 @@ export default async function AddCalibEventByAssetTag({
       getVariables,
       handleResponse,
       fetchPolicy: 'no-cache',
-      refetchQueries,
+      refetchQueries, // refetch so can change expiration date
     });
   });
 }

@@ -102,6 +102,7 @@ class UserAPI extends DataSource {
           modelPermission: false,
           instrumentPermission: false,
           calibrationPermission: false,
+          calibrationApproverPermission: false,
         });
         response.message = 'Created account for user';
         // 1 day = 8.64e7 ms
@@ -147,6 +148,7 @@ class UserAPI extends DataSource {
     userName, isAdmin, modelPermission,
     calibrationPermission,
     instrumentPermission,
+    calibrationApproverPermission,
   }) {
     const response = { success: false, message: '', user: null };
     const storeModel = await this.store;
@@ -155,7 +157,8 @@ class UserAPI extends DataSource {
       response.message = 'ERROR: User does not have permission.';
       return response;
     }
-    if (isAdmin && (!modelPermission || !instrumentPermission || !calibrationPermission)) {
+    // eslint-disable-next-line max-len
+    if (isAdmin && (!modelPermission || !instrumentPermission || !calibrationPermission || !calibrationApproverPermission)) {
       response.message = 'ERROR: admin permission must imply all other permissions';
       return response;
     }
@@ -163,11 +166,16 @@ class UserAPI extends DataSource {
       response.message = 'ERROR: model permission must imply instrument permission';
       return response;
     }
+    if (calibrationApproverPermission && !calibrationPermission) {
+      response.message = 'ERROR: calibration approver permission must imply calibration permission';
+      return response;
+    }
     if (userName !== 'admin') {
       await this.store.users.update({
         isAdmin,
         modelPermission,
         calibrationPermission,
+        calibrationApproverPermission,
         instrumentPermission,
       }, { where: { userName } });
       response.success = true;
@@ -252,6 +260,7 @@ class UserAPI extends DataSource {
     instrumentPermission = false,
     modelPermission = false,
     calibrationPermission = false,
+    calibrationApproverPermission = false,
   }) {
     const response = { message: '', success: false };
     const validation = validateUser({
@@ -280,6 +289,7 @@ class UserAPI extends DataSource {
           instrumentPermission: isAdmin || modelPermission || instrumentPermission,
           modelPermission: isAdmin || modelPermission,
           calibrationPermission: isAdmin || calibrationPermission,
+          calibrationApproverPermission: isAdmin || calibrationApproverPermission,
         });
         response.message = 'Account Created!';
         response.success = true;

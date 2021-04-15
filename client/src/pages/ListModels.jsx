@@ -307,12 +307,7 @@ function ListModels() {
         onPageSizeChange={(page, limit) => {
           updateUrlOnPageChange(page, limit);
         }}
-        initialOrder={() => {
-          if (orderBy) {
-            return [[orderBy, sortBy]];
-          }
-          return null;
-        }}
+        initialOrder={orderBy ? [[orderBy, sortBy]] : []}
         onSortModelChange={(order, sort) => {
           updateUrlOnOrderChange(order, sort);
         }}

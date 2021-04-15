@@ -2,6 +2,11 @@
 // Resolvers define the technique for fetching the types defined in the
 // schema.
 const bcrypt = require('bcryptjs');
+const { PubSub } = require('apollo-server');
+const { withFilter } = require('apollo-server');
+
+const pubsub = new PubSub();
+const triggerWord = 'USER_MODIFIED';
 // For hashing password
 const saltRounds = 10;
 module.exports = {
@@ -107,9 +112,22 @@ module.exports = {
       offset,
       orderBy,
     }),
+    getInstrumentsMatchingOneModelCategory: async (
+      _,
+      {
+        modelCategories,
+      },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getInstrumentsMatchingOneModelCategory({
+      modelCategories,
+    }),
 
     // Calibration Queries
     getAllCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllCalibrationEvents({
+      limit,
+      offset,
+    }),
+    getAllPendingCalibrationEvents: (_, { limit, offset }, { dataSources }) => dataSources.calibrationEventAPI.getAllPendingCalibrationEvents({
       limit,
       offset,
     }),
@@ -129,16 +147,26 @@ module.exports = {
     ) => await dataSources.calibrationEventAPI.getCalibrationEventsByReferenceId({
       calibrationHistoryIdReference,
     }),
-    getAllModelCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.modelAPI.getAllModelCategories({
+    getAllModelCategories: async (
+      _,
+      { limit, offset, orderBy },
+      { dataSources },
+    ) => await dataSources.modelAPI.getAllModelCategories({
       limit,
       offset,
       orderBy,
     }),
-    getAllInstrumentCategories: async (_, { limit, offset, orderBy }, { dataSources }) => await dataSources.instrumentAPI.getAllInstrumentCategories({
+    getAllInstrumentCategories: async (
+      _,
+      { limit, offset, orderBy },
+      { dataSources },
+    ) => await dataSources.instrumentAPI.getAllInstrumentCategories({
       limit,
       offset,
       orderBy,
     }),
+    getCetificateForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getCetificateForInstrument({ assetTag }),
+    getChainOfTruthForInstrument: async (_, { assetTag }, { dataSources }) => await dataSources.calibrationEventAPI.getChainOfTruthForInstrument({ assetTag }),
   },
   Mutation: {
     bulkImportData: async (
@@ -172,6 +200,10 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        calibratorCategories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       },
       { dataSources },
     ) => await dataSources.modelAPI.editModel({
@@ -184,6 +216,10 @@ module.exports = {
       supportKlufeCalibration,
       calibrationFrequency,
       categories,
+      calibratorCategories,
+      requiresCalibrationApproval,
+      supportCustomCalibration,
+      customForm,
     }),
     addModel: async (
       _,
@@ -196,6 +232,10 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        calibratorCategories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       },
       { dataSources },
     ) => {
@@ -208,6 +248,10 @@ module.exports = {
         supportLoadBankCalibration,
         supportKlufeCalibration,
         categories,
+        calibratorCategories,
+        requiresCalibrationApproval,
+        supportCustomCalibration,
+        customForm,
       });
       return response;
     },
@@ -256,6 +300,7 @@ module.exports = {
         comment,
         fileLocation,
         fileName,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -269,6 +314,7 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+          calibratedBy,
         },
       );
       return response;
@@ -276,7 +322,13 @@ module.exports = {
     addCalibrationEventByAssetTag: async (
       _,
       {
-        assetTag, user, date, comment, fileLocation, fileName,
+        assetTag,
+        user,
+        date,
+        comment,
+        fileLocation,
+        fileName,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -288,6 +340,7 @@ module.exports = {
           comment,
           fileLocation,
           fileName,
+          calibratedBy,
         },
       );
       return response;
@@ -295,7 +348,12 @@ module.exports = {
     addLoadBankCalibration: async (
       _,
       {
-        assetTag, user, date, comment, loadBankData,
+        assetTag,
+        user,
+        date,
+        comment,
+        loadBankData,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -306,6 +364,7 @@ module.exports = {
           date,
           comment,
           loadBankData,
+          calibratedBy,
         },
       );
       return response;
@@ -313,7 +372,12 @@ module.exports = {
     addKlufeCalibration: async (
       _,
       {
-        assetTag, user, date, comment, klufeData,
+        assetTag,
+        user,
+        date,
+        comment,
+        klufeData,
+        calibratedBy,
       },
       { dataSources },
     ) => {
@@ -324,6 +388,31 @@ module.exports = {
           date,
           comment,
           klufeData,
+          calibratedBy,
+        },
+      );
+      return response;
+    },
+    addCustomCalibration: async (
+      _,
+      {
+        assetTag,
+        user,
+        date,
+        comment,
+        customFormData,
+        calibratedBy,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.addCustomCalibration(
+        {
+          assetTag,
+          user,
+          date,
+          comment,
+          customFormData,
+          calibratedBy,
         },
       );
       return response;
@@ -331,7 +420,10 @@ module.exports = {
     addCalibrationEventById: async (
       _,
       {
-        calibrationHistoryIdReference, user, date, comment,
+        calibrationHistoryIdReference,
+        user,
+        date,
+        comment,
       },
       { dataSources },
     ) => {
@@ -366,6 +458,30 @@ module.exports = {
           id,
         },
       );
+      return response;
+    },
+    approveCalibrationEvent: async (
+      _,
+      {
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.approveCalibrationEvent({
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      });
+      return response;
+    },
+    rejectCalibrationEvent: async (
+      _,
+      {
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      },
+      { dataSources },
+    ) => {
+      const response = await dataSources.calibrationEventAPI.rejectCalibrationEvent({
+        calibrationEventId, approverId, approvalDate, approvalComment,
+      });
       return response;
     },
     login: async (_, { userName, password }, { dataSources }) => {
@@ -407,6 +523,7 @@ module.exports = {
         instrumentPermission,
         modelPermission,
         calibrationPermission,
+        calibrationApproverPermission,
       },
       { dataSources },
     ) => {
@@ -423,6 +540,7 @@ module.exports = {
         instrumentPermission,
         modelPermission,
         calibrationPermission,
+        calibrationApproverPermission,
       });
       return response;
     },
@@ -434,15 +552,25 @@ module.exports = {
         modelPermission,
         calibrationPermission,
         instrumentPermission,
+        calibrationApproverPermission,
       },
       { dataSources },
-    ) => await dataSources.userAPI.editPermissions({
-      userName,
-      isAdmin,
-      modelPermission,
-      calibrationPermission,
-      instrumentPermission,
-    }),
+    ) => {
+      const response = await dataSources.userAPI.editPermissions({
+        userName,
+        isAdmin,
+        modelPermission,
+        calibrationPermission,
+        instrumentPermission,
+        calibrationApproverPermission,
+      });
+      if (response.user) {
+        pubsub.publish(triggerWord, {
+          userChanged: response.user,
+        });
+      }
+      return response;
+    },
     deleteUser: async (_, { userName }, { dataSources }) => await dataSources.userAPI.deleteUser({ userName }),
     addModelCategory: async (_, { name }, { dataSources }) => {
       const response = await dataSources.modelAPI.addModelCategory({
@@ -547,6 +675,15 @@ module.exports = {
         },
       );
       return response;
+    },
+  },
+  Subscription: {
+    userChanged: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(triggerWord),
+        (payload, variables) => (payload.userChanged.userName === variables.userName)
+        ,
+      ),
     },
   },
 };

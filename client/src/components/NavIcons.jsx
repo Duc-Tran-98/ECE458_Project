@@ -9,6 +9,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import HelpIcon from '@material-ui/icons/Help';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
+import { PopOverFragment } from './PopOver';
 
 export default function NavIcons({ handleSignOut }) {
   NavIcons.propTypes = {
@@ -16,13 +17,13 @@ export default function NavIcons({ handleSignOut }) {
   };
   const history = useHistory();
   const user = useContext(UserContext);
-  const approvalPermissions = true;
-  const { userName } = user;
-  console.log(userName);
+  const approvalPermissions = user.calibrationApproverPermission;
+  // const { userName } = user;
+  // console.log(userName);
   const notifications = 12;
 
   // TODO: Implement handlers for onclick events
-  const handleClick = () => console.log('click');
+  const handleClick = () => history.push('/viewCalibrationArppovals?page=1&limit=25');
 
   return (
     <>
@@ -30,43 +31,51 @@ export default function NavIcons({ handleSignOut }) {
 
         {approvalPermissions && (
           <li className="nav-item">
-            <IconButton
-              aria-label="show 17 new notifications"
-              color="inherit"
-              onClick={handleClick}
-            >
-              <Badge badgeContent={notifications} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <PopOverFragment message="Approvals">
+              <IconButton
+                aria-label="show 17 new notifications"
+                color="inherit"
+                onClick={handleClick}
+              >
+                <Badge badgeContent={notifications} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </PopOverFragment>
           </li>
         )}
         <li className="nav-item">
-          <IconButton
-            aria-label="account of current user"
-            onClick={() => history.push('/userInfo')}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
+          <PopOverFragment message="Profile">
+            <IconButton
+              aria-label="account of current user"
+              onClick={() => history.push('/userInfo')}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+          </PopOverFragment>
         </li>
         <li className="nav-item">
-          <IconButton
-            aria-label="help icon"
-            onClick={() => history.push('/help')}
-            color="inherit"
-          >
-            <HelpIcon />
-          </IconButton>
+          <PopOverFragment message="Help">
+            <IconButton
+              aria-label="help icon"
+              onClick={() => history.push('/help')}
+              color="inherit"
+            >
+              <HelpIcon />
+            </IconButton>
+          </PopOverFragment>
         </li>
         <li className="nav-item">
-          <IconButton
-            aria-label="signout button"
-            onClick={handleSignOut}
-            color="inherit"
-          >
-            <ExitToAppIcon />
-          </IconButton>
+          <PopOverFragment message="Sign Out">
+            <IconButton
+              aria-label="signout button"
+              onClick={handleSignOut}
+              color="inherit"
+            >
+              <ExitToAppIcon />
+            </IconButton>
+          </PopOverFragment>
         </li>
       </ul>
     </>

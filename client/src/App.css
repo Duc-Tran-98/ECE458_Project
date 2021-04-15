@@ -205,3 +205,80 @@ div.MuiPaper-root.MuiPaper-elevation0{
 .MuiDataGrid-row:hover {
   cursor: pointer;
 }
+
+.customFormBox, .customFormWizard {
+  width: 50vw;
+  justify-content: center;
+  margin: auto;
+}
+
+.customFormBox {
+  margin-bottom: 15px;
+  text-align: center;
+  border-radius: 25px;
+  border: 2px solid #14213d;
+  padding: 10px;
+  background-color: whitesmoke;
+  box-shadow: 3px 3px 5px 6px #ccc;
+}
+
+.form-builder-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top:60px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #aebfe5;
+  /* background: linear-gradient(transparent, #aebfe5); */
+  border-radius: 6px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #fedca6;
+  /* background: linear-gradient(transparent, #fedca6); */
+}
+
+#custom-form-header {
+  font-size: 2rem!important;
+}
+
+.customFormWizardLabel {
+  margin-top: 15px!important;
+  margin-bottom: 0px!important;
+}
+
+.customFormWizardInput {
+  margin-top: 0!important;
+  /* margin-bottom: 15px!important; */
+}
+
+.customFormBasicBox {
+  margin: 12px 0px;
+  border-radius: 20px;
+  border: 1px solid #14213d;
+  background-color: whitesmoke;
+  box-shadow: 1px 1px 2px 2px #ccc;
+}
+
+.customFormEntryBox {
+  max-width: 60%;
+  margin: auto;
+  justify-content: center;
+}
+
+.bg-secondary {
+  background-color: #86A0D8!important;
+  color: black!important;
+  font-weight: bolder;
+}
+
+.custom-form-entry-modal {
+  width: 90%;
+}

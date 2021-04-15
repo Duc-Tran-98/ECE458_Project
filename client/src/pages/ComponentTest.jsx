@@ -1,12 +1,10 @@
 import React from 'react';
-import AppBarDemo from '../components/AppBarDemo';
-import NavIcons from '../components/NavIcons';
+import CalibratedWith from '../components/CalibratedWith';
 
 export default function ComponentTest() {
   return (
     <>
-      <AppBarDemo />
-      <NavIcons />
+      <CalibratedWith vendor="HPT" modelNumber="loadBank" />
     </>
   );
 }

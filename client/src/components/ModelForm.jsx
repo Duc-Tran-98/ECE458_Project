@@ -8,6 +8,12 @@ import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Portal } from '@material-ui/core';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import FormLabel from '@material-ui/core/FormLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormLabel from '@material-ui/core/FormLabel';
 import AsyncSuggest from './AsyncSuggest';
 import TagsInput from './TagsInput';
 import UserContext from './UserContext';
@@ -15,6 +21,12 @@ import { CustomButton, CustomInput } from './CustomFormComponents';
 import ModalAlert from './ModalAlert';
 // eslint-disable-next-line import/no-cycle
 import EditModel from './EditModel';
+import CustomFormBuilder from './CustomFormBuilder';
+import AccordionWrapper from './AccordionWrapper';
+
+import {
+  emptyHeader,
+} from './FormContsants';
 
 const GET_MODELS_QUERY = gql`
   query Models {
@@ -64,7 +76,7 @@ const schema = Yup.object({
 });
 
 export default function ModelForm({
-  modelNumber, vendor, calibrationFrequency, comment, description, categories, supportLoadBankCalibration, supportKlufeCalibration, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null,
+  modelNumber, vendor, calibrationFrequency, comment, description, categories, calibratorCategories, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, handleFormSubmit, viewOnly, diffSubmit, deleteBtn, type, editBtnRef = null, customForm,
 }) {
   ModelForm.propTypes = {
     modelNumber: PropTypes.string,
@@ -74,8 +86,12 @@ export default function ModelForm({
     description: PropTypes.string,
     supportLoadBankCalibration: PropTypes.bool,
     supportKlufeCalibration: PropTypes.bool,
+    supportCustomCalibration: PropTypes.bool,
+    requiresCalibrationApproval: PropTypes.bool,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
+    calibratorCategories: PropTypes.array,
     handleFormSubmit: PropTypes.func.isRequired,
     // eslint-disable-next-line react/require-default-props
     viewOnly: PropTypes.bool,
@@ -84,6 +100,7 @@ export default function ModelForm({
     type: PropTypes.string,
     // eslint-disable-next-line react/forbid-prop-types
     editBtnRef: PropTypes.object,
+    customForm: PropTypes.string,
   };
   ModelForm.defaultProps = {
     modelNumber: '',
@@ -93,12 +110,15 @@ export default function ModelForm({
     description: '',
     supportLoadBankCalibration: false,
     supportKlufeCalibration: false,
+    supportCustomCalibration: false,
+    requiresCalibrationApproval: false,
     categories: [],
+    calibratorCategories: [],
     diffSubmit: false,
     deleteBtn: null,
     type: 'create',
+    customForm: '',
   };
-
   const user = useContext(UserContext);
   const showFooter = type === 'edit' && (user.isAdmin || user.modelPermission);
   const cats = [];
@@ -140,6 +160,162 @@ export default function ModelForm({
       )}
     </div>
   );
+  console.log(`customForm prop: ${customForm}`);
+  const initCustomFormState = customForm ? JSON.parse(customForm) : [emptyHeader];
+  console.log('initCustomFormState: ');
+  console.log(initCustomFormState);
+  const [customFormState, setCustomFormState] = React.useState(initCustomFormState);
+  const [shouldUpdateCustomForm, setShouldUpdateCustomForm] = React.useState(0);
+
+  // Helper function to validate custom form
+  // Iterates through form state, assigning errors
+  // If errors exist, then return false, else return true
+  const validCustomForm = () => {
+    console.log('validatingCustomForm');
+    console.log(customFormState);
+    const nextState = customFormState;
+    let errorCount = 0;
+    customFormState.forEach((element, index) => {
+      console.log(element);
+      console.log(index);
+      const isEmpty = element.prompt === '';
+      if (isEmpty) {
+        console.log('found empty field');
+        errorCount += 1;
+        nextState[index] = {
+          ...nextState[index],
+          error: true,
+          helperText: 'Please enter a prompt',
+        };
+      }
+      if (element.type === 'number') {
+        // Validate min/max are valid numerically (if set)
+        console.log('numeric element');
+        console.log(element);
+        if (element.minSet && Number.isNaN(Number.parseFloat(element.min))) {
+          console.log('min is set but not parseable as float');
+          nextState[index] = {
+            ...nextState[index],
+            minError: true,
+            minHelperText: 'Invalid number',
+          };
+          errorCount += 1;
+        }
+        if (element.maxSet && Number.isNaN(Number.parseFloat(element.max))) {
+          console.log('max is set but not parseable as float');
+          nextState[index] = {
+            ...nextState[index],
+            maxError: true,
+            maxHelperText: 'Invalid number',
+          };
+          errorCount += 1;
+        }
+
+        // Validate correct min/max comparison
+        if (element.minSet && element.maxSet) {
+          const minFloat = Number.parseFloat(element.min);
+          const maxFloat = Number.parseFloat(element.max);
+          console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
+          if (!Number.isNaN(minFloat) && !Number.isNaN(maxFloat)) {
+            if (minFloat >= maxFloat) { // TODO: Variance request on min >= max? what if the same?
+              console.log('min and max set, but values comparison incorrect');
+              nextState[index] = {
+                ...nextState[index],
+                maxError: true,
+                maxHelperText: 'Must be greater than min',
+                minError: true,
+                minHelperText: 'Must be less than max',
+              };
+              errorCount += 1;
+            }
+          }
+        }
+      }
+    });
+    console.log(`inspected all fields, errorCount=${errorCount}\nsettingFormState: `);
+    console.log(nextState);
+    setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
+    return errorCount === 0;
+  };
+
+  const getCalibrationType = () => {
+    if (supportCustomCalibration) { return 'customForm'; }
+    if (supportKlufeCalibration) { return 'klufe'; }
+    if (supportLoadBankCalibration) { return 'loadBank'; }
+    return 'standard';
+  };
+  const initCalibrationType = getCalibrationType();
+  // console.log(`initCalibrationType: ${initCalibrationType}`);
+  console.log(getCalibrationType());
+  // Check if errors should be removed from custom form
+  React.useEffect(() => {
+    const nextState = customFormState;
+    customFormState.forEach((element, index) => {
+      if (element.error === true && element.helperText === 'Please enter a prompt') {
+        console.log('found previously field');
+        if (element.prompt !== '') {
+          nextState[index] = {
+            ...nextState[index],
+            error: false,
+            helperText: '',
+          };
+        }
+      }
+    });
+    setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
+  }, [customFormState]);
+
+  // Check if numeric errors should be removed from custom form
+  React.useEffect(() => {
+    const nextState = customFormState;
+    customFormState.forEach((element, index) => {
+      if (element.type === 'number') {
+        if (element.minSet && !Number.isNaN(Number.parseFloat(element.min))) {
+          nextState[index] = {
+            ...nextState[index],
+            minError: false,
+            minHelperText: '',
+          };
+        }
+        if (element.maxSet && !Number.isNaN(Number.parseFloat(element.max))) {
+          nextState[index] = {
+            ...nextState[index],
+            maxError: false,
+            maxHelperText: '',
+          };
+        }
+        if (element.minSet && element.maxSet) {
+          const minFloat = Number.parseFloat(element.min);
+          const maxFloat = Number.parseFloat(element.max);
+          console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
+          if (!Number.isNaN(minFloat) && !Number.isNaN(maxFloat)) {
+            if (minFloat < maxFloat) { // TODO: Variance request on min >= max? what if the same?
+              nextState[index] = {
+                ...nextState[index],
+                maxError: false,
+                maxHelperText: '',
+                minError: false,
+                minHelperText: '',
+              };
+            } else {
+              nextState[index] = {
+                ...nextState[index],
+                maxError: true,
+                maxHelperText: 'Must be greater than min',
+                minError: true,
+                minHelperText: 'Must be less than max',
+              };
+            }
+          }
+        }
+      }
+    });
+    setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
+  }, [customFormState]);
+
   return (
     <Formik
       initialValues={{
@@ -149,14 +325,39 @@ export default function ModelForm({
         comment: comment || '',
         description: description || '',
         categories: categories || [],
-        supportLoadBankCalibration: supportLoadBankCalibration || false,
-        supportKlufeCalibration: supportKlufeCalibration || false,
+        calibratorCategories: calibratorCategories || [],
+        requiresCalibrationApproval: requiresCalibrationApproval || false,
+        calibrationType: initCalibrationType,
       }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
+        // First, validate custom form has no errors
+        console.log('onSubmit in Formik ModelForm');
+        if (values.calibrationType.includes('custom') && !validCustomForm()) {
+          console.log('custom form is invalid, returning');
+          setSubmitting(false);
+          return;
+        }
+        console.log('validated custom form, submitting');
+        const filteredValues = {
+          modelNumber: values.modelNumber,
+          vendor: values.vendor,
+          calibrationFrequency: values.calibrationFrequency,
+          comment: values.comment,
+          description: values.description,
+          categories: values.categories,
+          calibratorCategories: values.calibratorCategories,
+          requiresCalibrationApproval: values.requiresCalibrationApproval,
+          supportCustomCalibration: values.calibrationType.includes('custom'),
+          supportKlufeCalibration: values.calibrationType.includes('klufe'),
+          supportLoadBankCalibration: values.calibrationType.includes('load'),
+          customForm: JSON.stringify(customFormState),
+        };
+        console.log(filteredValues);
+        console.log('setting submit to true');
         setSubmitting(true);
         setTimeout(() => {
-          handleFormSubmit(values, resetForm);
+          handleFormSubmit(filteredValues, resetForm);
           setSubmitting(false);
         }, 500);
       }}
@@ -266,75 +467,27 @@ export default function ModelForm({
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
-              <Form.Group controlId="formComment">
-                <Form.Label className="h5">Comment</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  name="comment"
-                  value={values.comment}
-                  onChange={handleChange}
-                  disabled={disabled}
-                  isInvalid={!!errors.comment}
-                  error={errors.comment}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.comment}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </div>
-            <div className="col mt-3">
-              <div className="form-check form-switch mt-4">
-                <label
-                  className="form-check-label h5 col"
-                  htmlFor="load-bank-support"
-                >
-                  Can model be calibrated as load bank?
-                </label>
-                <Form.Control
-                  className="form-check-input"
-                  type="checkbox"
-                  id="load-bank-support"
-                  name="supportLoadBankCalibration"
-                  checked={values.supportLoadBankCalibration}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <div className="col">
-                  <strong>
-                    {values.supportLoadBankCalibration ? 'Yes' : 'No'}
-                  </strong>
-                </div>
-              </div>
-              <div className="form-check form-switch mt-4">
-                <label
-                  className="form-check-label h5 col"
-                  htmlFor="klufe-support"
-                >
-                  Can model be calibrated with Klufe 5700?
-                </label>
-                <Form.Control
-                  className="form-check-input"
-                  type="checkbox"
-                  id="klufe-support"
-                  name="supportKlufeCalibration"
-                  checked={values.supportKlufeCalibration}
-                  onChange={handleChange}
-                  disabled={disabled}
-                />
-                <div className="col">
-                  <strong>
-                    {values.supportKlufeCalibration ? 'Yes' : 'No'}
-                  </strong>
-                </div>
-              </div>
-            </div>
+            <Form.Group controlId="formComment">
+              <Form.Label className="h5 mt-3">Comment</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                name="comment"
+                value={values.comment}
+                onChange={handleChange}
+                disabled={disabled}
+                isInvalid={!!errors.comment}
+                error={errors.comment}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.comment}
+              </Form.Control.Feedback>
+            </Form.Group>
           </div>
           {/* TODO: Ensure tags are added into the db (not rendering on view)  */}
           <div className="row mx-3 border-top border-dark mt-3">
             <div className="col mt-3">
-              <Form.Label className="h5">Categories</Form.Label>
+              <Form.Label className="h5">Model Categories</Form.Label>
               <TagsInput
                 selectedTags={(tags) => {
                   setFieldValue('categories', tags);
@@ -346,6 +499,58 @@ export default function ModelForm({
               />
             </div>
           </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            <div className="col mt-3">
+              <Form.Label className="h5">Calibrator Categories</Form.Label>
+              <TagsInput
+                selectedTags={(tags) => {
+                  setFieldValue('calibratorCategories', tags);
+                }}
+                tags={values.calibratorCategories}
+                dis={disabled}
+                models
+                special={values.calibrationType}
+                isInvalid={false}
+              />
+            </div>
+          </div>
+          <div className="row mx-3 border-top border-dark mt-3">
+            {/* <Form.Label className="h5 mt-3">Calibration Information</Form.Label> */}
+            <div className="col mt-3">
+              <FormLabel component="legend">Approval</FormLabel>
+              <FormControlLabel
+                control={<Checkbox checked={values.requiresCalibrationApproval} name="requiresCalibrationApproval" onChange={handleChange} color="primary" />}
+                label="Requires Approval"
+                disabled={disabled}
+              />
+            </div>
+            <div className="col-auto mt-3">
+              {/* <Form.Label className="h5">Calibration Mode</Form.Label> */}
+              <FormLabel component="legend">Special Calibration Type</FormLabel>
+              <RadioGroup row aria-label="calibrationType" name="calibrationType" value={values.calibrationType} onChange={handleChange}>
+                <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="None" />
+                <FormControlLabel value="loadBank" disabled={disabled} control={<Radio color="primary" />} label="Load Bank" />
+                <FormControlLabel value="klufe" disabled={disabled} control={<Radio color="primary" />} label="Klufe 5700" />
+                <FormControlLabel value="customForm" disabled={disabled} control={<Radio color="primary" />} label="Custom Form" />
+              </RadioGroup>
+            </div>
+          </div>
+          {values.calibrationType === 'customForm' && (
+            <div className="mt-2">
+              <AccordionWrapper
+                header="Custom Form"
+                defaultExpanded
+                contents={(
+                  <CustomFormBuilder
+                    state={customFormState}
+                    setState={setCustomFormState}
+                    update={shouldUpdateCustomForm}
+                    editEnabled={!disabled}
+                  />
+            )}
+              />
+            </div>
+          )}
           {(typeof viewOnly === 'undefined' || !viewOnly)
             && !diffSubmit
             && type === 'create' && (

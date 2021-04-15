@@ -11,7 +11,11 @@ export default function EditModelQuery({
   calibrationFrequency,
   supportLoadBankCalibration,
   supportKlufeCalibration,
+  supportCustomCalibration,
+  requiresCalibrationApproval,
+  customForm,
   categories,
+  calibratorCategories,
   handleResponse,
 }) {
   EditModelQuery.propTypes = {
@@ -21,11 +25,16 @@ export default function EditModelQuery({
     calibrationFrequency: PropTypes.number.isRequired,
     supportLoadBankCalibration: PropTypes.bool.isRequired,
     supportKlufeCalibration: PropTypes.bool.isRequired,
+    supportCustomCalibration: PropTypes.bool.isRequired,
+    requiresCalibrationApproval: PropTypes.bool.isRequired,
+    customForm: PropTypes.string.isRequired,
     comment: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     handleResponse: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     categories: PropTypes.array.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    calibratorCategories: PropTypes.array.isRequired,
   };
   const EDIT_MODEL = gql`
         mutation EditModel(
@@ -36,7 +45,11 @@ export default function EditModelQuery({
             $calibrationFrequency: Int
             $supportLoadBankCalibration: Boolean!
             $supportKlufeCalibration: Boolean!
+            $requiresCalibrationApproval: Boolean!
+            $supportCustomCalibration: Boolean!
+            $customForm: String
             $categories: [String]
+            $calibratorCategories: [String]
             $id: ID!
         ) {
             editModel(
@@ -47,7 +60,11 @@ export default function EditModelQuery({
             calibrationFrequency: $calibrationFrequency
             supportLoadBankCalibration: $supportLoadBankCalibration
             supportKlufeCalibration: $supportKlufeCalibration
+            requiresCalibrationApproval: $requiresCalibrationApproval
+            supportCustomCalibration: $supportCustomCalibration
+            customForm: $customForm
             categories: $categories
+            calibratorCategories: $calibratorCategories
             id: $id
             ){
               message
@@ -62,8 +79,14 @@ export default function EditModelQuery({
                 categories {
                   name
                 }
+                calibratorCategories {
+                  name
+                }
                 supportLoadBankCalibration
                 supportKlufeCalibration
+                supportCustomCalibration
+                requiresCalibrationApproval
+                customForm
               }
             }
         }
@@ -85,10 +108,14 @@ export default function EditModelQuery({
     calibrationFrequency,
     supportLoadBankCalibration,
     supportKlufeCalibration,
+    supportCustomCalibration,
+    requiresCalibrationApproval,
+    customForm,
     id,
     modelNumber,
     vendor,
     categories,
+    calibratorCategories,
   });
   Query({
     query,

@@ -26,6 +26,7 @@ export default function GetUser({ userName, includeAll = false, fetchPolicy = nu
         userName
         modelPermission
         calibrationPermission
+        calibrationApproverPermission
         instrumentPermission
       }
     }
@@ -70,6 +71,7 @@ export function GetAllUsers({ limit, offset, orderBy }) {
         modelPermission
         calibrationPermission
         instrumentPermission
+        calibrationApproverPermission
       }
     }
   `;

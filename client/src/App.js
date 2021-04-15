@@ -24,6 +24,7 @@ import UserInfo from './pages/UserInfo';
 import 'react-toastify/dist/ReactToastify.css';
 import './css/customToast.css';
 import { setAuthHeader } from './components/UseQuery';
+import CalibrationApproval from './pages/CalibrationApproval';
 
 function App() {
   const history = useHistory();
@@ -87,6 +88,9 @@ function App() {
           <Switch>
             <Route path="/test">
               <ComponentTest />
+            </Route>
+            <Route path="/viewCalibrationArppovals">
+              {loggedIn ? <CalibrationApproval /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route exact path="/">
               {loggedIn ? <Redirect to="/viewModels?page=1&limit=25" /> : <Login handleLogin={handleLogin} />}
