@@ -92,6 +92,59 @@ export function StateLessCloseModal({
   );
 }
 
+export function StateLessCloseButtonModal({
+  handleOpen,
+  handleClose,
+  show,
+  title,
+  children,
+  size = 'xl',
+  buttonText,
+  popOverText,
+}) {
+  // used with simple x button
+  StateLessCloseButtonModal.propTypes = {
+    handleClose: PropTypes.func.isRequired,
+    handleOpen: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+    size: PropTypes.string,
+    buttonText: PropTypes.string.isRequired,
+    popOverText: PropTypes.string.isRequired,
+  };
+  return (
+    <>
+      <MouseOverPopover message={popOverText}>
+        <button
+          type="button"
+          className="btn"
+          onClick={handleOpen}
+        >
+          {buttonText}
+        </button>
+      </MouseOverPopover>
+      <Modal
+        show={show}
+        size={size}
+        centered
+        onHide={handleClose}
+        contentClassName="bg-theme rounded"
+        animation={false}
+        dialogClassName="custom-form-entry-modal"
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
+          <IconButton onClick={handleClose} className="close">
+            <CloseIcon />
+          </IconButton>
+        </Modal.Header>
+        <Modal.Body>{children}</Modal.Body>
+      </Modal>
+    </>
+  );
+}
+
 function ModalAlert({ // use this modal if you're fine with modal controling its own show state
   title, children, footer, width = 'modal-100w', btnText, btnClass = 'btn', altCloseBtnId = null, popOverText = '', onShow = null, altBtn = null, altBtnId = null, onClose = () => undefined,
 }) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
+import Form from 'react-bootstrap/Form';
 import { makeStyles } from '@material-ui/core/styles';
 import { toast } from 'react-toastify';
 import AddCustomFormCalibration from '../queries/AddCustomFormCalibration';
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CustomFormEntry({
-  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish,
+  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
@@ -58,6 +59,7 @@ export default function CustomFormEntry({
     serialNumber: PropTypes.string,
     assetTag: PropTypes.number,
     onFinish: PropTypes.func,
+    handleClose: PropTypes.func,
   };
   CustomFormEntry.defaultProps = {
     modelNumber: '',
@@ -65,6 +67,7 @@ export default function CustomFormEntry({
     serialNumber: '',
     assetTag: 0,
     onFinish: null,
+    handleClose: null,
   };
 
   const user = React.useContext(UserContext);
@@ -73,9 +76,11 @@ export default function CustomFormEntry({
   const [state, setState] = React.useState(steps);
   const [formSteps, setFormSteps] = React.useState(null);
   const [update, setUpdate] = React.useState(0);
+  const [checkErrors, setCheckErrors] = React.useState(0);
+  const [shouldValidate, setShouldValidate] = React.useState(false);
 
   const inputProps = { disableUnderline: true };
-  const divClass = 'border-top border-dark mt-3';
+  const divClass = 'border-top border-dark mt-4';
 
   const handleResponse = (response) => {
     console.log(response);
@@ -85,7 +90,138 @@ export default function CustomFormEntry({
   };
   const today = new Date().toISOString().split('T')[0]; // TODO: Can this be set?
 
+  const validForm = () => {
+    let errorCount = 0;
+    const nextState = state;
+    state.forEach((element, index) => {
+      switch (element.type) {
+        case 'number':
+          // Validate number present
+          if (element.value === '' || Number.isNaN(parseFloat(element.value))) {
+            errorCount += 1;
+            nextState[index] = {
+              ...nextState[index],
+              error: true,
+              helperText: 'Please enter number',
+            };
+          } else {
+            // console.log(`minSet: ${element.minSet}\tminSet: ${element.maxSet}\telement.value: ${element.value}\tparseFloat(element.value): ${parseFloat(element.value)}`);
+            if (element.minSet && parseFloat(element.value) < element.min) {
+              errorCount += 1;
+              nextState[index] = {
+                ...nextState[index],
+                error: true,
+                helperText: 'Must be greater than min',
+              };
+            }
+            if (element.maxSet && parseFloat(element.value) > element.max) {
+              errorCount += 1;
+              nextState[index] = {
+                ...nextState[index],
+                error: true,
+                helperText: 'Must be less than max',
+              };
+            }
+          }
+          break;
+        case 'text':
+          // Validate text present
+          if (element.value === '') {
+            errorCount += 1;
+            nextState[index] = {
+              ...nextState[index],
+              error: true,
+              helperText: 'Please make observation',
+            };
+          }
+
+          break;
+        default:
+          break;
+      }
+    });
+    setState(nextState);
+    setUpdate(update + 1);
+    return errorCount === 0;
+  };
+
+  // Effect to remove errors and helper text as they are resolved
+  React.useEffect(() => {
+    if (shouldValidate) {
+      const nextState = state;
+      let errorCount = 0;
+      state.forEach((element, index) => {
+        switch (element.type) {
+          case 'number':
+          // Validate number present
+            if (element.value !== '' && !Number.isNaN(parseFloat(element.value))) {
+              nextState[index] = {
+                ...nextState[index],
+                error: false,
+                helperText: '',
+              };
+              if (element.minSet) {
+                if (parseFloat(element.value) >= element.min) {
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: false,
+                    helperText: '',
+                  };
+                } else {
+                  errorCount += 1;
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: true,
+                    helperText: 'Must be greater than min',
+                  };
+                  break;
+                }
+              }
+              if (element.maxSet) {
+                if (parseFloat(element.value) <= element.max) {
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: false,
+                    helperText: '',
+                  };
+                } else {
+                  errorCount += 1;
+                  nextState[index] = {
+                    ...nextState[index],
+                    error: true,
+                    helperText: 'Must be less than max',
+                  };
+                }
+              }
+            }
+            break;
+          case 'text':
+          // Validate text present
+            if (element.error && element.value !== '') {
+              nextState[index] = {
+                ...nextState[index],
+                error: false,
+                helperText: '',
+              };
+            }
+            break;
+          default:
+            break;
+        }
+      });
+      setState(nextState);
+      if (errorCount > 0) {
+        setUpdate(update + 1);
+      }
+    }
+  }, [checkErrors]);
+
+  // TODO: Add handle close on modal
   const handleSubmit = () => {
+    if (!validForm()) {
+      toast.error('Invalid fields in form, please fix before submitting', { toastId: -87 });
+      return;
+    }
     console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
     console.log(JSON.stringify(state));
     AddCustomFormCalibration({
@@ -96,6 +232,7 @@ export default function CustomFormEntry({
       customFormData: JSON.stringify(state),
       handleResponse,
     });
+    handleClose();
     onFinish();
   };
   const canSubmit = true;
@@ -106,8 +243,10 @@ export default function CustomFormEntry({
       ...nextState[index],
       value: e.target.value,
     };
+    setShouldValidate(true);
     setState(state);
     setUpdate(update + 1);
+    setCheckErrors(checkErrors + 1);
   };
 
   const getNumberLabel = (step) => {
@@ -152,7 +291,7 @@ export default function CustomFormEntry({
 
   const numberStep = (step, index) => (
     <div className={`${divClass} row`}>
-      <div className="col-auto">
+      <div className="col">
         <TextField
           className={classes.textFieldLarge}
           margin="normal"
@@ -162,21 +301,24 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col">
-        <TextField
-          className={classes.textFieldSmall}
-          margin="normal"
+      <div className="col" style={{ margin: 'auto 0px' }}>
+        <Form.Control
           type="number"
-          onChange={(e) => handleChange(e, index)}
+          name="comment"
           value={state[index].value}
-          variant="outlined"
+          onChange={(e) => handleChange(e, index)}
+          isInvalid={!!state[index].error}
+          error={state[index].error}
         />
+        <Form.Control.Feedback type="invalid">
+          {state[index].helperText}
+        </Form.Control.Feedback>
       </div>
     </div>
   );
   const textStep = (step, index) => (
     <div className={`${divClass} row`}>
-      <div className="col-auto">
+      <div className="col">
         <TextField
           className={classes.textFieldLarge}
           margin="normal"
@@ -185,17 +327,20 @@ export default function CustomFormEntry({
           InputProps={inputProps}
         />
       </div>
-      <div className="col">
-        <TextField
-          id="margin-normal"
-          className={classes.textFieldMedium}
-          margin="normal"
+      <div className="col mt-3" style={{ margin: 'auto 0px' }}>
+        <Form.Control
           type="text"
-          name="prompt"
-          onChange={(e) => handleChange(e, index)}
+          name="comment"
+          as="textarea"
+          rows={3}
           value={state[index].value}
-          variant="outlined"
+          onChange={(e) => handleChange(e, index)}
+          isInvalid={!!state[index].error}
+          error={state[index].error}
         />
+        <Form.Control.Feedback type="invalid">
+          {state[index].helperText}
+        </Form.Control.Feedback>
       </div>
     </div>
   );
@@ -219,9 +364,22 @@ export default function CustomFormEntry({
   }, [state, update]);
 
   return (
-    <div>
+    <div className="customFormEntryBox">
       {formSteps}
-      {onFinish !== null && <button type="submit" className="btn" disabled={!canSubmit} onClick={handleSubmit}>Finish</button>}
+      {onFinish !== null && (
+      <div className="m-3 text-center">
+        <button
+          type="submit"
+          className="btn"
+          disabled={!canSubmit}
+          onClick={handleSubmit}
+          style={{ margin: 'auto' }}
+        >
+          Finish
+
+        </button>
+      </div>
+      )}
     </div>
   );
 }
