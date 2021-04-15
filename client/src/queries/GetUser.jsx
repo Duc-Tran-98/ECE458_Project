@@ -28,6 +28,7 @@ export default function GetUser({ userName, includeAll = false, fetchPolicy = nu
         calibrationPermission
         calibrationApproverPermission
         instrumentPermission
+        id
       }
     }
   `;

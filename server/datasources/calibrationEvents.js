@@ -503,7 +503,7 @@ class CalibrationEventAPI extends DataSource {
     approvalDate,
     approvalComment,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (!this.checkApprovalPermission()) {
       response.message = 'ERROR: User does not have permission.';
       return JSON.stringify(response);
@@ -531,6 +531,7 @@ class CalibrationEventAPI extends DataSource {
       },
     );
     response.message = 'Calibration Event Approved';
+    response.success = true;
     return JSON.stringify(response);
   }
 
@@ -540,7 +541,7 @@ class CalibrationEventAPI extends DataSource {
     approvalDate,
     approvalComment,
   }) {
-    const response = { message: '' };
+    const response = { message: '', success: false };
     if (!this.checkApprovalPermission()) {
       response.message = 'ERROR: User does not have permission.';
       return JSON.stringify(response);
@@ -568,6 +569,7 @@ class CalibrationEventAPI extends DataSource {
       },
     );
     response.message = 'Calibration Event Rejected';
+    response.success = true;
     return JSON.stringify(response);
   }
 

@@ -10,7 +10,6 @@ import DetailedCalibrationView from '../components/DetailedCalibrationView';
 import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
 
 export default function CalibrationApprovalPage() {
-  // eslint-disable-next-line no-unused-vars
   const user = React.useContext(UserContext);
   const history = useHistory();
   const queryString = window.location.search;
@@ -80,7 +79,7 @@ export default function CalibrationApprovalPage() {
         title="Approval Request"
         size="xl"
       >
-        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} />}
+        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} approverId={user.id} />}
       </StateLessCloseModal>
       <ServerPaginationGrid
         shouldUpdate={update}

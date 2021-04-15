@@ -1,18 +1,24 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import InstrumentForm from './InstrumentForm';
 import MouseOverPopover from './PopOver';
 import TableLoadBank from './TableLoadBank';
 import KlufeDetailedView from './KlufeDetailedView';
+import ApproveCalibEvent from '../queries/ApproveCalibEvent';
+import RejectCalibEvent from '../queries/RejectCalibEvent';
 
-export default function DetailedCalibrationView({ selectedRow, isForInstrumentPage = false }) {
+export default function DetailedCalibrationView({ selectedRow, isForInstrumentPage = false, approverId }) {
   DetailedCalibrationView.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     selectedRow: PropTypes.object.isRequired, // the selected row is the calibration event
     // eslint-disable-next-line react/require-default-props
     isForInstrumentPage: PropTypes.bool, // if true, this will make the component hide instrument info and approve/deny buttons
+    approverId: PropTypes.string.isRequired,
   };
+  const [approvalComment, setApprovalComment] = React.useState('');
   const getCalibrationType = () => {
     if (selectedRow.loadBankData) {
       return 'Load Bank';
@@ -24,6 +30,18 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
       return 'Custom';
     }
     return 'Plain';
+  };
+  const approvalDate = new Date().toISOString().split('T')[0];
+  const handleResponse = (response) => {
+    if (response.success) {
+      toast.success(response.message, {
+        toastId: Math.random(),
+      });
+    } else {
+      toast.error(response.message, {
+        toastId: Math.random(),
+      });
+    }
   };
   return (
     <>
@@ -120,19 +138,43 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
                 rows={3}
                 name="comment"
                 id="approvalCommentInput"
+                value={approvalComment}
+                onChange={(e) => {
+                  setApprovalComment(e.target.value);
+                }}
               />
             </div>
           </div>
           <div className="row mx-3 mt-3 pt-3 border-top border-dark">
             <div className="col d-flex justify-content-center">
               <MouseOverPopover message="Approve this calibration event">
-                <button type="button" className="btn">
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    ApproveCalibEvent({
+                      handleResponse, calibrationEventId: selectedRow.id, approverId, approvalDate, approvalComment,
+                    });
+                  }}
+                >
                   Approve
                 </button>
               </MouseOverPopover>
               <span className="mx-3" />
               <MouseOverPopover message="Deny this calibration event">
-                <button type="button" className="btn btn-delete">
+                <button
+                  type="button"
+                  className="btn btn-delete"
+                  onClick={() => {
+                    RejectCalibEvent({
+                      handleResponse,
+                      calibrationEventId: selectedRow.id,
+                      approverId,
+                      approvalDate,
+                      approvalComment,
+                    });
+                  }}
+                >
                   Deny
                 </button>
               </MouseOverPopover>
