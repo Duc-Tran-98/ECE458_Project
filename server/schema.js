@@ -325,6 +325,8 @@ const typeDefs = gql`
     description: String!
     comment: String
     categories: [String]
+    calibratorCategories: [String]
+    requiresCalibrationApproval: Boolean!
     supportLoadBankCalibration: Boolean!
     supportKlufeCalibration: Boolean!
     calibrationFrequency: Int
