@@ -9,7 +9,9 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line no-unused-vars
 import axios from 'axios';
 import MouseOverPopover from './PopOver';
+import CalibratedWith from './CalibratedWith';
 import UserContext from './UserContext';
+// eslint-disable-next-line no-unused-vars
 import AssetChips from './AssetChips';
 
 export default function CalibrationRow({
@@ -28,6 +30,8 @@ export default function CalibrationRow({
   showSaveButton,
   onSaveClick = () => undefined,
   showDeleteBtn = true,
+  vendor,
+  modelNumber,
 }) {
   CalibrationRow.propTypes = {
     handleDelete: PropTypes.func,
@@ -47,11 +51,15 @@ export default function CalibrationRow({
     onSaveClick: PropTypes.func, // what to call when save button clicked
     // eslint-disable-next-line react/require-default-props
     showDeleteBtn: PropTypes.bool,
+    vendor: PropTypes.string,
+    modelNumber: PropTypes.string,
   };
   CalibrationRow.defaultProps = {
     file: null,
     handleDelete: null,
     showSaveButton: false,
+    vendor: '',
+    modelNumber: '',
   };
   const user = React.useContext(UserContext);
   const { viewOnly } = entry;
@@ -133,11 +141,21 @@ export default function CalibrationRow({
             </Form.Group>
           </div>
         </div>
-        <div className="row w-100 mx-auto">
+        {/* <div className="row w-100 mx-auto">
           <AssetChips onChangeCalib={onChangeCalibRow} entry={entry} />
-        </div>
+        </div> */}
         <div className="row w-100 mx-auto">
-          <div className="col-4">
+          <CalibratedWith vendor={vendor} modelNumber={modelNumber} />
+        </div>
+        <div
+          className="row w-100 mx-auto"
+          style={{
+            paddingTop: 5,
+          }}
+        >
+          <div
+            className="col-4"
+          >
             {!viewOnly && (
               <MouseOverPopover message="Upload a JPG, PNG, GIF, PDF, or XLSX file">
                 {/* add file validation/display selected files with the onInput handler */}

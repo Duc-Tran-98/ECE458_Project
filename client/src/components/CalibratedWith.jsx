@@ -1,3 +1,4 @@
+/* eslint-disable react/style-prop-object */
 /* eslint-disable react/require-default-props */
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect } from 'react';
@@ -82,7 +83,7 @@ export default function CalibratedWith({
 
   const [rows, setRows] = React.useState([]);
   const [now, setNow] = React.useState(false);
-  const space = ' ';
+  // const space = ' ';
 
   return (
     <>
@@ -95,10 +96,11 @@ export default function CalibratedWith({
                 type="button"
                 className="btn"
                 onClick={() => {
-                  setRows([...rows, {
-                    key: rows.length, tag: null, ok: false, with: null,
-                  }]);
-                  console.log(rows);
+                  if (cats.length > 0) {
+                    setRows([...rows, {
+                      key: rows.length, tag: null, ok: false, with: null,
+                    }]);
+                  }
                 }}
               >
                 Add calibrator
@@ -107,17 +109,24 @@ export default function CalibratedWith({
             <div className="col">
               Valid categories:
               {' '}
-              {cats.map((i) => `${i}, `)}
+              {cats.length > 0 ? cats.map((i) => `${i}, `) : 'NONE'}
             </div>
           </div>
 
           {rows.map((data) => (
             <div className="row">
               <Form.Group className="col mx-2">
-                <Form.Label className="h6 my-auto">
+                {/* <Form.Label className="h6 my-auto">
                   {space}
-                </Form.Label>
-                <div className="row">
+                </Form.Label> */}
+                <div
+                  className="row "
+                  style={{
+                    paddingTop: 3,
+                    paddingBottom: 3,
+                    paddingLeft: 0,
+                  }}
+                >
                   <div className="col-8">
                     <AsyncSuggest
                       query={gql`
@@ -165,6 +174,9 @@ export default function CalibratedWith({
                     </Button>
                   </div>
                 </div>
+                {/* <Form.Label className="h6 my-auto">
+                  {space}
+                </Form.Label> */}
               </Form.Group>
             </div>
           ))}

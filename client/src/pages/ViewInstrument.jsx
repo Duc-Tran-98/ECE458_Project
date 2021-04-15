@@ -325,6 +325,8 @@ export default function DetailedInstrumentView() {
             handleClose={() => setShow(false)}
           >
             <CalibrationTable
+              vendor={formState.vendor}
+              modelNumber={formState.modelNumber}
               rows={calibHist.filter((ele) => !ele.viewOnly)}
               deleteRow={deleteRow}
               onChangeCalibRow={onChangeCalibRow}
