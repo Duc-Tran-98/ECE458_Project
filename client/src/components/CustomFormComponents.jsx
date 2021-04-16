@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 const customFormBoxClass = 'customFormBasicBox';
 
 export function CustomHeaderInput({
-  header, index, handleChange, handleDelete, showDelete, addButton, autoFocus, error, helperText,
+  header, index, handleChange, handleDelete, showDelete, addButton, autoFocus, error, helperText, moveUpButton, moveDownButton, showUp, showDown,
 }) {
   CustomHeaderInput.propTypes = {
     header: PropTypes.string.isRequired,
@@ -98,10 +98,18 @@ export function CustomHeaderInput({
     autoFocus: PropTypes.bool.isRequired,
     error: PropTypes.bool.isRequired,
     helperText: PropTypes.string.isRequired,
+    moveUpButton: PropTypes.node.isRequired,
+    moveDownButton: PropTypes.node.isRequired,
+    showUp: PropTypes.bool.isRequired,
+    showDown: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
     <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showUp && moveUpButton}
+        {showDown && moveDownButton}
+      </div>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
@@ -126,7 +134,7 @@ export function CustomHeaderInput({
 }
 
 export function CustomUserPromptInput({
-  userPrompt, index, handleChange, handleDelete, showDelete, addButton, autoFocus, error, helperText,
+  userPrompt, index, handleChange, handleDelete, showDelete, addButton, autoFocus, error, helperText, moveUpButton, moveDownButton, showUp, showDown,
 }) {
   CustomUserPromptInput.propTypes = {
     userPrompt: PropTypes.string.isRequired,
@@ -138,10 +146,18 @@ export function CustomUserPromptInput({
     autoFocus: PropTypes.bool.isRequired,
     error: PropTypes.bool.isRequired,
     helperText: PropTypes.string.isRequired,
+    moveUpButton: PropTypes.node.isRequired,
+    moveDownButton: PropTypes.node.isRequired,
+    showUp: PropTypes.bool.isRequired,
+    showDown: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
     <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showUp && moveUpButton}
+        {showDown && moveDownButton}
+      </div>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
@@ -167,7 +183,7 @@ export function CustomUserPromptInput({
 }
 
 export function CustomNumericInput({
-  prompt, min, max, minSet, maxSet, minError, minHelperText, maxError, maxHelperText, handleChecked, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
+  prompt, min, max, minSet, maxSet, minError, minHelperText, maxError, maxHelperText, handleChecked, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText, moveUpButton, moveDownButton, showUp, showDown,
 }) {
   CustomNumericInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -188,11 +204,18 @@ export function CustomNumericInput({
     autoFocus: PropTypes.bool.isRequired,
     error: PropTypes.bool.isRequired,
     helperText: PropTypes.string.isRequired,
-
+    moveUpButton: PropTypes.node.isRequired,
+    moveDownButton: PropTypes.node.isRequired,
+    showUp: PropTypes.bool.isRequired,
+    showDown: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
   return (
     <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showUp && moveUpButton}
+        {showDown && moveDownButton}
+      </div>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
@@ -279,7 +302,7 @@ export function CustomNumericInput({
 }
 
 export function CustomTextInput({
-  prompt, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText,
+  prompt, handleChange, index, handleDelete, showDelete, addButton, autoFocus, error, helperText, moveUpButton, moveDownButton, showUp, showDown,
 }) {
   CustomTextInput.propTypes = {
     prompt: PropTypes.string.isRequired,
@@ -291,12 +314,19 @@ export function CustomTextInput({
     autoFocus: PropTypes.bool.isRequired,
     error: PropTypes.bool.isRequired,
     helperText: PropTypes.string.isRequired,
-
+    moveUpButton: PropTypes.node.isRequired,
+    moveDownButton: PropTypes.node.isRequired,
+    showUp: PropTypes.bool.isRequired,
+    showDown: PropTypes.bool.isRequired,
   };
   const classes = useStyles();
 
   return (
     <div className={`${customFormBoxClass} row`}>
+      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+        {showUp && moveUpButton}
+        {showDown && moveDownButton}
+      </div>
       <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
