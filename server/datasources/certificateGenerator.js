@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable max-len */
 /* eslint-disable no-unused-vars */
 // localhost:4001/api/certificate?calibrationID=10&chainOfTruth=true
@@ -20,6 +21,7 @@ createDB().then(() => {
   store = createStore(false);
 });
 
+let calEvents;
 let calEvent;
 
 const loadLevels = ['No Load', '1 x 100A', '2 x 100A', '3 x 100A', '4 x 100A', '5 x 100A', '6 x 100A', '7 x 100A', '8 x 100A', '9 x 100A', '10 x 100A', '10 x 100A + 1 x 20A', '10 x 100A + 2 x 20A', '10 x 100A + 3 x 20A', '10 x 100A + 4 x 20A', '10 x 100A + 5 x 20A', '10 x 100A + 5 x 20A + 1 x 1A', '10 x 100A + 5 x 20A + 2 x 1A', '10 x 100A + 5 x 20A + 3 x 1A', '10 x 100A + 5 x 20A + 4 x 1A', '10 x 100A + 5 x 20A + 5 x 1A', '10 x 100A + 5 x 20A + 6 x 1A', '10 x 100A + 5 x 20A + 7 x 1A', '10 x 100A + 5 x 20A + 8 x 1A', '10 x 100A + 5 x 20A + 9 x 1A', '10 x 100A + 5 x 20A + 10 x 1A', '10 x 100A + 5 x 20A + 11 x 1A', '10 x 100A + 5 x 20A + 12 x 1A', '10 x 100A + 5 x 20A + 13 x 1A', '10 x 100A + 5 x 20A + 14 x 1A', '10 x 100A + 5 x 20A + 15 x 1A', '10 x 100A + 5 x 20A + 16 x 1A', '10 x 100A + 5 x 20A + 17 x 1A', '10 x 100A + 5 x 20A + 18 x 1A', '10 x 100A + 5 x 20A + 19 x 1A', '10 x 100A + 5 x 20A + 20 x 1A'];
@@ -120,8 +122,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   tableCell: {
-    margin: 'auto',
-    marginTop: 5,
+    margin: 5,
     fontSize: 8,
   },
   lbTableCol: {
@@ -767,12 +768,11 @@ const displayCustomForm = () => {
   const pageDatas = [];
   let pageData = [];
   let counter = 0;
-  const rowsPerPage = 2;
+  const rowsPerPage = 18;
 
   // Split the JSON into page sized groups
   for (let i = 0; i < parsedFormData.length; i += 1) {
     const currentElement = parsedFormData[i];
-    console.log('hi', currentElement);
     if (currentElement.type === 'number' || currentElement.type === 'text') {
       pageData.push(currentElement);
       counter += 1;
@@ -789,63 +789,119 @@ const displayCustomForm = () => {
     pageDatas.push(pageData);
   }
 
-  console.log(pageDatas);
-
   // Make a page from each group
   for (let pageNum = 0; pageNum < pageDatas.length; pageNum += 1) {
     const data = pageDatas[pageNum];
     const tableRows = [];
     // Make the table for this page
+    const tableHeader = React.createElement(
+      View,
+      { style: styles.table },
+      React.createElement(
+        View,
+        { style: styles.tableRow },
+        React.createElement(
+          View,
+          { style: styles.customFormTableColPrompt },
+          React.createElement(
+            Text,
+            { style: styles.tableCell },
+            'Label',
+          ),
+        ),
+        React.createElement(
+          View,
+          { style: styles.customFormTableColRegular },
+          React.createElement(
+            Text,
+            { style: styles.tableCell },
+            'Value',
+          ),
+        ),
+        React.createElement(
+          View,
+          { style: styles.customFormTableColRegular },
+          React.createElement(
+            Text,
+            { style: styles.tableCell },
+            'Min',
+          ),
+        ),
+        React.createElement(
+          View,
+          { style: styles.customFormTableColRegular },
+          React.createElement(
+            Text,
+            { style: styles.tableCell },
+            'Max',
+          ),
+        ),
+        React.createElement(
+          View,
+          { style: styles.customFormTableColRegular },
+          React.createElement(
+            Text,
+            { style: styles.tableCell },
+            'OK?',
+          ),
+        ),
+      ),
+    );
+    tableRows.push(tableHeader);
     for (let i = 0; i < data.length; i += 1) {
       const rowJSON = data[i];
 
       if (rowJSON.type === 'number') {
         const rowData = React.createElement(
           View,
-          { style: styles.tableRow },
+          { style: styles.table },
           React.createElement(
             View,
-            { style: styles.customFormTableColPrompt },
+            { style: styles.tableRow },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              `${rowJSON.prompt}`,
+              View,
+              { style: styles.customFormTableColPrompt },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                `${rowJSON.prompt}`,
+              ),
             ),
-          ),
-          React.createElement(
-            View,
-            { style: styles.customFormTableColRegular },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              `${rowJSON.value}`,
+              View,
+              { style: styles.customFormTableColRegular },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                `${rowJSON.value}`,
+              ),
             ),
-          ),
-          React.createElement(
-            View,
-            { style: styles.customFormTableColRegular },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              `${rowJSON.min}`,
+              View,
+              { style: styles.customFormTableColRegular },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                `${rowJSON.min}`,
+              ),
             ),
-          ),
-          React.createElement(
-            View,
-            { style: styles.customFormTableColRegular },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              `${rowJSON.max}`,
+              View,
+              { style: styles.customFormTableColRegular },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                `${rowJSON.max}`,
+              ),
             ),
-          ),
-          React.createElement(
-            View,
-            { style: styles.customFormTableColRegular },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              'OK',
+              View,
+              { style: styles.customFormTableColRegular },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                'OK',
+              ),
             ),
           ),
         );
@@ -853,23 +909,27 @@ const displayCustomForm = () => {
       } else {
         const rowData = React.createElement(
           View,
-          { style: styles.tableRow },
+          { style: styles.table },
           React.createElement(
             View,
-            { style: styles.customFormTableColPrompt },
+            { style: styles.tableRow },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              `${rowJSON.prompt}`,
+              View,
+              { style: styles.customFormTableColPrompt },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                `${rowJSON.prompt}`,
+              ),
             ),
-          ),
-          React.createElement(
-            View,
-            { style: styles.customFormTableColSpanning },
             React.createElement(
-              Text,
-              { style: styles.tableCell },
-              `${rowJSON.value}`,
+              View,
+              { style: styles.customFormTableColSpanning },
+              React.createElement(
+                Text,
+                { style: styles.tableCell },
+                `${rowJSON.value}`,
+              ),
             ),
           ),
         );
@@ -941,66 +1001,98 @@ const generateDataTablesPage2 = async () => (
   )
 );
 
-// const generateDependencyPage = () => (
-
-// );
-
-const assembleOneCertificate = async () => (
-  React.createElement(
-    Document,
-    null,
-    await generateInfoPage(),
-    (calEvent.isKlufe || calEvent.isLoadBank) ? await generateDataTablesPage1() : null,
-    calEvent.isLoadBank ? await generateDataTablesPage2() : null,
-    calEvent.isCustomForm ? await displayCustomForm() : null,
-  )
-);
-
-const assembleCertificate = async () => {
-
+const getRelations = (calibratedByList) => {
+  let relations = '';
+  for (let j = 0; j < calibratedByList.length; j += 1) {
+    relations = `${relations} ${calibratedByList[j].vendor} ${calibratedByList[j].modelNumber} #${calibratedByList[j].assetTag}`;
+  }
+  return relations;
 };
 
-// async function convertToSendPDF() {
-//   const fname = `${__dirname}/${uuidv4()}.pdf`;
-//   await ReactPDF.render(
-//     await assembleCertificate(),
-//     fname,
-//   );
-//   const res = await fs.readFileSync(fname);
-//   await fs.unlinkSync(fname);
-//   return tou8(res);
-// }
+const fillDependencies = async () => {
+  const dependencies = [];
+  for (let i = 0; i < calEvents.length; i += 1) {
+    const inst = calEvents[i];
+    if (inst.calibratedBy.length !== 0) {
+      const line = React.createElement(
+        Text,
+        { style: styles.smallText },
+        `${inst.vendor} ${inst.modelNumber} #${inst.assetTag} was calibrated by: ${getRelations(inst.calibratedBy)}`,
+      );
+      dependencies.push(line);
+    }
+  }
+  return dependencies;
+};
+
+const generateDependencyPage = async () => {
+  const depPage = React.createElement(
+    Page,
+    { style: styles.page, size: 'LETTER' },
+    React.createElement(
+      View,
+      { style: styles.outerBorder },
+      React.createElement(
+        View,
+        { style: styles.innerBorder },
+        React.createElement(
+          Text,
+          { style: styles.title },
+          'Calibration Dependencies',
+        ),
+        React.createElement(
+          Text,
+          { style: styles.largeText },
+          ' ',
+        ),
+        await fillDependencies(),
+      ),
+    ),
+  );
+  return depPage;
+};
+
+const assembleOneCertificate = async () => {
+  const pageList = [];
+  pageList.push(await generateInfoPage());
+  (calEvent.isKlufe || calEvent.isLoadBank) ? pageList.push(await generateDataTablesPage1()) : null;
+  calEvent.isLoadBank ? pageList.push(await generateDataTablesPage2()) : null;
+  calEvent.isCustomForm ? pageList.push(await displayCustomForm()) : null;
+
+  return pageList;
+};
 
 const generateCertificate = async (assetTag, chainOfTruth) => {
   // Query for calibration data
   const cal = new CalibrationEventAPI({ store });
-  let calEvents = [];
   const certificateChain = [];
   if (chainOfTruth) {
-    calEvents = await cal.getChainOfTruthForInstrument(assetTag);
+    calEvents = await cal.getChainOfTruthForInstrument({ assetTag });
   } else {
-    calEvents = [await cal.getCetificateForInstrument(assetTag)];
+    calEvents = [await cal.getCetificateForInstrument({ assetTag })];
   }
   for (let i = 0; i < calEvents.length; i += 1) {
     calEvent = calEvents[i];
-    certificateChain.push(assembleOneCertificate());
+    if (i === 1) {
+      // eslint-disable-next-line no-await-in-loop
+      certificateChain.push(await generateDependencyPage());
+    }
+    // eslint-disable-next-line no-await-in-loop
+    certificateChain.push(await assembleOneCertificate());
   }
 
   const fname = `${__dirname}/${uuidv4()}.pdf`;
   await ReactPDF.render(
-    await certificateChain,
+    React.createElement(
+      Document,
+      null,
+      certificateChain,
+    ),
     fname,
   );
   const res = await fs.readFileSync(fname);
   await fs.unlinkSync(fname);
   return tou8(res);
-
-  // if not chain calEvent = [single_event]
-  // if chain calEvent = [events.....]
-  // certificates = [certificate for event in calEvents]
-  // append them into document Document, props, certicates
-
-  // return make_document_here;
 };
 
 module.exports = generateCertificate;

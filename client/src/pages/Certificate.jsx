@@ -599,7 +599,9 @@ function newCertificate() {
 
   return (
     <div height="100%">
-      <p id="loadingText">LOADING...</p>
+      <p id="loadingText">
+        Generating Certificate...
+      </p>
       <iframe id="pdfDisplay" title="Document" src={file} width="100%" height={window.innerHeight - 100} />
       {/* <div className="main">
         <Document

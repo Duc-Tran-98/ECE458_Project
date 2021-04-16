@@ -187,7 +187,7 @@ app.get(`${whichRoute}/certificate`, async (req, res) => {
     res.send('Asset Tag Missing');
     return;
   }
-  const pdf = await generateCertificate({ assetTag, chainOfTruth });
+  const pdf = await generateCertificate(assetTag, chainOfTruth);
   const filename = 'calibration_certificate.pdf';
   const readStream = new Stream.PassThrough();
   readStream.end(pdf);
