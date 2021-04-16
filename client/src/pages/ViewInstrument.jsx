@@ -9,6 +9,7 @@ import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
+import Checkbox from '@material-ui/core/Checkbox';
 import CalibrationTable, { TabCalibrationTable } from '../components/CalibrationTable';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
@@ -97,6 +98,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
     setLoading(true);
     DeleteInstrument({ id: formState.id, handleResponse });
   };
+  const [chainOfTruth, setChainOfTruth] = React.useState(false);
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
@@ -418,17 +420,30 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
         </>
       )}
       {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-        <MouseOverPopover
-          className="ms-2"
-          message="View instrument's calibration certificate"
-        >
-          <Link
-            className="btn text-nowrap"
-            to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
+        <>
+          <MouseOverPopover
+            className="ms-2"
+            message="View instrument's calibration certificate"
           >
-            View Certificate
-          </Link>
-        </MouseOverPopover>
+            <Link
+              className="btn text-nowrap"
+              to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}&chainOfTruth=${chainOfTruth}`}
+            >
+              View Certificate
+            </Link>
+          </MouseOverPopover>
+          <MouseOverPopover message="Show train of truth" className="ms-2">
+            <span className="h5">
+              Chain of truth
+              <Checkbox
+                checked={chainOfTruth}
+                name="chainOfTruth"
+                onChange={(e) => setChainOfTruth(e.target.checked)}
+                color="primary"
+              />
+            </span>
+          </MouseOverPopover>
+        </>
       )}
     </div>
   );
