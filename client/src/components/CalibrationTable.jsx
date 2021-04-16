@@ -86,17 +86,14 @@ export function TabCalibrationTable({
     requiresCalibrationApproval: PropTypes.bool.isRequired,
     instrumentId: PropTypes.number.isRequired,
   };
-  const [which, setWhich] = React.useState('Approved');
+  const [which, setWhich] = React.useState('All');
   // eslint-disable-next-line no-unused-vars
   const [localRows, setLocalRows] = React.useState([]);
   React.useEffect(() => {
     GetCalibHistory({
       id: instrumentId,
       handleResponse: (response) => {
-        const copyOfResponse = response?.filter(
-          (ele) => ele.approvalStatus === 3 || ele.approvalStatus === 1,
-        );
-        setLocalRows(copyOfResponse);
+        setLocalRows(response);
       },
     });
   }, []);
@@ -133,8 +130,8 @@ export function TabCalibrationTable({
             );
             setLocalRows(copyOfResponse);
             break;
-
           default:
+            setLocalRows(response);
             break;
         }
       } else {
@@ -145,8 +142,13 @@ export function TabCalibrationTable({
 
   const contentToDisplay = requiresCalibrationApproval ? (
     <>
-      <div className="bg-offset">
-        <div className="col py-2 ps-3">
+      <div className="bg-offset" />
+      <DataGrid
+        rows={localRows}
+        cols={cols}
+        cellHandler={(e) => cellHandler(e)}
+        additionalClassName="h-100"
+        footer={(
           <div className="btn-group dropdown">
             {/* This is for the drop up of how many user can select */}
             <button
@@ -162,6 +164,18 @@ export function TabCalibrationTable({
               className="dropdown-menu bg-light"
               aria-labelledby="calibrationTableDropDownMenu"
             >
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => {
+                    setWhich('All');
+                    getRows('All');
+                  }}
+                >
+                  All
+                </button>
+              </li>
               <li>
                 <button
                   className="dropdown-item"
@@ -200,9 +214,8 @@ export function TabCalibrationTable({
               </li>
             </ul>
           </div>
-        </div>
-      </div>
-      <DataGrid rows={localRows} cols={cols} cellHandler={(e) => cellHandler(e)} />
+        )}
+      />
     </>
   ) : (
     <DataGrid rows={rows} cols={cols} cellHandler={(e) => cellHandler(e)} />

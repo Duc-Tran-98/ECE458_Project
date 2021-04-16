@@ -11,13 +11,17 @@ import ApproveCalibEvent from '../queries/ApproveCalibEvent';
 import RejectCalibEvent from '../queries/RejectCalibEvent';
 import CustomFormEntry from './CustomFormEntry';
 
-export default function DetailedCalibrationView({ selectedRow, isForInstrumentPage = false, approverId }) {
+export default function DetailedCalibrationView({
+  selectedRow, isForInstrumentPage = false, approverId, onBtnClick = () => undefined,
+}) {
   DetailedCalibrationView.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     selectedRow: PropTypes.object.isRequired, // the selected row is the calibration event
     // eslint-disable-next-line react/require-default-props
     isForInstrumentPage: PropTypes.bool, // if true, this will make the component hide instrument info and approve/deny buttons
     approverId: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/require-default-props
+    onBtnClick: PropTypes.func,
   };
   const [approvalComment, setApprovalComment] = React.useState('');
   const getCalibrationType = () => {
@@ -38,6 +42,7 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
       toast.success(response.message, {
         toastId: Math.random(),
       });
+      onBtnClick();
     } else {
       toast.error(response.message, {
         toastId: Math.random(),
@@ -261,7 +266,7 @@ export default function DetailedCalibrationView({ selectedRow, isForInstrumentPa
                     });
                   }}
                 >
-                  Deny
+                  Reject
                 </button>
               </MouseOverPopover>
             </div>

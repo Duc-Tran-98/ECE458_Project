@@ -79,7 +79,13 @@ export default function CalibrationApprovalPage() {
         title="Approval Request"
         size="xl"
       >
-        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} approverId={user.id} />}
+        {selectedRow && (
+          <DetailedCalibrationView
+            selectedRow={selectedRow}
+            approverId={user.id}
+            onBtnClick={() => setShow(false)}
+          />
+        )}
       </StateLessCloseModal>
       <ServerPaginationGrid
         shouldUpdate={update}
@@ -103,10 +109,16 @@ export default function CalibrationApprovalPage() {
           <div className="ps-3 h5 py-2">Calibration Approval Table</div>
         }
         // eslint-disable-next-line no-unused-vars
-        fetchData={(limit, offset, ordering) => GetAllPendingCalibEvents({ limit, offset, fetchPolicy: 'no-cache' }).then(
-          (data) => data,
-        )}
-        rowCount={() => GetAllPendingCalibEvents({ fetchPolicy: 'no-cache', limit: 1, offset: 0 }).then((data) => data.length)}
+        fetchData={(limit, offset, ordering) => GetAllPendingCalibEvents({
+          limit,
+          offset,
+          fetchPolicy: 'no-cache',
+        }).then((data) => data)}
+        rowCount={() => GetAllPendingCalibEvents({
+          fetchPolicy: 'no-cache',
+          limit: 1,
+          offset: 0,
+        }).then((data) => data.length)}
       />
     </>
   );

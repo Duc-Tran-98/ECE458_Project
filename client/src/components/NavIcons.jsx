@@ -10,6 +10,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
 import { PopOverFragment } from './PopOver';
+import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
 
 export default function NavIcons({ handleSignOut }) {
   NavIcons.propTypes = {
@@ -20,7 +21,18 @@ export default function NavIcons({ handleSignOut }) {
   const approvalPermissions = user.calibrationApproverPermission;
   // const { userName } = user;
   // console.log(userName);
-  const notifications = 12;
+  const [notifications, setNotifications] = React.useState(0);
+  React.useEffect(() => {
+    GetAllPendingCalibEvents({
+      limit: 1,
+      offset: 0,
+      fetchPolicy: 'no-cache',
+      handleResponse: (response) => {
+        setNotifications(response.length);
+      },
+    });
+  }, []);
+  // const notifications = 12;
 
   // TODO: Implement handlers for onclick events
   const handleClick = () => history.push('/viewCalibrationArppovals?page=1&limit=25');

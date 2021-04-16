@@ -513,7 +513,6 @@ export default function DetailedInstrumentView() {
         >
           <div
             className="h-100"
-            style={{ overflowY: 'auto', overflowX: 'hidden' }}
           >
             <div
               className="bg-secondary text-light sticky-top"
