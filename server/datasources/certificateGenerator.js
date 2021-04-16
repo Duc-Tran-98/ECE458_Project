@@ -1,16 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable max-len */
-/* eslint-disable no-unused-vars */
 // localhost:4001/api/certificate?calibrationID=10&chainOfTruth=true
 const React = require('react');
-const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
 const fs = require('fs');
-const path = require('path');
 const { default: ReactPDF } = require('@react-pdf/renderer');
 const {
-  PDFViewer, Document, Page, Text, Image, View, StyleSheet, Link,
+  Document, Page, Text, Image, View, StyleSheet, Link,
 } = require('@react-pdf/renderer');
-const strftime = require('strftime');
 const { v4: uuidv4 } = require('uuid');
 const tou8 = require('utf8-to-uint8array');
 const { createStore, createDB } = require('../util');
