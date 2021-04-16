@@ -51,7 +51,8 @@ const ExportInstruments = ({ setLoading, filterOptions }) => {
         calibrationComment: (typeof row.recentCalibration[0] !== 'undefined' && row.recentCalibration[0].comment) ? row.recentCalibration[0].comment : '',
         calibrationType: typeof row.recentCalibration[0] !== 'undefined' ? (row.recentCalibration[0].fileName ? `Attached file ${row.recentCalibration[0].fileName}`
           : (row.recentCalibration[0].loadBankData ? 'Calibrated via Load Bank Wizard'
-            : (row.recentCalibration[0].klufeData ? 'Calibrated via Klufe Calibrator' : '')))
+            : (row.recentCalibration[0].klufeData ? 'Calibrated via Klufe Calibrator'
+              : (row.recentCalibration[0].customFormData ? 'Calibrated with Custom Form' : ''))))
           : '',
       };
       filteredData.push(updatedRow);
