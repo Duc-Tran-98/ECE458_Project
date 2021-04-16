@@ -49,6 +49,54 @@ export default function DetailedCalibrationView({
       });
     }
   };
+
+  const displayCalibratedBy = (
+    <ul className="list-group ms-4 mb-2">
+      {selectedRow.calibratedBy.length > 0 && (
+        <span className="h6">Calibrated by:</span>
+      )}
+      {selectedRow.calibratedBy.map((ele) => (
+        <li
+          key={ele.assetTag}
+          className="list-group-item bg-grey rounded my-1"
+          style={{ boxShadow: '5px 5px 2px #888888' }}
+        >
+          <div className="row">
+            <div className="col-md">
+              <span className="h6">Vendor</span>
+              <br />
+              <input
+                className="form-control mt-1"
+                disabled
+                value={ele.vendor}
+                type="text"
+              />
+            </div>
+            <div className="col-md">
+              <span className="h6">Model Number</span>
+              <br />
+              <input
+                className="form-control mt-1"
+                disabled
+                value={ele.modelNumber}
+                type="text"
+              />
+            </div>
+            <div className="col-md">
+              <span className="h6">Asset Tag</span>
+              <br />
+              <input
+                className="form-control mt-1"
+                disabled
+                value={ele.assetTag}
+                type="text"
+              />
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
   return (
     <>
       {!isForInstrumentPage && (
@@ -126,18 +174,20 @@ export default function DetailedCalibrationView({
           <a
             href={`../data/${selectedRow.fileLocation}`}
             download={selectedRow.fileName}
-            className="ms-4"
+            className="ms-4 my-2"
           >
             {selectedRow.fileName}
           </a>
         )}
+        {displayCalibratedBy}
         {getCalibrationType() === 'Load Bank' && (
           <TableLoadBank loadBankData={JSON.parse(selectedRow.loadBankData)} />
         )}
         {/* TODO: dynamically render any instruments used in calibration */}
         {getCalibrationType() === 'Plain'
-          && !selectedRow.fileName && ( // plain & no file upload & no instruments used in calib event => no data
-            <div className="ms-4">No data on record</div>
+          && selectedRow.calibratedBy.length === 0 && ( // plain & no file upload & no instruments used in calib event => no data
+          <div className="ms-4">No data on record</div>
+
         )}
         {getCalibrationType() === 'Klufe' && (
           <KlufeDetailedView klufeData={JSON.parse(selectedRow.klufeData)} />
@@ -152,7 +202,7 @@ export default function DetailedCalibrationView({
           />
         )}
       </div>
-      {isForInstrumentPage && selectedRow.approvalStatus === 3 && (
+      {/* {isForInstrumentPage && selectedRow.approvalStatus === 3 && (
         <div className="row mx-3 my-3 pt-3 border-top border-dark">
           <div className="col">
             <span className="h5">Approval Data</span>
@@ -162,7 +212,7 @@ export default function DetailedCalibrationView({
             </div>
           </div>
         </div>
-      )}
+      )} */}
       {isForInstrumentPage
         && (selectedRow.approvalStatus === 1
           || selectedRow.approvalStatus === 2) && ( // approvalStatus = 1 means this event was approved; 0=awaiting, 3=no approval, 2=rejected

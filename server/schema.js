@@ -278,6 +278,7 @@ const typeDefs = gql`
     approverLastName: String
     approvalDate: String
     approvalComment: String
+    calibratedBy: [CalibratedByInfo]
   }
 
   type ModelCacheUpdate {

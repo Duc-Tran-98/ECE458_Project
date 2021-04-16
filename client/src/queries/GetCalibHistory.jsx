@@ -91,6 +91,12 @@ export default async function GetCalibHistory({
         approverLastName
         approvalDate
         approvalComment
+        calibratedBy {
+          vendor
+          modelNumber
+          serialNumber
+          assetTag
+        }
       }
     }
   `;

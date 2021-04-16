@@ -35,6 +35,12 @@ export default async function GetAllPendingCalibEvents({
         fileName
         fileLocation
         calibrationHistoryIdReference
+        calibratedBy {
+          vendor
+          modelNumber
+          serialNumber
+          assetTag
+        }
       }
     }
   `;

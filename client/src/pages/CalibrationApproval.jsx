@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { ServerPaginationGrid } from '../components/UITable';
 import UserContext from '../components/UserContext';
 import { approvalCols } from '../utils/CalibTable';
-// import GetCalibHistory from '../queries/GetCalibHistory';
 import { StateLessCloseModal } from '../components/ModalAlert';
 import DetailedCalibrationView from '../components/DetailedCalibrationView';
 import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
