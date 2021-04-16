@@ -138,6 +138,27 @@ const styles = StyleSheet.create({
     borderLeftWidth: 0,
     borderTopWidth: 0,
   },
+  customFormTableColRegular: {
+    width: '15%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
+  customFormTableColPrompt: {
+    width: '40%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
+  customFormTableColSpanning: {
+    width: '60%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
 });
 
 async function getFileType(url) {
@@ -740,6 +761,146 @@ const displayKlufe = () => (
   )
 );
 
+const displayCustomForm = () => {
+  const parsedFormData = JSON.parse(calEvent.customFormData);
+  const pages = [];
+  const pageDatas = [];
+  let pageData = [];
+  let counter = 0;
+  const rowsPerPage = 2;
+
+  // Split the JSON into page sized groups
+  for (let i = 0; i < parsedFormData.length; i += 1) {
+    const currentElement = parsedFormData[i];
+    console.log('hi', currentElement);
+    if (currentElement.type === 'number' || currentElement.type === 'text') {
+      pageData.push(currentElement);
+      counter += 1;
+      if (counter === rowsPerPage) {
+        // Finish this page
+        pageDatas.push(pageData);
+        pageData = [];
+        counter = 0;
+      }
+    }
+  }
+
+  if (pageData.length > 0) {
+    pageDatas.push(pageData);
+  }
+
+  console.log(pageDatas);
+
+  // Make a page from each group
+  for (let pageNum = 0; pageNum < pageDatas.length; pageNum += 1) {
+    const data = pageDatas[pageNum];
+    const tableRows = [];
+    // Make the table for this page
+    for (let i = 0; i < data.length; i += 1) {
+      const rowJSON = data[i];
+
+      if (rowJSON.type === 'number') {
+        const rowData = React.createElement(
+          View,
+          { style: styles.tableRow },
+          React.createElement(
+            View,
+            { style: styles.customFormTableColPrompt },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              `${rowJSON.prompt}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.customFormTableColRegular },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              `${rowJSON.value}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.customFormTableColRegular },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              `${rowJSON.min}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.customFormTableColRegular },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              `${rowJSON.max}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.customFormTableColRegular },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              'OK',
+            ),
+          ),
+        );
+        tableRows.push(rowData);
+      } else {
+        const rowData = React.createElement(
+          View,
+          { style: styles.tableRow },
+          React.createElement(
+            View,
+            { style: styles.customFormTableColPrompt },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              `${rowJSON.prompt}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.customFormTableColSpanning },
+            React.createElement(
+              Text,
+              { style: styles.tableCell },
+              `${rowJSON.value}`,
+            ),
+          ),
+        );
+        tableRows.push(rowData);
+      }
+    }
+
+    // Make page with tableRows and add to pages
+    const page = React.createElement(
+      Page,
+      { style: styles.page, size: 'LETTER' },
+      React.createElement(
+        View,
+        { style: styles.outerBorder },
+        React.createElement(
+          View,
+          { style: styles.innerBorder },
+          React.createElement(
+            View,
+            null,
+            tableRows,
+          ),
+        ),
+      ),
+    );
+    pages.push(page);
+  }
+
+  return pages;
+};
+
 const generateDataTablesPage1 = async () => (
   React.createElement(
     Page,
@@ -755,7 +916,6 @@ const generateDataTablesPage1 = async () => (
           null,
           calEvent.isLoadBank ? await displayLoadBank() : null,
           calEvent.isKlufe ? displayKlufe() : null,
-          // calEvent.isCustomForm ? displayCustom() : null,
         ),
       ),
     ),
@@ -783,41 +943,64 @@ const generateDataTablesPage2 = async () => (
 
 // const generateDependencyPage = () => (
 
-//   )
+// );
 
-const assemblePDF = async () => (
+const assembleOneCertificate = async () => (
   React.createElement(
     Document,
     null,
     await generateInfoPage(),
-    (calEvent.isKlufe || calEvent.isLoadBank || calEvent.isCustomForm) ? await generateDataTablesPage1() : null,
-
-    (calEvent.isKlufe || calEvent.isLoadBank || calEvent.isCustomForm) ? await generateDataTablesPage2() : null,
+    (calEvent.isKlufe || calEvent.isLoadBank) ? await generateDataTablesPage1() : null,
+    calEvent.isLoadBank ? await generateDataTablesPage2() : null,
+    calEvent.isCustomForm ? await displayCustomForm() : null,
   )
 );
 
-async function convertToSendPDF() {
+const assembleCertificate = async () => {
+
+};
+
+// async function convertToSendPDF() {
+//   const fname = `${__dirname}/${uuidv4()}.pdf`;
+//   await ReactPDF.render(
+//     await assembleCertificate(),
+//     fname,
+//   );
+//   const res = await fs.readFileSync(fname);
+//   await fs.unlinkSync(fname);
+//   return tou8(res);
+// }
+
+const generateCertificate = async (assetTag, chainOfTruth) => {
+  // Query for calibration data
+  const cal = new CalibrationEventAPI({ store });
+  let calEvents = [];
+  const certificateChain = [];
+  if (chainOfTruth) {
+    calEvents = await cal.getChainOfTruthForInstrument(assetTag);
+  } else {
+    calEvents = [await cal.getCetificateForInstrument(assetTag)];
+  }
+  for (let i = 0; i < calEvents.length; i += 1) {
+    calEvent = calEvents[i];
+    certificateChain.push(assembleOneCertificate());
+  }
+
   const fname = `${__dirname}/${uuidv4()}.pdf`;
   await ReactPDF.render(
-    await assemblePDF(),
+    await certificateChain,
     fname,
   );
   const res = await fs.readFileSync(fname);
   await fs.unlinkSync(fname);
   return tou8(res);
-}
 
-const generateCertificate = async (assetTag, chainOfTruth) => {
-  // Query for calibration data
-  const cal = new CalibrationEventAPI({ store });
-  if (chainOfTruth) {
-    calEvent = await cal.getChainOfTruthForInstrument(assetTag);
-  } else {
-    calEvent = await cal.getCetificateForInstrument(assetTag);
-  }
-  console.log(displayLoadBankVoltage());
+  // if not chain calEvent = [single_event]
+  // if chain calEvent = [events.....]
+  // certificates = [certificate for event in calEvents]
+  // append them into document Document, props, certicates
 
-  return convertToSendPDF();
+  // return make_document_here;
 };
 
 module.exports = generateCertificate;
