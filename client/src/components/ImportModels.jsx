@@ -256,7 +256,7 @@ export default function ImportModels() {
     supportKlufeCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'klufe') || false,
     comment: String(obj.comment),
     calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
-    requiresCalibrationApproval: filterRequiresApproval(obj.requiresCalibrationApproval),
+    requiresCalibrationApproval: filterRequiresApproval(obj.calibrationRequiresApproval),
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
