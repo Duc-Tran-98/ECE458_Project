@@ -83,6 +83,23 @@ class BulkDataAPI extends DataSource {
           { transaction: t },
         );
         const modelId = createdModel.dataValues.id;
+        if (calibratorCategories) { // check calibratorCategories first so catMap is not modified
+          for (let j = 0; j < calibratorCategories.length; j += 1) {
+            const calibratorCategory = calibratorCategories[j];
+            console.log(`calibratorCategory: ${calibratorCategory}`);
+            if (!catMap.has(calibratorCategory.toLowerCase())) {
+              response.message = `ERROR: Calibrator Category ${calibratorCategory} does not exist`;
+              response.success = false;
+              await t.rollback();
+              return JSON.stringify(response);
+            }
+            const modelCategoryId = catMap.get(calibratorCategory.toLowerCase());
+            await this.store.calibratorCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            }, { transaction: t });
+          }
+        }
         if (categories) {
           for (let j = 0; j < categories.length; j += 1) {
             const name = categories[j];
@@ -106,23 +123,6 @@ class BulkDataAPI extends DataSource {
                 modelCategoryId,
               }, { transaction: t });
             }
-          }
-        }
-        if (calibratorCategories) {
-          for (let j = 0; j < calibratorCategories.length; j += 1) {
-            const calibratorCategory = calibratorCategories[j];
-            console.log(`calibratorCategory: ${calibratorCategory}`);
-            if (!catMap.has(calibratorCategory.toLowerCase())) {
-              response.message = `ERROR: Calibrator Category ${calibratorCategory} does not exist`;
-              response.success = false;
-              await t.rollback();
-              return JSON.stringify(response);
-            }
-            const modelCategoryId = catMap.get(calibratorCategory.toLowerCase());
-            await this.store.calibratorCategoryRelationships.create({
-              modelId,
-              modelCategoryId,
-            }, { transaction: t });
           }
         }
       }
