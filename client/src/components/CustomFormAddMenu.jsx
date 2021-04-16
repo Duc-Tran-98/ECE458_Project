@@ -2,7 +2,7 @@ import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import PropTypes from 'prop-types';
-import { MuiAddButton } from './CustomMuiIcons';
+import { AddPopOver } from './CustomMuiIcons';
 
 export default function CustomFormAddButton({
   createHeader, createUserPrompt, createNumericInput, createTextInput,
@@ -25,7 +25,7 @@ export default function CustomFormAddButton({
   // https://material-ui.com/components/menus/
   return (
     <>
-      <MuiAddButton onClick={handleClick} />
+      <AddPopOver onClick={handleClick} message="Add Element" />
       <Menu
         id="customized-menu"
         anchorEl={anchorEl}
