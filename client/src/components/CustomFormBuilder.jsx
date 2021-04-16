@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  PreviewButton, EditPopoverIcon, MuiSaveButton, TitlePopoverIcon, TextFieldPopoverIcon, NumberInputPopoverIcon,
+  PreviewButton, EditPopoverIcon, MoveDownPopOver, MoveUpPopOver,
 } from './CustomMuiIcons';
 import {
   CustomHeaderInput, CustomUserPromptInput, CustomNumericInput, CustomTextInput,
@@ -24,6 +23,7 @@ export default function CustomFormBuilder({
     editEnabled: PropTypes.bool.isRequired,
   };
 
+  const [shouldUpdate, setShouldUpdate] = React.useState(0); // another internal effect to force updates (lol I hope I never have to edit this)
   const initMode = editEnabled === true ? 'editing' : 'preview';
   const [formSteps, setFormSteps] = React.useState([]);
   const [formEntry, setFormEntry] = React.useState();
@@ -52,6 +52,24 @@ export default function CustomFormBuilder({
       const nextState = prevState.filter((item, i) => index !== i);
       setState(nextState);
     }
+  };
+  const handleMoveUp = (index) => {
+    const nextState = state;
+    const cur = nextState[index];
+    const prev = nextState[index - 1];
+    nextState[index - 1] = { ...cur };
+    nextState[index] = { ...prev };
+    setState(nextState);
+    setShouldUpdate(shouldUpdate + 1);
+  };
+  const handleMoveDown = (index) => {
+    const nextState = state;
+    const cur = nextState[index];
+    const next = nextState[index + 1];
+    nextState[index] = { ...next };
+    nextState[index + 1] = { ...cur };
+    setState(nextState);
+    setShouldUpdate(shouldUpdate + 1);
   };
 
   const addElement = (type, index) => {
@@ -88,6 +106,19 @@ export default function CustomFormBuilder({
     />
   );
 
+  const moveUpButton = (index) => (
+    <MoveUpPopOver
+      title="Move Up"
+      onClick={() => handleMoveUp(index)}
+    />
+  );
+  const moveDownButton = (index) => (
+    <MoveDownPopOver
+      title="Move Down"
+      onClick={() => handleMoveDown(index)}
+    />
+  );
+
   React.useEffect(() => {
     const steps = state.map((entry, index) => {
       switch (entry.type) {
@@ -103,6 +134,10 @@ export default function CustomFormBuilder({
               showDelete={state.length > 1}
               addButton={addButton(index)}
               autoFocus={focus === index}
+              moveUpButton={moveUpButton(index)}
+              moveDownButton={moveDownButton(index)}
+              showUp={index !== 0}
+              showDown={index !== state.length - 1}
             />
           );
         case 'description':
@@ -117,6 +152,10 @@ export default function CustomFormBuilder({
               showDelete={state.length > 1}
               addButton={addButton(index)}
               autoFocus={focus === index}
+              moveUpButton={moveUpButton(index)}
+              moveDownButton={moveDownButton(index)}
+              showUp={index !== 0}
+              showDown={index !== state.length - 1}
             />
           );
         case 'number':
@@ -140,6 +179,10 @@ export default function CustomFormBuilder({
               showDelete={state.length > 1}
               addButton={addButton(index)}
               autoFocus={focus === index}
+              moveUpButton={moveUpButton(index)}
+              moveDownButton={moveDownButton(index)}
+              showUp={index !== 0}
+              showDown={index !== state.length - 1}
             />
           );
         case 'text':
@@ -154,6 +197,10 @@ export default function CustomFormBuilder({
               showDelete={state.length > 1}
               addButton={addButton(index)}
               autoFocus={focus === index}
+              moveUpButton={moveUpButton(index)}
+              moveDownButton={moveDownButton(index)}
+              showUp={index !== 0}
+              showDown={index !== state.length - 1}
             />
           );
         default:
@@ -161,7 +208,7 @@ export default function CustomFormBuilder({
       }
     });
     setFormSteps(steps);
-  }, [state, update]);
+  }, [state, update, shouldUpdate]);
 
   React.useEffect(() => {
     setFormEntry(<CustomFormEntry getSteps={() => state} disabled={!editEnabled} />);

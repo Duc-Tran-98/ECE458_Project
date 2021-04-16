@@ -12,6 +12,8 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import TitleIcon from '@material-ui/icons/Title';
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { PopOverFragment } from './PopOver';
 
@@ -128,9 +130,33 @@ export const MuiAddButton = ({ onClick }) => (
   </IconButton>
 );
 
+export const AddPopOver = ({ onClick, message }) => (
+  <PopOverFragment message={message}>
+    <IconButton onClick={onClick}>
+      <AddIcon />
+    </IconButton>
+  </PopOverFragment>
+);
+
 export const DeletePopOver = ({ title, onClick }) => (
   <PopOverFragment message={title}>
     <MuiDeleteButton onClick={onClick} />
+  </PopOverFragment>
+);
+
+export const MoveUpPopOver = ({ title, onClick }) => (
+  <PopOverFragment message={title}>
+    <IconButton onClick={onClick}>
+      <ExpandLessIcon />
+    </IconButton>
+  </PopOverFragment>
+);
+
+export const MoveDownPopOver = ({ title, onClick }) => (
+  <PopOverFragment message={title}>
+    <IconButton onClick={onClick}>
+      <ExpandMoreIcon />
+    </IconButton>
   </PopOverFragment>
 );
 
