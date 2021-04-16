@@ -576,7 +576,8 @@ function newCertificate() {
   const urlParams = new URLSearchParams(queryString);
 
   const assetTag = urlParams.get('assetTag');
-  const chainOfTruth = true;
+  const chainOfTruth = urlParams.get('chainOfTruth');
+  console.log(chainOfTruth);
   const calibrationQuery = async () => {
     const expressParam = `/api/certificate?assetTag=${assetTag}&chainOfTruth=${chainOfTruth}`;
     ExpressQuery({

@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   largeText: {
     fontFamily: 'Times-Roman',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'left',
   },
   smallText: {
@@ -285,7 +285,7 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
-              `Username: ${calEvent.calibratorUserName}`,
+              `Calibrator Username: ${calEvent.calibratorUserName}`,
             ),
             React.createElement(
               Text,
@@ -296,11 +296,6 @@ const generateInfoPage = async () => (
               Text,
               { style: styles.largeText },
               `${calEvent.approverFirstName ? `Approved By: ${calEvent.approverFirstName} ${calEvent.approverLastName}` : ''}`,
-            ),
-            React.createElement(
-              Text,
-              { style: styles.largeText },
-              `${calEvent.approverUserName ? `Approved By: ${calEvent.approverUserName}` : ''}`,
             ),
           ),
           React.createElement(
@@ -319,7 +314,12 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
-              `\n\n${calEvent.approvalDate ? `Approval Date: ${calEvent.approvalDate}` : ''}`,
+              `\n\n${calEvent.approverUsername ? `Approver Username: ${calEvent.approverUsername}` : ''}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `${calEvent.approvalDate ? `Approval Date: ${calEvent.approvalDate}` : ''}`,
             ),
           ),
         ),
@@ -1066,10 +1066,10 @@ const generateCertificate = async (assetTag, chainOfTruth) => {
   // Query for calibration data
   const cal = new CalibrationEventAPI({ store });
   const certificateChain = [];
-  if (chainOfTruth) {
+  if (chainOfTruth === 'true') {
     calEvents = await cal.getChainOfTruthForInstrument({ assetTag });
   } else {
-    calEvents = [await cal.getCetificateForInstrument({ assetTag })];
+    calEvents = [await cal.getCertificateForInstrument({ assetTag })];
   }
   for (let i = 0; i < calEvents.length; i += 1) {
     calEvent = calEvents[i];
