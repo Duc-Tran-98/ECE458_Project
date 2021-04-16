@@ -232,6 +232,7 @@ export default function ImportInstruments() {
       return;
     }
 
+    setImportStatus('Registering');
     // File has been validated, now push to database
     const refetch = JSON.parse(window.sessionStorage.getItem('getInstrumentsWithFilter'))
       || null;

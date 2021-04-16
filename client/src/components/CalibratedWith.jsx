@@ -146,7 +146,7 @@ export default function CalibratedWith({
             </div>
             <div className="col" style={{ margin: 'auto 0px' }}>
               <div className="text-center">
-                {addButton}
+                {cats.length > 0 && (addButton)}
               </div>
             </div>
           </div>

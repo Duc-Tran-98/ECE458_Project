@@ -103,7 +103,7 @@ const TagsInput = (props) => {
             // eslint-disable-next-line react/no-array-index-key
             <li key={index} className="tag">
               <span className="tag-title">{tag}</span>
-              {!dis && (
+              {(!dis && (props.special !== 'loadBank' && props.special !== 'klufe')) && (
                 <span
                   className="tag-close-icon"
                   onClick={() => removeTags(index)}

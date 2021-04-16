@@ -24,16 +24,21 @@ const ExportModels = ({ setLoading, filterOptions }) => {
     { label: 'Model-Categories', key: 'categories' },
     { label: 'Special-Calibration-Support', key: 'specialCalibration' },
     { label: 'Calibration-Frequency', key: 'calibrationFrequency' },
+    { label: 'Calibration-Requires-Approval', key: 'requiresCalibrationApproval' },
+    { label: 'Calibrator-Categories', key: 'calibratorCategories' },
+    { label: 'Custom-Form-Exists', key: 'supportCustomCalibration' },
   ];
 
   const getData = async () => {
     await GetModelsForExport({ filterOptions }).then((res) => {
+      console.log(res);
       csvData = res;
     });
     return csvData;
   };
 
   const filterTransactionData = (r) => {
+    console.log(r);
     const filteredData = [];
     r.models.forEach((row) => {
       const updatedRow = {
@@ -45,6 +50,9 @@ const ExportModels = ({ setLoading, filterOptions }) => {
         // eslint-disable-next-line no-nested-ternary
         specialCalibration: row.supportLoadBankCalibration ? 'Load-Bank' : (row.supportKlufeCalibration ? 'Klufe' : ''),
         categories: row.categories.map((item) => item.name).join(' '),
+        requiresCalibrationApproval: row.requiresCalibrationApproval ? 'Y' : '',
+        calibratorCategories: row.calibratorCategories ? row.calibratorCategories.map((item) => item.name).join(' ') : '',
+        supportCustomCalibration: row.supportCustomCalibration ? 'Y' : '',
       };
       filteredData.push(updatedRow);
     });
@@ -62,6 +70,7 @@ const ExportModels = ({ setLoading, filterOptions }) => {
     await getData()
       .then((r) => {
         const filteredData = filterTransactionData(r);
+        console.log(filteredData);
         setTransactionData(filteredData);
       })
       .catch((e) => console.log(e));

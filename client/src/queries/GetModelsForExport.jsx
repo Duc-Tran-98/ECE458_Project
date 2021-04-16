@@ -29,8 +29,13 @@ export default async function GetModelsForExport({ filterOptions }) {
           categories{
             name
           }
+          calibratorCategories{
+            name
+          }
           supportLoadBankCalibration
           supportKlufeCalibration
+          supportCustomCalibration
+          requiresCalibrationApproval
         }
       }
     }
@@ -46,6 +51,9 @@ export default async function GetModelsForExport({ filterOptions }) {
   const getVariables = () => ({
     vendor, modelNumber, description, categories,
   });
-  const response = await QueryAndThen({ query, queryName, getVariables });
+  const fetchPolicy = 'no-cache';
+  const response = await QueryAndThen({
+    query, queryName, getVariables, fetchPolicy,
+  });
   return response;
 }

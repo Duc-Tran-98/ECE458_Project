@@ -34,6 +34,7 @@ class BulkDataAPI extends DataSource {
   }
 
   async bulkImportModels({ models }) {
+    console.log(models);
     const response = { success: false, message: '' };
     if (!process.env.NODE_ENV.includes('dev')) {
       const { user } = this.context;
@@ -62,8 +63,10 @@ class BulkDataAPI extends DataSource {
         const comment = currentModel.comment;
         const calibrationFrequency = currentModel.calibrationFrequency;
         const categories = currentModel.categories;
+        const calibratorCategories = currentModel.calibratorCategories;
         const supportLoadBankCalibration = currentModel.supportLoadBankCalibration;
         const supportKlufeCalibration = currentModel.supportKlufeCalibration;
+        const requiresCalibrationApproval = currentModel.requiresCalibrationApproval;
 
         const createdModel = await this.store.models.create(
           {
@@ -74,12 +77,29 @@ class BulkDataAPI extends DataSource {
             calibrationFrequency,
             supportLoadBankCalibration,
             supportKlufeCalibration,
+            requiresCalibrationApproval,
             supportCustomCalibration: false,
-            requiresCalibrationApproval: false,
           },
           { transaction: t },
         );
         const modelId = createdModel.dataValues.id;
+        if (calibratorCategories) { // check calibratorCategories first so catMap is not modified
+          for (let j = 0; j < calibratorCategories.length; j += 1) {
+            const calibratorCategory = calibratorCategories[j];
+            console.log(`calibratorCategory: ${calibratorCategory}`);
+            if (!catMap.has(calibratorCategory.toLowerCase())) {
+              response.message = `ERROR: Calibrator Category ${calibratorCategory} does not exist`;
+              response.success = false;
+              await t.rollback();
+              return JSON.stringify(response);
+            }
+            const modelCategoryId = catMap.get(calibratorCategory.toLowerCase());
+            await this.store.calibratorCategoryRelationships.create({
+              modelId,
+              modelCategoryId,
+            }, { transaction: t });
+          }
+        }
         if (categories) {
           for (let j = 0; j < categories.length; j += 1) {
             const name = categories[j];
@@ -106,7 +126,6 @@ class BulkDataAPI extends DataSource {
           }
         }
       }
-
       // If the execution reaches this line, no errors were thrown.
       // We commit the transaction.
       await t.commit();
