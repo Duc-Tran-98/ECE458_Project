@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import Form from 'react-bootstrap/Form';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { toast } from 'react-toastify';
 import AddCustomFormCalibration from '../queries/AddCustomFormCalibration';
 import UserContext from './UserContext';
@@ -49,6 +49,16 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
+// TODO: Add more styling like this (how to customize components)
+const CustomDisabledTextField = withStyles({
+  root: {
+    marginRight: 8,
+    '& .MuiInputBase-input.Mui-disabled': {
+      fontWeight: '400', // (default alpha is 0.38)
+    },
+  },
+})(TextField);
 
 export default function CustomFormEntry({
   getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose, disabled,
@@ -288,7 +298,7 @@ export default function CustomFormEntry({
   );
 
   const descriptionStep = (step) => (
-    <TextField
+    <CustomDisabledTextField
       className={classes.textFieldLarge}
       margin="normal"
       value={step.prompt}
