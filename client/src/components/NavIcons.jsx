@@ -12,9 +12,10 @@ import UserContext from './UserContext';
 import { PopOverFragment } from './PopOver';
 import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
 
-export default function NavIcons({ handleSignOut }) {
+export default function NavIcons({ handleSignOut, updateNotification }) {
   NavIcons.propTypes = {
     handleSignOut: PropTypes.func.isRequired,
+    updateNotification: PropTypes.bool.isRequired, // if this prop changes, update notification count
   };
   const history = useHistory();
   const user = useContext(UserContext);
@@ -24,14 +25,12 @@ export default function NavIcons({ handleSignOut }) {
   const [notifications, setNotifications] = React.useState(0);
   React.useEffect(() => {
     GetAllPendingCalibEvents({
-      limit: 1,
-      offset: 0,
       fetchPolicy: 'no-cache',
       handleResponse: (response) => {
         setNotifications(response.length);
       },
     });
-  }, []);
+  }, [updateNotification]);
   // const notifications = 12;
 
   // TODO: Implement handlers for onclick events

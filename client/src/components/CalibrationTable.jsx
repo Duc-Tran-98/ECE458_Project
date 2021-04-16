@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import CalibrationRow from './CalibrationRow';
 import DataGrid from './UITable';
 import { cols } from '../utils/CalibTable';
-import GetCalibHistory from '../queries/GetCalibHistory';
 
 export default function CalibrationTable({
   // eslint-disable-next-line no-unused-vars
@@ -77,68 +76,64 @@ export function TabCalibrationTable({
   cellHandler,
   rows,
   requiresCalibrationApproval,
-  instrumentId,
 }) {
   TabCalibrationTable.propTypes = {
     cellHandler: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     rows: PropTypes.array.isRequired,
     requiresCalibrationApproval: PropTypes.bool.isRequired,
-    instrumentId: PropTypes.number.isRequired,
   };
   const [which, setWhich] = React.useState('All');
-  // eslint-disable-next-line no-unused-vars
-  const [localRows, setLocalRows] = React.useState([]);
-  React.useEffect(() => {
-    GetCalibHistory({
-      id: instrumentId,
-      handleResponse: (response) => {
-        setLocalRows(response);
-      },
-    });
-  }, []);
+  const [localRows, setLocalRows] = React.useState(rows);
 
   // Approval states
   // 0 - awaiting approval
   // 1 - approved
   // 2 - rejected
   // 3 - no approval required
-  const getRows = (type) => GetCalibHistory({
-    id: instrumentId,
-    handleResponse: (response) => {
-      if (requiresCalibrationApproval) {
-        let copyOfResponse;
-        switch (type) {
-          case 'Approved':
-            // eslint-disable-next-line no-case-declarations
-            copyOfResponse = response?.filter(
-              (ele) => ele.approvalStatus === 3 || ele.approvalStatus === 1,
-            );
-            setLocalRows(copyOfResponse);
-            break;
-          case 'Rejected':
-            // eslint-disable-next-line no-case-declarations
-            copyOfResponse = response?.filter(
-              (ele) => ele.approvalStatus === 2,
-            );
-            setLocalRows(copyOfResponse);
-            break;
-          case 'Pending':
-            // eslint-disable-next-line no-case-declarations
-            copyOfResponse = response?.filter(
-              (ele) => ele.approvalStatus === 0,
-            );
-            setLocalRows(copyOfResponse);
-            break;
-          default:
-            setLocalRows(response);
-            break;
-        }
-      } else {
-        setLocalRows(response);
+  const getRows = (type) => {
+    if (requiresCalibrationApproval) {
+      let copyOfResponse;
+      switch (type) {
+        case 'Approved':
+          // eslint-disable-next-line no-case-declarations
+          copyOfResponse = rows?.filter(
+            (ele) => ele.approvalStatus === 3 || ele.approvalStatus === 1,
+          );
+          setLocalRows(copyOfResponse);
+          return copyOfResponse;
+        case 'Rejected':
+          // eslint-disable-next-line no-case-declarations
+          copyOfResponse = rows?.filter((ele) => ele.approvalStatus === 2);
+          setLocalRows(copyOfResponse);
+          return copyOfResponse;
+        case 'Pending':
+          // eslint-disable-next-line no-case-declarations
+          copyOfResponse = rows?.filter((ele) => ele.approvalStatus === 0);
+          setLocalRows(copyOfResponse);
+          return copyOfResponse;
+        default:
+          setLocalRows(rows);
+          return rows;
       }
-    },
-  });
+    } else {
+      setLocalRows(rows);
+      return rows;
+    }
+  };
+
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (active) {
+        getRows(which);
+        // setLocalRows(rows);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [rows]);
 
   const contentToDisplay = requiresCalibrationApproval ? (
     <>
