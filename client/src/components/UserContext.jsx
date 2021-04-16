@@ -63,6 +63,7 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
                   isAdmin
                   firstName
                   lastName
+                  id
                 }
               }
             `,

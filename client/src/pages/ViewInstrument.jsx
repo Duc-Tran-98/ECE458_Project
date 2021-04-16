@@ -8,6 +8,8 @@ import axios from 'axios';
 import { gql } from '@apollo/client';
 import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
+import PropTypes from 'prop-types';
+import Checkbox from '@material-ui/core/Checkbox';
 import CalibrationTable, { TabCalibrationTable } from '../components/CalibrationTable';
 import DeleteInstrument from '../queries/DeleteInstrument';
 import GetCalibHistory from '../queries/GetCalibHistory';
@@ -27,7 +29,10 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4001'
   : '/express';
 
-export default function DetailedInstrumentView() {
+export default function DetailedInstrumentView({ onCalibEventAdded }) {
+  DetailedInstrumentView.propTypes = {
+    onCalibEventAdded: PropTypes.func.isRequired,
+  };
   const user = React.useContext(UserContext);
   const history = useHistory();
   const [showDelete, setShowDelete] = React.useState(false);
@@ -44,8 +49,11 @@ export default function DetailedInstrumentView() {
   const [update, setUpdate] = React.useState(false); // bool to indicate when to update form
   const [fetched, setFetched] = React.useState(false); // bool to indicate when to display inst form (after we get the info)
   const [selectedRow, setSelectedRow] = React.useState(null); // selected calib event
-  const [showDetailedCalibInfo, setShowDetailedCalibInfo] = React.useState(false); // control show/hide state of calib event info
-  const [formState, setFormState] = React.useState({ // our state we display to user
+  const [showDetailedCalibInfo, setShowDetailedCalibInfo] = React.useState(
+    false,
+  ); // control show/hide state of calib event info
+  const [formState, setFormState] = React.useState({
+    // our state we display to user
     modelNumber: urlParams.get('modelNumber'),
     vendor: urlParams.get('vendor'),
     serialNumber: '',
@@ -58,7 +66,8 @@ export default function DetailedInstrumentView() {
     assetTag: parseInt(urlParams.get('assetTag'), 10),
   });
   const [showCustomForm, setShowCustomForm] = React.useState(false);
-  const handleResponse = (response) => { // handle deletion
+  const handleResponse = (response) => {
+    // handle deletion
     setLoading(false);
     setShowDelete(false);
     if (response.success) {
@@ -67,8 +76,11 @@ export default function DetailedInstrumentView() {
       });
       setTimeout(() => {
         if (history.location.state?.previousUrl) {
-          const path = history.location.state.previousUrl.split(window.location.host)[1];
-          history.replace( // This code updates the url to have the correct count
+          const path = history.location.state.previousUrl.split(
+            window.location.host,
+          )[1];
+          history.replace(
+            // This code updates the url to have the correct count
             path,
             null,
           );
@@ -86,25 +98,29 @@ export default function DetailedInstrumentView() {
     setLoading(true);
     DeleteInstrument({ id: formState.id, handleResponse });
   };
+  const [chainOfTruth, setChainOfTruth] = React.useState(false);
   // This code  is getting calibration frequency, calibration history and comment of instrument
   const [calibHist, setCalibHist] = useState([]);
   const [nextId, setNextId] = useState(0);
-  const fetchData = (excludeEntry = null, id = null) => {
+  const fetchData = (id = null) => {
     // This will refetch calib history and set it as our state
     GetCalibHistory({ id: id || formState.id }).then((data) => {
       let counter = nextId;
       data.forEach((item) => {
-        // console.log(item);
         item.id = counter;
         item.viewOnly = true;
         counter += 1;
       });
-      const openEdits = calibHist.filter((element) => !element.viewOnly && (!excludeEntry || excludeEntry?.id !== element.id));
-      setCalibHist(openEdits.concat(data));
+      // const openEdits = calibHist.filter(
+      //   (element) => !element.viewOnly
+      //     && (!excludeEntry || excludeEntry?.id !== element.id),
+      // );
+      setCalibHist(data);
       setNextId(counter);
     });
   };
-  const cellHandler = (e) => { // defines what happens when user clicks on cell of calib event table
+  const cellHandler = (e) => {
+    // defines what happens when user clicks on cell of calib event table
     setSelectedRow(e.row);
     setShowDetailedCalibInfo(true);
   };
@@ -116,7 +132,6 @@ export default function DetailedInstrumentView() {
         user: user.userName,
         userLastName: user.lastName,
         userFirstName: user.firstName,
-        approvalStatus: 3, // TODO: assign correct approval status
         date: new Date().toISOString().split('T')[0], // The new Date() thing defaults date to today
         comment: '',
         id: nextId,
@@ -132,7 +147,6 @@ export default function DetailedInstrumentView() {
   };
   const onChangeCalibRow = (e, entry) => {
     // This method deals with updating a particular calibration event
-    console.log(e);
     const newHistory = [...calibHist];
     const index = newHistory.indexOf(entry);
     newHistory[index] = { ...entry };
@@ -162,29 +176,32 @@ export default function DetailedInstrumentView() {
     if (entry.file) {
       const endpoint = '/api/upload';
       const path = `${route}${endpoint}`;
-      await axios.post(path, entry.file, {
-        // receive two    parameter endpoint url ,form data
-      }).then((res) => { // then print response status
-        // eslint-disable-next-line no-param-reassign
-        entry.fileLocation = res.data.assetName;
-        // eslint-disable-next-line no-param-reassign
-        entry.fileName = res.data.fileName;
-      // eslint-disable-next-line no-unused-vars
-      }).catch((err) => {
-        // console.log(err.message);
-      });
+      await axios
+        .post(path, entry.file, {
+          // receive two    parameter endpoint url ,form data
+        })
+        .then((res) => {
+          // then print response status
+          // eslint-disable-next-line no-param-reassign
+          entry.fileLocation = res.data.assetName;
+          // eslint-disable-next-line no-param-reassign
+          entry.fileName = res.data.fileName;
+        }) // eslint-disable-next-line no-unused-vars
+        .catch((err) => {
+          // console.log(err.message);
+        });
     }
-    console.log(newHistory);
     AddCalibEventByAssetTag({
       events: newHistory,
       assetTag: formState.assetTag,
       handleResponse: (res) => {
         if (res.success) {
+          onCalibEventAdded();
           toast.success(res.message);
         } else {
           toast.error(res.message);
         }
-        fetchData(entry);
+        fetchData();
       },
     });
   };
@@ -201,10 +218,13 @@ export default function DetailedInstrumentView() {
         setUpdate(true);
       }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   });
 
-  const updateState = (response) => { // function to update our state after user edits it
+  const updateState = (response) => {
+    // function to update our state after user edits it
     setFetched(false);
     const categories = response.instrumentCategories.map((item) => item.name);
     let {
@@ -224,7 +244,7 @@ export default function DetailedInstrumentView() {
     if (typeof id === 'string') {
       id = parseInt(id, 10);
     }
-    fetchData(null, id);
+    fetchData(id);
     comment = comment || '';
     modelNumber = modelNumber || '';
     vendor = vendor || '';
@@ -268,9 +288,11 @@ export default function DetailedInstrumentView() {
           }
         `,
         queryName: 'getModel',
-        getVariables: () => ({ modelNumber: formState.modelNumber, vendor: formState.vendor }),
+        getVariables: () => ({
+          modelNumber: formState.modelNumber,
+          vendor: formState.vendor,
+        }),
         handleResponse: (response) => {
-          console.log(response);
           if (response.supportCustomCalibration) {
             setSupportsCustomForm(response.supportCustomCalibration);
             setCustomForm(JSON.parse(response.customForm));
@@ -302,7 +324,9 @@ export default function DetailedInstrumentView() {
         });
       }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [update]);
 
   const genCalibButtons = (
@@ -360,7 +384,6 @@ export default function DetailedInstrumentView() {
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
                 popOverText="Add calibration via Klufe"
-
               >
                 <KlufeWiz
                   initModelNumber={formState.modelNumber}
@@ -397,17 +420,30 @@ export default function DetailedInstrumentView() {
         </>
       )}
       {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
-        <MouseOverPopover
-          className="ms-2"
-          message="View instrument's calibration certificate"
-        >
-          <Link
-            className="btn text-nowrap"
-            to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}`}
+        <>
+          <MouseOverPopover
+            className="ms-2"
+            message="View instrument's calibration certificate"
           >
-            View Certificate
-          </Link>
-        </MouseOverPopover>
+            <Link
+              className="btn text-nowrap"
+              to={`/viewCertificate/?modelNumber=${formState.modelNumber}&vendor=${formState.vendor}&assetTag=${formState.assetTag}&chainOfTruth=${chainOfTruth}`}
+            >
+              View Certificate
+            </Link>
+          </MouseOverPopover>
+          <MouseOverPopover message="Show train of truth" className="ms-2">
+            <span className="h5">
+              Chain of truth
+              <Checkbox
+                checked={chainOfTruth}
+                name="chainOfTruth"
+                onChange={(e) => setChainOfTruth(e.target.checked)}
+                color="primary"
+              />
+            </span>
+          </MouseOverPopover>
+        </>
       )}
     </div>
   );
@@ -421,13 +457,21 @@ export default function DetailedInstrumentView() {
         ) : (
           <>
             <div className="mt-3">
-              <button className="btn btn-delete" type="button" onClick={handleDelete}>
+              <button
+                className="btn btn-delete"
+                type="button"
+                onClick={handleDelete}
+              >
                 Yes
               </button>
             </div>
             <span className="mx-3" />
             <div className="mt-3">
-              <button className="btn " type="button" onClick={() => setShowDelete(false)}>
+              <button
+                className="btn "
+                type="button"
+                onClick={() => setShowDelete(false)}
+              >
                 No
               </button>
             </div>
@@ -438,7 +482,9 @@ export default function DetailedInstrumentView() {
   );
 
   const deleteBtn = (
-    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">Delete</Button>
+    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">
+      Delete
+    </Button>
     // <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
   );
   const deleteModal = (
@@ -511,10 +557,7 @@ export default function DetailedInstrumentView() {
           className="col-lg p-3 border border-left border-dark"
           id="remove-if-empty"
         >
-          <div
-            className="h-100"
-            style={{ overflowY: 'auto', overflowX: 'hidden' }}
-          >
+          <div className="h-100">
             <div
               className="bg-secondary text-light sticky-top"
               style={{ zIndex: '1' }}
@@ -530,7 +573,6 @@ export default function DetailedInstrumentView() {
             </div>
             {formState.calibrationFrequency > 0 ? (
               <TabCalibrationTable
-                instrumentId={formState.id}
                 rows={calibHist.filter((ele) => ele.viewOnly)}
                 cellHandler={(e) => cellHandler(e)}
                 requiresCalibrationApproval={

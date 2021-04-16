@@ -7,12 +7,13 @@ import UserContext from './UserContext';
 import NavIcons from './NavIcons';
 
 function NavBar({
-  loggedIn, handleSignOut, title,
+  loggedIn, handleSignOut, title, updateNotification,
 }) {
   NavBar.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
     handleSignOut: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
+    updateNotification: PropTypes.bool.isRequired, // if this prop changes, update notifications badge on nav bar
   };
   const user = React.useContext(UserContext);
 
@@ -98,7 +99,7 @@ function NavBar({
         </ul>
       </div>
       <div className="col-auto">
-        <NavIcons handleSignOut={handleSignOut} />
+        <NavIcons handleSignOut={handleSignOut} updateNotification={updateNotification} />
       </div>
     </div>
   ) : (

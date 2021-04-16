@@ -65,12 +65,14 @@ function CustomPagination(props) {
 }
 
 export default function DisplayGrid({
-  rows, cols, cellHandler,
+  rows, cols, cellHandler, footer = null, additionalClassName = '',
 }) {
   DisplayGrid.propTypes = {
     rows: PropTypes.array.isRequired,
     cols: PropTypes.array.isRequired,
     cellHandler: PropTypes.func,
+    footer: PropTypes.node,
+    additionalClassName: PropTypes.string,
   };
   paginationContainer = React.useRef(null);
   React.useEffect(() => {
@@ -79,7 +81,7 @@ export default function DisplayGrid({
 
   return (
     <div
-      className="rounded"
+      className={`rounded ${additionalClassName}`}
       style={{
         // maxHeight: '77vh',
         overflowY: 'auto',
@@ -115,6 +117,9 @@ export default function DisplayGrid({
       <div className="row bg-offset rounded py-2 mx-auto">
         {/* This is where the footer starts */}
         <div className="col-auto me-auto" ref={paginationContainer} />
+        <div className="col-auto">
+          {footer}
+        </div>
       </div>
     </div>
   );

@@ -244,6 +244,7 @@ const typeDefs = gql`
     fileName: String
     loadBankData: String
     klufeData: String
+    customFormData: String
   }
 
   type InstrumentWithCalibration {
@@ -278,6 +279,7 @@ const typeDefs = gql`
     approverLastName: String
     approvalDate: String
     approvalComment: String
+    calibratedBy: [CalibratedByInfo]
   }
 
   type ModelCacheUpdate {
@@ -326,6 +328,8 @@ const typeDefs = gql`
     description: String!
     comment: String
     categories: [String]
+    calibratorCategories: [String]
+    requiresCalibrationApproval: Boolean!
     supportLoadBankCalibration: Boolean!
     supportKlufeCalibration: Boolean!
     calibrationFrequency: Int

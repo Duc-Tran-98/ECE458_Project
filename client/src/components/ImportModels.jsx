@@ -37,6 +37,8 @@ export default function ImportModels() {
     { display: 'Model-Categories', value: 'categories' },
     { display: 'Special-Calibration-Support', value: 'specialCalibrationSupport' },
     { display: 'Calibration-Frequency', value: 'calibrationFrequency' },
+    { display: 'Calibration-Requires-Approval', value: 'calibrationRequiresApproval' },
+    { display: 'Calibrator-Categories', value: 'calibratorCategories' },
   ];
   const customHeaderTransform = (header) => {
     switch (header) {
@@ -54,6 +56,11 @@ export default function ImportModels() {
         // eslint-disable-next-line no-case-declarations
         const arr = value.trim().split(/\s+/);
         if (arr.length > 0 && arr[0] !== '') { return arr; }
+        return null;
+      case 'calibratorCategories':
+        // eslint-disable-next-line no-case-declarations
+        const catArr = value.trim().split(/\s+/);
+        if (catArr.length > 0 && catArr[0] !== '') { return catArr; }
         return null;
       default:
         return value.trim().length > 0 ? value.trim() : null;
@@ -107,7 +114,17 @@ export default function ImportModels() {
       field: 'comment',
       headerName: 'Comment',
       width: 300,
-    }, { field: 'calibrationFrequency', headerName: 'Calibration-Frequency', width: 200 },
+      renderCell: (params) => (
+        <div className="overflow-auto">
+          {params.value}
+        </div>
+      ),
+    }, {
+      field: 'calibrationFrequency',
+      headerName: 'Calibration-Frequency',
+      width: 200,
+      renderCell: (params) => ((params.value >= 0) ? params.value : ' '),
+    },
   ];
 
   const characterLimits = {
@@ -116,6 +133,7 @@ export default function ImportModels() {
       modelNumber: 40,
       description: 100,
       categories: 100,
+      calibratorCategories: 100,
       comment: 2000,
       calibrationFrequency: 10,
     },
@@ -153,6 +171,7 @@ export default function ImportModels() {
     if (row.modelNumber && row.modelNumber.length > characterLimits.model.modelNumber) { invalidKeys.push('Model-Number'); }
     if (row.description && row.description.length > characterLimits.model.description) { invalidKeys.push('Short-Description'); }
     if (row.categories && row.categories.length > characterLimits.model.categories) { invalidKeys.push('Model-Categories'); }
+    if (row.calibratorCategories && row.calibratorCategories.length > characterLimits.model.calibratorCategories) { invalidKeys.push('Calibrator-Categories'); }
     if (row.comment && row.comment.length > characterLimits.model.comment) { invalidKeys.push('Comment'); }
     if (row.calibrationFrequency && row.calibrationFrequency.length > characterLimits.model.calibrationFrequency) { invalidKeys.push('Calibration-Frequency'); }
     return invalidKeys.length > 0 ? invalidKeys : null;
@@ -167,6 +186,17 @@ export default function ImportModels() {
     return false;
   };
 
+  const validateRequiresApproval = (calibrationRequiresApproval) => {
+    if (calibrationRequiresApproval) {
+      if (typeof (calibrationRequiresApproval) === 'string') {
+        const lower = calibrationRequiresApproval.toLowerCase();
+        return lower === 'y' || lower === 'yes';
+      }
+      return false;
+    }
+    return true;
+  };
+
   // const emptyLine = (obj) => !Object.values(obj).every((x) => x == null);
 
   const getImportErrors = (fileInfo) => {
@@ -176,11 +206,12 @@ export default function ImportModels() {
       const missingKeys = getMissingKeys(row);
       const isDuplicateModel = checkDuplicateModel(fileInfo, row.vendor, row.modelNumber, index);
       const invalidEntries = validateRow(row);
+      const invalidApproval = !validateRequiresApproval(row.calibrationRequiresApproval);
       const invalidCalibration = !validateCalibrationFrequency(row.calibrationFrequency);
       const invalidSpecialCalibrationSupport = invalidCalibrationSupport(row.specialCalibrationSupport);
 
       // If any errors exist, create errors object
-      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel || invalidSpecialCalibrationSupport) {
+      if (missingKeys || invalidEntries || invalidCalibration || isDuplicateModel || invalidSpecialCalibrationSupport || invalidApproval) {
         const rowError = {
           data: row,
           row: index + 2,
@@ -189,6 +220,7 @@ export default function ImportModels() {
           ...(isDuplicateModel) && { isDuplicateModel },
           ...(invalidCalibration) && { invalidCalibration },
           ...(invalidSpecialCalibrationSupport) && { invalidSpecialCalibrationSupport },
+          ...(invalidApproval) && { invalidApproval },
         };
         importRowErrors.push(rowError);
       }
@@ -206,15 +238,25 @@ export default function ImportModels() {
     return true;
   };
 
+  const filterRequiresApproval = (requiresCalibrationApproval) => {
+    if (typeof (requiresCalibrationApproval) === 'string' && (requiresCalibrationApproval.toLowerCase() === 'y' || requiresCalibrationApproval.toLowerCase() === 'yes')) {
+      return true;
+    }
+    return false;
+  };
+
+  // NOTE: supportCustom is not included as this is not part of import
   const filterData = (fileInfo) => fileInfo.map((obj) => ({
     vendor: String(obj.vendor),
     modelNumber: String(obj.modelNumber),
     description: String(obj.description),
     categories: obj.categories,
+    calibratorCategories: obj.calibratorCategories,
     supportLoadBankCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'load-bank') || false,
     supportKlufeCalibration: (obj.specialCalibrationSupport && typeof (obj.specialCalibrationSupport) === 'string' && obj.specialCalibrationSupport.toLowerCase() === 'klufe') || false,
     comment: String(obj.comment),
     calibrationFrequency: parseInt(obj.calibrationFrequency, 10) > 0 ? parseInt(obj.calibrationFrequency, 10) : null,
+    requiresCalibrationApproval: filterRequiresApproval(obj.calibrationRequiresApproval),
   }));
 
   const handleImport = (fileInfo, resetUpload) => {
@@ -224,8 +266,10 @@ export default function ImportModels() {
       return;
     }
 
+    setImportStatus('Registering');
     // File has been validated, now push to database
     const models = filterData(fileInfo);
+    console.log(models);
     const getVariables = () => ({ models });
     const refetch = JSON.parse(window.sessionStorage.getItem('getModelsWithFilter')) || null;
     const refetchQueries = refetch !== null
