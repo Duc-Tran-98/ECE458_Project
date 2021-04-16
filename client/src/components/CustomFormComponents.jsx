@@ -106,11 +106,11 @@ export function CustomHeaderInput({
   const classes = useStyles();
   return (
     <div className={`${customFormBoxClass} row`}>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-auto" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {showUp && moveUpButton}
         {showDown && moveDownButton}
       </div>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-auto" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
@@ -154,11 +154,11 @@ export function CustomUserPromptInput({
   const classes = useStyles();
   return (
     <div className={`${customFormBoxClass} row`}>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-1" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {showUp && moveUpButton}
         {showDown && moveDownButton}
       </div>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-1" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
@@ -212,11 +212,11 @@ export function CustomNumericInput({
   const classes = useStyles();
   return (
     <div className={`${customFormBoxClass} row`}>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-1" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {showUp && moveUpButton}
         {showDown && moveDownButton}
       </div>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-1" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
@@ -323,11 +323,11 @@ export function CustomTextInput({
 
   return (
     <div className={`${customFormBoxClass} row`}>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-1" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {showUp && moveUpButton}
         {showDown && moveDownButton}
       </div>
-      <div className="col-sm-auto" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="col-1" style={{ display: 'flex', flexDirection: 'column', maxWidth: '5%' }}>
         {addButton}
         {showDelete && <CustomFormDeletePopOver title="Delete" onClick={() => handleDelete(index)} />}
       </div>
