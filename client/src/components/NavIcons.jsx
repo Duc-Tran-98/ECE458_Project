@@ -10,17 +10,28 @@ import HelpIcon from '@material-ui/icons/Help';
 import PropTypes from 'prop-types';
 import UserContext from './UserContext';
 import { PopOverFragment } from './PopOver';
+import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
 
-export default function NavIcons({ handleSignOut }) {
+export default function NavIcons({ handleSignOut, updateNotification }) {
   NavIcons.propTypes = {
     handleSignOut: PropTypes.func.isRequired,
+    updateNotification: PropTypes.bool.isRequired, // if this prop changes, update notification count
   };
   const history = useHistory();
   const user = useContext(UserContext);
   const approvalPermissions = user.calibrationApproverPermission;
   // const { userName } = user;
   // console.log(userName);
-  const notifications = 12;
+  const [notifications, setNotifications] = React.useState(0);
+  React.useEffect(() => {
+    GetAllPendingCalibEvents({
+      fetchPolicy: 'no-cache',
+      handleResponse: (response) => {
+        setNotifications(response.length);
+      },
+    });
+  }, [updateNotification]);
+  // const notifications = 12;
 
   // TODO: Implement handlers for onclick events
   const handleClick = () => history.push('/viewCalibrationArppovals?page=1&limit=25');

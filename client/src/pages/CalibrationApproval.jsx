@@ -1,22 +1,28 @@
 /* eslint-disable no-param-reassign */
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { ServerPaginationGrid } from '../components/UITable';
 import UserContext from '../components/UserContext';
 import { approvalCols } from '../utils/CalibTable';
-// import GetCalibHistory from '../queries/GetCalibHistory';
 import { StateLessCloseModal } from '../components/ModalAlert';
 import DetailedCalibrationView from '../components/DetailedCalibrationView';
 import GetAllPendingCalibEvents from '../queries/GetAllPendingCalibEvents';
 
-export default function CalibrationApprovalPage() {
-  // eslint-disable-next-line no-unused-vars
+export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
+  CalibrationApprovalPage.propTypes = {
+    onCalibEventUpdated: PropTypes.func.isRequired,
+  };
   const user = React.useContext(UserContext);
   const history = useHistory();
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const [initPage, setInitPage] = React.useState(parseInt(urlParams.get('page'), 10));
-  const [initLimit, setInitLimit] = React.useState(parseInt(urlParams.get('limit'), 10));
+  const [initPage, setInitPage] = React.useState(
+    parseInt(urlParams.get('page'), 10),
+  );
+  const [initLimit, setInitLimit] = React.useState(
+    parseInt(urlParams.get('limit'), 10),
+  );
   const [orderBy, setOrderBy] = React.useState(urlParams.get('orderBy'));
   const [sortBy, setSortBy] = React.useState(urlParams.get('sortBy'));
   const [show, setShow] = React.useState(false);
@@ -67,7 +73,8 @@ export default function CalibrationApprovalPage() {
     });
   }, []);
   const cellHandler = (e) => {
-    if (!(e.field === 'fileName' && e.row.fileName)) { // if click on fileName field and fileName has a value, don't setShow to true because that's a link
+    if (!(e.field === 'fileName' && e.row.fileName)) {
+      // if click on fileName field and fileName has a value, don't setShow to true because that's a link
       setSelectedRow(e.row);
       setShow(true);
     }
@@ -80,7 +87,16 @@ export default function CalibrationApprovalPage() {
         title="Approval Request"
         size="xl"
       >
-        {selectedRow && <DetailedCalibrationView selectedRow={selectedRow} />}
+        {selectedRow && (
+          <DetailedCalibrationView
+            selectedRow={selectedRow}
+            approverId={user.id}
+            onBtnClick={() => {
+              setShow(false);
+              onCalibEventUpdated();
+            }}
+          />
+        )}
       </StateLessCloseModal>
       <ServerPaginationGrid
         shouldUpdate={update}
@@ -104,10 +120,16 @@ export default function CalibrationApprovalPage() {
           <div className="ps-3 h5 py-2">Calibration Approval Table</div>
         }
         // eslint-disable-next-line no-unused-vars
-        fetchData={(limit, offset, ordering) => GetAllPendingCalibEvents({ limit, offset, fetchPolicy: 'no-cache' }).then(
-          (data) => data,
-        )}
-        rowCount={() => GetAllPendingCalibEvents({ fetchPolicy: 'no-cache', limit: 1, offset: 0 }).then((data) => data.length)}
+        fetchData={(limit, offset, ordering) => GetAllPendingCalibEvents({
+          limit,
+          offset,
+          fetchPolicy: 'no-cache',
+        }).then((data) => data)}
+        rowCount={() => GetAllPendingCalibEvents({
+          fetchPolicy: 'no-cache',
+          limit: 1,
+          offset: 0,
+        }).then((data) => data.length)}
       />
     </>
   );

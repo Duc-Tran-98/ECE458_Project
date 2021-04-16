@@ -42,6 +42,9 @@ export default async function GetAllModels({
           description
           calibrationFrequency
           supportLoadBankCalibration
+          requiresCalibrationApproval
+          supportCustomCalibration
+          customForm
           comment
           categories {
             name

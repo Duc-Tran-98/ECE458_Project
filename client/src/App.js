@@ -30,6 +30,7 @@ function App() {
   const history = useHistory();
   const [loggedIn, setLoggedIn] = useState(false);
   let jwt = '';
+  const [updateNotification, setUpdateNotification] = React.useState(false);
   const handlePageRefresh = async (token) => {
     // this will save token in local storage before reloading page
     window.sessionStorage.setItem('jwt', token);
@@ -57,6 +58,10 @@ function App() {
       setLoggedIn(true);
     }, 50);
   };
+  const handleUpdateNotification = () => {
+    setUpdateNotification(true);
+    setUpdateNotification(false);
+  };
   React.useEffect(() => {
     if (window.sessionStorage.getItem('token') && !loggedIn) {
       // If previously logged in and refreshed page
@@ -79,21 +84,30 @@ function App() {
           title="HPC IMS"
           loggedIn={loggedIn}
           handleSignOut={handleSignOut}
+          updateNotification={updateNotification}
         />
       </header>
-      <main
-        style={{ zIndex: 0 }}
-      >
+      <main style={{ zIndex: 0 }}>
         <div className="bg-theme rounded ">
           <Switch>
             <Route path="/test">
               <ComponentTest />
             </Route>
             <Route path="/viewCalibrationArppovals">
-              {loggedIn ? <CalibrationApproval /> : <Login handleLogin={handleLogin} />}
+              {loggedIn ? (
+                <CalibrationApproval
+                  onCalibEventUpdated={handleUpdateNotification}
+                />
+              ) : (
+                <Login handleLogin={handleLogin} />
+              )}
             </Route>
             <Route exact path="/">
-              {loggedIn ? <Redirect to="/viewModels?page=1&limit=25" /> : <Login handleLogin={handleLogin} />}
+              {loggedIn ? (
+                <Redirect to="/viewModels?page=1&limit=25" />
+              ) : (
+                <Login handleLogin={handleLogin} />
+              )}
             </Route>
             <Route path="/help">
               {loggedIn ? <Help /> : <Login handleLogin={handleLogin} />}
@@ -102,11 +116,7 @@ function App() {
               {loggedIn ? <UsersTable /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewUser">
-              {loggedIn ? (
-                <ViewUser />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <ViewUser /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/viewModels">
               {loggedIn ? <ListModels /> : <Login handleLogin={handleLogin} />}
@@ -120,7 +130,9 @@ function App() {
             </Route>
             <Route path="/viewInstrument/">
               {loggedIn ? (
-                <DetailedInstrumentView />
+                <DetailedInstrumentView
+                  onCalibEventAdded={handleUpdateNotification}
+                />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}
@@ -136,11 +148,7 @@ function App() {
               {loggedIn ? <Certificate /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/import">
-              {loggedIn ? (
-                <BulkImport />
-              ) : (
-                <Login handleLogin={handleLogin} />
-              )}
+              {loggedIn ? <BulkImport /> : <Login handleLogin={handleLogin} />}
             </Route>
             <Route path="/modelCategories">
               {loggedIn ? (
