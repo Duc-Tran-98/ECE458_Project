@@ -373,7 +373,7 @@ export default function ModelForm({
       }) => (
         <Form noValidate onSubmit={handleSubmit} className="col">
           <div className="row mx-3">
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <Form.Group>
                 <Form.Label className="h5">Vendor</Form.Label>
                 {viewOnly ? (
@@ -411,7 +411,7 @@ export default function ModelForm({
                 )}
               </Form.Group>
             </div>
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <CustomInput
                 controlId="formModelNumber"
                 className="h5"
@@ -429,7 +429,7 @@ export default function ModelForm({
           </div>
           {/* TODO: Calibration frequency ONLY accept numeric values */}
           <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <CustomInput
                 controlId="formCalibrationFrequency"
                 className="h5 text-nowrap"
@@ -450,7 +450,7 @@ export default function ModelForm({
                 error={errors.calibrationFrequency}
               />
             </div>
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <CustomInput
                 controlId="formDescription"
                 className="h5"

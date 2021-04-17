@@ -26,6 +26,7 @@ export default function AsyncSuggest({
   isComboBox,
   getVariables,
   filterRes,
+  backgroundColor,
   handleKeyPress, // what to do when user clicks key on input
 }) {
   AsyncSuggest.propTypes = {
@@ -49,6 +50,7 @@ export default function AsyncSuggest({
     getVariables: PropTypes.func, // pass variables to queries
     filterRes: PropTypes.func, // how to filter response
     handleKeyPress: PropTypes.func,
+    backgroundColor: PropTypes.string,
   };
   AsyncSuggest.defaultProps = {
     value: null,
@@ -61,6 +63,7 @@ export default function AsyncSuggest({
     validMsg: 'Looks Good',
     filterRes: null,
     handleKeyPress: () => undefined,
+    backgroundColor: null,
   };
   const [open, setOpen] = React.useState(false);
   const [availableOptions, setOptions] = React.useState([]);
@@ -115,7 +118,6 @@ export default function AsyncSuggest({
       label={label}
       variant="outlined"
       size="small"
-      onKeyDown={(e) => handleKeyPress(e)}
     />
   ) : (
     <div ref={params.InputProps.ref} className="position-relative">
@@ -167,7 +169,15 @@ export default function AsyncSuggest({
     // If we want use to add new suggestions
     return (
       <Autocomplete
-        style={{ width: '100%' }}
+        style={
+          backgroundColor
+            ? {
+              width: '100%',
+              background: backgroundColor,
+              paddingTop: '0.25rem',
+            }
+            : { width: '100%' }
+        }
         open={open}
         onOpen={() => {
           setOpen(true);
@@ -201,13 +211,22 @@ export default function AsyncSuggest({
         autoHighlight
         onChange={onInputChange}
         renderInput={(params) => genLook(params)}
+        onKeyDown={(e) => handleKeyPress(e)}
       />
     );
   }
   if (multiple) {
     return (
       <Autocomplete
-        style={{ width: '100%' }}
+        style={
+          backgroundColor
+            ? {
+              width: '100%',
+              background: backgroundColor,
+              paddingTop: '0.25rem',
+            }
+            : { width: '100%' }
+        }
         open={open}
         onOpen={() => {
           setOpen(true);
@@ -223,6 +242,7 @@ export default function AsyncSuggest({
         autoHighlight
         onChange={onInputChange}
         value={multipleValues}
+        onKeyDown={(e) => handleKeyPress(e)}
         renderInput={(params) => (
           <>
             <TextField
@@ -239,7 +259,15 @@ export default function AsyncSuggest({
   }
   return (
     <Autocomplete
-      style={{ width: '100%' }}
+      style={
+        backgroundColor
+          ? {
+            width: '100%',
+            background: backgroundColor,
+            paddingTop: '0.25rem',
+          }
+          : { width: '100%' }
+      }
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -257,6 +285,7 @@ export default function AsyncSuggest({
       disableClearable={!isComboBox}
       onChange={onInputChange}
       renderInput={(params) => genLook(params)}
+      onKeyDown={(e) => handleKeyPress(e)}
     />
   );
 }
