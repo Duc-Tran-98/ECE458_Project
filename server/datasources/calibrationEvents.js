@@ -1277,7 +1277,7 @@ class CalibrationEventAPI extends DataSource {
     return JSON.stringify(response);
   }
 
-  async getCetificateForInstrument({ assetTag }) {
+  async getCertificateForInstrument({ assetTag }) {
     const storeModel = await this.store;
     this.store = storeModel;
     const instrument = await this.store.instruments.findOne({

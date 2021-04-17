@@ -8,6 +8,7 @@ const SSH2Promise = require('ssh2-promise');
 const { createStore, createDB } = require('./util');
 const InstrumentAPI = require('./datasources/instruments');
 const runBarcode = require('./datasources/barcodeGenerator');
+const generateCertificate = require('./datasources/certificateGenerator');
 
 let store;
 createDB().then(() => {
@@ -173,6 +174,28 @@ app.get(`${whichRoute}/barcodes`, async (req, res) => {
   res.set('Content-disposition', `attachment; filename=${filename}`);
   res.set('Content-Type', 'application/pdf');
   readStream.pipe(res);
+});
+
+app.get(`${whichRoute}/certificate`, async (req, res) => {
+  let assetTag;
+  let chainOfTruth;
+  if (req.query.assetTag) {
+    assetTag = req.query.assetTag || null;
+    chainOfTruth = req.query.chainOfTruth || null;
+  } else {
+    res.status(400);
+    res.send('Asset Tag Missing');
+    return;
+  }
+  const pdf = await generateCertificate(assetTag, chainOfTruth);
+  const filename = 'calibration_certificate.pdf';
+  const readStream = new Stream.PassThrough();
+  readStream.end(pdf);
+  res.set('Content-disposition', `attachment; filename=${filename}`);
+  res.set('Content-Type', 'arraybuffer');
+  readStream.pipe(res);
+  // res.status(200);
+  // res.send('good job!');
 });
 
 app.post(`${whichRoute}/klufeOn`, (req, res) => {
