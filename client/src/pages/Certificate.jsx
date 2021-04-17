@@ -4,7 +4,7 @@ import React from 'react';
 import { pdfjs } from 'react-pdf';
 import ExpressQuery from '../queries/ExpressQuery';
 
-function newCertificate() {
+export default function Certificate() {
   const [file, setFile] = React.useState();
   const [loaded, setLoaded] = React.useState(false);
 
@@ -70,5 +70,3 @@ function newCertificate() {
     </div>
   );
 }
-
-export default newCertificate;
