@@ -50,6 +50,10 @@ export default function SearchBar({
   const [instrumentCategories, setInstrumentCategories] = React.useState(formatInsCats);
   const [serialNumber, setSerialNumber] = React.useState(initSerialNumber);
   const [assetTag, setAssetTag] = React.useState(initAssetTag);
+  const realTimeVars = {
+    vendors, modelNumbers, descriptions, modelCategories, instrumentCategories, serialNumber, assetTag,
+  }; // use this to keep track of real time variables
+  // sort of like copy of the state we already have, but updated faster than useState
   React.useEffect(() => {
     let active = true;
 
@@ -157,14 +161,22 @@ export default function SearchBar({
 
   const handleKeyPress = (e) => {
     if (e.code === 'Enter') {
+      // console.log('handle key press called');
+      // console.log(
+      //   realTimeVars.vendors,
+      //   realTimeVars.modelNumbers,
+      //   realTimeVars.descriptions,
+      //   realTimeVars.serialNumber,
+      //   realTimeVars.assetTag,
+      // );
       onSearch({
-        vendors: vendors?.vendor || null,
-        modelNumbers: modelNumbers?.modelNumber || null,
-        descriptions: descriptions?.description || null,
-        modelCategories,
-        instrumentCategories,
-        filterSerialNumber: serialNumber?.serialNumber || null,
-        assetTag: assetTag?.assetTag || null,
+        vendors: realTimeVars.vendors?.vendor || null,
+        modelNumbers: realTimeVars.modelNumbers?.modelNumber || null,
+        descriptions: realTimeVars.descriptions?.description || null,
+        modelCategories: realTimeVars.modelCategories,
+        instrumentCategories: realTimeVars.instrumentCategories,
+        filterSerialNumber: realTimeVars.serialNumber?.serialNumber || null,
+        assetTag: realTimeVars.assetTag?.assetTag || null,
       });
     }
   };
@@ -172,7 +184,7 @@ export default function SearchBar({
   const baseSearchRow = () => (
     <>
       <button
-        className="btn my-auto mx-2"
+        className="btn my-auto mx-2 col"
         type="button"
         onClick={() => onSearch({
           vendors: vendors?.vendor || null,
@@ -186,11 +198,9 @@ export default function SearchBar({
       >
         <SearchIcon />
       </button>
-      <div
-        className="m-2 w-25 my-auto pt-1 rounded"
-        style={{ background: '#539ce6' }}
-      >
+      <div className="col-lg py-1">
         <AsyncSuggest
+          backgroundColor="#539ce6"
           query={gql`
             query Models {
               getUniqueVendors {
@@ -199,7 +209,10 @@ export default function SearchBar({
             }
           `}
           queryName="getUniqueVendors"
-          onInputChange={(_e, v) => setVendors(v)}
+          onInputChange={(_e, v) => {
+            setVendors(v);
+            realTimeVars.vendors = v;
+          }}
           label="Filter by Vendor"
           getOptionLabel={(option) => `${option.vendor}`}
           getOptionSelected={(option, value) => option.vendor === value.vendor}
@@ -209,8 +222,9 @@ export default function SearchBar({
           handleKeyPress={handleKeyPress}
         />
       </div>
-      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
+      <div className="col-lg py-1">
         <AsyncSuggest
+          backgroundColor="#539ce6"
           query={gql`
             query GetModelNumbers {
               getAllModels {
@@ -219,7 +233,10 @@ export default function SearchBar({
             }
           `}
           queryName="getAllModels"
-          onInputChange={(_e, v) => setModelNumbers(v)}
+          onInputChange={(_e, v) => {
+            setModelNumbers(v);
+            realTimeVars.modelNumbers = v;
+          }}
           label="Filter by Model Number"
           getOptionLabel={(option) => `${option.modelNumber}`}
           getOptionSelected={(option, value) => option.modelNumber === value.modelNumber}
@@ -229,8 +246,9 @@ export default function SearchBar({
           handleKeyPress={handleKeyPress}
         />
       </div>
-      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
+      <div className="col-lg py-1">
         <AsyncSuggest
+          backgroundColor="#539ce6"
           query={gql`
             query GetCategories {
               getAllModelCategories {
@@ -239,7 +257,10 @@ export default function SearchBar({
             }
           `}
           queryName="getAllModelCategories"
-          onInputChange={(_e, v) => setModelCategories(v)}
+          onInputChange={(_e, v) => {
+            setModelCategories(v);
+            realTimeVars.modelCategories = v;
+          }}
           label={
             forModelSearch ? 'Filter by Category' : 'Filter by Model Category'
           }
@@ -251,8 +272,9 @@ export default function SearchBar({
           handleKeyPress={handleKeyPress}
         />
       </div>
-      <div className="m-2 w-25 my-auto pt-1" style={{ background: '#539ce6' }}>
+      <div className="col-lg py-1">
         <AsyncSuggest
+          backgroundColor="#539ce6"
           query={gql`
             query GetModelNumbers {
               getAllModels {
@@ -261,7 +283,10 @@ export default function SearchBar({
             }
           `}
           queryName="getAllModels"
-          onInputChange={(_e, v) => setDescriptions(v)}
+          onInputChange={(_e, v) => {
+            setDescriptions(v);
+            realTimeVars.descriptions = v;
+          }}
           label="Filter by Description"
           getOptionLabel={(option) => `${option.description}`}
           getOptionSelected={(option, value) => option.description === value.description}
@@ -276,94 +301,96 @@ export default function SearchBar({
   );
 
   if (forModelSearch) {
-    return baseSearchRow();
+    return (
+      <div className="row mx-auto w-100">
+        {baseSearchRow()}
+      </div>
+    );
   }
   return (
-    <>
-      <div className="d-flex flex-column w-100">
-        <div className="d-flex flex-row w-100">{baseSearchRow()}</div>
-        <div className="d-flex flex-row w-100 pt-2">
-          {/* This is for matching the spacing of the above row */}
-          {/* TODO: Move search bar to the left */}
-          <button className="btn my-auto mx-2 invisible" type="button">
-            <SearchIcon />
-          </button>
-          <div
-            className="m-2 w-25 my-auto pt-1"
-            style={{ background: '#539ce6' }}
-          >
-            <AsyncSuggest
-              query={gql`
-                query getSerialNumbs {
-                  getAllInstruments {
-                    serialNumber
-                  }
+    <div className="col w-100">
+      <div className="row mx-auto w-100">{baseSearchRow()}</div>
+      <div className="row mx-auto w-100">
+        {/* This is for matching the spacing of the above row */}
+        <button className="btn my-auto mx-2 invisible col" type="button">
+          <SearchIcon />
+        </button>
+        <div className="col-lg py-1">
+          <AsyncSuggest
+            backgroundColor="#539ce6"
+            query={gql`
+              query getSerialNumbs {
+                getAllInstruments {
+                  serialNumber
                 }
-              `}
-              filterRes={(entry) => entry.serialNumber.length > 0}
-              queryName="getAllInstruments"
-              onInputChange={(_e, v) => setSerialNumber(v)}
-              label="Filter by Serial Number"
-              getOptionLabel={(option) => `${option.serialNumber}`}
-              getOptionSelected={(option, value) => option.serialNumber === value.serialNumber}
-              isComboBox
-              value={serialNumber}
-              isInvalid={false}
-              handleKeyPress={handleKeyPress}
-            />
-          </div>
-          <div
-            className="m-2 w-25 my-auto pt-1"
-            style={{ background: '#539ce6' }}
-          >
-            <AsyncSuggest
-              query={gql`
-                query getSerialNumbs {
-                  getAllInstruments {
-                    assetTag
-                  }
-                }
-              `}
-              queryName="getAllInstruments"
-              onInputChange={(_e, v) => setAssetTag(v)}
-              label="Filter by Asset Tag"
-              getOptionLabel={(option) => `${option.assetTag}`}
-              getOptionSelected={(option, value) => option.assetTag === value.assetTag}
-              isComboBox
-              value={assetTag}
-              isInvalid={false}
-              handleKeyPress={handleKeyPress}
-            />
-          </div>
-          <div
-            className="m-2 w-25 my-auto pt-1"
-            style={{ background: '#539ce6' }}
-          >
-            <AsyncSuggest
-              query={gql`
-                query getInstCats {
-                  getAllInstrumentCategories {
-                    name
-                  }
-                }
-              `}
-              queryName="getAllInstrumentCategories"
-              onInputChange={(_e, v) => setInstrumentCategories(v)}
-              label="Filter by Instrument Category"
-              getOptionLabel={(option) => `${option.name}`}
-              getOptionSelected={() => undefined}
-              multiple
-              multipleValues={instrumentCategories}
-              isInvalid={false}
-              handleKeyPress={handleKeyPress}
-            />
-          </div>
-          {/* This is for matching the spacing of the above row */}
-          <div className="m-2 w-25 my-auto pt-1" />
-          {/* TODO: Move search bar to the left */}
-
+              }
+            `}
+            filterRes={(entry) => entry.serialNumber.length > 0}
+            queryName="getAllInstruments"
+            onInputChange={(_e, v) => {
+              setSerialNumber(v);
+              realTimeVars.serialNumber = v;
+            }}
+            label="Filter by Serial Number"
+            getOptionLabel={(option) => `${option.serialNumber}`}
+            getOptionSelected={(option, value) => option.serialNumber === value.serialNumber}
+            isComboBox
+            value={serialNumber}
+            isInvalid={false}
+            handleKeyPress={handleKeyPress}
+          />
         </div>
+        <div className="col-lg py-1">
+          <AsyncSuggest
+            backgroundColor="#539ce6"
+            query={gql`
+              query getSerialNumbs {
+                getAllInstruments {
+                  assetTag
+                }
+              }
+            `}
+            queryName="getAllInstruments"
+            onInputChange={(_e, v) => {
+              setAssetTag(v);
+              realTimeVars.assetTag = v;
+            }}
+            label="Filter by Asset Tag"
+            getOptionLabel={(option) => `${option.assetTag}`}
+            getOptionSelected={(option, value) => option.assetTag === value.assetTag}
+            isComboBox
+            value={assetTag}
+            isInvalid={false}
+            handleKeyPress={handleKeyPress}
+          />
+        </div>
+        <div className="col-lg py-1">
+          <AsyncSuggest
+            backgroundColor="#539ce6"
+            query={gql`
+              query getInstCats {
+                getAllInstrumentCategories {
+                  name
+                }
+              }
+            `}
+            queryName="getAllInstrumentCategories"
+            onInputChange={(_e, v) => {
+              setInstrumentCategories(v);
+              realTimeVars.instrumentCategories = v;
+            }}
+            label="Filter by Instrument Category"
+            getOptionLabel={(option) => `${option.name}`}
+            getOptionSelected={() => undefined}
+            multiple
+            multipleValues={instrumentCategories}
+            isInvalid={false}
+            handleKeyPress={handleKeyPress}
+          />
+        </div>
+        {/* This is for matching the spacing of the above row */}
+        <div className="col-lg py-1" />
       </div>
-    </>
+    </div>
   );
 }

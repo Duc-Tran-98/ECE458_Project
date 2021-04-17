@@ -1262,7 +1262,7 @@ class CalibrationEventAPI extends DataSource {
     await this.store.calibrationEvents.update(
       {
         approvalStatus: 2,
-        approverUsername: approver.username,
+        approverUsername: approver.userName,
         approverFirstName: approver.firstName,
         approverLastName: approver.lastName,
         approvalDate,

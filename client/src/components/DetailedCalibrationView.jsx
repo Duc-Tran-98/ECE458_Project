@@ -185,7 +185,7 @@ export default function DetailedCalibrationView({
         )}
         {/* TODO: dynamically render any instruments used in calibration */}
         {getCalibrationType() === 'Plain'
-          && selectedRow.calibratedBy.length === 0 && ( // plain & no file upload & no instruments used in calib event => no data
+          && selectedRow.calibratedBy.length === 0 && !selectedRow.fileName && ( // plain & no file upload & no instruments used in calib event => no data
           <div className="ms-4">No data on record</div>
 
         )}
