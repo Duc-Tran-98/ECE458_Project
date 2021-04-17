@@ -9,6 +9,7 @@ const {
 } = require('@react-pdf/renderer');
 const { v4: uuidv4 } = require('uuid');
 const tou8 = require('utf8-to-uint8array');
+const { dirname } = require('path');
 const { createStore, createDB } = require('../util');
 const CalibrationEventAPI = require('./calibrationEvents');
 
@@ -186,7 +187,7 @@ const displayImage = async () => (
       { style: styles.centerView },
       React.createElement(
         Image,
-        { style: styles.image, src: calEvent.fileLocation },
+        { style: styles.image, src: `uploads/${calEvent.fileLocation}` },
       ),
     )
   ) : (null)
@@ -320,6 +321,7 @@ const generateInfoPage = async () => (
           ),
         ),
         await displayLink(),
+        console.log(dirname),
         await displayImage(),
       ),
     ),
@@ -1050,6 +1052,7 @@ const generateDependencyPage = async () => {
 
 const assembleOneCertificate = async () => {
   const pageList = [];
+  console.log(calEvent);
   pageList.push(await generateInfoPage());
   (calEvent.isKlufe || calEvent.isLoadBank) ? pageList.push(await generateDataTablesPage1()) : null;
   calEvent.isLoadBank ? pageList.push(await generateDataTablesPage2()) : null;
@@ -1069,6 +1072,7 @@ const generateCertificate = async (assetTag, chainOfTruth) => {
   }
   for (let i = 0; i < calEvents.length; i += 1) {
     calEvent = calEvents[i];
+    console.log(calEvent);
     if (i === 1) {
       // eslint-disable-next-line no-await-in-loop
       certificateChain.push(await generateDependencyPage());
