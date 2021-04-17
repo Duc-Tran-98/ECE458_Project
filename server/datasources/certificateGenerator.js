@@ -170,9 +170,9 @@ const displayLink = async () => (
   (((await getFileType(calEvent.fileLocation) === 'pdf') || (await getFileType(calEvent.fileLocation) === 'xlsx') || (await getFileType(calEvent.fileLocation) === 'gif'))) ? (
     React.createElement(
       Link,
-      { src: calEvent.fileLocation },
+      { src: `../data/${calEvent.fileLocation}` },
       React.createElement(
-        Text,
+        Link,
         { style: styles.largeText },
         `\n${calEvent.fileName}\n`,
       ),
@@ -321,7 +321,6 @@ const generateInfoPage = async () => (
           ),
         ),
         await displayLink(),
-        console.log(dirname),
         await displayImage(),
       ),
     ),
