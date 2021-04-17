@@ -32,12 +32,12 @@ export default function UserInfo() {
   };
 
   return (
-    <>
+    <div className="py-2" style={{ overflowX: 'hidden' }}>
       <h1 className="m-4">{`${fullName}'s Profile`}</h1>
       <div className="row border-bottom border-dark">
         <ProfileInfo />
       </div>
       {!netIDUser && <PasswordForm handleSubmitPassword={handleSubmitPassword} />}
-    </>
+    </div>
   );
 }

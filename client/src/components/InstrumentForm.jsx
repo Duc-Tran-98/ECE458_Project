@@ -180,7 +180,7 @@ export default function InstrumentForm({
       }) => (
         <Form noValidate onSubmit={handleSubmit}>
           <div className="row mx-3">
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <Form.Group>
                 <div className="d-flex flex-row">
                   <Form.Label className="h5 text-center">
@@ -227,7 +227,7 @@ export default function InstrumentForm({
                 )}
               </Form.Group>
             </div>
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <CustomInput
                 placeHolder={disabled ? '' : 'This field is optional'}
                 controlId="formAssetTag"
@@ -251,7 +251,7 @@ export default function InstrumentForm({
             </div>
           </div>
           <div className="row mx-3 border-top border-dark mt-3">
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <Form.Group>
                 <Form.Label className="h5 text-center text-nowrap ">
                   Calibration Frequency
@@ -264,7 +264,7 @@ export default function InstrumentForm({
                 />
               </Form.Group>
             </div>
-            <div className="col mt-3">
+            <div className="col-lg mt-3">
               <Form.Group>
                 <Form.Label className="h5 text-center">
                   Model Description

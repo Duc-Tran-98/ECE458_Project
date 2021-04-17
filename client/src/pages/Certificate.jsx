@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-no-undef */
 import React from 'react';
 import { pdfjs } from 'react-pdf';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpressQuery from '../queries/ExpressQuery';
 
 export default function Certificate() {
@@ -62,11 +63,21 @@ export default function Certificate() {
   }
 
   return (
-    <div height="100%">
-      <p id="loadingText">
+    <div height="100%" className="position-relative">
+      <p
+        id="loadingText"
+        className="position-absolute top-0 start-50 translate-middle-x"
+      >
         Generating Certificate...
+        <CircularProgress variant="indeterminate" />
       </p>
-      <iframe id="pdfDisplay" title="Document" src={file} width="100%" height={window.innerHeight - 100} />
+      <iframe
+        id="pdfDisplay"
+        title="Document"
+        src={file}
+        width="100%"
+        height={window.innerHeight - 123}
+      />
     </div>
   );
 }
