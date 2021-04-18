@@ -18,8 +18,32 @@ require('./express'); // use express server too
 
 // Connect to db and init tables
 let store;
-createDB().then(() => {
-  store = createStore(false);
+createDB().then(async () => {
+  store = await createStore(false);
+  const checkVoltmeter = await store.modelCategories.findOne({
+    where: { name: 'voltmeter' },
+  });
+  if (checkVoltmeter === null) {
+    await store.modelCategories.create({
+      name: 'voltmeter',
+    });
+  }
+  const checkShuntmeter = await store.modelCategories.findOne({
+    where: { name: 'current_shunt_meter' },
+  });
+  if (checkShuntmeter === null) {
+    await store.modelCategories.create({
+      name: 'current_shunt_meter',
+    });
+  }
+  const checkKlufe = await store.modelCategories.findOne({
+    where: { name: 'Klufe_K5700-compatible' },
+  });
+  if (checkKlufe === null) {
+    await store.modelCategories.create({
+      name: 'Klufe_K5700-compatible',
+    });
+  }
 });
 
 // Define api
@@ -63,6 +87,7 @@ const server = new ApolloServer({
         return null; // return null if user no longer exists
       })
       .catch(() => null);
+
     return { user: userVals }; // return user: userVals(null if user doesn't exist/no jwt header, not null if jwt okay and user exists) to API classes
   },
   // Additional constructor options

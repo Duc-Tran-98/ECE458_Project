@@ -655,32 +655,32 @@ module.exports.createStore = async (useTestDB) => {
     });
   }
 
-  const checkVoltmeter = await modelCategories.findOne({
-    where: { name: 'voltmeter' },
-  });
-  if (checkVoltmeter === null) {
-    await modelCategories.create({
-      name: 'voltmeter',
-    });
-  }
+  // const checkVoltmeter = await modelCategories.findOne({
+  //   where: { name: 'voltmeter' },
+  // });
+  // if (checkVoltmeter === null) {
+  //   await modelCategories.create({
+  //     name: 'voltmeter',
+  //   });
+  // }
 
-  const checkShuntmeter = await modelCategories.findOne({
-    where: { name: 'current_shunt_meter' },
-  });
-  if (checkShuntmeter === null) {
-    await modelCategories.create({
-      name: 'current_shunt_meter',
-    });
-  }
+  // const checkShuntmeter = await modelCategories.findOne({
+  //   where: { name: 'current_shunt_meter' },
+  // });
+  // if (checkShuntmeter === null) {
+  //   await modelCategories.create({
+  //     name: 'current_shunt_meter',
+  //   });
+  // }
 
-  const checkKlufe = await modelCategories.findOne({
-    where: { name: 'Klufe_K5700-compatible' },
-  });
-  if (checkKlufe === null) {
-    await modelCategories.create({
-      name: 'Klufe_K5700-compatible',
-    });
-  }
+  // const checkKlufe = await modelCategories.findOne({
+  //   where: { name: 'Klufe_K5700-compatible' },
+  // });
+  // if (checkKlufe === null) {
+  //   await modelCategories.create({
+  //     name: 'Klufe_K5700-compatible',
+  //   });
+  // }
 
   return {
     db,
