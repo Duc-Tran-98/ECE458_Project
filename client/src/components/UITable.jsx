@@ -145,6 +145,7 @@ export function ServerPaginationGrid({
   showImport,
   shouldUpdate = false,
   onCreate,
+  sortingMode = 'server',
 }) {
   ServerPaginationGrid.propTypes = {
     fetchData: PropTypes.func.isRequired, // This is what is called to get more data
@@ -166,6 +167,7 @@ export function ServerPaginationGrid({
     showImport: PropTypes.bool.isRequired,
     shouldUpdate: PropTypes.bool, // if you want to force update table
     onCreate: PropTypes.func, // optional create button
+    sortingMode: PropTypes.string, // optional define sorting mode
   };
   ServerPaginationGrid.defaultProps = {
     headerElement: null,
@@ -347,7 +349,7 @@ export function ServerPaginationGrid({
           pageSize={initLimit}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
-          sortingMode="server"
+          sortingMode={sortingMode}
           onSortModelChange={handleSortModelChange}
           loading={loading}
           rowsPerPageOptions={rowsPerPage}

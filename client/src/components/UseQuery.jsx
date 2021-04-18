@@ -16,12 +16,14 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4000'
   : '/api';
 
+const wsRoute = process.env.NODE_ENV.includes('dev') ? 'ws://localhost:4000/graphql' : 'ws://backend:4000/graphql';
+
 const httpLink = new HttpLink({
   uri: route,
 });
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:4000/graphql',
+  uri: wsRoute,
   options: {
     reconnect: true,
   },
