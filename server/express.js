@@ -109,7 +109,8 @@ const storage = multer.diskStorage({
     cb(null, '/usr/src/app/uploads');
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    const nameForFile = file.originalname.replace(/\s/g, '');
+    cb(null, `${Date.now()}-${nameForFile}`);
   },
 });
 
@@ -136,7 +137,7 @@ app.post(`${whichRoute}/upload`, upload.any(), (req, res) => {
   // req.body will hold the text fields, if there were any
   res.send({
     assetName: req.files[0].filename,
-    fileName: req.files[0].originalname,
+    fileName: req.files[0].originalname.replace(/\s/g, ''),
   });
 });
 
