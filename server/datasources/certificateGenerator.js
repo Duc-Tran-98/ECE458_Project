@@ -9,6 +9,7 @@ const {
 } = require('@react-pdf/renderer');
 const { v4: uuidv4 } = require('uuid');
 const tou8 = require('utf8-to-uint8array');
+// eslint-disable-next-line no-unused-vars
 const { dirname } = require('path');
 const { createStore, createDB } = require('../util');
 const CalibrationEventAPI = require('./calibrationEvents');
@@ -170,7 +171,7 @@ const displayLink = async () => (
   (((await getFileType(calEvent.fileLocation) === 'pdf') || (await getFileType(calEvent.fileLocation) === 'xlsx') || (await getFileType(calEvent.fileLocation) === 'gif'))) ? (
     React.createElement(
       Link,
-      { src: `../data/${calEvent.fileLocation}` },
+      process.env.NODE_ENV.includes('dev') ? { src: `http://localhost:3000/data/${calEvent.fileLocation}` } : { src: `https://hpt.hopto.org/data/${calEvent.fileLocation}` },
       React.createElement(
         Link,
         { style: styles.largeText },
@@ -261,7 +262,7 @@ const generateInfoPage = async () => (
         React.createElement(
           Text,
           { style: styles.largeText },
-          '\nComment:',
+          '\nCalibration Comment',
         ),
         React.createElement(
           Text,
@@ -289,11 +290,6 @@ const generateInfoPage = async () => (
               { style: styles.largeText },
               `\n\nApproval Status: ${calEvent.approvalStatus}`,
             ),
-            React.createElement(
-              Text,
-              { style: styles.largeText },
-              `${calEvent.approverFirstName ? `Approved By: ${calEvent.approverFirstName} ${calEvent.approverLastName}` : ''}`,
-            ),
           ),
           React.createElement(
             View,
@@ -308,15 +304,42 @@ const generateInfoPage = async () => (
               { style: styles.largeText },
               `Date of Expiration: ${new Date(new Date(calEvent.calibrationDate).getTime() + 86400000 * calEvent.calibrationFrequency).toISOString().split('T')[0]}`,
             ),
+          ),
+        ),
+        React.createElement(
+          Text,
+          { style: styles.largeText },
+          `${calEvent.approvalStatus === 'Approved' ? '\nApproval Comment' : ''}`,
+        ),
+        React.createElement(
+          Text,
+          { style: styles.smallText },
+          calEvent.approvalStatus === 'Approved' ? `${calEvent.approvalComment}` : '',
+        ),
+        React.createElement(
+          View,
+          { style: styles.columnView },
+          React.createElement(
+            View,
+            { style: styles.rightColumn },
             React.createElement(
               Text,
               { style: styles.largeText },
-              `\n\n${calEvent.approverUsername ? `Approver Username: ${calEvent.approverUsername}` : ''}`,
+              `${calEvent.approverFirstName ? `\nApproved By: ${calEvent.approverFirstName} ${calEvent.approverLastName}` : ''}`,
             ),
             React.createElement(
               Text,
               { style: styles.largeText },
-              `${calEvent.approvalDate ? `Approval Date: ${calEvent.approvalDate}` : ''}`,
+              `${calEvent.approverUsername ? `Approver Username: ${calEvent.approverUsername}` : ''}`,
+            ),
+          ),
+          React.createElement(
+            View,
+            { style: styles.leftColumn },
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `\n\n${calEvent.approvalDate ? `Date of Approval: ${calEvent.approvalDate}` : ''}`,
             ),
           ),
         ),
@@ -1051,7 +1074,6 @@ const generateDependencyPage = async () => {
 
 const assembleOneCertificate = async () => {
   const pageList = [];
-  console.log(calEvent);
   pageList.push(await generateInfoPage());
   (calEvent.isKlufe || calEvent.isLoadBank) ? pageList.push(await generateDataTablesPage1()) : null;
   calEvent.isLoadBank ? pageList.push(await generateDataTablesPage2()) : null;
@@ -1071,7 +1093,6 @@ const generateCertificate = async (assetTag, chainOfTruth) => {
   }
   for (let i = 0; i < calEvents.length; i += 1) {
     calEvent = calEvents[i];
-    console.log(calEvent);
     if (i === 1) {
       // eslint-disable-next-line no-await-in-loop
       certificateChain.push(await generateDependencyPage());
