@@ -119,6 +119,7 @@ const typeDefs = gql`
     approverUserName: String
     approverFirstName: String
     approverLastName: String
+    approverEmail: String
     isFileAttached: Boolean!
     fileLocation: String
     fileName: String

@@ -1329,6 +1329,13 @@ class CalibrationEventAPI extends DataSource {
         });
       }
     }
+    // const email = findEmail
+    const approvalUser = await this.store.users.findOne({
+      where: {
+        userName: calibration.dataValues.approverUsername,
+      },
+    });
+    const approverEmail = approvalUser ? approvalUser.dataValues.email : null;
     const result = {
       vendor: instrument.dataValues.vendor,
       modelNumber: instrument.dataValues.modelNumber,
@@ -1348,6 +1355,7 @@ class CalibrationEventAPI extends DataSource {
       approverUsername: calibration.dataValues.approverUsername,
       approverFirstName: calibration.dataValues.approverFirstName,
       approverLastName: calibration.dataValues.approverLastName,
+      approverEmail,
       // eslint-disable-next-line max-len
       isFileAttached: calibration.dataValues.fileLocation !== null && calibration.dataValues.fileName !== null,
       fileLocation: calibration.dataValues.fileLocation,
@@ -1437,6 +1445,12 @@ class CalibrationEventAPI extends DataSource {
           assetTagArray.push(inst.dataValues.assetTag);
         }
       }
+      const approvalUser = await this.store.users.findOne({
+        where: {
+          userName: calibration.dataValues.approverUsername,
+        },
+      });
+      const approverEmail = approvalUser ? approvalUser.dataValues.email : null;
       const cert = {
         vendor: instrument.dataValues.vendor,
         modelNumber: instrument.dataValues.modelNumber,
@@ -1456,6 +1470,7 @@ class CalibrationEventAPI extends DataSource {
         approverUsername: calibration.dataValues.approverUsername,
         approverFirstName: calibration.dataValues.approverFirstName,
         approverLastName: calibration.dataValues.approverLastName,
+        approverEmail,
         // eslint-disable-next-line max-len
         isFileAttached: calibration.dataValues.fileLocation !== null && calibration.dataValues.fileName !== null,
         fileLocation: calibration.dataValues.fileLocation,
