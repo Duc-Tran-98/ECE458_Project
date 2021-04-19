@@ -46,7 +46,7 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
     const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
     if (window.location.search !== searchString) {
       // If current location != next location, update url
-      history.push(`/viewModels${searchString}`);
+      history.push(`/viewCalibrationArppovals${searchString}`);
     }
   };
 
@@ -56,7 +56,7 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
     const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
     if (window.location.search !== searchString) {
       // If current location != next location, update url
-      history.push(`/viewModels${searchString}`);
+      history.push(`/viewCalibrationArppovals${searchString}`);
     }
   };
   React.useEffect(() => {
@@ -103,6 +103,7 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
         cols={approvalCols}
         initPage={initPage || 1}
         initLimit={initLimit || 25}
+        sortingMode="client"
         cellHandler={(e) => cellHandler(e)}
         onPageChange={(page, limit) => {
           updateUrlOnPageChange(page, limit);
@@ -127,7 +128,6 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
         }).then((data) => data)}
         rowCount={() => GetAllPendingCalibEvents({
           fetchPolicy: 'no-cache',
-          limit: 1,
           offset: 0,
         }).then((data) => data.length)}
       />

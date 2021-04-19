@@ -3,6 +3,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import InstrumentForm from './InstrumentForm';
 import MouseOverPopover from './PopOver';
 import TableLoadBank from './TableLoadBank';
@@ -61,9 +62,19 @@ export default function DetailedCalibrationView({
           className="list-group-item bg-grey rounded my-1"
           style={{ boxShadow: '5px 5px 2px #888888' }}
         >
-          <div className="row">
-            <div className="col-md">
-              <span className="h6">Vendor</span>
+          <div
+            className="row"
+          >
+            <div className="col-lg">
+              <span className="h6 text-dark">
+                Vendor
+                <Link
+                  to={`/viewInstrument/?modelNumber=${ele.modelNumber}&vendor=${ele.vendor}&assetTag=${ele.assetTag}`}
+                  className="ps-4"
+                >
+                  Link
+                </Link>
+              </span>
               <br />
               <input
                 className="form-control mt-1"
@@ -72,7 +83,7 @@ export default function DetailedCalibrationView({
                 type="text"
               />
             </div>
-            <div className="col-md">
+            <div className="col-lg">
               <span className="h6">Model Number</span>
               <br />
               <input
@@ -82,7 +93,7 @@ export default function DetailedCalibrationView({
                 type="text"
               />
             </div>
-            <div className="col-md">
+            <div className="col-lg">
               <span className="h6">Asset Tag</span>
               <br />
               <input
@@ -123,7 +134,7 @@ export default function DetailedCalibrationView({
         </>
       )}
       <div className="row mx-3 pt-2">
-        <div className="col">
+        <div className="col-lg">
           <span className="h5">Calibration Type</span>
           <br />
           <input
@@ -133,7 +144,7 @@ export default function DetailedCalibrationView({
             type="text"
           />
         </div>
-        <div className="col">
+        <div className="col-lg">
           <span className="h5">User</span>
           <br />
           <input
@@ -143,7 +154,7 @@ export default function DetailedCalibrationView({
             type="text"
           />
         </div>
-        <div className="col">
+        <div className="col-lg">
           <span className="h5">Date</span>
           <br />
           <input
@@ -183,7 +194,6 @@ export default function DetailedCalibrationView({
         {getCalibrationType() === 'Load Bank' && (
           <TableLoadBank loadBankData={JSON.parse(selectedRow.loadBankData)} />
         )}
-        {/* TODO: dynamically render any instruments used in calibration */}
         {getCalibrationType() === 'Plain'
           && selectedRow.calibratedBy.length === 0 && !selectedRow.fileName && ( // plain & no file upload & no instruments used in calib event => no data
           <div className="ms-4">No data on record</div>
@@ -218,7 +228,7 @@ export default function DetailedCalibrationView({
           || selectedRow.approvalStatus === 2) && ( // approvalStatus = 1 means this event was approved; 0=awaiting, 3=no approval, 2=rejected
           <>
             <div className="row mx-3 mt-3 pt-3 border-top border-dark">
-              <div className="col">
+              <div className="col-lg">
                 <span className="h5">Approver</span>
                 <br />
                 <input
@@ -228,7 +238,7 @@ export default function DetailedCalibrationView({
                   type="text"
                 />
               </div>
-              <div className="col">
+              <div className="col-lg">
                 <span className="h5">Approver Username</span>
                 <br />
                 <input
@@ -238,7 +248,7 @@ export default function DetailedCalibrationView({
                   type="text"
                 />
               </div>
-              <div className="col">
+              <div className="col-lg">
                 <span className="h5">Approval Date</span>
                 <br />
                 <input
