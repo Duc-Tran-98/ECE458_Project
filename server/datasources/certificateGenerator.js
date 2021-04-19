@@ -291,7 +291,7 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
-              `Calibrator Username: ${calEvent.calibratorUserName}`,
+              `Username: ${calEvent.calibratorUserName}`,
             ),
             React.createElement(
               Text,
@@ -348,12 +348,12 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
-              `${calEvent.approverUsername ? `Approver Username: ${calEvent.approverUsername}` : ''}`,
+              `${calEvent.approverUsername ? `Username: ${calEvent.approverUsername}` : ''}`,
             ),
             React.createElement(
               Text,
               { style: styles.largeText },
-              `${calEvent.approverEmail ? `Approver Email: ${calEvent.approverEmail}` : ''}`,
+              `${calEvent.approverEmail ? `Email: ${calEvent.approverEmail}` : ''}`,
             ),
           ),
           React.createElement(
@@ -362,7 +362,7 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
-              `\n\n${calEvent.approvalDate ? `Date of Approval: ${calEvent.approvalDate}` : ''}`,
+              `\n\n\n${calEvent.approvalDate ? `Date of Approval: ${calEvent.approvalDate}` : ''}`,
             ),
           ),
         ),
@@ -925,7 +925,7 @@ const displayCustomForm = () => {
               React.createElement(
                 Text,
                 { style: styles.tableCell },
-                `${rowJSON.min}`,
+                rowJSON.min ? `${rowJSON.min}` : '',
               ),
             ),
             React.createElement(
@@ -934,7 +934,7 @@ const displayCustomForm = () => {
               React.createElement(
                 Text,
                 { style: styles.tableCell },
-                `${rowJSON.max}`,
+                rowJSON.max ? `${rowJSON.max}` : '',
               ),
             ),
             React.createElement(
