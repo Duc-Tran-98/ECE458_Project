@@ -87,30 +87,29 @@ export default function Help() {
           <p>To import models or instruments in bulk, select “Import” icon from the models or instruments page. This will take you to a page containing a link to the import documentation and allow you to download templates for models and instruments. Once you are sure your file is formatted correctly, import it using the correct file selector button. Only users with appropriate permissions can do this.</p>
           <h3>Exporting models/instruments in bulk</h3>
           <p>To export models or instruments in bulk, select “Models” or “Instruments,” respectively, from the menu bar. Use the checkboxes to select the desired rows for export, and then export using the “Export Selected Rows” button above the table. Additionally, all of the models and instruments can be exported using the “Export All” button above the table. For more information on navigating these tables, see the Viewing Models and Viewing Instruments sections of this document.</p>
-          
+
           <h3>Calibrating Instruments</h3>
           <p>Users with appropriate permissions may record instrument calibrations. There are 4 types of calibration events: simple, load bank wizard, klufe wizard, and custom form. All calibration events record the user, date, and an optional comment. Models can support one of the special calibration types.</p>
-    <ul>
+          <ul>
             <li>Simple calibrations: all instruments can record simple calibrations. Simple calibrations can also include a file upload.</li>
             <li>Load Bank Wizard: instruments with appropriately marked models can be calibrated using the load bank wizard. This will guide the user through the calibration process.</li>
             <li>Klufe Calibration Wizard: instruments with appropriately marked models can be calibrated using the Klufe 5700 wizard. This will guide the user through the calibration process.</li>
             <li>Custom Form: instruments with appropriately marked models can be calibrated using a custom form. The form used will be created when the model is created.</li>
-  </ul>
-          
-  
-  <h3>Creating Users</h3>
+          </ul>
+
+          <h3>Creating Users</h3>
           <p>To create a new user, select “Create Users” from the menu bar. Add the new user’s first name, last name, username, email, password, their appropriate permissions and then click register. Only administrators can do this.</p>
-  
+
           <h3>Permission management</h3>
           <p>All users in the system are assigned permissions. The available permissions are: instrument management, model management, calibration, calibration approver, and administrator. Administrators can edit the permissions of all other users.</p>
           <ul>
             <li>Instrument management permission:  Allows creation, modification, and deletion of instruments. This also includes management of instrument categories. This does not confer the ability to calibrate an instrument.</li>
             <li>Model management permission: Allows creation, modification, and deletion of models. This also includes management of model categories. This permission implies instrument management permission.</li>
-  <li>Calibration permission:  Allows the user to perform calibrations.</li>
-  <li>Calibration Approver permission: Allows the user to approve/reject calibrations for models that require it. This permission implies calibration permission.</li>
-  <li>Administrator permission: Inherits all of the abilities described above. Can also confer or revoke permissions onto users.</li>
+            <li>Calibration permission:  Allows the user to perform calibrations.</li>
+            <li>Calibration Approver permission: Allows the user to approve/reject calibrations for models that require it. This permission implies calibration permission.</li>
+            <li>Administrator permission: Inherits all of the abilities described above. Can also confer or revoke permissions onto users.</li>
           </ul>
-  
+
           <hr />
           <p>
             Created for ECE 458 by Angel Huizar, Louis Jensen, Max Smith, Duc Tran, and Natasha Von Seelen
