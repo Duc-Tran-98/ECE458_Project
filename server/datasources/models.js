@@ -137,6 +137,29 @@ class ModelAPI extends DataSource {
       if (value && value.id !== id) {
         response.message = 'That model number and vendor pair already exists!';
       } else {
+        if (!requiresCalibrationApproval && value.requiresCalibrationApproval) {
+          // if approval is turned off make all pending events valid
+          const myInst = await this.store.instruments.findAll({
+            where: {
+              modelReference: id,
+            },
+          });
+          for (let i = 0; i < myInst.length; i += 1) {
+            const myCals = await this.store.calibrationEvents.findAll({
+              where: {
+                calibrationHistoryIdReference: myInst[i].dataValues.id,
+              },
+            });
+            for (let j = 0; j < myCals.length; j += 1) {
+              if (myCals[j].dataValues.approvalStatus === 0) {
+                this.store.calibrationEvents.update({
+                  approvalStatus: 3,
+                },
+                { where: { id: myCals[j].dataValues.id } });
+              }
+            }
+          }
+        }
         this.store.models.update(
           {
             modelNumber,
