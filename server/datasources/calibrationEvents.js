@@ -1220,12 +1220,24 @@ class CalibrationEventAPI extends DataSource {
                 // eslint-disable-next-line prefer-destructuring
                 const id = curr.dataValues.id;
                 const filters = [];
+                const pendingFilters = [];
+                pendingFilters.push({
+                  calibrationHistoryIdReference: id,
+                  approvalStatus: [0],
+                });
                 filters.push({
                   calibrationHistoryIdReference: id,
-                  approvalStatus: [0, 1, 3],
+                  approvalStatus: [1, 3],
                 });
                 if (count !== 1) {
                   filters.push({
+                    date: SQL.where(
+                      SQL.fn('date', SQL.col('date')),
+                      '<=',
+                      dates.get(curr.dataValues.assetTag),
+                    ),
+                  });
+                  pendingFilters.push({
                     date: SQL.where(
                       SQL.fn('date', SQL.col('date')),
                       '<=',
@@ -1244,7 +1256,19 @@ class CalibrationEventAPI extends DataSource {
                     as: 'calibratedBy',
                   },
                 });
+                const pendingCalibrations = await this.store.calibrationEvents.findAll({
+                  where: pendingFilters,
+                  order: [
+                    ['date', 'DESC'],
+                    ['id', 'DESC'],
+                  ],
+                  include: {
+                    model: this.store.calibratedByRelationships,
+                    as: 'calibratedBy',
+                  },
+                });
                 if (calibration === null) continue;
+                const validId = calibration.dataValues.id;
                 // const relations = [];
                 for (let j = 0; j < calibration.calibratedBy.length; j += 1) {
                   const inst = calibration.calibratedBy[j];
@@ -1255,6 +1279,7 @@ class CalibrationEventAPI extends DataSource {
                       id: currentId,
                     },
                   });
+
                   if (found) {
                     if (found.dataValues.assetTag === assetTag) {
                       response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
@@ -1269,6 +1294,36 @@ class CalibrationEventAPI extends DataSource {
                     }
                     dates.set(inst.dataValues.assetTag, calibration.dataValues.date);
                     assetTagArray.push(inst.dataValues.assetTag);
+                  }
+                }
+                if (pendingCalibrations === null) continue;
+                for (let k = 0; k < pendingCalibrations.length; k += 1) {
+                  const pending = pendingCalibrations[k];
+                  if (pending.dataValues.id < validId) continue;
+                  for (let j = 0; j < pending.calibratedBy.length; j += 1) {
+                    const inst = pending.calibratedBy[j];
+                    const currentId = inst.dataValues.calibratedBy;
+                    // eslint-disable-next-line no-await-in-loop
+                    const found = await this.store.instruments.findOne({
+                      where: {
+                        id: currentId,
+                      },
+                    });
+                    if (found) {
+                      if (found.dataValues.assetTag === assetTag) {
+                        response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                        return;
+                      }
+                      dates.set(found.dataValues.assetTag, pending.dataValues.date);
+                      assetTagArray.push(found.dataValues.assetTag);
+                    } else {
+                      if (inst.dataValues.assetTag === assetTag) {
+                        response.message = `ERROR: Calibrating instrument ${assetTag} with instrument ${assetTagArray[0]} would create a cycle in the chain of truth`;
+                        return;
+                      }
+                      dates.set(inst.dataValues.assetTag, pending.dataValues.date);
+                      assetTagArray.push(inst.dataValues.assetTag);
+                    }
                   }
                 }
               }
