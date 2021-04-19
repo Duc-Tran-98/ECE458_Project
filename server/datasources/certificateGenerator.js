@@ -278,12 +278,6 @@ const generateInfoPage = async () => (
           calEvent.calibrationComment ? `${calEvent.calibrationComment}` : '',
         ),
         React.createElement(
-          Text,
-          { style: styles.largeText },
-          // eslint-disable-next-line no-use-before-define
-          (calEvent.calibratedBy.length !== 0) ? `\nCalibrated Using: ${getRelations(calEvent.calibratedBy)}` : '',
-        ),
-        React.createElement(
           View,
           { style: styles.columnView },
           React.createElement(
@@ -359,12 +353,7 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
-              `${calEvent.approverUsername ? `Email: ${calEvent.approverEmail}` : ''}`,
-            ),
-            React.createElement(
-              Text,
-              { style: styles.largeText },
-              `${calEvent.approverEmail ? `Approver Email: ${calEvent.approverEmail}` : ''}`,
+              `${calEvent.approverEmail ? `Email: ${calEvent.approverEmail}` : ''}`,
             ),
           ),
           React.createElement(
