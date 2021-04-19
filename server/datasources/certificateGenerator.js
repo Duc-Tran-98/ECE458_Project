@@ -1110,12 +1110,16 @@ const generateCertificate = async (assetTag, chainOfTruth) => {
   } else {
     calEvents = [await cal.getCertificateForInstrument({ assetTag })];
   }
+  const repeatChecker = new Set();
   for (let i = 0; i < calEvents.length; i += 1) {
     calEvent = calEvents[i];
     if (i === 1) {
       // eslint-disable-next-line no-await-in-loop
       certificateChain.push(await generateDependencyPage());
     }
+    // eslint-disable-next-line no-continue
+    if (repeatChecker.has(calEvent.assetTag)) continue;
+    repeatChecker.add(calEvent.assetTag);
     // eslint-disable-next-line no-await-in-loop
     certificateChain.push(await assembleOneCertificate());
   }
