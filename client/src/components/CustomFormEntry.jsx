@@ -104,6 +104,8 @@ export default function CustomFormEntry({
     console.log(response);
     if (response.success) {
       toast.success(response.message);
+    } else {
+      toast.error(response.message);
     }
   };
 
