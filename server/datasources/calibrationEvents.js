@@ -460,7 +460,10 @@ class CalibrationEventAPI extends DataSource {
               }
               const calibration = await this.store.calibrationEvents.findOne({
                 where: filters,
-                order: [['date', 'DESC']],
+                order: [
+                  ['date', 'DESC'],
+                  ['id', 'DESC'],
+                ],
                 include: {
                   model: this.store.calibratedByRelationships,
                   as: 'calibratedBy',
@@ -659,7 +662,10 @@ class CalibrationEventAPI extends DataSource {
               }
               const calibration = await this.store.calibrationEvents.findOne({
                 where: filters,
-                order: [['date', 'DESC']],
+                order: [
+                  ['date', 'DESC'],
+                  ['id', 'DESC'],
+                ],
                 include: {
                   model: this.store.calibratedByRelationships,
                   as: 'calibratedBy',
@@ -858,7 +864,10 @@ class CalibrationEventAPI extends DataSource {
               }
               const calibration = await this.store.calibrationEvents.findOne({
                 where: filters,
-                order: [['date', 'DESC']],
+                order: [
+                  ['date', 'DESC'],
+                  ['id', 'DESC'],
+                ],
                 include: {
                   model: this.store.calibratedByRelationships,
                   as: 'calibratedBy',
@@ -1061,7 +1070,10 @@ class CalibrationEventAPI extends DataSource {
                 }
                 const calibration = await this.store.calibrationEvents.findOne({
                   where: filters,
-                  order: [['date', 'DESC']],
+                  order: [
+                    ['date', 'DESC'],
+                    ['id', 'DESC'],
+                  ],
                   include: {
                     model: this.store.calibratedByRelationships,
                     as: 'calibratedBy',
