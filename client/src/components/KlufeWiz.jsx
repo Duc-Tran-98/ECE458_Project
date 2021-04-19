@@ -44,6 +44,7 @@ export default function KlufeWiz({
     comment: '',
     klufeCalOk: false,
     klufeCalWith: null,
+    infoValid: false,
     step4ok: false,
     step7ok: false,
     step9ok: false,
@@ -78,6 +79,7 @@ export default function KlufeWiz({
         date: today,
         user: user.userName,
         comment: '',
+        infoValid: false,
         step4ok: false,
         step7ok: false,
         step9ok: false,
@@ -216,6 +218,8 @@ export default function KlufeWiz({
   };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
+      case 0:
+        return formState.infoValid;
       case 4:
         return formState.step4ok;
       case 7:
@@ -360,7 +364,10 @@ export default function KlufeWiz({
                   name="date"
                   type="date"
                   max={today}
-                  onChange={(e) => setFormState({ ...formState, date: e.target.value })}
+                  onChange={(e) => {
+                    const check = !validateDate(e.target.value) && formState.klufeCalOk;
+                    setFormState({ ...formState, date: e.target.value, infoValid: check });
+                  }}
                   required
                   value={formState.date}
                   className=""
@@ -426,8 +433,9 @@ export default function KlufeWiz({
                         date: v?.recentCalibration[0]?.date,
                         calibrationFrequency: v.calibrationFrequency,
                       });
+                      const check = !validateDate(formState.date) && klufeCalOk;
                       setFormState({
-                        ...formState, calibratedBy: v.assetTag, klufeCalOk, klufeCalWith: v,
+                        ...formState, calibratedBy: v.assetTag, klufeCalOk, klufeCalWith: v, infoValid: check,
                       });
                       // }
                     }}
