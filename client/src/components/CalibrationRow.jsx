@@ -69,8 +69,13 @@ export default function CalibrationRow({
   const val = { userName: entry.user };
   const [fileNameDisplay, setFileNameDisplay] = useState('');
   const [displayError, setDisplayError] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [calibratorsValid, setCalibratorsValid] = useState(true);
   const maxCalibrationComment = 2000;
-  const isValidForm = () => comment.length <= maxCalibrationComment;
+  const isValidForm = () => comment.length <= maxCalibrationComment && calibratorsValid;
+  const checkIfValid = (valid) => {
+    setCalibratorsValid(valid);
+  };
   // const [fileData, setFileData] = useState(null);
   // eslint-disable-next-line prefer-const
   return (
@@ -145,7 +150,7 @@ export default function CalibrationRow({
           <AssetChips onChangeCalib={onChangeCalibRow} entry={entry} />
         </div> */}
         <div className="row w-100 mx-auto">
-          <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} entry={entry} />
+          <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} entry={entry} checkValid={checkIfValid} />
         </div>
         <div
           className="row w-100 mx-auto"
