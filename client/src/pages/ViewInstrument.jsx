@@ -432,7 +432,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
               View Certificate
             </Link>
           </MouseOverPopover>
-          <MouseOverPopover message="Show train of truth" className="ms-2">
+          <MouseOverPopover message="Show chain of truth" className="ms-2">
             <span className="h5">
               Chain of truth
               <Checkbox
