@@ -18,7 +18,7 @@ const route = process.env.NODE_ENV.includes('dev')
 
 const wsRoute = process.env.NODE_ENV.includes('dev')
   ? 'ws://localhost:4000/graphql'
-  : 'wss://backend:4000/graphql';
+  : 'wss://localhost:4000/graphql';
 
 const httpLink = new HttpLink({
   uri: route,

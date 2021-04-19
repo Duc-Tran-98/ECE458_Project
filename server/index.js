@@ -106,11 +106,7 @@ const server = new ApolloServer({
   },
 });
 
-const wsRoute = process.env.NODE_ENV.includes('dev')
-  ? 'ws://localhost:4000/graphql'
-  : 'wss://localhost:4000/graphql';
-
-server.listen({ subscriptionsUrl: wsRoute }).then(({ url, subscriptionsUrl }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`
     Server is running at ${url}\n
     Subscriptions Ready at ${subscriptionsUrl}
