@@ -1046,9 +1046,13 @@ const generateDataTablesPage2 = async () => (
 
 const fillDependencies = async () => {
   const dependencies = [];
+  const repeatChecker = new Set();
   for (let i = 0; i < calEvents.length; i += 1) {
     const inst = calEvents[i];
     if (inst.calibratedBy.length !== 0) {
+      // eslint-disable-next-line no-continue
+      if (repeatChecker.has(inst.assetTag)) continue;
+      repeatChecker.add(inst.assetTag);
       const line = React.createElement(
         Text,
         { style: styles.smallText },
