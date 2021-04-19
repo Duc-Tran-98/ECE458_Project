@@ -29,6 +29,8 @@ services:
     expose:
       - 4000
       - 4001
+    ports: 
+      - 4000:4000
     links:
       - mysql
     volumes:

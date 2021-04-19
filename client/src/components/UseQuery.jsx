@@ -16,7 +16,9 @@ const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4000'
   : '/api';
 
-const wsRoute = process.env.NODE_ENV.includes('dev') ? 'ws://localhost:4000/graphql' : 'wss://hpt.hopto.org/ws';
+const wsRoute = process.env.NODE_ENV.includes('dev')
+  ? 'ws://localhost:4000/graphql'
+  : 'wss://backend:4000/graphql';
 
 const httpLink = new HttpLink({
   uri: route,
