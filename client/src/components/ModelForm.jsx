@@ -316,6 +316,19 @@ export default function ModelForm({
     setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
   }, [customFormState]);
 
+  const genCalibrationTypeLabel = (calibrationType) => {
+    switch (calibrationType) {
+      case 'standard':
+        return 'None';
+      case 'loadBank':
+        return 'Load Bank';
+      case 'klufe':
+        return 'Klufe 5700';
+      default:
+        return 'Custom Form';
+    }
+  };
+
   return (
     <Formik
       initialValues={{
@@ -517,22 +530,83 @@ export default function ModelForm({
           <div className="row mx-3 border-top border-dark mt-3">
             {/* <Form.Label className="h5 mt-3">Calibration Information</Form.Label> */}
             <div className="col mt-3">
-              <FormLabel component="legend">Approval</FormLabel>
-              <FormControlLabel
-                control={<Checkbox checked={values.requiresCalibrationApproval} name="requiresCalibrationApproval" onChange={handleChange} color="primary" />}
-                label="Requires Approval"
-                disabled={disabled}
-              />
+              {(typeof viewOnly === 'undefined' || !viewOnly) && (
+                <>
+                  <FormLabel component="legend">Approval</FormLabel>
+                  <FormControlLabel
+                    control={(
+                      <Checkbox
+                        checked={values.requiresCalibrationApproval}
+                        name="requiresCalibrationApproval"
+                        onChange={handleChange}
+                        color="primary"
+                      />
+                    )}
+                    label="Requires Approval"
+                    disabled={disabled}
+                  />
+                </>
+              )}
+              {viewOnly && (
+                <>
+                  <span className="h5">Approval</span>
+                  <br />
+                  <div className="ps-3 pt-1">
+                    {values.requiresCalibrationApproval
+                      ? 'Required'
+                      : 'Not required'}
+                  </div>
+                </>
+              )}
             </div>
-            <div className="col-auto mt-3">
+            <div className={viewOnly ? 'col mt-3' : 'col-auto mt-3'}>
               {/* <Form.Label className="h5">Calibration Mode</Form.Label> */}
-              <FormLabel component="legend">Special Calibration Type</FormLabel>
-              <RadioGroup row aria-label="calibrationType" name="calibrationType" value={values.calibrationType} onChange={handleChange}>
-                <FormControlLabel value="standard" disabled={disabled} control={<Radio color="primary" />} label="None" />
-                <FormControlLabel value="loadBank" disabled={disabled} control={<Radio color="primary" />} label="Load Bank" />
-                <FormControlLabel value="klufe" disabled={disabled} control={<Radio color="primary" />} label="Klufe 5700" />
-                <FormControlLabel value="customForm" disabled={disabled} control={<Radio color="primary" />} label="Custom Form" />
-              </RadioGroup>
+              {viewOnly && (
+                <>
+                  <span className="h5">Special Calibration Type</span>
+                  <br />
+                  <div className="ps-3 pt-1">{genCalibrationTypeLabel(values.calibrationType)}</div>
+                </>
+              )}
+              {(typeof viewOnly === 'undefined' || !viewOnly) && (
+                <>
+                  <FormLabel component="legend">
+                    Special Calibration Type
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-label="calibrationType"
+                    name="calibrationType"
+                    value={values.calibrationType}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="standard"
+                      disabled={disabled}
+                      control={<Radio color="primary" />}
+                      label="None"
+                    />
+                    <FormControlLabel
+                      value="loadBank"
+                      disabled={disabled}
+                      control={<Radio color="primary" />}
+                      label="Load Bank"
+                    />
+                    <FormControlLabel
+                      value="klufe"
+                      disabled={disabled}
+                      control={<Radio color="primary" />}
+                      label="Klufe 5700"
+                    />
+                    <FormControlLabel
+                      value="customForm"
+                      disabled={disabled}
+                      control={<Radio color="primary" />}
+                      label="Custom Form"
+                    />
+                  </RadioGroup>
+                </>
+              )}
             </div>
           </div>
           {values.calibrationType === 'customForm' && (
@@ -547,7 +621,7 @@ export default function ModelForm({
                     update={shouldUpdateCustomForm}
                     editEnabled={!disabled}
                   />
-            )}
+                )}
               />
             </div>
           )}
