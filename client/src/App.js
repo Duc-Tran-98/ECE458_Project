@@ -81,7 +81,7 @@ function App() {
       <ToastContainer />
       <header className="sticky-top text-light" style={{ zIndex: 100 }}>
         <NavBar
-          title="HPC IMS"
+          title="PM"
           loggedIn={loggedIn}
           handleSignOut={handleSignOut}
           updateNotification={updateNotification}

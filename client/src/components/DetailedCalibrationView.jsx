@@ -209,6 +209,7 @@ export default function DetailedCalibrationView({
             serialNumber={selectedRow.serialNumber}
             assetTag={selectedRow.assetTag}
             vendor={selectedRow.vendor}
+            disabled
           />
         )}
       </div>

@@ -413,13 +413,16 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
                   serialNumber={formState.serialNumber}
                   assetTag={formState.assetTag}
                   vendor={formState.vendor}
+                  onCalibEventAdded={onCalibEventAdded}
                 />
               </StateLessCloseButtonModal>
             </div>
           )}
         </>
       )}
-      {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+      {calibHist.filter(
+        (entry) => entry.viewOnly && (entry.approvalStatus === 1 || entry.approvalStatus === 3),
+      ).length > 0 && (
         <>
           <MouseOverPopover
             className="ms-2"
