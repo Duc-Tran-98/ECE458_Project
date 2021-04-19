@@ -34,6 +34,7 @@ export default function CalibratedWith({
   modelNumber,
   onChangeCalib,
   entry,
+  checkValid,
 }) {
   CalibratedWith.propTypes = {
     vendor: PropTypes.string,
@@ -41,6 +42,7 @@ export default function CalibratedWith({
     onChangeCalib: PropTypes.func.isRequired,
     // eslint-disable-next-line react/forbid-prop-types
     entry: PropTypes.object.isRequired,
+    checkValid: PropTypes.func.isRequired,
   };
   CalibratedWith.defaultProps = {
     vendor: null,
@@ -191,6 +193,11 @@ export default function CalibratedWith({
                         rows[data.key].ok = calOk;
                         rows[data.key].tag = v.assetTag;
                         rows[data.key].with = v;
+                        let check = true;
+                        for (let i = 0; i < rows.length; i += 1) {
+                          if (rows[i].tag && !rows[i].ok) check = false;
+                        }
+                        checkValid(check);
                         setNow(!now);
                         const e = {
                           target: {
@@ -214,6 +221,11 @@ export default function CalibratedWith({
                       title="Remove Instrument"
                       onClick={() => {
                         const newRows = rows.filter((chip) => chip.key !== data.key);
+                        let check = true;
+                        for (let i = 0; i < newRows.length; i += 1) {
+                          if (newRows[i].tag && !newRows[i].ok) check = false;
+                        }
+                        checkValid(check);
                         const tagArr = newRows.map((el) => el.tag);
                         setRows((chips) => chips.filter((chip) => chip.key !== data.key));
                         console.log(rows);

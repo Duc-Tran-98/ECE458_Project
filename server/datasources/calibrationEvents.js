@@ -327,7 +327,7 @@ class CalibrationEventAPI extends DataSource {
     fileName,
     calibratedBy,
   }) {
-    console.log(`add by asset tag ${calibratedBy}`);
+    console.log(`calibrators: ${calibratedBy}`);
     const response = { message: '', success: false };
     if (!this.checkPermission()) {
       response.message = 'ERROR: User does not have permission.';
@@ -369,8 +369,10 @@ class CalibrationEventAPI extends DataSource {
         const calibrationHistoryIdReference = instrument[0].dataValues.id;
         const relations = [];
         if (calibratedBy) {
+          const addedSet = new Set();
           for (let cal = 0; cal < calibratedBy.length; cal += 1) {
             const tag = calibratedBy[cal];
+            if (tag === null || addedSet.has(tag)) continue;
             if (tag < 100000 || tag > 999999) {
               response.message = 'ERROR: Asset tag must be in range 100000-999999!';
               return;
@@ -403,6 +405,7 @@ class CalibrationEventAPI extends DataSource {
                   bySerialNumber: calWith.dataValues.serialNumber,
                   byAssetTag: calWith.dataValues.assetTag,
                 });
+                addedSet.add(tag);
               } else {
                 response.message = `ERROR: instrument ${calWith.dataValues.assetTag} is not in a valid calibration category!`;
                 return;
@@ -968,8 +971,10 @@ class CalibrationEventAPI extends DataSource {
           const calibrationHistoryIdReference = instrument[0].dataValues.id;
           const relations = [];
           if (calibratedBy) {
+            const addedSet = new Set();
             for (let cal = 0; cal < calibratedBy.length; cal += 1) {
               const tag = calibratedBy[cal];
+              if (tag === null || addedSet.has(tag)) continue;
               if (tag < 100000 || tag > 999999) {
                 response.message = 'ERROR: Asset tag must be in range 100000-999999!';
                 return;
@@ -1002,6 +1007,7 @@ class CalibrationEventAPI extends DataSource {
                     bySerialNumber: calWith.dataValues.serialNumber,
                     byAssetTag: calWith.dataValues.assetTag,
                   });
+                  addedSet.add(tag);
                 } else {
                   response.message = `ERROR: instrument ${calWith.dataValues.assetTag} is not in a valid calibration category!`;
                   return;

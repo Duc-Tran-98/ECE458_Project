@@ -253,8 +253,11 @@ export default function CustomFormEntry({
     handleClose();
     onFinish();
   };
-  const canSubmit = true;
-
+  // const canSubmit = true;
+  const [canSubmit, setCanSubmit] = React.useState(true);
+  const checkValid = (valid) => {
+    setCanSubmit(valid);
+  };
   const handleChange = (e, index) => {
     if (!disabled) {
       const nextState = state;
@@ -445,7 +448,7 @@ export default function CustomFormEntry({
                 className=""
               />
             </Form.Group>
-            <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} />
+            <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} checkValid={checkValid} />
             <div className={divClass}>
               <div className=" m-3 text-center">
                 <button

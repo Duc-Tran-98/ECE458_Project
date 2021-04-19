@@ -194,6 +194,14 @@ const displayImage = async () => (
   ) : (null)
 );
 
+const getRelations = (calibratedByList) => {
+  let relations = '';
+  for (let j = 0; j < calibratedByList.length; j += 1) {
+    relations = `${relations} ${calibratedByList[j].vendor} ${calibratedByList[j].modelNumber} #${calibratedByList[j].assetTag}`;
+  }
+  return relations;
+};
+
 const generateInfoPage = async () => (
   React.createElement(
     Page,
@@ -294,6 +302,16 @@ const generateInfoPage = async () => (
             React.createElement(
               Text,
               { style: styles.largeText },
+              '\nCalibrators Used: ',
+            ),
+            React.createElement(
+              Text,
+              { style: styles.smallText },
+              getRelations(calEvent.calibratedBy),
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
               `\n\nApproval Status: ${calEvent.approvalStatus}`,
             ),
           ),
@@ -342,6 +360,11 @@ const generateInfoPage = async () => (
               Text,
               { style: styles.largeText },
               `${calEvent.approverUsername ? `Email: ${calEvent.approverEmail}` : ''}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `${calEvent.approverEmail ? `Approver Email: ${calEvent.approverEmail}` : ''}`,
             ),
           ),
           React.createElement(
@@ -1031,14 +1054,6 @@ const generateDataTablesPage2 = async () => (
     ),
   )
 );
-
-const getRelations = (calibratedByList) => {
-  let relations = '';
-  for (let j = 0; j < calibratedByList.length; j += 1) {
-    relations = `${relations} ${calibratedByList[j].vendor} ${calibratedByList[j].modelNumber} #${calibratedByList[j].assetTag}`;
-  }
-  return relations;
-};
 
 const fillDependencies = async () => {
   const dependencies = [];
