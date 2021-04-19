@@ -332,6 +332,11 @@ const generateInfoPage = async () => (
               { style: styles.largeText },
               `${calEvent.approverUsername ? `Approver Username: ${calEvent.approverUsername}` : ''}`,
             ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              `${calEvent.approverEmail ? `Approver Email: ${calEvent.approverEmail}` : ''}`,
+            ),
           ),
           React.createElement(
             View,
