@@ -194,6 +194,14 @@ const displayImage = async () => (
   ) : (null)
 );
 
+const getRelations = (calibratedByList) => {
+  let relations = '';
+  for (let j = 0; j < calibratedByList.length; j += 1) {
+    relations = `${relations} ${calibratedByList[j].vendor} ${calibratedByList[j].modelNumber} #${calibratedByList[j].assetTag}`;
+  }
+  return relations;
+};
+
 const generateInfoPage = async () => (
   React.createElement(
     Page,
@@ -284,6 +292,16 @@ const generateInfoPage = async () => (
               Text,
               { style: styles.largeText },
               `Calibrator Username: ${calEvent.calibratorUserName}`,
+            ),
+            React.createElement(
+              Text,
+              { style: styles.largeText },
+              '\nCalibrators Used: ',
+            ),
+            React.createElement(
+              Text,
+              { style: styles.smallText },
+              getRelations(calEvent.calibratedBy),
             ),
             React.createElement(
               Text,
@@ -1025,14 +1043,6 @@ const generateDataTablesPage2 = async () => (
     ),
   )
 );
-
-const getRelations = (calibratedByList) => {
-  let relations = '';
-  for (let j = 0; j < calibratedByList.length; j += 1) {
-    relations = `${relations} ${calibratedByList[j].vendor} ${calibratedByList[j].modelNumber} #${calibratedByList[j].assetTag}`;
-  }
-  return relations;
-};
 
 const fillDependencies = async () => {
   const dependencies = [];
