@@ -195,10 +195,10 @@ export default function LoadBankWiz({
   };
   const canAdvance = (step) => { // whether or not user can advance a step
     switch (step) {
+      case 0:
+        return !validateDate(formState.date);
       case 1:
-        return (
-          DEBUG || (formState.voltMeterOk && formState.shuntMeterOk && formState.voltMeter !== null && formState.shuntMeter !== null)
-        );
+        return formState.voltMeterOk && formState.shuntMeterOk && formState.voltMeter !== null && formState.shuntMeter !== null;
       case 2:
         return formState.visualCheckOk;
       case 3:
