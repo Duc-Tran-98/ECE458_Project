@@ -335,13 +335,15 @@ export default function CustomFormEntry({
   const numberStep = (step, index) => (
     <div className={`${divClass} row`}>
       <div className="col">
-        <TextField
+        <CustomDisabledTextField
           className={classes.textFieldLarge}
           margin="normal"
           value={step.prompt}
           helperText={getNumberLabel(step)}
           disabled
           InputProps={inputProps}
+          multiline
+          rowsMax={100}
         />
       </div>
       <div className="col" style={{ margin: 'auto 0px' }}>
@@ -363,12 +365,14 @@ export default function CustomFormEntry({
   const textStep = (step, index) => (
     <div className={`${divClass} row`}>
       <div className="col">
-        <TextField
+        <CustomDisabledTextField
           className={classes.textFieldLarge}
           margin="normal"
           value={step.prompt}
           disabled
           InputProps={inputProps}
+          multiline
+          rowsMax={100}
         />
       </div>
       <div className="col mt-3" style={{ margin: 'auto 0px' }}>
