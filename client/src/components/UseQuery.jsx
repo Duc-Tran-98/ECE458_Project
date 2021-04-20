@@ -3,50 +3,47 @@ import PropTypes from 'prop-types';
 import {
   ApolloClient,
   InMemoryCache,
-  HttpLink,
-  // eslint-disable-next-line no-unused-vars
-  split,
 } from '@apollo/client';
-import { WebSocketLink } from '@apollo/client/link/ws';
-import { getMainDefinition } from '@apollo/client/utilities';
-import { setContext } from '@apollo/client/link/context';
+// import { WebSocketLink } from '@apollo/client/link/ws';
+// import { getMainDefinition } from '@apollo/client/utilities';
+// import { setContext } from '@apollo/client/link/context';
 import { print } from 'graphql';
 
 const route = process.env.NODE_ENV.includes('dev')
   ? 'http://localhost:4000'
   : '/api';
 
-const wsRoute = process.env.NODE_ENV.includes('dev')
-  ? 'ws://localhost:4000/graphql'
-  : 'wss://localhost:4000/graphql';
+// const wsRoute = process.env.NODE_ENV.includes('dev')
+//   ? 'ws://localhost:4000/graphql'
+//   : 'wss://localhost:4000/graphql';
 
-const httpLink = new HttpLink({
-  uri: route,
-});
+// const httpLink = new HttpLink({
+//   uri: route,
+// });
 
-const wsLink = new WebSocketLink({
-  uri: wsRoute,
-  options: {
-    reconnect: true,
-  },
-});
-let authLink = setContext((_, { headers }) => ({
-  headers: {
-    ...headers,
-    authorization: '',
-  },
-}));
-let splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition'
-      && definition.operation === 'subscription'
-    );
-  },
-  wsLink,
-  authLink.concat(httpLink),
-);
+// const wsLink = new WebSocketLink({
+//   uri: wsRoute,
+//   options: {
+//     reconnect: true,
+//   },
+// });
+// let authLink = setContext((_, { headers }) => ({
+//   headers: {
+//     ...headers,
+//     authorization: '',
+//   },
+// }));
+// let splitLink = split(
+//   ({ query }) => {
+//     const definition = getMainDefinition(query);
+//     return (
+//       definition.kind === 'OperationDefinition'
+//       && definition.operation === 'subscription'
+//     );
+//   },
+//   wsLink,
+//   authLink.concat(httpLink),
+// );
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
@@ -80,33 +77,39 @@ const cache = new InMemoryCache({
   },
 });
 let client = new ApolloClient({
-  link: splitLink,
+  uri: route,
   cache,
+  headers: {
+    authorization: '',
+  },
 });
 
 export function setAuthHeader(token) { // This is to let backend know request are coming from the user who logged in via our website
   // axios.defaults.headers.post.authorization = token || '';
   client.clearStore();
-  authLink = setContext((_, { headers }) => ({
-    headers: {
-      ...headers,
-      authorization: token ? `${token}` : '',
-    },
-  }));
-  splitLink = split(
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      return (
-        definition.kind === 'OperationDefinition'
-        && definition.operation === 'subscription'
-      );
-    },
-    wsLink,
-    authLink.concat(httpLink),
-  );
+  // authLink = setContext((_, { headers }) => ({
+  //   headers: {
+  //     ...headers,
+  //     authorization: token ? `${token}` : '',
+  //   },
+  // }));
+  // splitLink = split(
+  //   ({ query }) => {
+  //     const definition = getMainDefinition(query);
+  //     return (
+  //       definition.kind === 'OperationDefinition'
+  //       && definition.operation === 'subscription'
+  //     );
+  //   },
+  //   wsLink,
+  //   authLink.concat(httpLink),
+  // );
   client = new ApolloClient({
-    link: splitLink,
+    uri: route,
     cache,
+    headers: {
+      authorization: token || '',
+    },
   });
 }
 
