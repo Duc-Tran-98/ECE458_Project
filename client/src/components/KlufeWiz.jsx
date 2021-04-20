@@ -411,20 +411,18 @@ export default function KlufeWiz({
                   <AsyncSuggest
                     query={gql`
                       query Instruments($modelCategories: [String]) {
-                        getInstrumentsWithFilter(modelCategories: $modelCategories) {
-                          instruments {
-                            vendor
+                        getInstrumentsMatchingOneModelCategory(modelCategories: $modelCategories) {
+                          vendor
                             modelNumber
                             assetTag
                             calibrationFrequency
                             recentCalibration {
                               date
                             }
-                          }
                         }
                       }
                     `}
-                    queryName="getInstrumentsWithFilter"
+                    queryName="getInstrumentsMatchingOneModelCategory"
                     getVariables={() => ({ modelCategories: ['Klufe_K5700-compatible'] })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
