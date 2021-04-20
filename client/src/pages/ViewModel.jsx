@@ -6,13 +6,17 @@ import { useHistory, Link } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import ModelForm from '../components/ModelForm';
 import InfinityScroll from '../components/InfiniteScroll';
 import { StateLessCloseModal } from '../components/ModalAlert';
 import DeleteModel from '../queries/DeleteModel';
 import FindModel, { FindModelById } from '../queries/FindModel';
 
-export default function DetailedModelView() {
+export default function DetailedModelView({ onChange }) {
+  DetailedModelView.propTypes = {
+    onChange: PropTypes.func.isRequired,
+  };
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   const [model, setModel] = React.useState({
@@ -37,12 +41,21 @@ export default function DetailedModelView() {
   const [update, setUpdate] = React.useState(false);
   const handleFindModel = (response) => {
     console.log('found model with response: ');
+    onChange();
     console.log(response);
     setFetched(false);
     const categories = response.categories.map((item) => item.name);
-    const calibratorCategories = response.calibratorCategories.map((item) => item.name);
+    const calibratorCategories = response.calibratorCategories.map(
+      (item) => item.name,
+    );
     const {
-      description, comment, supportLoadBankCalibration, supportKlufeCalibration, supportCustomCalibration, requiresCalibrationApproval, customForm,
+      description,
+      comment,
+      supportLoadBankCalibration,
+      supportKlufeCalibration,
+      supportCustomCalibration,
+      requiresCalibrationApproval,
+      customForm,
     } = response;
     let { calibrationFrequency, id } = response;
     if (calibrationFrequency !== null) {
@@ -101,7 +114,9 @@ export default function DetailedModelView() {
         handleResponse: handleFindModel,
       });
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
   React.useEffect(() => {
     let active = true;
@@ -113,7 +128,9 @@ export default function DetailedModelView() {
         FindModelById({ id: model.id, handleResponse: handleFindModel });
       }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [update]);
   const handleResponse = (response) => {
     setLoading(false);
@@ -123,8 +140,11 @@ export default function DetailedModelView() {
       });
       setTimeout(() => {
         if (history.location.state?.previousUrl) {
-          const path = history.location.state.previousUrl.split(window.location.host)[1];
-          history.replace( // This code updates the url to have the correct count
+          const path = history.location.state.previousUrl.split(
+            window.location.host,
+          )[1];
+          history.replace(
+            // This code updates the url to have the correct count
             path,
             null,
           );
@@ -165,13 +185,21 @@ export default function DetailedModelView() {
         ) : (
           <>
             <div className="mt-3">
-              <button className="btn btn-delete" type="button" onClick={handleDelete}>
+              <button
+                className="btn btn-delete"
+                type="button"
+                onClick={handleDelete}
+              >
                 Yes
               </button>
             </div>
             <span className="mx-3" />
             <div className="mt-3">
-              <button className="btn " type="button" onClick={() => setShowDelete(false)}>
+              <button
+                className="btn "
+                type="button"
+                onClick={() => setShowDelete(false)}
+              >
                 No
               </button>
             </div>
@@ -182,7 +210,9 @@ export default function DetailedModelView() {
   );
 
   const deleteBtn = (
-    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">Delete</Button>
+    <Button onClick={() => setShowDelete(true)} className="btn btn-delete">
+      Delete
+    </Button>
     // <DeletePopOver onClick={() => setShowDelete(true)} title="Click to delete instrument" />
   );
   const deleteModal = (
@@ -202,7 +232,9 @@ export default function DetailedModelView() {
         <div className="col p-3 border border-right border-dark">
           {fetched && (
             <>
-              <h3 className="px-3 bg-secondary text-light my-auto">Model Information</h3>
+              <h3 className="px-3 bg-secondary text-light my-auto">
+                Model Information
+              </h3>
               {deleteModal}
               <ModelForm
                 editBtnRef={ref}
@@ -228,8 +260,14 @@ export default function DetailedModelView() {
             </>
           )}
         </div>
-        <div className="col-lg p-3 border border-left border-dark" id="remove-if-empty">
-          <div id="scrollableDiv" style={{ maxHeight: '72vh', overflowY: 'auto', minHeight: '72vh' }}>
+        <div
+          className="col-lg p-3 border border-left border-dark"
+          id="remove-if-empty"
+        >
+          <div
+            id="scrollableDiv"
+            style={{ maxHeight: '72vh', overflowY: 'auto', minHeight: '72vh' }}
+          >
             <InfinityScroll
               title="Instances:"
               titleClassName="px-3 bg-secondary text-light my-auto sticky-top"

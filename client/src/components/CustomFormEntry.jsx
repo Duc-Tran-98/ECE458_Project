@@ -61,7 +61,15 @@ const CustomDisabledTextField = withStyles({
 })(TextField);
 
 export default function CustomFormEntry({
-  getSteps, modelNumber, vendor, serialNumber, assetTag, onFinish, handleClose, disabled,
+  getSteps,
+  modelNumber,
+  vendor,
+  serialNumber,
+  assetTag,
+  onFinish,
+  handleClose,
+  disabled,
+  onCalibEventAdded = () => undefined,
 }) {
   CustomFormEntry.propTypes = {
     getSteps: PropTypes.func.isRequired, // return array of steps JSON
@@ -72,6 +80,8 @@ export default function CustomFormEntry({
     onFinish: PropTypes.func,
     handleClose: PropTypes.func,
     disabled: PropTypes.bool,
+    // eslint-disable-next-line react/require-default-props
+    onCalibEventAdded: PropTypes.func,
   };
   CustomFormEntry.defaultProps = {
     modelNumber: '',
@@ -104,9 +114,11 @@ export default function CustomFormEntry({
     console.log(response);
     if (response.success) {
       toast.success(response.message);
+      onCalibEventAdded();
     } else {
       toast.error(response.message);
     }
+    onFinish();
   };
 
   const validForm = () => {
@@ -172,8 +184,11 @@ export default function CustomFormEntry({
       state.forEach((element, index) => {
         switch (element.type) {
           case 'number':
-          // Validate number present
-            if (element.value !== '' && !Number.isNaN(parseFloat(element.value))) {
+            // Validate number present
+            if (
+              element.value !== ''
+              && !Number.isNaN(parseFloat(element.value))
+            ) {
               nextState[index] = {
                 ...nextState[index],
                 error: false,
@@ -238,10 +253,14 @@ export default function CustomFormEntry({
   // TODO: Add handle close on modal
   const handleSubmit = () => {
     if (!validForm()) {
-      toast.error('Invalid fields in form, please fix before submitting', { toastId: -87 });
+      toast.error('Invalid fields in form, please fix before submitting', {
+        toastId: -87,
+      });
       return;
     }
-    console.log(`submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`);
+    console.log(
+      `submit calib event for\n${modelNumber}\t${vendor}\t${serialNumber}\t${assetTag}`,
+    );
     console.log(JSON.stringify(state));
     AddCustomFormCalibration({
       assetTag,
@@ -253,7 +272,6 @@ export default function CustomFormEntry({
       handleResponse,
     });
     handleClose();
-    onFinish();
   };
   // const canSubmit = true;
   const [canSubmit, setCanSubmit] = React.useState(true);
@@ -317,13 +335,15 @@ export default function CustomFormEntry({
   const numberStep = (step, index) => (
     <div className={`${divClass} row`}>
       <div className="col">
-        <TextField
+        <CustomDisabledTextField
           className={classes.textFieldLarge}
           margin="normal"
           value={step.prompt}
           helperText={getNumberLabel(step)}
           disabled
           InputProps={inputProps}
+          multiline
+          rowsMax={100}
         />
       </div>
       <div className="col" style={{ margin: 'auto 0px' }}>
@@ -345,12 +365,14 @@ export default function CustomFormEntry({
   const textStep = (step, index) => (
     <div className={`${divClass} row`}>
       <div className="col">
-        <TextField
+        <CustomDisabledTextField
           className={classes.textFieldLarge}
           margin="normal"
           value={step.prompt}
           disabled
           InputProps={inputProps}
+          multiline
+          rowsMax={100}
         />
       </div>
       <div className="col mt-3" style={{ margin: 'auto 0px' }}>
@@ -450,7 +472,12 @@ export default function CustomFormEntry({
                 className=""
               />
             </Form.Group>
-            <CalibratedWith vendor={vendor} modelNumber={modelNumber} onChangeCalib={onChangeCalibRow} checkValid={checkValid} />
+            <CalibratedWith
+              vendor={vendor}
+              modelNumber={modelNumber}
+              onChangeCalib={onChangeCalibRow}
+              checkValid={checkValid}
+            />
             <div className={divClass}>
               <div className=" m-3 text-center">
                 <button
@@ -461,7 +488,6 @@ export default function CustomFormEntry({
                   style={{ margin: 'auto' }}
                 >
                   Finish
-
                 </button>
               </div>
             </div>

@@ -330,10 +330,10 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
   }, [update]);
 
   const genCalibButtons = (
-    <div className="d-flex flex-row">
+    <div className="row">
       {(user.isAdmin || user.calibrationPermission) && (
         <>
-          <MouseOverPopover message="Add a new calibration event">
+          <MouseOverPopover message="Add a new calibration event" className="col-lg">
             <button
               type="button"
               onClick={() => {
@@ -362,7 +362,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
             />
           </StateLessModal>
           {supportsLoadBankWiz && (
-            <div className="ms-2">
+            <div className="col-lg">
               <ModalAlert
                 btnText="Add Load Bank Calibration"
                 title="Load Bank Wizard"
@@ -379,7 +379,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
             </div>
           )}
           {supportsKlufeWiz && (
-            <div className="ms-2">
+            <div className="col-lg">
               <ModalAlert
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
@@ -396,7 +396,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
             </div>
           )}
           {supportsCustomForm && (
-            <div className="ms-2">
+            <div className="col-lg">
               <StateLessCloseButtonModal
                 handleOpen={() => setShowCustomForm(true)}
                 handleClose={() => setShowCustomForm(false)}
@@ -413,16 +413,19 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
                   serialNumber={formState.serialNumber}
                   assetTag={formState.assetTag}
                   vendor={formState.vendor}
+                  onCalibEventAdded={onCalibEventAdded}
                 />
               </StateLessCloseButtonModal>
             </div>
           )}
         </>
       )}
-      {calibHist.filter((entry) => entry.viewOnly).length > 0 && (
+      {calibHist.filter(
+        (entry) => entry.viewOnly && (entry.approvalStatus === 1 || entry.approvalStatus === 3),
+      ).length > 0 && (
         <>
           <MouseOverPopover
-            className="ms-2"
+            className="col-lg"
             message="View instrument's calibration certificate"
           >
             <Link
@@ -432,7 +435,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
               View Certificate
             </Link>
           </MouseOverPopover>
-          <MouseOverPopover message="Show chain of truth" className="ms-2">
+          <MouseOverPopover message="Show chain of truth" className="col-lg">
             <span className="h5">
               Chain of truth
               <Checkbox
