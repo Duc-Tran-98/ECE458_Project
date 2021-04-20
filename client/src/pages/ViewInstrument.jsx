@@ -333,7 +333,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
     <div className="row">
       {(user.isAdmin || user.calibrationPermission) && (
         <>
-          <MouseOverPopover message="Add a new calibration event" className="col-lg">
+          <MouseOverPopover message="Add a new calibration event" className="col-auto">
             <button
               type="button"
               onClick={() => {
@@ -362,7 +362,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
             />
           </StateLessModal>
           {supportsLoadBankWiz && (
-            <div className="col-lg">
+            <div className="col-auto">
               <ModalAlert
                 btnText="Add Load Bank Calibration"
                 title="Load Bank Wizard"
@@ -379,7 +379,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
             </div>
           )}
           {supportsKlufeWiz && (
-            <div className="col-lg">
+            <div className="col-auto">
               <ModalAlert
                 btnText="Add Klufe Calibration"
                 title="Add Klufe Calibration"
@@ -396,7 +396,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
             </div>
           )}
           {supportsCustomForm && (
-            <div className="col-lg">
+            <div className="col-auto">
               <StateLessCloseButtonModal
                 handleOpen={() => setShowCustomForm(true)}
                 handleClose={() => setShowCustomForm(false)}
@@ -425,7 +425,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
       ).length > 0 && (
         <>
           <MouseOverPopover
-            className="col-lg"
+            className="col-auto"
             message="View instrument's calibration certificate"
           >
             <Link
@@ -435,7 +435,7 @@ export default function DetailedInstrumentView({ onCalibEventAdded }) {
               View Certificate
             </Link>
           </MouseOverPopover>
-          <MouseOverPopover message="Show chain of truth" className="col-lg">
+          <MouseOverPopover message="Show chain of truth" className="col-auto">
             <span className="h5">
               Chain of truth
               <Checkbox
