@@ -182,7 +182,7 @@ function ListModels() {
               xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
-              fill="tomato"
+              fill="darkgrey"
               className="bi bi-x-circle-fill position-absolute top-50 start-50 translate-middle"
               viewBox="0 0 16 16"
             >
