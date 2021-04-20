@@ -167,10 +167,10 @@ export default function ModelForm({
       )}
     </div>
   );
-  console.log(`customForm prop: ${customForm}`);
+  // console.log(`customForm prop: ${customForm}`);
   const initCustomFormState = customForm ? JSON.parse(customForm) : [emptyHeader];
-  console.log('initCustomFormState: ');
-  console.log(initCustomFormState);
+  // console.log('initCustomFormState: ');
+  // console.log(initCustomFormState);
   const [customFormState, setCustomFormState] = React.useState(initCustomFormState);
   const [shouldUpdateCustomForm, setShouldUpdateCustomForm] = React.useState(0);
 
@@ -178,16 +178,16 @@ export default function ModelForm({
   // Iterates through form state, assigning errors
   // If errors exist, then return false, else return true
   const validCustomForm = () => {
-    console.log('validatingCustomForm');
-    console.log(customFormState);
+    // console.log('validatingCustomForm');
+    // console.log(customFormState);
     const nextState = customFormState;
     let errorCount = 0;
     customFormState.forEach((element, index) => {
-      console.log(element);
-      console.log(index);
+      // console.log(element);
+      // console.log(index);
       const isEmpty = element.prompt === '';
       if (isEmpty) {
-        console.log('found empty field');
+        // console.log('found empty field');
         errorCount += 1;
         nextState[index] = {
           ...nextState[index],
@@ -197,10 +197,10 @@ export default function ModelForm({
       }
       if (element.type === 'number') {
         // Validate min/max are valid numerically (if set)
-        console.log('numeric element');
-        console.log(element);
+        // console.log('numeric element');
+        // console.log(element);
         if (element.minSet && Number.isNaN(Number.parseFloat(element.min))) {
-          console.log('min is set but not parseable as float');
+          // console.log('min is set but not parseable as float');
           nextState[index] = {
             ...nextState[index],
             minError: true,
@@ -209,7 +209,7 @@ export default function ModelForm({
           errorCount += 1;
         }
         if (element.maxSet && Number.isNaN(Number.parseFloat(element.max))) {
-          console.log('max is set but not parseable as float');
+          // console.log('max is set but not parseable as float');
           nextState[index] = {
             ...nextState[index],
             maxError: true,
@@ -222,10 +222,10 @@ export default function ModelForm({
         if (element.minSet && element.maxSet) {
           const minFloat = Number.parseFloat(element.min);
           const maxFloat = Number.parseFloat(element.max);
-          console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
+          // console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
           if (!Number.isNaN(minFloat) && !Number.isNaN(maxFloat)) {
             if (minFloat >= maxFloat) { // TODO: Variance request on min >= max? what if the same?
-              console.log('min and max set, but values comparison incorrect');
+              // console.log('min and max set, but values comparison incorrect');
               nextState[index] = {
                 ...nextState[index],
                 maxError: true,
@@ -271,8 +271,8 @@ export default function ModelForm({
         errorCount += 1;
       }
     });
-    console.log(`inspected all fields, errorCount=${errorCount}\nsettingFormState: `);
-    console.log(nextState);
+    // console.log(`inspected all fields, errorCount=${errorCount}\nsettingFormState: `);
+    // console.log(nextState);
     setCustomFormState(nextState);
     setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
     return errorCount === 0;
@@ -285,14 +285,14 @@ export default function ModelForm({
     return 'standard';
   };
   const initCalibrationType = getCalibrationType();
-  // console.log(`initCalibrationType: ${initCalibrationType}`);
-  console.log(getCalibrationType());
+  // // console.log(`initCalibrationType: ${initCalibrationType}`);
+  // console.log(getCalibrationType());
   // Check if errors should be removed from custom form
   React.useEffect(() => {
     const nextState = customFormState;
     customFormState.forEach((element, index) => {
       if (element.error === true && element.helperText === 'Please enter a prompt') {
-        console.log('found previously field');
+        // console.log('found previously field');
         if (element.prompt !== '') {
           nextState[index] = {
             ...nextState[index],
@@ -328,7 +328,7 @@ export default function ModelForm({
         if (element.minSet && element.maxSet) {
           const minFloat = Number.parseFloat(element.min);
           const maxFloat = Number.parseFloat(element.max);
-          console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
+          // console.log(`minFloat: ${minFloat}\tmaxFloat: ${maxFloat}`);
           if (!Number.isNaN(minFloat) && !Number.isNaN(maxFloat)) {
             if (minFloat < maxFloat) { // TODO: Variance request on min >= max? what if the same?
               nextState[index] = {
@@ -423,13 +423,13 @@ export default function ModelForm({
       validationSchema={schema}
       onSubmit={(values, { setSubmitting, resetForm }) => {
         // First, validate custom form has no errors
-        console.log('onSubmit in Formik ModelForm');
+        // console.log('onSubmit in Formik ModelForm');
         if (values.calibrationType.includes('custom') && !validCustomForm()) {
-          console.log('custom form is invalid, returning');
+          // console.log('custom form is invalid, returning');
           setSubmitting(false);
           return;
         }
-        console.log('validated custom form, submitting');
+        // console.log('validated custom form, submitting');
         const filteredValues = {
           modelNumber: values.modelNumber,
           vendor: values.vendor,
@@ -444,8 +444,8 @@ export default function ModelForm({
           supportLoadBankCalibration: values.calibrationType.includes('load'),
           customForm: JSON.stringify(customFormState),
         };
-        console.log(filteredValues);
-        console.log('setting submit to true');
+        // console.log(filteredValues);
+        // console.log('setting submit to true');
         setSubmitting(true);
         setTimeout(() => {
           handleFormSubmit(filteredValues, resetForm);
