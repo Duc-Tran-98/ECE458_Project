@@ -155,7 +155,6 @@ class BulkDataAPI extends DataSource {
     const storeModel = await this.store;
     this.store = storeModel;
     const t = await this.store.db.transaction();
-
     try {
       // Then, we do some calls passing this transaction as an option:
       const assetTags = await this.store.instruments.findAll({
@@ -169,7 +168,11 @@ class BulkDataAPI extends DataSource {
       for (let i = 0; i < cats.length; i += 1) {
         catMap.set(cats[i].dataValues.name.toLowerCase(), cats[i].dataValues.id);
       }
-
+      const calibrationSubmitter = await this.store.users.findOne({
+        where: {
+          userName: instruments[0].calibrationUser,
+        },
+      });
       for (let i = 0; i < instruments.length; i += 1) {
         const currentInstrument = instruments[i];
         const assetTag = currentInstrument.assetTag;
@@ -255,6 +258,7 @@ class BulkDataAPI extends DataSource {
                 if (response.success) {
                   if (serialNumber == null) serialNumber = '';
                   const modelReference = model.dataValues.id;
+                  // LOUIS
                   tags.push(newAssetTag);
                   const newInstrumentData = {
                     modelReference,
@@ -273,16 +277,15 @@ class BulkDataAPI extends DataSource {
                   );
                   const instrumentId = created.dataValues.id;
                   // add calibration event if included
+                  const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
                   if (calibrationUser != null) {
                     await this.store.calibrationEvents.create(
                       {
                         calibrationHistoryIdReference: instrumentId,
                         user: calibrationUser,
-                        // TODO update firstname, lastName, and approval
-                        // this is temp patch so import still works
-                        userFirstName: 'first name placeHolder - update import later',
-                        userLastName: 'last name placeHolder - update import later',
-                        approvalStatus: 3,
+                        userFirstName: calibrationSubmitter.firstName,
+                        userLastName: calibrationSubmitter.lastName,
+                        approvalStatus,
                         date: calibrationDate,
                         comment: calibrationComment,
                       },
@@ -426,20 +429,18 @@ class BulkDataAPI extends DataSource {
                     { transaction: t },
                   );
                   const instrumentId = created.dataValues.id;
-
+                  const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
                   // add calibration event if included
                   if (calibrationUser != null) {
                     await this.store.calibrationEvents.create(
                       {
                         calibrationHistoryIdReference: instrumentId,
                         user: calibrationUser,
+                        userFirstName: calibrationSubmitter.firstName,
+                        userLastName: calibrationSubmitter.lastName,
+                        approvalStatus,
                         date: calibrationDate,
                         comment: calibrationComment,
-                        // TODO update firstname, lastName, and approval
-                        // this is temp patch so import still works
-                        userFirstName: 'first name placeHolder - update import later',
-                        userLastName: 'last name placeHolder - update import later',
-                        approvalStatus: 3,
                       },
                       { transaction: t },
                     );
