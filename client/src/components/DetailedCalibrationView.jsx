@@ -68,12 +68,12 @@ export default function DetailedCalibrationView({
             <div className="col-lg">
               <span className="h6 text-dark">
                 Vendor
-                <Link
-                  to={`/viewInstrument/?modelNumber=${ele.modelNumber}&vendor=${ele.vendor}&assetTag=${ele.assetTag}`}
+                <a
+                  href={`/viewInstrument/?modelNumber=${ele.modelNumber}&vendor=${ele.vendor}&assetTag=${ele.assetTag}`}
                   className="ps-4"
                 >
                   Link
-                </Link>
+                </a>
               </span>
               <br />
               <input

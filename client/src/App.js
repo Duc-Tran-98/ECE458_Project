@@ -139,7 +139,7 @@ function App() {
             </Route>
             <Route path="/viewModel/">
               {loggedIn ? (
-                <DetailedModelView />
+                <DetailedModelView onChange={handleUpdateNotification} />
               ) : (
                 <Login handleLogin={handleLogin} />
               )}

@@ -1,11 +1,14 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 // import { toast } from 'react-toastify';
 import { gql } from '@apollo/client';
+import { useHistory } from 'react-router-dom';
 import GetUser from '../queries/GetUser';
 import { Subscribe } from './UseQuery';
 
 const UserContext = React.createContext({});
+// eslint-disable-next-line prefer-const
 let subscription = null;
 // eslint-disable-next-line no-unused-vars
 export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
@@ -14,6 +17,8 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
     loggedIn: PropTypes.bool.isRequired,
     handleSignOut: PropTypes.func.isRequired,
   };
+
+  const history = useHistory();
 
   const [user, setUserState] = React.useState({
     isAdmin: false,
@@ -26,6 +31,27 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
     email: '',
   });
   let token = window.sessionStorage.getItem('token');
+
+  React.useEffect(() => {
+    let active = true;
+    (async () => {
+      if (active) {
+        history.listen(() => {
+          if (loggedIn) {
+            // console.log('history updated and user logged in');
+            GetUser({
+              userName: Buffer.from(token, 'base64').toString('ascii'),
+              includeAll: true,
+              fetchPolicy: 'no-cache',
+            }).then((val) => setUserState(val));
+          }
+        });
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     token = window.sessionStorage.getItem('token');
@@ -52,31 +78,31 @@ export const UserProvider = ({ children, loggedIn, handleSignOut }) => {
           fetchPolicy: 'no-cache',
         }).then((val) => {
           setUserState(val);
-          subscription = Subscribe({
-            query: gql`
-              subscription Test($userName: String!) {
-                userChanged(userName: $userName) {
-                  modelPermission
-                  calibrationPermission
-                  calibrationApproverPermission
-                  instrumentPermission
-                  isAdmin
-                  firstName
-                  lastName
-                  id
-                }
-              }
-            `,
-            getVariables: () => ({ userName: val.userName }),
-          }).subscribe({
-            next: ({ data }) => {
-              console.log(data.userChanged); // do something with new user data
-              setUserState(data.userChanged);
-            },
-            error: (err) => {
-              console.error('err', err);
-            },
-          });
+          // subscription = Subscribe({
+          //   query: gql`
+          //     subscription Test($userName: String!) {
+          //       userChanged(userName: $userName) {
+          //         modelPermission
+          //         calibrationPermission
+          //         calibrationApproverPermission
+          //         instrumentPermission
+          //         isAdmin
+          //         firstName
+          //         lastName
+          //         id
+          //       }
+          //     }
+          //   `,
+          //   getVariables: () => ({ userName: val.userName }),
+          // }).subscribe({
+          //   next: ({ data }) => {
+          //     console.log(data.userChanged); // do something with new user data
+          //     setUserState(data.userChanged);
+          //   },
+          //   error: (err) => {
+          //     console.error('err', err);
+          //   },
+          // });
         });
       }, 100); // set timeout to give time for new authheader to get applied
     }
