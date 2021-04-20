@@ -168,7 +168,7 @@ class BulkDataAPI extends DataSource {
       for (let i = 0; i < cats.length; i += 1) {
         catMap.set(cats[i].dataValues.name.toLowerCase(), cats[i].dataValues.id);
       }
-      const calibrationSubmitter = await this.store.users.findOne({
+      let calibrationSubmitter = await this.store.users.findOne({
         where: {
           userName: instruments[0].calibrationUser,
         },
@@ -176,6 +176,13 @@ class BulkDataAPI extends DataSource {
       for (let i = 0; i < instruments.length; i += 1) {
         const currentInstrument = instruments[i];
         const assetTag = currentInstrument.assetTag;
+        if (calibrationSubmitter === null) {
+          calibrationSubmitter = await this.store.users.findOne({
+            where: {
+              userName: instruments[i].calibrationUser,
+            },
+          });
+        }
         if (assetTag !== null) {
           // validate and add instruments
           const vendor = currentInstrument.vendor;
@@ -283,8 +290,8 @@ class BulkDataAPI extends DataSource {
                       {
                         calibrationHistoryIdReference: instrumentId,
                         user: calibrationUser,
-                        userFirstName: calibrationSubmitter.firstName,
-                        userLastName: calibrationSubmitter.lastName,
+                        userFirstName: calibrationSubmitter ? calibrationSubmitter.firstName : null,
+                        userLastName: calibrationSubmitter ? calibrationSubmitter.lastName : null,
                         approvalStatus,
                         date: calibrationDate,
                         comment: calibrationComment,
@@ -436,8 +443,8 @@ class BulkDataAPI extends DataSource {
                       {
                         calibrationHistoryIdReference: instrumentId,
                         user: calibrationUser,
-                        userFirstName: calibrationSubmitter.firstName,
-                        userLastName: calibrationSubmitter.lastName,
+                        userFirstName: calibrationSubmitter ? calibrationSubmitter.firstName : null,
+                        userLastName: calibrationSubmitter ? calibrationSubmitter.lastName : null,
                         approvalStatus,
                         date: calibrationDate,
                         comment: calibrationComment,

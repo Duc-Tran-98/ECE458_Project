@@ -649,8 +649,7 @@ export default function LoadBankWiz({
                   <AsyncSuggest
                     query={gql`
                       query Instruments($modelCategories: [String]) {
-                        getInstrumentsWithFilter(modelCategories: $modelCategories) {
-                          instruments {
+                        getInstrumentsMatchingOneModelCategory(modelCategories: $modelCategories) {
                             vendor
                             modelNumber
                             assetTag
@@ -658,11 +657,11 @@ export default function LoadBankWiz({
                             recentCalibration {
                               date
                             }
-                          }
+                          
                         }
                       }
                     `}
-                    queryName="getInstrumentsWithFilter"
+                    queryName="getInstrumentsMatchingOneModelCategory"
                     getVariables={() => ({ modelCategories: ['voltmeter'] })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {
@@ -698,8 +697,7 @@ export default function LoadBankWiz({
                   <AsyncSuggest
                     query={gql`
                     query Instruments($modelCategories: [String]) {
-                      getInstrumentsWithFilter(modelCategories: $modelCategories) {
-                        instruments {
+                      getInstrumentsMatchingOneModelCategory(modelCategories: $modelCategories) {
                           vendor
                           modelNumber
                           assetTag
@@ -707,11 +705,11 @@ export default function LoadBankWiz({
                           recentCalibration {
                             date
                           }
-                        }
+                        
                       }
                     }
                   `}
-                    queryName="getInstrumentsWithFilter"
+                    queryName="getInstrumentsMatchingOneModelCategory"
                     getVariables={() => ({ modelCategories: ['current_shunt_meter'] })}
                     // eslint-disable-next-line no-unused-vars
                     onInputChange={(_e, v) => {

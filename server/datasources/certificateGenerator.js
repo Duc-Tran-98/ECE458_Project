@@ -270,7 +270,7 @@ const generateInfoPage = async () => (
         React.createElement(
           Text,
           { style: styles.largeText },
-          '\nCalibration Comment',
+          '\nCalibration Comment:',
         ),
         React.createElement(
           Text,
@@ -327,7 +327,7 @@ const generateInfoPage = async () => (
         React.createElement(
           Text,
           { style: styles.largeText },
-          `${calEvent.approvalStatus === 'Approved' ? '\nApproval Comment' : ''}`,
+          `${calEvent.approvalStatus === 'Approved' ? '\nApproval Comment:' : ''}`,
         ),
         React.createElement(
           Text,
