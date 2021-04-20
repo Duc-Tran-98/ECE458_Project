@@ -192,9 +192,9 @@ class InstrumentAPI extends DataSource {
           model: this.store.modelCategories,
           as: 'modelCategories',
           through: 'modelCategoryRelationships',
-          // where: {
-          //   name: modelCategories,
-          // },
+          where: {
+            name: modelCategories,
+          },
         });
         checkModelCategories = modelCategories;
       } else {
@@ -211,9 +211,9 @@ class InstrumentAPI extends DataSource {
           model: this.store.instrumentCategories,
           as: 'instrumentCategories',
           through: 'instrumentCategoryRelationships',
-          // where: {
-          //   name: instrumentCategories,
-          // },
+          where: {
+            name: instrumentCategories,
+          },
         });
         checkInstrumentCategories = instrumentCategories;
       } else {
