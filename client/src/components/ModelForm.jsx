@@ -58,6 +58,13 @@ const charLimits = {
   },
 };
 
+const customFormLimits = {
+  header: 100,
+  plaintext: 5000,
+  numeric: 100,
+  text: 100,
+};
+
 const schema = Yup.object({
   modelNumber: Yup.string()
     .max(charLimits.modelNumber.max, `Must be less than ${charLimits.modelNumber.max} characters`)
@@ -231,6 +238,38 @@ export default function ModelForm({
           }
         }
       }
+      if (element.type === 'number' && element.prompt.length > customFormLimits.numeric) {
+        nextState[index] = {
+          ...nextState[index],
+          error: true,
+          helperText: `Must be less than ${customFormLimits.numeric} characters`,
+        };
+        errorCount += 1;
+      }
+      if (element.type === 'header' && element.prompt.length > customFormLimits.header) {
+        nextState[index] = {
+          ...nextState[index],
+          error: true,
+          helperText: `Must be less than ${customFormLimits.header} characters`,
+        };
+        errorCount += 1;
+      }
+      if (element.type === 'description' && element.prompt.length > customFormLimits.plaintext) {
+        nextState[index] = {
+          ...nextState[index],
+          error: true,
+          helperText: `Must be less than ${customFormLimits.plaintext} characters`,
+        };
+        errorCount += 1;
+      }
+      if (element.type === 'text' && element.prompt.length > customFormLimits.text) {
+        nextState[index] = {
+          ...nextState[index],
+          error: true,
+          helperText: `Must be less than ${customFormLimits.text} characters`,
+        };
+        errorCount += 1;
+      }
     });
     console.log(`inspected all fields, errorCount=${errorCount}\nsettingFormState: `);
     console.log(nextState);
@@ -309,6 +348,45 @@ export default function ModelForm({
               };
             }
           }
+        }
+      }
+    });
+    setCustomFormState(nextState);
+    setShouldUpdateCustomForm(shouldUpdateCustomForm + 1);
+  }, [customFormState]);
+
+  // Check if character count errors should be updated
+  React.useEffect(() => {
+    const nextState = customFormState;
+    customFormState.forEach((element, index) => {
+      if (element.error) {
+        if (element.type === 'number' && element.prompt.length <= customFormLimits.numeric) {
+          nextState[index] = {
+            ...nextState[index],
+            error: false,
+            helperText: '',
+          };
+        }
+        if (element.type === 'header' && element.prompt.length <= customFormLimits.header) {
+          nextState[index] = {
+            ...nextState[index],
+            error: false,
+            helperText: '',
+          };
+        }
+        if (element.type === 'description' && element.prompt.length <= customFormLimits.plaintext) {
+          nextState[index] = {
+            ...nextState[index],
+            error: false,
+            helperText: '',
+          };
+        }
+        if (element.type === 'text' && element.prompt.length <= customFormLimits.text) {
+          nextState[index] = {
+            ...nextState[index],
+            error: false,
+            helperText: '',
+          };
         }
       }
     });

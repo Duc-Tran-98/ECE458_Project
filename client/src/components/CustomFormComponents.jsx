@@ -127,6 +127,8 @@ export function CustomHeaderInput({
           value={header}
           error={error}
           helperText={helperText}
+          multiline
+          rowsMax={4}
         />
       </div>
     </div>
@@ -344,6 +346,8 @@ export function CustomTextInput({
           autoFocus={autoFocus}
           error={error}
           helperText={helperText}
+          multiline
+          rowsMax={10}
         />
       </div>
     </div>
