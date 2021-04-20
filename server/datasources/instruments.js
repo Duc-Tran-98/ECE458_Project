@@ -159,7 +159,7 @@ class InstrumentAPI extends DataSource {
         vendor: instruments[i].dataValues.vendor,
         modelNumber: instruments[i].dataValues.modelNumber,
         assetTag: instruments[i].dataValues.assetTag,
-        calibrationFrequency: instruments[i].dataValues.calibrationFrequency,
+        calibrationFrequency: instruments[i].dataValues.calibrationFrequency ? instruments[i].dataValues.calibrationFrequency : 0,
         recentCalibration: instruments[i].dataValues.recentCalibration,
       });
     }
