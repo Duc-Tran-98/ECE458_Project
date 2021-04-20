@@ -61,8 +61,8 @@ const charLimits = {
 const customFormLimits = {
   header: 100,
   plaintext: 5000,
-  numeric: 100,
-  text: 100,
+  numeric: 200,
+  text: 200,
 };
 
 const schema = Yup.object({

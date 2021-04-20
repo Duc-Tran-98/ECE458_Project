@@ -127,8 +127,9 @@ export function CustomHeaderInput({
           value={header}
           error={error}
           helperText={helperText}
-          multiline
-          rowsMax={4}
+          // multiline
+          // rowsMax={4}
+          // rows={1}
         />
       </div>
     </div>
