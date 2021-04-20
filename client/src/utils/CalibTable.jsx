@@ -151,7 +151,7 @@ export const approvalCols = [
             {params.value}
           </a>
         ) : (
-          'N/A'
+          ' '
         )}
       </>
     ),

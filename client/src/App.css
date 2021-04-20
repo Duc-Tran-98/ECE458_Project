@@ -286,3 +286,7 @@ div.MuiPaper-root.MuiPaper-elevation0{
 .custom-form-entry-modal {
   width: 90%;
 }
+
+a.nav-link.h5 {
+  margin-bottom: 0!important;
+}
