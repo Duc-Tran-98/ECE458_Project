@@ -277,7 +277,7 @@ class BulkDataAPI extends DataSource {
                   );
                   const instrumentId = created.dataValues.id;
                   // add calibration event if included
-                  const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
+                  const approvalStatus = model.dataValues.requiresCalibrationApproval ? 1 : 3;
                   if (calibrationUser != null) {
                     await this.store.calibrationEvents.create(
                       {
@@ -429,7 +429,7 @@ class BulkDataAPI extends DataSource {
                     { transaction: t },
                   );
                   const instrumentId = created.dataValues.id;
-                  const approvalStatus = model.dataValues.requiresCalibrationApproval ? 0 : 3;
+                  const approvalStatus = model.dataValues.requiresCalibrationApproval ? 1 : 3;
                   // add calibration event if included
                   if (calibrationUser != null) {
                     await this.store.calibrationEvents.create(
