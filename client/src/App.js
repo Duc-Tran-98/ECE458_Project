@@ -93,7 +93,7 @@ function App() {
             <Route path="/test">
               <ComponentTest />
             </Route>
-            <Route path="/viewCalibrationArppovals">
+            <Route path="/viewCalibrationApprovals">
               {loggedIn ? (
                 <CalibrationApproval
                   onCalibEventUpdated={handleUpdateNotification}

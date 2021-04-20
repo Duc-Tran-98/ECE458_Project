@@ -34,7 +34,7 @@ export default function NavIcons({ handleSignOut, updateNotification }) {
   // const notifications = 12;
 
   // TODO: Implement handlers for onclick events
-  const handleClick = () => history.push('/viewCalibrationArppovals?page=1&limit=25');
+  const handleClick = () => history.push('/viewCalibrationApprovals?page=1&limit=25');
 
   return (
     <>

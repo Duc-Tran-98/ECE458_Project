@@ -46,7 +46,7 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
     const searchString = `?page=${page}&limit=${limit}&orderBy=${orderBy}&sortBy=${sortBy}`;
     if (window.location.search !== searchString) {
       // If current location != next location, update url
-      history.push(`/viewCalibrationArppovals${searchString}`);
+      history.push(`/viewCalibrationApprovals${searchString}`);
     }
   };
 
@@ -56,7 +56,7 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
     const searchString = `?page=${initPage}&limit=${initLimit}&orderBy=${order}&sortBy=${sort}`;
     if (window.location.search !== searchString) {
       // If current location != next location, update url
-      history.push(`/viewCalibrationArppovals${searchString}`);
+      history.push(`/viewCalibrationApprovals${searchString}`);
     }
   };
   React.useEffect(() => {
