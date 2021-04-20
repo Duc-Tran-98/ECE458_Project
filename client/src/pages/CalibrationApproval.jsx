@@ -118,7 +118,7 @@ export default function CalibrationApprovalPage({ onCalibEventUpdated }) {
         showToolBar={false}
         showImport={false}
         headerElement={
-          <div className="ps-3 h5 py-2">Calibration Approval Table</div>
+          <div className="ps-3 h5 py-2 bg-secondary">Calibration Approval Table</div>
         }
         // eslint-disable-next-line no-unused-vars
         fetchData={(limit, offset, ordering) => GetAllPendingCalibEvents({
