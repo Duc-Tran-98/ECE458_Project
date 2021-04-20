@@ -72,7 +72,7 @@ export default function DetailedCalibrationView({
                   href={`/viewInstrument/?modelNumber=${ele.modelNumber}&vendor=${ele.vendor}&assetTag=${ele.assetTag}`}
                   className="ps-4"
                 >
-                  Link
+                  View Instrument
                 </a>
               </span>
               <br />
